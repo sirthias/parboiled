@@ -6,9 +6,9 @@ import org.parboiled.support.Checks;
 import org.parboiled.support.ParserConstructionException;
 import static org.parboiled.utils.Utils.arrayOf;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.HashMap;
 
 public abstract class BaseParser<T extends Actions> {
 
@@ -16,7 +16,7 @@ public abstract class BaseParser<T extends Actions> {
 
     private final Map<Character, Rule> charMatchers = new HashMap<Character, Rule>();
     private final Map<String, Rule> stringMatchers = new HashMap<String, Rule>();
-    private final LinkedList<ActionParameter> actionParameters = new LinkedList<ActionParameter>();
+    private final LinkedList<ActionParameter> actionParameterStack = new LinkedList<ActionParameter>();
     public final T actions;
 
     ///************************* PUBLIC ***************************///
@@ -98,42 +98,52 @@ public abstract class BaseParser<T extends Actions> {
     // action parameters
 
     public Node node(@NotNull String path) {
-        actionParameters.add(new ActionParameter.Node(path));
+        actionParameterStack.add(new ActionParameter.Node(path));
         return null;
     }
 
     public Node[] nodes(@NotNull String path) {
-        actionParameters.add(new ActionParameter.Nodes(path));
+        actionParameterStack.add(new ActionParameter.Nodes(path));
         return null;
     }
 
-    public <T> T value(String path) {
-        actionParameters.add(new ActionParameter.Value(path));
+    public Object value(String path) {
+        return value(path, null);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public <T> T value(String path, Class<T> type) {
+        actionParameterStack.add(new ActionParameter.Value(path));
         return null;
     }
 
-    public <T> T[] values(String path) {
-        actionParameters.add(new ActionParameter.Values(path));
+    public Object[] values(String path) {
+        return values(path, null);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public <T> T[] values(String path, Class<T> type) {
+        actionParameterStack.add(new ActionParameter.Values(path));
         return null;
     }
 
     public String text(String path) {
-        actionParameters.add(new ActionParameter.Text(path));
+        actionParameterStack.add(new ActionParameter.Text(path));
         return null;
     }
 
     public String[] texts(String path) {
-        actionParameters.add(new ActionParameter.Texts(path));
+        actionParameterStack.add(new ActionParameter.Texts(path));
         return null;
     }
 
     public Character ch(String path) {
-        actionParameters.add(new ActionParameter.Char(path));
+        actionParameterStack.add(new ActionParameter.Char(path));
         return null;
     }
 
     public Character[] chars(String path) {
-        actionParameters.add(new ActionParameter.Chars(path));
+        actionParameterStack.add(new ActionParameter.Chars(path));
         return null;
     }
 
@@ -143,30 +153,30 @@ public abstract class BaseParser<T extends Actions> {
         for (int i = args.length - 1; i >= 0; i--) {
             T arg = args[i];
             if (arg == null) {
-                arg = (T) actionParameters.removeLast();
+                arg = (T) actionParameterStack.removeLast();
                 Checks.ensure(arg != null, "Illegal argument list for firstNonNull(): null values are not allowed!");
             }
             args[i] = arg;
         }
-        actionParameters.add(new ActionParameter.FirstOfNonNull(args));
+        actionParameterStack.add(new ActionParameter.FirstOfNonNull(args));
         return null;
     }
 
-    public Integer convertToInteger(String text) {
+    public <N extends Number> N convertToNumber(String text, Class<N> type) {
         Object arg = text;
         if (text == null) {
-            arg = actionParameters.removeLast();
-            Checks.ensure(arg != null, "Illegal argument list for convertToInteger(): null values are not allowed!");
+            arg = actionParameterStack.removeLast();
+            Checks.ensure(arg != null, "Illegal argument list for convertToNumber(): null values are not allowed!");
         }
-        actionParameters.add(new ActionParameter.ConvertToInteger(arg));
+        actionParameterStack.add(new ActionParameter.ConvertToNumber<N>(arg, type));
         return null;
     }
 
     ///************************* PACKAGE ***************************///
 
     ActionParameter[] retrieveAndClearActionParameters() {
-        ActionParameter[] params = actionParameters.toArray(new ActionParameter[actionParameters.size()]);
-        actionParameters.clear();
+        ActionParameter[] params = actionParameterStack.toArray(new ActionParameter[actionParameterStack.size()]);
+        actionParameterStack.clear();
         return params;
     }
 

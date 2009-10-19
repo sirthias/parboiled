@@ -13,7 +13,7 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    actions.setValue(convertToInteger(text("oneOrMore")))
+                    actions.setValue(convertToNumber(text("oneOrMore"), Integer.class))
             );
         }
 

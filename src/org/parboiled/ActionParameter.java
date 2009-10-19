@@ -6,6 +6,8 @@ import static org.parboiled.support.ParseTreeUtils.collectNodesByPath;
 import org.parboiled.utils.Preconditions;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,12 +190,14 @@ abstract class ActionParameter {
         }
     }
 
-    static class ConvertToInteger extends ActionParameter {
+    static class ConvertToNumber<N extends Number> extends ActionParameter {
         private final Object arg;
+        private final Class<N> type;
 
-        public ConvertToInteger(Object arg) {
+        public ConvertToNumber(Object arg, Class<N> type) {
             super(null);
             this.arg = arg;
+            this.type = type;
         }
 
         @Override
@@ -205,7 +209,7 @@ abstract class ActionParameter {
         }
 
         Object getValue(@NotNull MatcherContext context) {
-            Preconditions.checkState(expectedParameterType.isAssignableFrom(Integer.class));
+            Preconditions.checkState(expectedParameterType.isAssignableFrom(type));
             String text;
             if (arg instanceof ActionParameter) {
                 ActionParameter param = (ActionParameter) arg;
@@ -214,7 +218,18 @@ abstract class ActionParameter {
                 Preconditions.checkState(arg instanceof String);
                 text = (String) arg;
             }
-            return text != null ? Integer.valueOf(text) : null;
+            if (text == null) return null;
+            if (type == Integer.class) return Integer.valueOf(text);
+            if (type == Long.class) return Long.valueOf(text);
+            if (type == Double.class) return Double.valueOf(text);
+            if (type == Float.class) return Float.valueOf(text);
+            if (type == Short.class) return Short.valueOf(text);
+            if (type == Byte.class) return Byte.valueOf(text);
+            if (type == BigInteger.class) return new BigInteger(text);
+            if (type == BigDecimal.class) return new BigDecimal(text);
+            throw new IllegalStateException("Unknown number type: " + type);
         }
+
     }
+
 }

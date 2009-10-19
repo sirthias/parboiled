@@ -26,9 +26,9 @@ public class ComplexTest extends AbstractTest {
                             mult().enforce()
                     ),
                     actions.compute(
-                            this.<Integer>value("mult"),
+                            value("mult", Integer.class),
                             chars("zeroOrMore/firstOf"),
-                            this.<Integer>values("zeroOrMore/mult")
+                            values("zeroOrMore/mult", Integer.class)
                     )
             );
         }
@@ -41,9 +41,9 @@ public class ComplexTest extends AbstractTest {
                             atom().enforce()
                     ),
                     actions.compute(
-                            this.<Integer>value("atom"),
+                            value("atom", Integer.class),
                             chars("zeroOrMore/firstOf"),
-                            this.<Integer>values("zeroOrMore/atom")
+                            values("zeroOrMore/atom", Integer.class)
                     )
             );
         }
@@ -65,7 +65,7 @@ public class ComplexTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    actions.setValue(convertToInteger(text("oneOrMore")))
+                    actions.setValue(convertToNumber(text("oneOrMore"), Integer.class))
             );
         }
 
