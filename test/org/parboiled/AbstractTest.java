@@ -1,8 +1,8 @@
 package org.parboiled;
 
-import org.apache.commons.lang.StringUtils;
 import static org.parboiled.TestUtils.assertEqualsMultiline;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import org.parboiled.utils.StringUtils2;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
@@ -13,7 +13,7 @@ abstract class AbstractTest {
         assertTrue(parsingResult.matched, "Did not match input");
         if (!parsingResult.parseErrors.isEmpty()) {
             fail("\n--- ParseErrors ---\n" +
-                    StringUtils.join(parsingResult.parseErrors, "---\n") +
+                    StringUtils2.join(parsingResult.parseErrors, "---\n") +
                     "\n--- ParseTree ---\n" +
                     printNodeTree(parsingResult)
             );
@@ -28,7 +28,7 @@ abstract class AbstractTest {
         assertTrue(parsingResult.matched, "Did not match input");
         String actualTree = printNodeTree(parsingResult);
         assertEqualsMultiline(actualTree, expectedTree);
-        assertEqualsMultiline(StringUtils.join(parsingResult.parseErrors, "---\n"), expectedErrors);
+        assertEqualsMultiline(StringUtils2.join(parsingResult.parseErrors, "---\n"), expectedErrors);
     }
 
 }

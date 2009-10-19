@@ -1,9 +1,9 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.parboiled.support.Checks;
+import org.parboiled.utils.Preconditions;
 
 import java.lang.reflect.Method;
 

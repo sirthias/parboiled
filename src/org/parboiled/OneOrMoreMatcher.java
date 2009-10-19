@@ -1,9 +1,9 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
+import org.parboiled.utils.Preconditions;
 
 class OneOrMoreMatcher extends AbstractMatcher {
 

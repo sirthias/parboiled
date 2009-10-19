@@ -1,6 +1,6 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
+import org.parboiled.utils.Preconditions;
 
 public class BaseActions implements Actions {
 

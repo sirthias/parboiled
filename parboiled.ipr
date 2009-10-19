@@ -340,18 +340,6 @@
     <find-history />
   </component>
   <component name="libraryTable">
-    <library name="Google Collect">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/google-collect/google-collect-1.0-rc2.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$PROJECT_DIR$/lib/google-collect/google-collect-1.0-rc2-javadoc.jar!/" />
-        <root url="http://google-collections.googlecode.com/svn/trunk/javadoc" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/lib/google-collect/google-collect-1.0-rc2-src.zip!/" />
-      </SOURCES>
-    </library>
     <library name="TestNG">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/lib/testng/testng-5.10-jdk15.jar!/" />
@@ -359,17 +347,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/lib/testng/testng-5.10-src.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Apache Commons">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/apache-commons/commons-lang-2.4.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$PROJECT_DIR$/lib/apache-commons/commons-lang-2.4-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/lib/apache-commons/commons-lang-2.4-src.jar!/" />
       </SOURCES>
     </library>
     <library name="cglib">

@@ -1,9 +1,8 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import org.apache.commons.lang.StringUtils;
+import org.parboiled.utils.ImmutableList;
+import org.parboiled.utils.Preconditions;
 
 abstract class AbstractMatcher extends AbstractRule<Matcher> implements Matcher {
 
@@ -36,7 +35,9 @@ abstract class AbstractMatcher extends AbstractRule<Matcher> implements Matcher 
     @Override
     public String toString() {
         String label = getLabel();
-        return label != null ? label : StringUtils.removeEnd(getClass().getSimpleName(), "Matcher");
+        if (label != null) return label;
+        label = getClass().getSimpleName();
+        return label.substring(label.length() - 7); // remove the "Matcher" ending
     }
 
 }

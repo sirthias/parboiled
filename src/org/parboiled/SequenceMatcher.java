@@ -1,7 +1,7 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.utils.Preconditions;
 
 class SequenceMatcher extends AbstractMatcher {
 

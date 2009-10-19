@@ -1,6 +1,5 @@
 package org.parboiled;
 
-import com.google.common.collect.Lists;
 import net.sf.cglib.proxy.*;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
@@ -13,6 +12,7 @@ import static org.parboiled.utils.Utils.arrayOf;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.ArrayList;
 
 public class Parser {
 
@@ -83,7 +83,7 @@ public class Parser {
         BaseParser<?> parser = ((StagingRule) rule).getParser();
         InputBuffer inputBuffer = new InputBuffer(input);
         InputLocation startLocation = new InputLocation(inputBuffer);
-        List<ParseError> parseErrors = Lists.newArrayList();
+        List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher matcher = rule.toMatcher();
         MatcherContext context = new MatcherContextImpl(null, startLocation, matcher, parser.actions, parseErrors);
         boolean matched = context.runMatcher(matcher, matcher.isEnforced());

@@ -1,19 +1,19 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.LazyLoader;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.apache.commons.lang.ArrayUtils;
+import org.parboiled.utils.Preconditions;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 class StagingInterceptor implements MethodInterceptor {
 
-    private final Map<Method, Rule> rules = Maps.newHashMap();
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    private final Map<Method, Rule> rules = new HashMap<Method, Rule>();
 
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Preconditions.checkState(obj instanceof BaseParser);
@@ -44,7 +44,7 @@ class StagingInterceptor implements MethodInterceptor {
         // call the actual rule creation method (which might recurse into itself or any ancestor)
         // and arm the proxy with the actual rule, so all Rules that have so far received the proxy object
         // from now on "call through" to the actual Rule
-        realRule[0] = (AbstractRule) methodProxy.invokeSuper(obj, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        realRule[0] = (AbstractRule) methodProxy.invokeSuper(obj, EMPTY_OBJECT_ARRAY);
         realRule[0].label(method.getName());
         realRule[0].lock();
 

@@ -1,10 +1,9 @@
 package org.parboiled.support;
 
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Context;
-import org.parboiled.Node;
 import org.parboiled.Matcher;
+import org.parboiled.Node;
 import org.parboiled.utils.StringUtils2;
 
 public class ParseError {
@@ -17,7 +16,7 @@ public class ParseError {
     private final String errorMessage;
 
     public ParseError(@NotNull Context context, InputLocation errorStart, InputLocation errorEnd,
-                         Matcher failedMatcher, Node node, @NotNull String errorMessage) {
+                      Matcher failedMatcher, Node node, @NotNull String errorMessage) {
         this.context = context;
         this.errorStart = errorStart;
         this.errorEnd = errorEnd;
@@ -67,7 +66,7 @@ public class ParseError {
         sb.append('\n');
 
         int charCount = Math
-                .min(start.row == end.row ? end.index - start.index : 1000, StringUtils.length(line) - start.column);
+                .min(start.row == end.row ? end.index - start.index : 1000, StringUtils2.length(line) - start.column);
         sb.append(StringUtils2.repeat(' ', start.column));
         sb.append(StringUtils2.repeat('^', Math.max(charCount, 1)));
         sb.append('\n');

@@ -1,11 +1,11 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import net.sf.cglib.proxy.MethodProxy;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.ParsingException;
 import org.parboiled.support.ParserConstructionException;
+import org.parboiled.utils.ImmutableList;
+import org.parboiled.utils.Preconditions;
 
 import java.util.List;
 

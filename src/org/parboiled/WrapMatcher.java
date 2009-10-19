@@ -1,7 +1,7 @@
 package org.parboiled;
 
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.utils.ImmutableList;
 
 class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
 

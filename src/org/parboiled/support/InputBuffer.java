@@ -1,6 +1,5 @@
 package org.parboiled.support;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class InputBuffer {
@@ -12,7 +11,7 @@ public class InputBuffer {
     }
 
     public InputBuffer(@NotNull char[] buffer) {
-        this.buffer = ArrayUtils.clone(buffer);
+        this.buffer = buffer.clone();
     }
 
     public char[] getBuffer() {

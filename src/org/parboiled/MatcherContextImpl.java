@@ -1,12 +1,13 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParseError;
 import org.parboiled.support.ParseTreeUtils;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
+import org.parboiled.utils.Preconditions;
+import org.parboiled.utils.StringUtils2;
+import org.parboiled.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -135,9 +136,9 @@ class MatcherContextImpl implements MatcherContext {
     }
 
     public Node getNodeByPath(String path) {
-        if (subNodes != null && StringUtils.isNotEmpty(path)) {
+        if (subNodes != null && StringUtils2.isNotEmpty(path)) {
             for (Node node : subNodes) {
-                if (StringUtils.equals(node.getLabel(), path)) return node;
+                if (Utils.equals(node.getLabel(), path)) return node;
                 if (!path.startsWith(node.getLabel())) continue;
                 Node found = findNodeByPath(node, path.substring(path.indexOf('/') + 1));
                 if (found != null) return found;

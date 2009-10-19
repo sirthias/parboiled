@@ -1,9 +1,9 @@
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
 import static org.parboiled.support.ParseTreeUtils.collectNodesByPath;
+import org.parboiled.utils.Preconditions;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

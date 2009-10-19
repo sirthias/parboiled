@@ -1,34 +1,14 @@
 package org.parboiled.utils;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Reflector_ {
 
-    private static final Map<Class<?>, Set<Class<?>>> superTypes = new MapMaker().concurrencyLevel(4)
-            .makeComputingMap(new Function<Class<?>, Set<Class<?>>>() {
-                public Set<Class<?>> apply(Class<?> from) {
-                    return getAllSuperTypes(from, new HashSet<Class<?>>());
-                }
-
-                private Set<Class<?>> getAllSuperTypes(Class<?> type, Set<Class<?>> result) {
-                    if (type != null) {
-                        result.add(type);
-                        getAllSuperTypes(type.getSuperclass(), result);
-                        for (Class<?> interfaceClass : type.getInterfaces()) {
-                            getAllSuperTypes(interfaceClass, result);
-                        }
-                    }
-                    return result;
-                }
-            });
+    private static final Map<Class<?>, Set<Class<?>>> superTypes = new ConcurrentHashMap<Class<?>, Set<Class<?>>>();
 
     private final Object object;
     private final Class type;
@@ -72,7 +52,7 @@ public class Reflector_ {
      */
     @NotNull
     public List<Field> getAllFields() {
-        List<Field> allFields = Lists.newArrayList();
+        List<Field> allFields = new ArrayList<Field>();
         for (Class<?> superThing : getAllSuperTypes()) {
             allFields.addAll(Arrays.asList(superThing.getDeclaredFields()));
         }
@@ -101,7 +81,7 @@ public class Reflector_ {
      */
     @NotNull
     public List<Method> getAllMethods() {
-        List<Method> methods = Lists.newArrayList();
+        List<Method> methods = new ArrayList<Method>();
         for (Class<?> superThing : getAllSuperTypes()) {
             methods.addAll(Arrays.asList(superThing.getDeclaredMethods()));
         }
@@ -139,7 +119,7 @@ public class Reflector_ {
         if (method == null) {
             throw new RuntimeException(
                     String.format("Class '%s' does not define a method %s(%s)", Reflector.getShortClassName(type),
-                            methodName, StringUtils.join(argTypes, ", ")));
+                            methodName, StringUtils2.join(argTypes, ", ")));
         }
         return method;
     }
@@ -170,7 +150,7 @@ public class Reflector_ {
         if (method == null) {
             throw new RuntimeException(String.format("Class '%s' does not define a %s method %s(%s)",
                     Reflector.getShortClassName(type),
-                    Reflector.getShortClassName(returnType), methodName, StringUtils.join(argTypes, ", ")));
+                    Reflector.getShortClassName(returnType), methodName, StringUtils2.join(argTypes, ", ")));
         }
         return method;
     }
@@ -287,7 +267,23 @@ public class Reflector_ {
      * @return the set
      */
     public Set<Class<?>> getAllSuperTypes() {
-        return superTypes.get(type);
+        Set<Class<?>> supers = superTypes.get(type);
+        if (supers == null) {
+            supers = getAllSuperTypes(type, new HashSet<Class<?>>());
+            superTypes.put(type, supers);
+        }
+        return supers;
+    }
+
+    private Set<Class<?>> getAllSuperTypes(Class<?> type, Set<Class<?>> result) {
+        if (type != null) {
+            result.add(type);
+            getAllSuperTypes(type.getSuperclass(), result);
+            for (Class<?> interfaceClass : type.getInterfaces()) {
+                getAllSuperTypes(interfaceClass, result);
+            }
+        }
+        return result;
     }
 
     /**
@@ -351,7 +347,7 @@ public class Reflector_ {
         } else {
             actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
         }
-        List<Class<?>> typeArgumentsAsClasses = Lists.newArrayList();
+        List<Class<?>> typeArgumentsAsClasses = new ArrayList<Class<?>>();
         // resolve types by chasing down type variables.
         for (Type baseType : actualTypeArguments) {
             while (resolvedTypes.containsKey(baseType)) {

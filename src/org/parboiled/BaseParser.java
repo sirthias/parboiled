@@ -1,7 +1,5 @@
 package org.parboiled;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
@@ -10,14 +8,15 @@ import static org.parboiled.utils.Utils.arrayOf;
 
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.HashMap;
 
 public abstract class BaseParser<T extends Actions> {
 
     public static final Object NULL = new Object();
 
-    private final Map<Character, Rule> charMatchers = Maps.newHashMap();
-    private final Map<String, Rule> stringMatchers = Maps.newHashMap();
-    private final LinkedList<ActionParameter> actionParameters = Lists.newLinkedList();
+    private final Map<Character, Rule> charMatchers = new HashMap<Character, Rule>();
+    private final Map<String, Rule> stringMatchers = new HashMap<String, Rule>();
+    private final LinkedList<ActionParameter> actionParameters = new LinkedList<ActionParameter>();
     public final T actions;
 
     ///************************* PUBLIC ***************************///
@@ -41,7 +40,7 @@ public abstract class BaseParser<T extends Actions> {
     }
 
     public Rule firstOf(@NotNull Object rule, Object rule2, Object... moreRules) {
-        return new FirstOfMatcher(toRules(arrayOf(rule, rule2, moreRules))).label("firstOf");
+        return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
     }
 
     public Rule oneOrMore(@NotNull Object rule, Object... moreRules) {

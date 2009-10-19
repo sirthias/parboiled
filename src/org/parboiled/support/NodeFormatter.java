@@ -1,8 +1,8 @@
 package org.parboiled.support;
 
-import org.apache.commons.lang.StringUtils;
 import org.parboiled.Node;
 import org.parboiled.utils.Formatter;
+import org.parboiled.utils.StringUtils2;
 
 public class NodeFormatter implements Formatter<Node> {
 
@@ -21,7 +21,7 @@ public class NodeFormatter implements Formatter<Node> {
     public String format(Node node) {
         if (includeShadowNodes || node.getLabel() == null) return null;
         String text = ParseTreeUtils.getNodeText(node, inputBuffer);
-        if (StringUtils.isEmpty(text)) return node.toString();
+        if (StringUtils2.isEmpty(text)) return node.toString();
         return node + " '" + org.parboiled.utils.StringUtils2.escapeNLs(text) + '\'';
     }
 

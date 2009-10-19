@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
-
 public class ImmutableDGraphNode<T extends DGraphNode<T>> implements DGraphNode<T> {
 
     @NotNull private final List<T> children;

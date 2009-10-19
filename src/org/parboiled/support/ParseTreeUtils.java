@@ -1,11 +1,11 @@
 package org.parboiled.support;
 
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.ParsingResult;
 import static org.parboiled.utils.DGraphUtils.hasChildren;
 import static org.parboiled.utils.DGraphUtils.printTree;
+import org.parboiled.utils.Utils;
 
 import java.util.Collection;
 
@@ -65,7 +65,7 @@ public class ParseTreeUtils {
 
     public static Node findByLabel(Node searchTreeRoot, @NotNull String label) {
         if (searchTreeRoot != null) {
-            if (StringUtils.equals(searchTreeRoot.getLabel(), label)) return searchTreeRoot;
+            if (Utils.equals(searchTreeRoot.getLabel(), label)) return searchTreeRoot;
             if (hasChildren(searchTreeRoot)) {
                 Node found = findByLabel(searchTreeRoot.getChildren(), label);
                 if (found != null) return found;
