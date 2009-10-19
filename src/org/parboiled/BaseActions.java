@@ -11,7 +11,6 @@ public class BaseActions implements Actions {
     }
 
     public void setContext(Context context) {
-        Preconditions.checkArgument(this.context == null, "Context cannot be changed once set");
         this.context = context;
     }
 

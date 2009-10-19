@@ -57,13 +57,12 @@ public class ParseError {
         return getClass().getSimpleName() + ": " + errorMessage;
     }
 
-    public static String createMessageSuffix(@NotNull InputBuffer input, @NotNull InputLocation start,
-                                             @NotNull InputLocation end) {
+    public static String createMessageSuffix(@NotNull InputLocation start, @NotNull InputLocation end) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(" (line %s, pos %s):", start.row + 1, start.column + 1));
         sb.append('\n');
 
-        String line = StringUtils2.getLine(String.valueOf(input.getBuffer()), start.row);
+        String line = StringUtils2.getLine(String.valueOf(start.inputBuffer.getBuffer()), start.row);
         sb.append(line);
         sb.append('\n');
 

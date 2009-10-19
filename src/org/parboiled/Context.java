@@ -1,7 +1,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParseError;
 
 import java.util.List;
@@ -9,21 +9,33 @@ import java.util.List;
 public interface Context {
 
     /**
-     * @return the input buffer this parser is running on
+     * @return the parent context, i.e. the context for the currently running parent matcher
      */
-    @NotNull
-    InputBuffer getInputBuffer();
+    Context getParent();
 
     /**
-     * @return the parse errors detected during the parser run
+     * @return the matcher this context was constructed for
+     */
+    @NotNull
+    Matcher getMatcher();
+
+    /**
+     * @return the start location of the currently running rule match attempt
+     */
+    @NotNull
+    InputLocation getStartLocation();
+
+    /**
+     * @return the current location in the input buffer
+     */
+    @NotNull
+    InputLocation getCurrentLocation();
+
+    /**
+     * @return the list of parse errors so far generated
      */
     @NotNull
     List<ParseError> getParseErrors();
-
-    /**
-     * @return the last Node that was created during the parser run
-     */
-    Node getLastNodeCreated();
 
     /**
      * @param node the node to get the input text for
@@ -38,25 +50,14 @@ public interface Context {
     Character getNodeChar(Node node);
 
     /**
-     * @return the list of nodes already matched in the current sequence
-     */
-    @NotNull
-    List<Node> getCurrentNodes();
-
-    /**
-     * @return the list of nodes already matched in the current parent sequence
-     */
-    @NotNull
-    List<Node> getCurrentParentNodes();
-
-    /**
      * @return the full path name of the currently running Matcher.
      */
     @NotNull
-    String getCurrentPath();
+    String getPath();
 
     /**
      * Tries to find an already created parse tree node by its relative path.
+     *
      * @param path the path of the node to find relative to the current level
      * @return the Node or null
      */
@@ -64,6 +65,7 @@ public interface Context {
 
     /**
      * Sets the value object of the node to be created for the current matcher
+     *
      * @param value the object
      */
     void setNodeValue(Object value);
@@ -72,5 +74,6 @@ public interface Context {
      * @return the previously set value of the node to be created for the current matcher
      */
     Object getNodeValue();
+
 }
 

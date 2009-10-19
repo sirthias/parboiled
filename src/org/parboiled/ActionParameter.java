@@ -22,6 +22,10 @@ abstract class ActionParameter {
         expectedParameterType = parameterType;
     }
 
+    protected ArrayList<org.parboiled.Node> collectPathNodes(MatcherContext context) {
+        return collectNodesByPath(context.getSubNodes(), path, new ArrayList<org.parboiled.Node>());
+    }
+
     abstract Object getValue(@NotNull MatcherContext context);
 
     static class Node extends ActionParameter {
@@ -32,7 +36,7 @@ abstract class ActionParameter {
         Object getValue(@NotNull MatcherContext context) {
             Checks.ensure(expectedParameterType.isAssignableFrom(org.parboiled.Node.class),
                     "Illegal action argument in '%s', expected %s instead of %s",
-                    context.getCurrentPath(), expectedParameterType, org.parboiled.Node.class);
+                    context.getPath(), expectedParameterType, org.parboiled.Node.class);
             Preconditions.checkState(expectedParameterType.isAssignableFrom(org.parboiled.Node.class));
             return context.getNodeByPath(path);
         }
@@ -47,9 +51,8 @@ abstract class ActionParameter {
             Class<?> componentType = expectedParameterType.getComponentType();
             Checks.ensure(expectedParameterType.isArray() && componentType.isAssignableFrom(org.parboiled.Node.class),
                     "Illegal action argument in '%s', expected %s instead of %s",
-                    context.getCurrentPath(), expectedParameterType, org.parboiled.Node[].class);
-            ArrayList<org.parboiled.Node> list = collectNodesByPath(context.getCurrentNodes(), path,
-                    new ArrayList<org.parboiled.Node>());
+                    context.getPath(), expectedParameterType, org.parboiled.Node[].class);
+            List<org.parboiled.Node> list = collectPathNodes(context);
             return list.toArray((org.parboiled.Node[]) Array.newInstance(componentType, list.size()));
         }
     }
@@ -65,7 +68,7 @@ abstract class ActionParameter {
             Object value = node.getValue();
             Checks.ensure(expectedParameterType.isAssignableFrom(value.getClass()),
                     "Illegal action argument in '%s', cannot cast %s to %s",
-                    context.getCurrentPath(), value.getClass(), expectedParameterType);
+                    context.getPath(), value.getClass(), expectedParameterType);
             return value;
         }
     }
@@ -78,15 +81,14 @@ abstract class ActionParameter {
         Object getValue(@NotNull MatcherContext context) {
             Class<?> componentType = expectedParameterType.getComponentType();
             Preconditions.checkState(expectedParameterType.isArray() && !componentType.isPrimitive());
-            List<org.parboiled.Node> nodes = collectNodesByPath(context.getCurrentNodes(), path,
-                    new ArrayList<org.parboiled.Node>());
+            List<org.parboiled.Node> nodes = collectPathNodes(context);
             Object array = Array.newInstance(componentType, nodes.size());
             for (int i = 0; i < nodes.size(); i++) {
                 Object value = nodes.get(i).getValue();
                 if (value == null) continue;
                 Checks.ensure(componentType.isAssignableFrom(value.getClass()),
                         "Illegal action argument in '%s', cannot cast value array component from %s to %s",
-                        context.getCurrentPath(), value.getClass(), componentType);
+                        context.getPath(), value.getClass(), componentType);
                 Array.set(array, i, value);
             }
             return array;
@@ -113,8 +115,7 @@ abstract class ActionParameter {
         Object getValue(@NotNull MatcherContext context) {
             Preconditions.checkState(
                     expectedParameterType.isArray() && expectedParameterType.getComponentType() == String.class);
-            List<org.parboiled.Node> nodes = collectNodesByPath(context.getCurrentNodes(), path,
-                    new ArrayList<org.parboiled.Node>());
+            List<org.parboiled.Node> nodes = collectPathNodes(context);
             String[] texts = new String[nodes.size()];
             for (int i = 0; i < nodes.size(); i++) {
                 texts[i] = context.getNodeText(nodes.get(i));
@@ -143,8 +144,7 @@ abstract class ActionParameter {
         Object getValue(@NotNull MatcherContext context) {
             Preconditions.checkState(
                     expectedParameterType.isArray() && expectedParameterType.getComponentType() == Character.class);
-            List<org.parboiled.Node> nodes = collectNodesByPath(context.getCurrentNodes(), path,
-                    new ArrayList<org.parboiled.Node>());
+            List<org.parboiled.Node> nodes = collectPathNodes(context);
             Character[] chars = new Character[nodes.size()];
             for (int i = 0; i < nodes.size(); i++) {
                 chars[i] = context.getNodeChar(nodes.get(i));
@@ -180,7 +180,7 @@ abstract class ActionParameter {
                 if (arg != null) {
                     Checks.ensure(expectedParameterType.isAssignableFrom(arg.getClass()),
                             "Illegal action argument in firstOfNonNull(...) in '%s', cannot cast %s to %s",
-                            context.getCurrentPath(), arg.getClass(), expectedParameterType);
+                            context.getPath(), arg.getClass(), expectedParameterType);
                     return arg;
                 }
             }

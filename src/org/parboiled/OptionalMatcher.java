@@ -16,11 +16,11 @@ class OptionalMatcher extends AbstractMatcher {
     }
 
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Checks.ensure(!isEnforced(), "Optional rule '%s' must not be enforced", context.getCurrentPath());
+        Checks.ensure(!isEnforced(), "Optional rule '%s' must not be enforced", context.getPath());
 
         Matcher matcher = getChildren().get(0);
         Checks.ensure(!matcher.isEnforced(), "The inner rule of Optional rule '%s' must not be enforced",
-                context.getCurrentPath());
+                context.getPath());
         context.runMatcher(matcher, false);
         context.createNode();
         return true;

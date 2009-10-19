@@ -1,14 +1,18 @@
 package org.parboiled;
 
+import com.google.common.collect.Lists;
 import net.sf.cglib.proxy.*;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputBuffer;
+import org.parboiled.support.InputLocation;
+import org.parboiled.support.ParseError;
 import org.parboiled.utils.Reflector;
 import static org.parboiled.utils.Utils.arrayOf;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class Parser {
 
@@ -78,11 +82,14 @@ public class Parser {
 
         BaseParser<?> parser = ((StagingRule) rule).getParser();
         InputBuffer inputBuffer = new InputBuffer(input);
-        MatcherContext context = new MatcherContextImpl(inputBuffer);
-        if (parser.actions != null) parser.actions.setContext(context);
+        InputLocation startLocation = new InputLocation(inputBuffer);
+        List<ParseError> parseErrors = Lists.newArrayList();
         Matcher matcher = rule.toMatcher();
+        MatcherContext context = new MatcherContextImpl(null, startLocation, matcher, parser.actions, parseErrors);
         boolean matched = context.runMatcher(matcher, matcher.isEnforced());
-        return new ParsingResult(matched, context.getLastNodeCreated(), context.getParseErrors(), inputBuffer);
+        Node root = context.getSubNodes() != null && !context.getSubNodes().isEmpty() ?
+                context.getSubNodes().get(0) : null;
+        return new ParsingResult(matched, root, parseErrors, inputBuffer);
     }
 
     @SuppressWarnings({"unchecked"})

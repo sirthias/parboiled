@@ -2,7 +2,6 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
-import org.parboiled.support.InputBuffer;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParserConstructionException;
 
@@ -34,18 +33,16 @@ class TestMatcher extends AbstractMatcher {
 
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
         Checks.ensure(!isEnforced(), "Test rule '%s' must not be explictly enforced (it implicitly is)",
-                context.getCurrentPath());
+                context.getPath());
 
         Matcher matcher = getChildren().get(0);
         Checks.ensure(!matcher.isEnforced(), "The inner rule of test rule '%s' must not be enforced",
-                context.getCurrentPath());
+                context.getPath());
 
-        InputBuffer input = context.getInputBuffer();
-        InputLocation preTestInputLocation = input.getCurrentLocation();
-
+        InputLocation preTestInputLocation = context.getCurrentLocation();
         boolean matched = context.runMatcher(matcher, enforced && !inverted);
+        context.setCurrentLocation(preTestInputLocation);
         
-        input.rewind(preTestInputLocation);
         if (matched && enforced && inverted) {
             context.addUnexpectedInputError("no match of '" + matcher + '\'');
         }

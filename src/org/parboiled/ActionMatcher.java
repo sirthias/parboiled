@@ -42,12 +42,13 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
         Object result;
         try {
+            actionsObject.setContext(context);
             result = methodProxy.invokeSuper(actionsObject, buildArguments(context));
         } catch (ParsingException pex) {
             context.addActionError(pex.getMessage());
             return false;
         } catch (Throwable e) {
-            throw new RuntimeException("Error during execution of " + context.getCurrentPath(), e);
+            throw new RuntimeException("Error during execution of " + context.getPath(), e);
         }
         Preconditions.checkState(result instanceof ActionResult);
         return result == ActionResult.CONTINUE;

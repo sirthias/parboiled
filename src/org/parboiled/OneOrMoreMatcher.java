@@ -3,7 +3,6 @@ package org.parboiled;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
-import org.parboiled.support.InputBuffer;
 import org.parboiled.support.InputLocation;
 
 class OneOrMoreMatcher extends AbstractMatcher {
@@ -15,7 +14,7 @@ class OneOrMoreMatcher extends AbstractMatcher {
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
         Matcher matcher = getChildren().get(0);
         Checks.ensure(!matcher.isEnforced(), "The inner rule of OneOrMore rule '%s' must not be enforced",
-                context.getCurrentPath());
+                context.getPath());
 
         boolean matched = context.runMatcher(matcher, enforced);
         if (!matched) {
@@ -24,12 +23,11 @@ class OneOrMoreMatcher extends AbstractMatcher {
         }
 
         // collect all further matches as well
-        InputBuffer input = context.getInputBuffer();
-        InputLocation lastLocation = input.getCurrentLocation();
+        InputLocation lastLocation = context.getCurrentLocation();
         while (context.runMatcher(matcher, false)) {
-            InputLocation currentLocation = input.getCurrentLocation();
+            InputLocation currentLocation = context.getCurrentLocation();
             Checks.ensure(currentLocation.index > lastLocation.index,
-                    "The inner rule of OneOrMore rule '%s' must not allow empty matches", context.getCurrentPath());
+                    "The inner rule of OneOrMore rule '%s' must not allow empty matches", context.getPath());
             lastLocation = currentLocation;
         }
 

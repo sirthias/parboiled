@@ -2,7 +2,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Chars;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.support.InputLocation;
 
 class CharMatcher extends AbstractMatcher {
 
@@ -30,11 +30,9 @@ class CharMatcher extends AbstractMatcher {
     }
 
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        InputBuffer input = context.getInputBuffer();
-
-        char c = input.LA();
-        if (cLow == Chars.ANY || c >= cLow && c <= cHigh) {
-            input.consume();
+        InputLocation currentLocation = context.getCurrentLocation();
+        if (cLow == Chars.ANY || currentLocation.currentChar >= cLow && currentLocation.currentChar <= cHigh) {
+            context.setCurrentLocation(currentLocation.advance());
         } else {
             if (!enforced) return false;
             context.addUnexpectedInputError(getLabel());

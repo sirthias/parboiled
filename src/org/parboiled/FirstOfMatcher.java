@@ -15,7 +15,7 @@ class FirstOfMatcher extends AbstractMatcher {
         for (int i = 0; i < getChildren().size(); i++) {
             Matcher matcher = getChildren().get(i);
             Checks.ensure(!matcher.isEnforced(), "Option %s of a FirstOf rule '%s' must not be enforced", i + 1,
-                    context.getCurrentPath());
+                    context.getPath());
             boolean matched = context.runMatcher(matcher, false);
             if (matched) {
                 context.createNode();

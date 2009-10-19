@@ -1,6 +1,9 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.InputLocation;
+
+import java.util.List;
 
 interface MatcherContext extends Context {
 
@@ -11,5 +14,11 @@ interface MatcherContext extends Context {
     void addActionError(@NotNull String errorMessage);
 
     void createNode();
+
+    void setCurrentLocation(InputLocation currentLocation);
+
+    List<Node> getSubNodes();
+
+    Node getNode();
 
 }
