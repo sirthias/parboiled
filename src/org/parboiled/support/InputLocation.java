@@ -32,5 +32,9 @@ public class InputLocation {
         }
     }
 
+    public char lookAhead(int delta) {
+        return inputBuffer.charAt(index + delta);
+    }
+
 }
 

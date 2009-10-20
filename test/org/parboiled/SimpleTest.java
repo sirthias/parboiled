@@ -27,7 +27,7 @@ public class SimpleTest extends AbstractTest {
     @Test
     public void test() {
         SimpleTestParser parser = Parser.create(SimpleTestParser.class, null);
-        test(parser.clause().enforce(), "1+5", "" +
+        test(parser.clause(), "1+5", "" +
                 "[clause] '1+5'\n" +
                 "    [digit] '1'\n" +
                 "    [operator] '+'\n" +

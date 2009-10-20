@@ -1,17 +1,12 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.Checks;
-import org.parboiled.support.InputLocation;
-import org.parboiled.support.ParserConstructionException;
+
+import java.util.Set;
 
 class TestMatcher extends AbstractMatcher {
 
     private final boolean inverted;
-
-    public TestMatcher(@NotNull Rule subRule) {
-        this(subRule, false);
-    }
 
     public TestMatcher(@NotNull Rule subRule, boolean inverted) {
         super(subRule);
@@ -26,27 +21,23 @@ class TestMatcher extends AbstractMatcher {
         return (inverted ? "!(" : "&(") + getChildren().get(0) + ")";
     }
 
-    @Override
-    public Rule enforce() {
-        throw new ParserConstructionException("Test rules cannot be explicitly enforced (they implicitly are)");
+    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+        Matcher matcher = getChildren().get(0);
+
+        MatcherContext tempContext = new MatcherContextImpl(null, context.getCurrentLocation(), matcher,
+                context.getActions(), context.getParseErrors());
+        boolean matched = tempContext.runMatcher(matcher, false);
+
+        return inverted ? !matched : matched;
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Checks.ensure(!isEnforced(), "Test rule '%s' must not be explictly enforced (it implicitly is)",
-                context.getPath());
+    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
+        return false;
+    }
 
-        Matcher matcher = getChildren().get(0);
-        Checks.ensure(!matcher.isEnforced(), "The inner rule of test rule '%s' must not be enforced",
-                context.getPath());
-
-        InputLocation preTestInputLocation = context.getCurrentLocation();
-        boolean matched = context.runMatcher(matcher, enforced && !inverted);
-        context.setCurrentLocation(preTestInputLocation);
-        
-        if (matched && enforced && inverted) {
-            context.addUnexpectedInputError("no match of '" + matcher + '\'');
-        }
-        return inverted ? !matched : matched;
+    @Override
+    public String getExpectedString() {
+        return (inverted ? "not " : "") + getChildren().get(0).getExpectedString();
     }
 
 }

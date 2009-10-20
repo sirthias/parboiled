@@ -19,7 +19,7 @@ public class AbcnTest extends AbstractTest {
 
         public Rule S() {
             return sequence(
-                    test(A(), 'c'),
+                    test(sequence(A(), 'c')),
                     oneOrMore('a'),
                     B(),
                     testNot(firstOf('a', 'b', 'c'))
@@ -39,7 +39,7 @@ public class AbcnTest extends AbstractTest {
     @Test
     public void test() {
         TestParser parser = Parser.create(TestParser.class, null);
-        test(parser.S().enforce(), "aabbcc", "" +
+        test(parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
@@ -57,8 +57,9 @@ public class AbcnTest extends AbstractTest {
     @Test
     public void testFail() {
         TestParser parser = Parser.create(TestParser.class, null);
-        testFail(parser.S().enforce(), "aabbbcc", "" +
+        testFail(parser.S(), "aabbbcc", "" +
                 "[S] 'aabbbcc'\n" +
+                "    [&(sequence)]\n" +
                 "    [oneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
                 "        ['a'] 'a'\n" +
@@ -74,11 +75,11 @@ public class AbcnTest extends AbstractTest {
                 "                        ['c'] 'c'\n" +
                 "                ['c'] 'c'\n" +
                 "        ['c']\n", "" +
-                "ParseError: Invalid input, expected 'c' (line 1, pos 5):\n" +
+                "ParseError: Invalid input 'a', expected sequence (line 1, pos 1):\n" +
                 "aabbbcc\n" +
-                "    ^\n" +
+                "^\n" +
                 "---\n" +
-                "ParseError: Invalid input, expected 'c' (line 1, pos 8):\n" +
+                "ParseError: Invalid input EOF, expected 'c' (line 1, pos 8):\n" +
                 "aabbbcc\n" +
                 "       ^\n"
         );

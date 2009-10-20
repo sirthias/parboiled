@@ -23,11 +23,7 @@ public class ParseTreeUtils {
             String label = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
             for (Node child : nodes) {
                 String childLabel = child.getLabel();
-                if (childLabel == null) {
-                    // if the child has no real label descend and try there
-                    Node found = findNodeByPath(child, path);
-                    if (found != null) return found;
-                } else if (childLabel.equals(label)) {
+                if (childLabel.equals(label)) {
                     return separatorIndex != -1 ? findNodeByPath(child, path.substring(separatorIndex + 1)) : child;
                 }
             }
@@ -48,10 +44,7 @@ public class ParseTreeUtils {
             String label = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
             for (Node child : nodes) {
                 String childLabel = child.getLabel();
-                if (childLabel == null) {
-                    // if the child has no real label descend
-                    collectNodesByPath(child, path, collection);
-                } else if (childLabel.equals(label)) {
+                if (childLabel.equals(label)) {
                     if (separatorIndex == -1) {
                         collection.add(child);
                     } else {
@@ -95,11 +88,6 @@ public class ParseTreeUtils {
 
     public static String printNodeTree(@NotNull ParsingResult parsingResult) {
         return printTree(parsingResult.root, new NodeFormatter(parsingResult.inputBuffer));
-    }
-
-    public static String printFullNodeTree(@NotNull ParsingResult parsingResult) {
-        return printTree(parsingResult.root, new NodeFormatter(parsingResult.inputBuffer, true));
-
     }
 
 }

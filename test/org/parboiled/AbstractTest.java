@@ -10,7 +10,6 @@ abstract class AbstractTest {
 
     public void test(Rule rule, String input, String expectedTree) {
         ParsingResult parsingResult = Parser.parse(rule, input);
-        assertTrue(parsingResult.matched, "Did not match input");
         if (!parsingResult.parseErrors.isEmpty()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils2.join(parsingResult.parseErrors, "---\n") +
@@ -25,7 +24,6 @@ abstract class AbstractTest {
 
     public void testFail(Rule rule, String input, String expectedTree, String expectedErrors) {
         ParsingResult parsingResult = Parser.parse(rule, input);
-        assertTrue(parsingResult.matched, "Did not match input");
         String actualTree = printNodeTree(parsingResult);
         assertEqualsMultiline(actualTree, expectedTree);
         assertEqualsMultiline(StringUtils2.join(parsingResult.parseErrors, "---\n"), expectedErrors);

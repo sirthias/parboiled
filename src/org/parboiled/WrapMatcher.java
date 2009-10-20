@@ -3,6 +3,8 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.utils.ImmutableList;
 
+import java.util.Set;
+
 class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
 
     WrapMatcher(@NotNull Rule innerRule) {
@@ -13,12 +15,7 @@ class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
     @Override
     public String getLabel() {
         String label = super.getLabel();
-        return label != null ? label : getChildren().get(0).getLabel();
-    }
-
-    @Override
-    public boolean isEnforced() {
-        return super.isEnforced() || getChildren().get(0).isEnforced();
+        return label != null ? label : getInner().getLabel();
     }
 
     public Matcher toMatcher() {
@@ -26,12 +23,24 @@ class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
     }
 
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        return getChildren().get(0).match(context, enforced || isEnforced());
+        return getInner().match(context, enforced);
     }
 
     @Override
     public String toString() {
         return "wrapper:" + getLabel();
+    }
+
+    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
+        return getInner().collectFirstCharSet(firstCharSet);
+    }
+
+    public String getExpectedString() {
+        return getInner().getExpectedString();
+    }
+
+    private Matcher getInner() {
+        return getChildren().get(0);
     }
 
 }

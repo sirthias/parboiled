@@ -1,17 +1,15 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Chars;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParseError;
 import org.parboiled.support.ParseTreeUtils;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
-import org.parboiled.utils.Preconditions;
 import org.parboiled.utils.StringUtils2;
 import org.parboiled.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 class MatcherContextImpl implements MatcherContext {
 
@@ -26,6 +24,7 @@ class MatcherContextImpl implements MatcherContext {
     private List<Node> subNodes;
     private String errorMessage;
     private Object nodeValue;
+    private Object tag;
 
     public MatcherContextImpl(MatcherContextImpl parent, @NotNull InputLocation startLocation, @NotNull Matcher matcher,
                               Actions actions, @NotNull List<ParseError> parseErrors) {
@@ -51,6 +50,10 @@ class MatcherContextImpl implements MatcherContext {
         return matcher;
     }
 
+    public Actions getActions() {
+        return actions;
+    }
+
     @NotNull
     public List<ParseError> getParseErrors() {
         return Collections.unmodifiableList(parseErrors);
@@ -63,6 +66,10 @@ class MatcherContextImpl implements MatcherContext {
 
     public void setCurrentLocation(InputLocation currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    public void advanceInputLocation() {
+        setCurrentLocation(getCurrentLocation().advance());
     }
 
     public Node getNode() {
@@ -94,29 +101,18 @@ class MatcherContextImpl implements MatcherContext {
         this.nodeValue = value;
     }
 
-    public boolean runMatcher(@NotNull Matcher matcher, boolean enforced) {
-        MatcherContextImpl innerContext = matcher instanceof ActionMatcher ? this :
-                new MatcherContextImpl(this, currentLocation, matcher, actions, parseErrors);
-        boolean matched = matcher.match(innerContext, enforced);
-        if (matched) {
-            currentLocation = innerContext.getCurrentLocation();
-        } else {
-            Preconditions.checkState(!enforced);
-        }
-        ParseError error = innerContext.getError(matcher);
-        if (error != null) parseErrors.add(error);
-        return matched;
+    public Object getTag() {
+        return tag;
     }
 
-    private ParseError getError(Matcher matcher) {
-        return errorMessage == null ? null :
-                new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage);
+    public void setTag(Object tag) {
+        this.tag = tag;
     }
 
-    public void addUnexpectedInputError(@NotNull String expected) {
+    public void addUnexpectedInputError(char illegalChar, @NotNull String expected) {
         this.errorMessage = new StringBuilder()
-                .append("Invalid input, expected ")
-                .append(expected)
+                .append("Invalid input ").append(illegalChar != Chars.EOF ? "\'" + illegalChar + '\'' : "EOF")
+                .append(", expected ").append(expected)
                 .append(ParseError.createMessageSuffix(startLocation, currentLocation))
                 .toString();
     }
@@ -145,6 +141,105 @@ class MatcherContextImpl implements MatcherContext {
             }
         }
         return null;
+    }
+
+    public boolean runMatcher(@NotNull Matcher matcher, boolean enforced) {
+        MatcherContextImpl innerContext = new MatcherContextImpl(this, currentLocation, matcher, actions, parseErrors);
+        boolean matched = innerContext.runMatcher(enforced);
+        if (matched) {
+            setCurrentLocation(innerContext.getCurrentLocation());
+        }
+        return matched;
+    }
+
+    public boolean runMatcher(boolean enforced) {
+        boolean matched = matcher.match(this, enforced);
+        if (!matched && enforced) {
+            recover();
+            matched = true;
+        }
+        if (errorMessage != null) {
+            parseErrors.add(new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage));
+        }
+        return matched;
+    }
+
+    private void recover() {
+        Set<Character> starterSet = new HashSet<Character>();
+        matcher.collectFirstCharSet(starterSet);
+        if (trySingleSymbolDeletion(starterSet)) return;
+
+        Set<Character> followerSet = getFollowerSet();
+        if (trySingleSymbolInsertion(followerSet)) return;
+        resynchronize(followerSet);
+    }
+
+    // check whether the current char is a junk char that we can simply discard to continue with the next char
+    private boolean trySingleSymbolDeletion(Set<Character> starterSet) {
+        char lookAheadOne = getCurrentLocation().lookAhead(1);
+        if (!starterSet.contains(lookAheadOne)) {
+            return false;
+        }
+
+        // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
+        // appears on the same tree level, however if we are the root ourselves we run in this context
+        MatcherContext parentContext = parent != null ? parent : this;
+
+        // success, we have to skip only one char in order to be able to start the match
+        // match the illegal char and create a node for it
+        parentContext.runMatcher(new IllegalCharactersMatcher(matcher.getExpectedString()), true);
+
+        // retry the original match
+        parentContext.runMatcher(matcher, true);
+
+        // catch up with the advanced location
+        setCurrentLocation(parentContext.getCurrentLocation());
+        
+        return true;
+    }
+
+    // check whether the current char is a legally following next char in the follower set
+    // if so, just virtually "insert" the missing expected token and continue
+    private boolean trySingleSymbolInsertion(Set<Character> followerSet) {
+        char currentChar = getCurrentLocation().currentChar;
+        if (!followerSet.contains(currentChar)) return false;
+
+        // success, the current mismatching token is a legal follower,
+        // so add a ParseError and still "match" (empty)
+        addUnexpectedInputError(currentChar, matcher.getExpectedString());
+        createNode();
+        return true;
+    }
+
+    // consume all characters until we see a legal follower
+    private void resynchronize(Set<Character> followerSet) {
+        createNode(); // create an empty match node
+
+        // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
+        // appears on the same tree level, however if we are the root ourselves we run in this context
+        MatcherContext parentContext = parent != null ? parent : this;
+
+        // create a node for the illegal chars
+        parentContext.runMatcher(new IllegalCharactersMatcher(matcher.getExpectedString(), followerSet), true);
+
+        // catch up with the advanced location
+        setCurrentLocation(parentContext.getCurrentLocation());
+    }
+
+    public Set<Character> getFollowerSet() {
+        Set<Character> set = new HashSet<Character>();
+        MatcherContextImpl parent = this.parent;
+        while (parent != null) {
+            if (parent.getMatcher() instanceof FollowMatcher) {
+                FollowMatcher followMatcher = (FollowMatcher) parent.getMatcher();
+                if (followMatcher.collectCurrentFollowerSet(parent, set)) {
+                    return set;
+                }
+            }
+            parent = parent.parent;
+        }
+        set.add(Chars.EOF);
+        return set;
     }
 
 }

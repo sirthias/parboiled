@@ -36,23 +36,15 @@ public abstract class BaseParser<T extends Actions> {
     public Rule string(@NotNull String string) {
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) matchers[i] = cachedChar(string.charAt(i));
-        return new SequenceMatcher(matchers);
+        return new SequenceMatcher(matchers, false).label(string);
     }
 
     public Rule firstOf(@NotNull Object rule, Object rule2, Object... moreRules) {
         return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
     }
 
-    public Rule oneOrMore(@NotNull Object rule, Object... moreRules) {
-        return oneOrMore(new SequenceMatcher(toRules(arrayOf(rule, moreRules))));
-    }
-
     public Rule oneOrMore(@NotNull Object rule) {
         return new OneOrMoreMatcher(toRule(rule)).label("oneOrMore");
-    }
-
-    public Rule optional(@NotNull Object rule, Object... moreRules) {
-        return optional(new SequenceMatcher(toRules(arrayOf(rule, moreRules))));
     }
 
     public Rule optional(@NotNull Object rule) {
@@ -60,31 +52,23 @@ public abstract class BaseParser<T extends Actions> {
     }
 
     public Rule sequence(@NotNull Object rule, Object... moreRules) {
-        return new SequenceMatcher(toRules(arrayOf(rule, moreRules))).label("sequence");
+        return new SequenceMatcher(toRules(arrayOf(rule, moreRules)), false).label("sequence");
     }
 
-    public Rule test(@NotNull Object rule, Object... moreRules) {
-        return test(new SequenceMatcher(toRules(arrayOf(rule, moreRules))));
+    public Rule enforcedSequence(@NotNull Object rule, Object... moreRules) {
+        return new SequenceMatcher(toRules(arrayOf(rule, moreRules)), true).label("enforcedSequence");
     }
 
     public Rule test(@NotNull Object rule) {
-        return new TestMatcher(toRule(rule));
-    }
-
-    public Rule testNot(@NotNull Object rule, Object... moreRules) {
-        return testNot(new SequenceMatcher(toRules(arrayOf(rule, moreRules))));
+        return new TestMatcher(toRule(rule), false);
     }
 
     public Rule testNot(@NotNull Object rule) {
         return new TestMatcher(toRule(rule), true);
     }
 
-    public Rule zeroOrMore(@NotNull Object rule, Object... moreRules) {
-        return zeroOrMore(new SequenceMatcher(toRules(arrayOf(rule, moreRules))));
-    }
-
     public Rule zeroOrMore(@NotNull Object rule) {
-        return new OptionalMatcher(new OneOrMoreMatcher(toRule(rule))).label("zeroOrMore");
+        return new ZeroOrMoreMatcher(toRule(rule)).label("zeroOrMore");
     }
 
     public Rule eof() {

@@ -86,10 +86,8 @@ public class Parser {
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher matcher = rule.toMatcher();
         MatcherContext context = new MatcherContextImpl(null, startLocation, matcher, parser.actions, parseErrors);
-        boolean matched = context.runMatcher(matcher, matcher.isEnforced());
-        Node root = context.getSubNodes() != null && !context.getSubNodes().isEmpty() ?
-                context.getSubNodes().get(0) : null;
-        return new ParsingResult(matched, root, parseErrors, inputBuffer);
+        context.runMatcher(true);
+        return new ParsingResult(context.getNode(), parseErrors, inputBuffer);
     }
 
     @SuppressWarnings({"unchecked"})

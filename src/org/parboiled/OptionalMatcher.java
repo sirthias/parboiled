@@ -1,8 +1,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.Checks;
-import org.parboiled.support.ParserConstructionException;
+
+import java.util.Set;
 
 class OptionalMatcher extends AbstractMatcher {
 
@@ -10,20 +10,15 @@ class OptionalMatcher extends AbstractMatcher {
         super(subRule);
     }
 
-    @Override
-    public Rule enforce() {
-        throw new ParserConstructionException("Optional rules cannot be enforced");
-    }
-
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Checks.ensure(!isEnforced(), "Optional rule '%s' must not be enforced", context.getPath());
-
         Matcher matcher = getChildren().get(0);
-        Checks.ensure(!matcher.isEnforced(), "The inner rule of Optional rule '%s' must not be enforced",
-                context.getPath());
         context.runMatcher(matcher, false);
         context.createNode();
         return true;
     }
 
+    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
+        getChildren().get(0).collectFirstCharSet(firstCharSet);
+        return false;
+    }
 }

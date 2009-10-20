@@ -3,11 +3,11 @@ package org.parboiled;
 import net.sf.cglib.proxy.MethodProxy;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.ParsingException;
-import org.parboiled.support.ParserConstructionException;
 import org.parboiled.utils.ImmutableList;
 import org.parboiled.utils.Preconditions;
 
 import java.util.List;
+import java.util.Set;
 
 class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResult {
 
@@ -30,16 +30,8 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
         return "action '" + methodProxy.getSignature().getName() + '\'';
     }
 
-    @Override
-    public Rule enforce() {
-        throw new ParserConstructionException("Optional rules cannot be enforced");
-    }
-
-    public boolean isEnforced() {
-        return false;
-    }
-
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
+        context = (MatcherContext) context.getParent(); // actions want to operate in the parent scope
         Object result;
         try {
             actionsObject.setContext(context);
@@ -73,4 +65,11 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
         return ImmutableList.of();
     }
 
+    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
+        return false;
+    }
+
+    public String getExpectedString() {
+        throw new UnsupportedOperationException();
+    }
 }

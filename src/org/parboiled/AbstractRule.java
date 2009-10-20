@@ -9,7 +9,6 @@ import java.util.List;
 abstract class AbstractRule<T extends DGraphNode<T>> extends ImmutableDGraphNode<T> implements Rule {
 
     private String label;
-    private boolean enforced;
     private boolean locked;
 
     protected AbstractRule(@NotNull List<T> children) {
@@ -35,20 +34,10 @@ abstract class AbstractRule<T extends DGraphNode<T>> extends ImmutableDGraphNode
         return this;
     }
 
-    public Rule enforce() {
-        checkNotLocked();
-        this.enforced = true;
-        return this;
-    }
-
     //************************************ GETTERS ********************************************
 
     public String getLabel() {
         return label;
-    }
-
-    public boolean isEnforced() {
-        return enforced;
     }
 
     public boolean isLocked() {

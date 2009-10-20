@@ -28,11 +28,11 @@ public class DGraphUtils {
         return node != null && !node.getChildren().isEmpty();
     }
 
-    public <T extends DGraphNode<T>> T getFirstChild(T node) {
+    public static <T extends DGraphNode<T>> T getFirstChild(T node) {
         return hasChildren(node) ? node.getChildren().get(0) : null;
     }
 
-    public <T extends DGraphNode<T>> T getLastChild(T node) {
+    public static <T extends DGraphNode<T>> T getLastChild(T node) {
         return hasChildren(node) ? node.getChildren().get(node.getChildren().size() - 1) : null;
     }
 

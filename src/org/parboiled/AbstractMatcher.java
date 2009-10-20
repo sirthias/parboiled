@@ -32,12 +32,16 @@ abstract class AbstractMatcher extends AbstractRule<Matcher> implements Matcher 
         return this;
     }
 
+    public String getExpectedString() {
+        return getLabel(); // default implementation
+    }
+
     @Override
     public String toString() {
         String label = getLabel();
         if (label != null) return label;
         label = getClass().getSimpleName();
-        return label.substring(label.length() - 7); // remove the "Matcher" ending
+        return label.substring(0, label.length() - 7); // remove the "Matcher" ending
     }
 
 }

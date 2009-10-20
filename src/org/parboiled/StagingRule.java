@@ -5,7 +5,6 @@ class StagingRule implements Rule {
     private final BaseParser<?> parser;
     private final Rule innerRule;
     private String label;
-    private boolean enforced;
 
     StagingRule(Rule innerRule, BaseParser<?> parser) {
         this.innerRule = innerRule;
@@ -17,11 +16,6 @@ class StagingRule implements Rule {
         return this;
     }
 
-    public Rule enforce() {
-        enforced = true;
-        return this;
-    }
-
     public BaseParser<?> getParser() {
         return parser;
     }
@@ -29,10 +23,9 @@ class StagingRule implements Rule {
     public Matcher toMatcher() {
         // the real rule is has been locked after creation,
         // so we need to inject a wrapper for setting properties
-        if (label != null || enforced) {
+        if (label != null) {
             WrapMatcher wrapper = new WrapMatcher(innerRule);
             if (label != null) wrapper.label(label);
-            if (enforced) wrapper.enforce();
             return wrapper;
         }
 
