@@ -2,12 +2,12 @@ package org.parboiled;
 
 import net.sf.cglib.proxy.MethodProxy;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
 import org.parboiled.support.ParsingException;
 import org.parboiled.utils.ImmutableList;
 import org.parboiled.utils.Preconditions;
 
 import java.util.List;
-import java.util.Set;
 
 class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResult {
 
@@ -31,13 +31,13 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
     }
 
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        context = (MatcherContext) context.getParent(); // actions want to operate in the parent scope
+        context = context.getParent(); // actions want to operate in the parent scope
         Object result;
         try {
             actionsObject.setContext(context);
             result = methodProxy.invokeSuper(actionsObject, buildArguments(context));
         } catch (ParsingException pex) {
-            context.addActionError(pex.getMessage());
+            context.addError(pex.getMessage());
             return false;
         } catch (Throwable e) {
             throw new RuntimeException("Error during execution of " + context.getPath(), e);
@@ -65,8 +65,8 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
         return ImmutableList.of();
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        return false;
+    public Characters getStarterChars() {
+        return Characters.ONLY_EMPTY;
     }
 
     public String getExpectedString() {

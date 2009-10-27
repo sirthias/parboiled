@@ -1,31 +1,24 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
 import org.parboiled.utils.ImmutableList;
 
 import java.util.List;
-import java.util.Set;
 
 class IllegalCharactersMatcher implements Matcher {
     private final String expected;
-    private final Set<Character> followerSet;
-
-    /**
-     * Creates an IllegalCharactersMatcher that will match exactly one character.
-     * @param expected a string describing the expected content
-     */
-    public IllegalCharactersMatcher(@NotNull String expected) {
-        this(expected, null);
-    }
+    private final Characters stopMatchChars;
 
     /**
      * Creates an IllegalCharactersMatcher that will match all characters not in the given follower set.
-     * @param expected a string describing the expected content
-     * @param followerSet the set of characters up to which illegal characters will be matched
+     *
+     * @param expected       a string describing the expected content
+     * @param stopMatchChars the set of characters up to which illegal characters will be matched
      */
-    public IllegalCharactersMatcher(@NotNull String expected, Set<Character> followerSet) {
+    public IllegalCharactersMatcher(@NotNull String expected, @NotNull Characters stopMatchChars) {
         this.expected = expected;
-        this.followerSet = followerSet;
+        this.stopMatchChars = stopMatchChars;
     }
 
     public String getLabel() {
@@ -36,7 +29,7 @@ class IllegalCharactersMatcher implements Matcher {
         context.addUnexpectedInputError(context.getCurrentLocation().currentChar, expected);
         do {
             context.advanceInputLocation();
-        } while (followerSet != null && !followerSet.contains(context.getCurrentLocation().currentChar));
+        } while (!stopMatchChars.contains(context.getCurrentLocation().currentChar));
         context.createNode();
         return true;
     }
@@ -46,7 +39,7 @@ class IllegalCharactersMatcher implements Matcher {
         return ImmutableList.of();
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
+    public Characters getStarterChars() {
         throw new IllegalStateException(); // should never be called
     }
 

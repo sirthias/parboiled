@@ -1,9 +1,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
 import org.parboiled.utils.ImmutableList;
-
-import java.util.Set;
 
 class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
 
@@ -31,8 +30,8 @@ class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
         return "wrapper:" + getLabel();
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        return getInner().collectFirstCharSet(firstCharSet);
+    public Characters getStarterChars() {
+        return getInner().getStarterChars();
     }
 
     public String getExpectedString() {

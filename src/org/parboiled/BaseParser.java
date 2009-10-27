@@ -30,7 +30,7 @@ public abstract class BaseParser<T extends Actions> {
     }
 
     public Rule charRange(char cLow, char cHigh) {
-        return new CharMatcher(cLow, cHigh);
+        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(cLow, cHigh);
     }
 
     public Rule string(@NotNull String string) {
@@ -77,6 +77,10 @@ public abstract class BaseParser<T extends Actions> {
 
     public Rule any() {
         return ch(Chars.ANY);
+    }
+
+    public Rule empty() {
+        return ch(Chars.EMPTY);
     }
 
     // action parameters

@@ -21,8 +21,14 @@ class ActionInterceptor implements MethodInterceptor {
 
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Preconditions.checkState(obj instanceof Actions);
-        Checks.ensure(parser != null,
-                "Illegal action method call, action methods can only be invoked during parser construction");
+
+        // if we have a non-null parser object set we are in the rule construction phase and do not actually invoke
+        // the action method but construct an ActionMatcher
+        // however, actions might also be called by other actions during the parsing run (i.e. after rule construction)
+        // in this case the parser object will have been set to null and we should directly invoke the action method
+        if (parser == null) {
+            return proxy.invokeSuper(obj, args);
+        }
 
         // build real arguments by replacing null values with respective parameter objects from the parser
         Class<?>[] parameterTypes = method.getParameterTypes();

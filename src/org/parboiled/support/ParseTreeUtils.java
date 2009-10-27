@@ -20,11 +20,11 @@ public class ParseTreeUtils {
     public static Node findNodeByPath(Collection<Node> nodes, @NotNull String path) {
         if (nodes != null && !nodes.isEmpty()) {
             int separatorIndex = path.indexOf('/');
-            String label = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
+            String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
             for (Node child : nodes) {
                 String childLabel = child.getLabel();
-                if (childLabel.equals(label)) {
-                    return separatorIndex != -1 ? findNodeByPath(child, path.substring(separatorIndex + 1)) : child;
+                if (childLabel.startsWith(prefix)) {
+                    return separatorIndex == -1 ? child : findNodeByPath(child, path.substring(separatorIndex + 1));
                 }
             }
         }
@@ -41,10 +41,10 @@ public class ParseTreeUtils {
                                                                     @NotNull C collection) {
         if (nodes != null && !nodes.isEmpty()) {
             int separatorIndex = path.indexOf('/');
-            String label = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
+            String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
             for (Node child : nodes) {
                 String childLabel = child.getLabel();
-                if (childLabel.equals(label)) {
+                if (childLabel.startsWith(prefix)) {
                     if (separatorIndex == -1) {
                         collection.add(child);
                     } else {

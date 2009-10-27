@@ -29,8 +29,8 @@ public class ComplexTest extends AbstractTest {
                     ),
                     actions.compute(
                             value("mult", Integer.class),
-                            chars("zeroOrMore/enforcedSequence/firstOf"),
-                            values("zeroOrMore/enforcedSequence/mult", Integer.class)
+                            chars("z/e/firstOf"),
+                            values("z/e/mult", Integer.class)
                     )
             );
         }
@@ -46,8 +46,8 @@ public class ComplexTest extends AbstractTest {
                     ),
                     actions.compute(
                             value("atom", Integer.class),
-                            chars("zeroOrMore/enforcedSequence/firstOf"),
-                            values("zeroOrMore/enforcedSequence/atom", Integer.class)
+                            chars("z/e/firstOf"),
+                            values("z/e/atom", Integer.class)
                     )
             );
         }
@@ -58,7 +58,7 @@ public class ComplexTest extends AbstractTest {
                             number(),
                             enforcedSequence('(', term(), ')').label("parens")
                     ),
-                    actions.setValue(firstNonNull(value("firstOf/number"), value("firstOf/parens/term")))
+                    actions.setValue(firstNonNull(value("f/number"), value("f/p/term")))
             );
         }
 
@@ -84,8 +84,7 @@ public class ComplexTest extends AbstractTest {
                     value = performOperation(value, operators[i], values[i]);
                 }
             }
-            getContext().setNodeValue(value);
-            return ActionResult.CONTINUE;
+            return setValue(value);
         }
 
         private int performOperation(int value1, Character operator, Integer value2) {

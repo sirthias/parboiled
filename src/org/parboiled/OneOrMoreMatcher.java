@@ -1,10 +1,10 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
-
-import java.util.Set;
 
 class OneOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
 
@@ -31,17 +31,16 @@ class OneOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
         return true;
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        Checks.ensure(getChildren().get(0).collectFirstCharSet(firstCharSet),
-                "Sub rule of an OneOrMore-rule must not allow empty matches");
-        return true;
+    public Characters getStarterChars() {
+        Characters chars = getChildren().get(0).getStarterChars();
+        Checks.ensure(!chars.contains(Chars.EMPTY), "Sub rule of an OneOrMore-rule must not allow empty matches");
+        return chars;
     }
 
-    public boolean collectCurrentFollowerSet(MatcherContext context, @NotNull Set<Character> followerSet) {
+    public Characters getFollowerChars(MatcherContext context) {
         // since this call is only legal when we are currently within a match of our sub matcher,
         // i.e. the submatcher can either match once more or the repetition can legally terminate which means
-        // our follower set addition is incomplete -> return false
-        collectFirstCharSet(followerSet);
-        return false;
+        // our follower set addition is incomplete -> add EMPTY
+        return getStarterChars().add(Chars.EMPTY);
     }
 }

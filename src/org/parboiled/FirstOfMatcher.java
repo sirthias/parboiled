@@ -1,11 +1,11 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
 import org.parboiled.support.Checks;
+import org.parboiled.support.Chars;
 import org.parboiled.utils.StringUtils2;
 import org.parboiled.utils.Utils;
-
-import java.util.Set;
 
 class FirstOfMatcher extends AbstractMatcher {
 
@@ -25,12 +25,14 @@ class FirstOfMatcher extends AbstractMatcher {
         return false;
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
+    public Characters getStarterChars() {
+        Characters chars = Characters.NONE;
         for (Matcher matcher : getChildren()) {
-            Checks.ensure(matcher.collectFirstCharSet(firstCharSet),
-                    "Rule '{}' allows empty matches, unlikely to be correct as a sub rule of an OneOf-Rule");
+            chars = chars.add(matcher.getStarterChars());
+            Checks.ensure(!chars.contains(Chars.EMPTY),
+                    "Rule '{}' allows empty matches, unlikely to be correct as a sub rule of an FirstOf-Rule");
         }
-        return true;
+        return chars;
     }
 
     public String getExpectedString() {

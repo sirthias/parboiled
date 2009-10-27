@@ -3,6 +3,8 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
+import org.parboiled.support.Chars;
+import org.parboiled.support.Characters;
 
 import java.util.Set;
 
@@ -27,13 +29,14 @@ class ZeroOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
         return true;
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        Checks.ensure(getChildren().get(0).collectFirstCharSet(firstCharSet),
-                "Sub rule of an ZeroOrMore rule must not allow empty matches");
-        return false;
+    public Characters getStarterChars() {
+        Characters chars = getChildren().get(0).getStarterChars();
+        Checks.ensure(!chars.contains(Chars.EMPTY), "Sub rule of an ZeroOrMore-rule must not allow empty matches");
+        return chars;
     }
 
-    public boolean collectCurrentFollowerSet(MatcherContext context, @NotNull Set<Character> followerSet) {
-        return collectFirstCharSet(followerSet);
+    public Characters getFollowerChars(MatcherContext context) {
+        return getStarterChars().add(Chars.EMPTY);
     }
+
 }

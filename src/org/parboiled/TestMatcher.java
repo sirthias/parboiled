@@ -1,8 +1,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
+import org.parboiled.support.Characters;
 
 class TestMatcher extends AbstractMatcher {
 
@@ -24,15 +23,16 @@ class TestMatcher extends AbstractMatcher {
     public boolean match(@NotNull MatcherContext context, boolean enforced) {
         Matcher matcher = getChildren().get(0);
 
-        MatcherContext tempContext = new MatcherContextImpl(null, context.getCurrentLocation(), matcher,
-                context.getActions(), context.getParseErrors());
+        // we run the test matcher in a detached context as it is not to affect the parse tree being built
+        MatcherContext tempContext = context.createCopy(null, matcher);
         boolean matched = tempContext.runMatcher(matcher, false);
 
         return inverted ? !matched : matched;
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        return false;
+    public Characters getStarterChars() {
+        Characters characters = getChildren().get(0).getStarterChars();
+        return inverted ? Characters.ALL.remove(characters) : characters;
     }
 
     @Override

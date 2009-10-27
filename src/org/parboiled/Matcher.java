@@ -1,9 +1,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
 import org.parboiled.utils.DGraphNode;
-
-import java.util.Set;
 
 public interface Matcher extends DGraphNode<Matcher> {
 
@@ -27,11 +26,9 @@ public interface Matcher extends DGraphNode<Matcher> {
     boolean match(@NotNull MatcherContext context, boolean enforced);
 
     /**
-     * Adds all characters that this matcher can legally start a match with to the given set.
-     *
-     * @param firstCharSet the set
-     * @return true if the added set of types is complete, false if an empty match would also be legal
+     * @return all characters that this matcher can legally start a match with. Contains Chars.EMPTY if the
+     *         matcher can legally match nothing.
      */
-    boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet);
+    Characters getStarterChars();
 
 }

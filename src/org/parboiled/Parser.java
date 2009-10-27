@@ -43,7 +43,10 @@ public class Parser {
                 return isRuleCreatingMethod && hasNoParameters ? 1 : 0;
             }
         }, arrayOf(actions, parserConstructorArgs));
+
         if (actions != null) {
+            // signal to the ActionInterceptor that we are in the rule construction phase by informing it
+            // about the parser object instance
             //noinspection ConstantConditions
             ((ActionInterceptor) ((Factory) actions).getCallback(1)).setParser(parser);
         }
@@ -80,13 +83,25 @@ public class Parser {
         Checks.ensure(rule instanceof StagingRule,
                 "Illegal rule instance, please use Parser.create(...) for creating your parser object");
 
+        // prepare
         BaseParser<?> parser = ((StagingRule) rule).getParser();
         InputBuffer inputBuffer = new InputBuffer(input);
         InputLocation startLocation = new InputLocation(inputBuffer);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher matcher = rule.toMatcher();
-        MatcherContext context = new MatcherContextImpl(null, startLocation, matcher, parser.actions, parseErrors);
+        MatcherContext context = new MatcherContext(null, startLocation, matcher, parser.actions, parseErrors);
+
+        // the matcher tree has already been built during the call to Parser.parse(...), usually immediately
+        // before the invocation of this method, we need to signal to the ActionInterceptor that rule construction
+        // is over and all further action calls should not continue to create ActionMatchers but actually be
+        // "routed through" to the actual action method implementations
+        if (parser.actions != null) {
+            ((ActionInterceptor) ((Factory) parser.actions).getCallback(1)).setParser(null);
+        }
+
+        // run the actual matcher tree
         context.runMatcher(true);
+
         return new ParsingResult(context.getNode(), parseErrors, inputBuffer);
     }
 

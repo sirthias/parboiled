@@ -135,28 +135,28 @@ public final class Utils {
     /**
      * <p>Produces a new array containing the elements between
      * the start and end indices.</p>
-     *
+     * <p/>
      * <p>The start index is inclusive, the end index exclusive.
      * Null array input produces null output.</p>
-     *
+     * <p/>
      * <p>The component type of the subarray is always the same as
      * that of the input array. Thus, if the input is an array of type
      * <code>Date</code>, the following usage is envisaged:</p>
-     *
+     * <p/>
      * <pre>
      * Date[] someDates = (Date[])ArrayUtils.subarray(allDates, 2, 5);
      * </pre>
      *
-     * @param array  the array
-     * @param startIndexInclusive  the starting index. Undervalue (&lt;0)
-     *      is promoted to 0, overvalue (&gt;array.length) results
-     *      in an empty array.
-     * @param endIndexExclusive  elements up to endIndex-1 are present in the
-     *      returned subarray. Undervalue (&lt; startIndex) produces
-     *      empty array, overvalue (&gt;array.length) is demoted to
-     *      array length.
+     * @param array               the array
+     * @param startIndexInclusive the starting index. Undervalue (&lt;0)
+     *                            is promoted to 0, overvalue (&gt;array.length) results
+     *                            in an empty array.
+     * @param endIndexExclusive   elements up to endIndex-1 are present in the
+     *                            returned subarray. Undervalue (&lt; startIndex) produces
+     *                            empty array, overvalue (&gt;array.length) is demoted to
+     *                            array length.
      * @return a new array containing the elements between
-     *      the start and end indices.
+     *         the start and end indices.
      */
     public static Object[] subarray(Object[] array, int startIndexInclusive, int endIndexExclusive) {
         if (array == null) {
@@ -177,6 +177,6 @@ public final class Utils {
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
     }
-    
+
 }
 

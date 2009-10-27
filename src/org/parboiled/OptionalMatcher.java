@@ -1,8 +1,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 
 class OptionalMatcher extends AbstractMatcher {
 
@@ -17,8 +17,7 @@ class OptionalMatcher extends AbstractMatcher {
         return true;
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        getChildren().get(0).collectFirstCharSet(firstCharSet);
-        return false;
+    public Characters getStarterChars() {
+        return getChildren().get(0).getStarterChars().add(Chars.EMPTY);
     }
 }

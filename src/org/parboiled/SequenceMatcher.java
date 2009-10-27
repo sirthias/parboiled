@@ -1,9 +1,10 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 
 import java.util.List;
-import java.util.Set;
 
 class SequenceMatcher extends AbstractMatcher implements FollowMatcher {
 
@@ -29,20 +30,23 @@ class SequenceMatcher extends AbstractMatcher implements FollowMatcher {
         return true;
     }
 
-    public boolean collectFirstCharSet(@NotNull Set<Character> firstCharSet) {
-        return collectFirstCharSet(0, firstCharSet);
+    public Characters getStarterChars() {
+        return getStarterChars(0);
     }
 
-    private boolean collectFirstCharSet(int startIndex, @NotNull Set<Character> firstCharSet) {
+    private Characters getStarterChars(int startIndex) {
+        Characters chars = Characters.ONLY_EMPTY;
         for (int i = startIndex; i < getChildren().size(); i++) {
-            if (getChildren().get(i).collectFirstCharSet(firstCharSet)) return true;
+            Characters matcherStarters = getChildren().get(i).getStarterChars();
+            chars = chars.add(matcherStarters);
+            if (!matcherStarters.contains(Chars.EMPTY)) return chars.remove(Chars.EMPTY);
         }
-        return false;
+        return chars;
     }
 
-    public boolean collectCurrentFollowerSet(MatcherContext context, @NotNull Set<Character> followerSet) {
+    public Characters getFollowerChars(MatcherContext context) {
         int currentIndex = (Integer) context.getTag();
-        return collectFirstCharSet(currentIndex + 1, followerSet);
+        return getStarterChars(currentIndex + 1);
     }
 
 }
