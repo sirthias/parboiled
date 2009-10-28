@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="listo" default="compile">
+
+    <!-- can be overridden at the command line with -Dversion= -->
+    <property name="version" value="snapshot"/>
+
+    <target name="clean" description="Remove all generated files">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile" description="Compile main and example sources">
+        <mkdir dir="build/classes"/>
+        <javac debug="on" destdir="build/classes" source="1.5" target="1.5" encoding="utf8">
+            <src location="src"/>
+            <src location="examples"/>
+            <classpath>
+                <fileset dir="lib" includes="**/*.jar"/>
+            </classpath>
+            <compilerarg line="-Xlint:all -Xlint:-serial"/>
+        </javac>
+    </target>
+
+    <target name="compile.test" depends="compile" description="Compile test sources">
+        <mkdir dir="build/test-classes"/>
+        <javac debug="on" destdir="build/test-classes" source="1.5" target="1.5" encoding="utf8">
+            <src location="test"/>
+            <classpath>
+                <pathelement path="build/classes"/>
+                <fileset dir="lib" includes="**/*.jar"/>
+            </classpath>
+            <compilerarg line="-Xlint:all -Xlint:-serial"/>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile.test" description="Run all tests">
+        <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
+
+        <testng parallel="true" suitename="All Tests" outputdir="test-output" haltonfailure="true">
+            <classfileset dir="build/test-classes" includes="**/*Test.class"/>
+            <classpath>
+                <pathelement path="build/classes"/>
+                <pathelement path="build/test-classes"/>
+                <fileset dir="lib" includes="**/*.jar"/>
+            </classpath>
+        </testng>
+    </target>
+
+    <target name="manifest">
+        <mkdir dir="build/META-INF"/>
+        <copy file="LICENSE" todir="build/META-INF"/>
+        <copy file="NOTICE" todir="build/META-INF"/>
+        <manifest file="build/META-INF/MANIFEST.MF">
+            <attribute name="Built-By" value="${user.name}"/>
+            <attribute name="Specification-Title" value="parboiled"/>
+            <attribute name="Specification-Version" value="${version}"/>
+            <attribute name="Specification-Vendor" value="parboiled.org"/>
+            <attribute name="Implementation-Title" value="parboiled"/>
+            <attribute name="Implementation-Version" value="${version}"/>
+            <attribute name="Implementation-Vendor" value="parboiled.org"/>
+            <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+            <attribute name="Bundle-Version" value="${version}"/>
+            <attribute name="Bundle-Description"
+                       value="parboiled, a Java 1.5+ library providing a light-weight and easy-to-use, yet powerful PEG parsing facility."/>
+            <attribute name="Bundle-Name" value="parboiled"/>
+            <attribute name="Bundle-DocURL" value="http://www.parboiled.org"/>
+            <attribute name="Bundle-Vendor" value="parboiled.org"/>
+            <attribute name="Bundle-SymbolicName" value="org.parboiled"/>
+        </manifest>
+    </target>
+
+    <target name="jar" depends="compile, manifest" description="Build main library jar">
+        <jar destfile="build/parboiled-${version}.jar" manifest="build/META-INF/MANIFEST.MF">
+            <fileset dir="build/classes" excludes="org.parboiled.examples/**"/>
+            <fileset dir="build" includes="META-INF/*"/>
+        </jar>
+    </target>
+
+    <target name="jar.source" depends="manifest" description="Create a .jar file with main sources">
+        <zip destfile="build/parboiled-${version}-src.jar">
+            <fileset dir="src"/>
+            <fileset dir="build" includes="META-INF/*"/>
+        </zip>
+    </target>
+
+    <target name="jar.examples" depends="compile" description="Creates .jar files for examples">
+        <jar destfile="build/parboiled-${version}-examples.jar">
+            <fileset dir="build/classes" includes="org/parboiled/examples/**"/>
+        </jar>
+        <zip destfile="build/parboiled-${version}-examples-src.jar">
+            <fileset dir="examples"/>
+        </zip>
+    </target>
+
+    <target name="dist" depends="test, jar, jar.source, jar.examples" description="Compiles, tests and jars everything">
+        <copy file="lib/cglib/cglib-nodep-2.2.jar" todir="build"/>
+    </target>
+
+</project>
