@@ -59,9 +59,8 @@ public class AbcnTest extends AbstractTest {
         TestParser parser = Parser.create(TestParser.class, null);
         testFail(parser.S(), "aabbbcc", "" +
                 "[S] 'aabbbcc'\n" +
-                "    [!ILLEGAL!] 'a'\n" +
-                "    [&(sequence)]\n" +
-                "    [oneOrMore] 'a'\n" +
+                "    [oneOrMore] 'aa'\n" +
+                "        ['a'] 'a'\n" +
                 "        ['a'] 'a'\n" +
                 "    [B] 'bbbcc'\n" +
                 "        ['b'] 'b'\n" +
@@ -75,13 +74,9 @@ public class AbcnTest extends AbstractTest {
                 "                        ['c'] 'c'\n" +
                 "                ['c'] 'c'\n" +
                 "        ['c']\n", "" +
-                "ParseError: Invalid input 'a', expected sequence (line 1, pos 1):\n" +
+                "ParseError: Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
                 "aabbbcc\n" +
-                "^\n" +
-                "---\n" +
-                "ParseError: Invalid input 'a', expected sequence (line 1, pos 2):\n" +
-                "aabbbcc\n" +
-                " ^\n" +
+                "    ^\n" +
                 "---\n" +
                 "ParseError: Invalid input EOF, expected 'c' (line 1, pos 8):\n" +
                 "aabbbcc\n" +

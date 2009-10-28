@@ -25,7 +25,7 @@ class TestMatcher extends AbstractMatcher {
 
         // we run the test matcher in a detached context as it is not to affect the parse tree being built
         MatcherContext tempContext = context.createCopy(null, matcher);
-        boolean matched = tempContext.runMatcher(matcher, false);
+        boolean matched = tempContext.runMatcher(matcher, enforced && !inverted);
 
         return inverted ? !matched : matched;
     }
