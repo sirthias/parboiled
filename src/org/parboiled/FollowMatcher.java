@@ -2,6 +2,11 @@ package org.parboiled;
 
 import org.parboiled.support.Characters;
 
+/**
+ * Matchers that match sequences of other matchers also implement this interface which provides access to the set
+ * of all characters that can legally follow the currently running match.
+ * Used during parse error recovery.
+ */
 interface FollowMatcher {
 
     /**

@@ -10,6 +10,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Interceptor for the Rule creation methods of the parser rule object.
+ * Provides the following functionality to the Rule-creating, no-arg instance methods of the parser object:
+ * - Automatically locks all created Rules (which prevents further changes to their properties)
+ * - Automatically labels all created Rule objects with the name of the respective creation method
+ * - Caches Rules created by such methods, so subsequent calls return the same Rule instance
+ * - Prevents infinite recursions during rule construction by inserting proxy objects where required
+ * - Automatically injects WrapMatcher to allow for setting of custom properties for cached, locked Rules
+ */
 class StagingInterceptor implements MethodInterceptor {
 
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -19,7 +28,7 @@ class StagingInterceptor implements MethodInterceptor {
         Preconditions.checkState(obj instanceof BaseParser);
         Preconditions.checkState(args.length == 0);
 
-        // create/get the underlying AbstractRule or proxy
+        // createActions/get the underlying AbstractRule or proxy
         Rule innerRule = getRule(obj, method, proxy);
 
         // every call to the method receives its own StagingRule to set properties on (if required)
@@ -30,7 +39,7 @@ class StagingInterceptor implements MethodInterceptor {
         Rule rule = rules.get(method);
         if (rule != null) return rule;
 
-        // first call to the Rule, create a proxy and put it into the rule cache so any potential
+        // first call to the Rule, createActions a proxy and put it into the rule cache so any potential
         // recursive calls don't recurse infinitely but rather immediately return the proxy
         final AbstractRule[] realRule = new AbstractRule[] {null};
         Rule proxy = (Rule) Enhancer.create(Object.class, new Class[] {Rule.class, Matcher.class}, new LazyLoader() {

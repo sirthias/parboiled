@@ -23,7 +23,7 @@ public class InputLocation {
 
     public InputLocation advance() {
         switch (currentChar) {
-            case Chars.EOF:
+            case Chars.EOI:
                 return this;
             case '\n':
                 return new InputLocation(inputBuffer, index + 1, row + 1, 0);

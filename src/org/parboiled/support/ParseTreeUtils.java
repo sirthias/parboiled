@@ -5,25 +5,47 @@ import org.parboiled.Node;
 import org.parboiled.ParsingResult;
 import static org.parboiled.utils.DGraphUtils.hasChildren;
 import static org.parboiled.utils.DGraphUtils.printTree;
-import org.parboiled.utils.Utils;
+import org.parboiled.utils.StringUtils;
 
 import java.util.Collection;
 
+/**
+ * General utility methods for operating on parse trees.
+ */
 public class ParseTreeUtils {
 
     private ParseTreeUtils() {}
 
+    /**
+     * Returns the first Node underneath the given parent that matches the given path.
+     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Node
+     * relative to the given parent.
+     * If parent is null or no node is found the method returns null.
+     *
+     * @param parent the parent Node
+     * @param path   the path to the Node being searched for
+     * @return the Node if found or null if not found
+     */
     public static Node findNodeByPath(Node parent, @NotNull String path) {
         return parent != null && hasChildren(parent) ? findNodeByPath(parent.getChildren(), path) : null;
     }
 
-    public static Node findNodeByPath(Collection<Node> nodes, @NotNull String path) {
-        if (nodes != null && !nodes.isEmpty()) {
+    /**
+     * Returns the first Node underneath the given parents that matches the given path.
+     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Node
+     * relative to each of the given parent nodes.
+     * If the given collections of parents is null or empty or no node is found the method returns null.
+     *
+     * @param parents the parent Nodes to look through
+     * @param path    the path to the Node being searched for
+     * @return the Node if found or null if not found
+     */
+    public static Node findNodeByPath(Collection<Node> parents, @NotNull String path) {
+        if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
-            for (Node child : nodes) {
-                String childLabel = child.getLabel();
-                if (childLabel.startsWith(prefix)) {
+            for (Node child : parents) {
+                if (StringUtils.startsWith(child.getLabel(), prefix)) {
                     return separatorIndex == -1 ? child : findNodeByPath(child, path.substring(separatorIndex + 1));
                 }
             }
@@ -31,20 +53,39 @@ public class ParseTreeUtils {
         return null;
     }
 
+    /**
+     * Collects all Nodes underneath the given parent that match the given path.
+     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Nodes
+     * relative to the given parent.
+     *
+     * @param parent     the parent Node
+     * @param path       the path to the Nodes being searched for
+     * @param collection the collection to collect the found Nodes into
+     * @return the same collection instance passed as a parameter
+     */
     public static <C extends Collection<Node>> C collectNodesByPath(Node parent, @NotNull String path,
                                                                     @NotNull C collection) {
         return parent != null && hasChildren(parent) ?
                 collectNodesByPath(parent.getChildren(), path, collection) : collection;
     }
 
-    public static <C extends Collection<Node>> C collectNodesByPath(Collection<Node> nodes, @NotNull String path,
+    /**
+     * Collects all Nodes underneath the given parents that match the given path.
+     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Nodes
+     * relative to each of the given parent nodes.
+     *
+     * @param parents    the parent Nodes to look through
+     * @param path       the path to the Nodes being searched for
+     * @param collection the collection to collect the found Nodes into
+     * @return the same collection instance passed as a parameter
+     */
+    public static <C extends Collection<Node>> C collectNodesByPath(Collection<Node> parents, @NotNull String path,
                                                                     @NotNull C collection) {
-        if (nodes != null && !nodes.isEmpty()) {
+        if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
-            for (Node child : nodes) {
-                String childLabel = child.getLabel();
-                if (childLabel.startsWith(prefix)) {
+            for (Node child : parents) {
+                if (StringUtils.startsWith(child.getLabel(), prefix)) {
                     if (separatorIndex == -1) {
                         collection.add(child);
                     } else {
@@ -56,36 +97,108 @@ public class ParseTreeUtils {
         return collection;
     }
 
-    public static Node findByLabel(Node searchTreeRoot, @NotNull String label) {
-        if (searchTreeRoot != null) {
-            if (Utils.equals(searchTreeRoot.getLabel(), label)) return searchTreeRoot;
-            if (hasChildren(searchTreeRoot)) {
-                Node found = findByLabel(searchTreeRoot.getChildren(), label);
+    /**
+     * Returns the first Node underneath the given parent that matches the given label prefix.
+     * If parent is null or no node is found the method returns null.
+     *
+     * @param parent the parent Node
+     * @param label  the label to look for
+     * @return the Node if found or null if not found
+     */
+    public static Node findNodeByLabel(Node parent, @NotNull String label) {
+        if (parent != null) {
+            if (StringUtils.startsWith(parent.getLabel(), label)) return parent;
+            if (hasChildren(parent)) {
+                Node found = findNodeByLabel(parent.getChildren(), label);
                 if (found != null) return found;
             }
         }
         return null;
     }
 
-    public static Node findByLabel(Collection<Node> nodes, @NotNull String label) {
-        if (nodes != null && !nodes.isEmpty()) {
-            for (Node child : nodes) {
-                Node found = findByLabel(child, label);
+    /**
+     * Returns the first Node underneath the given parents that matches the given label prefix.
+     * If parents is null or empty or no node is found the method returns null.
+     *
+     * @param parents the parent Nodes to look through
+     * @param label   the label to look for
+     * @return the Node if found or null if not found
+     */
+    public static Node findNodeByLabel(Collection<Node> parents, @NotNull String label) {
+        if (parents != null && !parents.isEmpty()) {
+            for (Node child : parents) {
+                Node found = findNodeByLabel(child, label);
                 if (found != null) return found;
             }
         }
         return null;
     }
 
+    /**
+     * Collects all Nodes underneath the given parent that match the given label (prefix).
+     *
+     * @param parent      the parent Node
+     * @param labelPrefix the path to the Nodes being searched for
+     * @param collection  the collection to collect the found Nodes into
+     * @return the same collection instance passed as a parameter
+     */
+    public static <C extends Collection<Node>> C collectNodesByLabel(Node parent, @NotNull String labelPrefix,
+                                                                     @NotNull C collection) {
+        return parent != null && hasChildren(parent) ?
+                collectNodesByPath(parent.getChildren(), labelPrefix, collection) : collection;
+    }
+
+    /**
+     * Collects all Nodes underneath the given parents that match the given label (prefix).
+     *
+     * @param parents     the parent Nodes to look through
+     * @param labelPrefix the path to the Nodes being searched for
+     * @param collection  the collection to collect the found Nodes into
+     * @return the same collection instance passed as a parameter
+     */
+    public static <C extends Collection<Node>> C collectNodesByLabel(Collection<Node> parents,
+                                                                     @NotNull String labelPrefix,
+                                                                     @NotNull C collection) {
+        if (parents != null && !parents.isEmpty()) {
+            for (Node child : parents) {
+                if (StringUtils.startsWith(child.getLabel(), labelPrefix)) {
+                    collection.add(child);
+                }
+                collectNodesByPath(child, labelPrefix, collection);
+            }
+        }
+        return collection;
+    }
+
+    /**
+     * Returns the input text matched by the given Node.
+     *
+     * @param node        the node
+     * @param inputBuffer the underlying inputBuffer
+     * @return null if node is null otherwise a string with the matched input text (which can be empty)
+     */
     public static String getNodeText(Node node, @NotNull InputBuffer inputBuffer) {
         return node != null ? inputBuffer.extract(node.getStartLocation().index, node.getEndLocation().index) : null;
     }
 
+    /**
+     * Returns the first input character matched by the given Node.
+     *
+     * @param node        the node
+     * @param inputBuffer the underlying inputBuffer
+     * @return null if node is null or did not match at least one character otherwise the first matched input char
+     */
     public static Character getNodeChar(Node node, InputBuffer inputBuffer) {
-        return node != null && node.getEndLocation().index == node.getStartLocation().index + 1 ?
+        return node != null && node.getEndLocation().index > node.getStartLocation().index ?
                 inputBuffer.charAt(node.getStartLocation().index) : null;
     }
 
+    /**
+     * Creates a readable string represenation of the parse tree in thee given ParsingResult object.
+     *
+     * @param parsingResult the parsing result containing the parse tree
+     * @return a new String
+     */
     public static String printNodeTree(@NotNull ParsingResult parsingResult) {
         return printTree(parsingResult.root, new NodeFormatter(parsingResult.inputBuffer));
     }

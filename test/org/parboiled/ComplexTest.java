@@ -14,7 +14,7 @@ public class ComplexTest extends AbstractTest {
             return enforcedSequence(
                     term(),
                     actions.setValue(value("term")),
-                    eof()
+                    eoi()
             );
         }
 
@@ -65,7 +65,7 @@ public class ComplexTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    actions.setValue(convertToNumber(text("oneOrMore"), Integer.class))
+                    actions.setValue(convertToInteger(text("oneOrMore")))
             );
         }
 
@@ -107,7 +107,7 @@ public class ComplexTest extends AbstractTest {
     public void test() {
         CalculatorParser parser = Parser.create(
                 CalculatorParser.class,
-                Parser.create(CalculatorActions.class)
+                Parser.createActions(CalculatorActions.class)
         );
 
         test(parser.expression(), "1+5", "" +
@@ -131,14 +131,14 @@ public class ComplexTest extends AbstractTest {
                 "                                [oneOrMore] '5'\n" +
                 "                                    [digit] '5'\n" +
                 "                    [zeroOrMore]\n" +
-                "    [eof]\n");
+                "    [eoi]\n");
     }
 
     @Test
     public void testSingleSymbolDeletion() {
         CalculatorParser parser = Parser.create(
                 CalculatorParser.class,
-                Parser.create(CalculatorActions.class)
+                Parser.createActions(CalculatorActions.class)
         );
         testFail(parser.expression(), "(8-6))", "" +
                 "[expression, {2}] '(8-6))'\n" +
@@ -171,8 +171,8 @@ public class ComplexTest extends AbstractTest {
                 "            [zeroOrMore]\n" +
                 "        [zeroOrMore]\n" +
                 "    [!ILLEGAL!] ')'\n" +
-                "    [eof]\n",
-                "ParseError: Invalid input ')', expected eof (line 1, pos 6):\n" +
+                "    [eoi]\n",
+                "ParseError: Invalid input ')', expected eoi (line 1, pos 6):\n" +
                         "(8-6))\n" +
                         "     ^\n"
         );
@@ -182,7 +182,7 @@ public class ComplexTest extends AbstractTest {
     public void testSingleSymbolInsertion() {
         CalculatorParser parser = Parser.create(
                 CalculatorParser.class,
-                Parser.create(CalculatorActions.class)
+                Parser.createActions(CalculatorActions.class)
         );
         testFail(parser.expression(), "(8-6", "" +
                 "[expression, {2}] '(8-6'\n" +
@@ -214,8 +214,8 @@ public class ComplexTest extends AbstractTest {
                 "                        [')']\n" +
                 "            [zeroOrMore]\n" +
                 "        [zeroOrMore]\n" +
-                "    [eof]\n",
-                "ParseError: Invalid input EOF, expected ')' (line 1, pos 5):\n" +
+                "    [eoi]\n",
+                "ParseError: Invalid input EOI, expected ')' (line 1, pos 5):\n" +
                         "(8-6\n" +
                         "    ^\n"
         );
@@ -225,7 +225,7 @@ public class ComplexTest extends AbstractTest {
     public void testResynchronization1() {
         CalculatorParser parser = Parser.create(
                 CalculatorParser.class,
-                Parser.create(CalculatorActions.class)
+                Parser.createActions(CalculatorActions.class)
         );
         testFail(parser.expression(), "2*xxx(4-1)", "" +
                 "[expression, {1}] '2*xxx(4-1)'\n" +
@@ -255,12 +255,12 @@ public class ComplexTest extends AbstractTest {
                 "                                    [digit] '1'\n" +
                 "                    [zeroOrMore]\n" +
                 "    [!ILLEGAL!] ')'\n" +
-                "    [eof]\n",
+                "    [eoi]\n",
                 "ParseError: Invalid input 'x', expected number or parens (line 1, pos 3):\n" +
                         "2*xxx(4-1)\n" +
                         "  ^\n" +
                         "---\n" +
-                        "ParseError: Invalid input ')', expected eof (line 1, pos 10):\n" +
+                        "ParseError: Invalid input ')', expected eoi (line 1, pos 10):\n" +
                         "2*xxx(4-1)\n" +
                         "         ^\n"
         );
@@ -270,7 +270,7 @@ public class ComplexTest extends AbstractTest {
     public void testResynchronization2() {
         CalculatorParser parser = Parser.create(
                 CalculatorParser.class,
-                Parser.create(CalculatorActions.class)
+                Parser.createActions(CalculatorActions.class)
         );
         testFail(parser.expression(), "2*)(6-4)*3", "" +
                 "[expression, {12}] '2*)(6-4)*3'\n" +
@@ -319,7 +319,7 @@ public class ComplexTest extends AbstractTest {
                 "                                [oneOrMore] '3'\n" +
                 "                                    [digit] '3'\n" +
                 "        [zeroOrMore]\n" +
-                "    [eof]\n",
+                "    [eoi]\n",
                 "ParseError: Invalid input ')', expected number or parens (line 1, pos 3):\n" +
                         "2*)(6-4)*3\n" +
                         "  ^\n"

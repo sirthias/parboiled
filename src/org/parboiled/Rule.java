@@ -1,5 +1,8 @@
 package org.parboiled;
 
+/**
+ * Represents a parsing rule.
+ */
 public interface Rule {
 
     /**

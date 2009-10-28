@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.utils.TreeNode;
 import org.parboiled.support.InputLocation;
 
+/**
+ * A Node represents a node in the parse tree created during a parsing run.
+ */
 public interface Node extends TreeNode<Node> {
 
     /**
@@ -24,7 +27,7 @@ public interface Node extends TreeNode<Node> {
     InputLocation getEndLocation();
 
     /**
-     * @return the main value attached to this node
+     * @return the value object attached to this node
      */
     Object getValue();
 

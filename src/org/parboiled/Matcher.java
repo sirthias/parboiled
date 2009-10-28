@@ -4,10 +4,14 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.utils.DGraphNode;
 
+/**
+ * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual
+ * rule type specific matching logic.
+ */
 public interface Matcher extends DGraphNode<Matcher> {
 
     /**
-     * @return the label of the matcher
+     * @return the label of the matcher (which is identical to the label of the Rule this matcher matches)
      */
     String getLabel();
 
@@ -17,7 +21,7 @@ public interface Matcher extends DGraphNode<Matcher> {
     String getExpectedString();
 
     /**
-     * Try a match on the given MatcherContext.
+     * Tries a match on the given MatcherContext.
      *
      * @param context  the MatcherContext
      * @param enforced whether this match is required to succeed

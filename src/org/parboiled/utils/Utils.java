@@ -1,110 +1,13 @@
 package org.parboiled.utils;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.reflect.Array;
 
+/**
+ * General utility methods.
+ */
 public final class Utils {
 
     private Utils() {}
-
-    /**
-     * Returns the smallest of the given integers.
-     *
-     * @param integers the integers
-     * @return the minimum
-     */
-    public static int min(int... integers) {
-        if (integers.length == 0) throw new IllegalArgumentException();
-        int min = integers[0];
-        for (int i = 1; i < integers.length; i++) {
-            min = Math.min(min, integers[i]);
-        }
-        return min;
-    }
-
-    /**
-     * Returns the largest of the given integers.
-     *
-     * @param integers the integers
-     * @return the maximum
-     */
-    public static int max(int... integers) {
-        if (integers.length == 0) throw new IllegalArgumentException();
-        int min = integers[0];
-        for (int i = 1; i < integers.length; i++) {
-            min = Math.max(min, integers[i]);
-        }
-        return min;
-    }
-
-    /**
-     * Returns i if lo < i < hi, otherwise lo or hi.
-     *
-     * @param i  the value
-     * @param lo the lower bound
-     * @param hi the higher bound
-     * @return the maximum
-     */
-    public static int applyBounds(int i, int lo, int hi) {
-        Preconditions.checkArgument(lo <= hi);
-        return i < lo ? lo : i > hi ? hi : i;
-    }
-
-    /**
-     * Small helper for static imports, emulates the C# ?? operator.
-     *
-     * @param object       an object
-     * @param defaultValue the default value to return if object is null
-     * @param <T>          the type
-     * @return object (if not null) or defaultValue (if object is null)
-     */
-    public static <T> T ifNull(T object, T defaultValue) {
-        return object != null ? object : defaultValue;
-    }
-
-    /**
-     * Gets the enum constant with the given name (case insensitive comparison) or null
-     *
-     * @param enumClass the enum class
-     * @param name      the name of the constant to get
-     * @return the constant or null
-     */
-    public static <E extends Enum<E>> E getEnumNull(@NotNull Class<E> enumClass, String name) {
-        for (E value : enumClass.getEnumConstants()) {
-            if (StringUtils2.equalsIgnoreCase(value.toString(), name)) return value;
-        }
-        return null;
-    }
-
-    /**
-     * Gets the enum constant with the given name (case insensitive comparison).
-     * Throws an IllegalArgumentException if the name is not a valid enum constant name.
-     *
-     * @param enumClass the enum class
-     * @param name      the name of the constant to get
-     * @return the constant or null
-     */
-    public static <E extends Enum<E>> E getEnum(@NotNull Class<E> enumClass, String name) {
-        for (E value : enumClass.getEnumConstants()) {
-            if (StringUtils2.equalsIgnoreCase(value.toString(), name)) return value;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    /**
-     * Gets the enum constant with the given ordinal value or null.
-     *
-     * @param enumClass the enum class
-     * @param value     the oridinal value of the constant to get
-     * @return the constant or null
-     */
-    public static <E extends Enum<E>> E getEnum(@NotNull Class<E> enumClass, int value) {
-        if (value < 0) return null;
-        E[] values = enumClass.getEnumConstants();
-        if (value >= values.length) return null;
-        return values[value];
-    }
 
     /**
      * Joins the given arguments into one array.
@@ -122,10 +25,23 @@ public final class Utils {
         return array;
     }
 
+    /**
+     * Provides a null enabled equals().
+     *
+     * @param a the first object
+     * @param b the second object
+     * @return true if a and b are either both null or a.equals(b), false otherwise
+     */
     public static boolean equals(Object a, Object b) {
         return a == b || (a != null && a.equals(b));
     }
 
+    /**
+     * Null enabled toString()
+     *
+     * @param obj the object
+     * @return the empty string of obj is null, otherwise obj.toString()
+     */
     public static String toString(Object obj) {
         return obj == null ? "" : obj.toString();
     }

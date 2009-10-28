@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.Context;
 import org.parboiled.Matcher;
 import org.parboiled.Node;
-import org.parboiled.utils.StringUtils2;
+import org.parboiled.utils.StringUtils;
 
 public class ParseError {
 
@@ -61,14 +61,14 @@ public class ParseError {
         sb.append(String.format(" (line %s, pos %s):", start.row + 1, start.column + 1));
         sb.append('\n');
 
-        String line = StringUtils2.getLine(String.valueOf(start.inputBuffer.getBuffer()), start.row);
+        String line = StringUtils.getLine(start.inputBuffer.getBuffer(), start.row);
         sb.append(line);
         sb.append('\n');
 
         int charCount = Math
-                .min(start.row == end.row ? end.index - start.index : 1000, StringUtils2.length(line) - start.column);
-        sb.append(StringUtils2.repeat(' ', start.column));
-        sb.append(StringUtils2.repeat('^', Math.max(charCount, 1)));
+                .min(start.row == end.row ? end.index - start.index : 1000, StringUtils.length(line) - start.column);
+        sb.append(StringUtils.repeat(' ', start.column));
+        sb.append(StringUtils.repeat('^', Math.max(charCount, 1)));
         sb.append('\n');
 
         return sb.toString();

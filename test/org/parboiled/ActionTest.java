@@ -13,7 +13,7 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    actions.setValue(convertToNumber(text("o"), Integer.class))
+                    actions.setValue(convertToInteger(text("o")))
             );
         }
 
@@ -25,7 +25,7 @@ public class ActionTest extends AbstractTest {
 
     @Test
     public void test() {
-        ActionTestParser parser = Parser.create(ActionTestParser.class, Parser.create(BaseActions.class));
+        ActionTestParser parser = Parser.create(ActionTestParser.class, Parser.createActions(BaseActions.class));
         test(parser.number(), "123", "" +
                 "[number, {123}] '123'\n" +
                 "    [oneOrMore] '123'\n" +

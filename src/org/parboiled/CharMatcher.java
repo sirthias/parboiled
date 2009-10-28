@@ -18,8 +18,8 @@ class CharMatcher extends AbstractMatcher {
         if (label != null) return label;
 
         switch (character) {
-            case Chars.EOF:
-                return "EOF";
+            case Chars.EOI:
+                return "EOI";
             case Chars.ANY:
                 return "ANY";
             case Chars.EMPTY:

@@ -8,8 +8,8 @@ import org.parboiled.utils.Preconditions;
 import java.lang.reflect.Method;
 
 /**
- * This interceptor intercepts all action method calls to the parser action object during the parser construction
- * phase. It creates the respective ActionMatcher for the call and returns it.
+ * This interceptor intercepts all action method calls to the parser action object.
+ * In the rule creation phase it creates the respective ActionMatcher for the call and returns it.
  */
 class ActionInterceptor implements MethodInterceptor {
 
@@ -26,14 +26,18 @@ class ActionInterceptor implements MethodInterceptor {
         // the action method but construct an ActionMatcher
         // however, actions might also be called by other actions during the parsing run (i.e. after rule construction)
         // in this case the parser object will have been set to null and we should directly invoke the action method
-        if (parser == null) {
-            return proxy.invokeSuper(obj, args);
+        if (parser != null) {
+            return createActionMatcher(obj, method, args, proxy);
         }
+        return proxy.invokeSuper(obj, args);
+    }
 
-        // build real arguments by replacing null values with respective parameter objects from the parser
+    // build real arguments by replacing null values with respective parameter objects from the parser
+    private Object createActionMatcher(Object obj, Method method, Object[] args, MethodProxy proxy) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         ActionParameter[] params = parser.retrieveAndClearActionParameters();
         Object[] realArgs = new Object[args.length];
+
         int j = 0;
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];

@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.utils.ImmutableList;
 import org.parboiled.utils.Preconditions;
 
+/**
+ * Abstract base class of most regular Matchers.
+ */
 abstract class AbstractMatcher extends AbstractRule<Matcher> implements Matcher {
 
     protected AbstractMatcher() {

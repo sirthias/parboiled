@@ -3,6 +3,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
+import static org.parboiled.support.ParseTreeUtils.findNodeByLabel;
 import org.parboiled.utils.Preconditions;
 
 import java.util.ArrayList;
@@ -85,6 +86,10 @@ class MatcherContext implements Context {
         return findNodeByPath(subNodes, path);
     }
 
+    public Node getNodeByLabel(String path) {
+        return findNodeByLabel(subNodes, path);
+    }
+
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public MatcherContext createCopy(MatcherContext parent, Matcher matcher) {
@@ -117,7 +122,7 @@ class MatcherContext implements Context {
 
     public void addUnexpectedInputError(char illegalChar, @NotNull String expected) {
         addError(new StringBuilder()
-                .append("Invalid input ").append(illegalChar != Chars.EOF ? "\'" + illegalChar + '\'' : "EOF")
+                .append("Invalid input ").append(illegalChar != Chars.EOI ? "\'" + illegalChar + '\'' : "EOI")
                 .append(", expected ").append(expected)
                 .append(ParseError.createMessageSuffix(startLocation, currentLocation))
                 .toString());
@@ -169,7 +174,7 @@ class MatcherContext implements Context {
             }
             parent = parent.parent;
         }
-        return chars.remove(Chars.EMPTY).add(Chars.EOF);
+        return chars.remove(Chars.EMPTY).add(Chars.EOI);
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////
@@ -196,7 +201,7 @@ class MatcherContext implements Context {
         MatcherContext parentContext = parent != null ? parent : this;
 
         // success, we have to skip only one char in order to be able to start the match
-        // match the illegal char and create a node for it
+        // match the illegal char and createActions a node for it
         IllegalCharactersMatcher illegalCharsMatcher = new IllegalCharactersMatcher(matcher.getExpectedString(),
                 Characters.of(lookAheadOne));
         parentContext.runMatcher(illegalCharsMatcher, true);
@@ -225,13 +230,13 @@ class MatcherContext implements Context {
 
     // consume all characters until we see a legal follower
     private void resynchronize(Characters followerChars) {
-        createNode(); // create an empty match node
+        createNode(); // createActions an empty match node
 
         // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
         // appears on the same tree level, however if we are the root ourselves we run in this context
         MatcherContext parentContext = parent != null ? parent : this;
 
-        // create a node for the illegal chars
+        // createActions a node for the illegal chars
         parentContext.runMatcher(new IllegalCharactersMatcher(matcher.getExpectedString(), followerChars), true);
 
         // catch up with the advanced location

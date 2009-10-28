@@ -6,6 +6,10 @@ import org.parboiled.utils.ImmutableDGraphNode;
 
 import java.util.List;
 
+/**
+ * Abstract base class of all Rules.
+ * @param <T>
+ */
 abstract class AbstractRule<T extends DGraphNode<T>> extends ImmutableDGraphNode<T> implements Rule {
 
     private String label;
@@ -26,15 +30,11 @@ abstract class AbstractRule<T extends DGraphNode<T>> extends ImmutableDGraphNode
         return this;
     }
 
-    //************************************ Rule interface ********************************************
-
     public Rule label(String label) {
         checkNotLocked();
         this.label = label;
         return this;
     }
-
-    //************************************ GETTERS ********************************************
 
     public String getLabel() {
         return label;

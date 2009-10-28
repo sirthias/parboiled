@@ -9,6 +9,9 @@ import org.parboiled.utils.Preconditions;
 
 import java.util.List;
 
+/**
+ * A Matcher that not actually matches input but rather invoking parser actions.
+ */
 class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResult {
 
     private final Actions actionsObject;
@@ -70,6 +73,7 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
     }
 
     public String getExpectedString() {
-        throw new UnsupportedOperationException();
+        return "successful execution of " + getLabel();
     }
+
 }

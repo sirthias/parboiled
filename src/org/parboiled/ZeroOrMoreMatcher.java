@@ -1,12 +1,10 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
-import org.parboiled.support.Chars;
-import org.parboiled.support.Characters;
-
-import java.util.Set;
 
 class ZeroOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
 

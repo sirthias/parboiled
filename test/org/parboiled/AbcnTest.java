@@ -78,7 +78,7 @@ public class AbcnTest extends AbstractTest {
                 "aabbbcc\n" +
                 "    ^\n" +
                 "---\n" +
-                "ParseError: Invalid input EOF, expected 'c' (line 1, pos 8):\n" +
+                "ParseError: Invalid input EOI, expected 'c' (line 1, pos 8):\n" +
                 "aabbbcc\n" +
                 "       ^\n"
         );

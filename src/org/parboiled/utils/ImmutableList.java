@@ -6,6 +6,10 @@ import static org.parboiled.utils.Utils.arrayOf;
 import java.util.AbstractList;
 import java.util.List;
 
+/**
+ * A simple, immutable List implementation wrapping an array.
+ * @param <T>
+ */
 @SuppressWarnings({"unchecked"})
 public class ImmutableList<T> extends AbstractList<T> {
 
@@ -27,7 +31,7 @@ public class ImmutableList<T> extends AbstractList<T> {
     }
 
     public static <T> List<T> copyOf(@NotNull List<T> other) {
-        return new ImmutableList<T>((T[]) other.toArray());
+        return other instanceof ImmutableList ? other : new ImmutableList<T>((T[]) other.toArray());
     }
 
     public static <T> List<T> of() {

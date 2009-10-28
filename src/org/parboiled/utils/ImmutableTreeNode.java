@@ -2,9 +2,13 @@ package org.parboiled.utils;
 
 import java.util.List;
 
+/**
+ * An ImmutableDGraphNode specialization representing a tree node with a parent field linking back to the nodes
+ * (only) parent.
+ */
 public class ImmutableTreeNode<T extends TreeNode<T>> extends ImmutableDGraphNode<T> implements TreeNode<T> {
 
-    // we cannot make the parent field final since otherwise we can't create a tree hierarchy with parents linking to
+    // we cannot make the parent field final since otherwise we can't createActions a tree hierarchy with parents linking to
     // their children and vice versa. So we design this for a bottom up tree construction strategy were children
     // are created first and then "acquired" by their parents
     private T parent;

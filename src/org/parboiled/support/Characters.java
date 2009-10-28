@@ -5,8 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 /**
- * An immutable, set-like aggregation of (relatively few) characters that allows for in inverted semantic (all chars
- * except these few) and proper containment of the EMPTY char (which is not part of ANY char).
+ * An immutable, set-like aggregation of (relatively few) characters that allows for an inverted semantic (all chars
+ * except these few) and proper treatment of Chars.EMPTY and Chars.ANY.
+ * The latter has the special meaning of "all characters except the EMPTY char".
  */
 public class Characters {
 
@@ -26,6 +27,12 @@ public class Characters {
         this.chars = chars;
     }
 
+    /**
+     * Adds the given character to the set. If c is Chars.ANY all characters except Chars.EMPTY will be added.
+     *
+     * @param c the character to add
+     * @return a new Characters object
+     */
     @NotNull
     public Characters add(char c) {
         if (c == Chars.ANY) {
@@ -34,6 +41,12 @@ public class Characters {
         return negative ? removeFromChars(c) : addToChars(c);
     }
 
+    /**
+     * Removes the given character to the set. If c is Chars.ANY all characters except Chars.EMPTY will be removed.
+     *
+     * @param c the character to remove
+     * @return a new Characters object
+     */
     @NotNull
     public Characters remove(char c) {
         if (c == Chars.ANY) {
@@ -42,13 +55,27 @@ public class Characters {
         return negative ? addToChars(c) : removeFromChars(c);
     }
 
+    /**
+     * Checks whether this instance contains the given character.
+     * If c is Chars.ANY the method will only return true if all non EMPTY characters are actually included.
+     *
+     * @param c the character to check for
+     * @return true if this instance contains c
+     */
     public boolean contains(char c) {
         if (c == Chars.ANY) {
-            return !negative && (chars.length == 0 || (chars.length == 1 && contains(Chars.EMPTY)));
+            return negative && (chars.length == 0 || (chars.length == 1 && contains(Chars.EMPTY)));
         }
         return indexOf(chars, c) == -1 ? negative : !negative;
     }
 
+    /**
+     * Returns a new Characters object containing all the characters of this instance plus all characters of the
+     * given instance.
+     *
+     * @param other the other Characters to add
+     * @return a new Characters object
+     */
     @NotNull
     public Characters add(@NotNull Characters other) {
         if (!negative && !other.negative) {
@@ -60,6 +87,13 @@ public class Characters {
         return negative ? removeFromChars(other.chars) : other.removeFromChars(chars);
     }
 
+    /**
+     * Returns a new Characters object containing all the characters of this instance minus all characters of the
+     * given instance.
+     *
+     * @param other the other Characters to remove
+     * @return a new Characters object
+     */
     @NotNull
     public Characters remove(@NotNull Characters other) {
         if (!negative && !other.negative) {
@@ -79,8 +113,8 @@ public class Characters {
             if (i > 0) sb.append(',');
             char c = chars[i];
             switch (c) {
-                case Chars.EOF:
-                    sb.append("EOF");
+                case Chars.EOI:
+                    sb.append("EOI");
                     break;
                 case Chars.EMPTY:
                     sb.append("EMPTY");
@@ -181,21 +215,47 @@ public class Characters {
         return true;
     }
 
+    /**
+     * Creates a new Characters instance containing only the given char or all non-EMPTY characters if c is Chars.ANY.
+     *
+     * @param c the char
+     * @return a new Characters object
+     */
     @NotNull
     public static Characters of(char c) {
-        return new Characters(false, new char[] {c});
+        return c == Chars.ANY ? Characters.ALL_EXCEPT_EMPTY : new Characters(false, new char[] {c});
     }
 
+    /**
+     * Creates a new Characters instance containing only the given chars.
+     * Chars.ANY will be expanded to all characters if it is contained in the given array.
+     *
+     * @param chars the chars
+     * @return a new Characters object
+     */
     @NotNull
     public static Characters of(char... chars) {
-        return new Characters(false, chars.clone());
+        return !(indexOf(chars, Chars.ANY) != -1) ? new Characters(false, chars.clone()) :
+                indexOf(chars, Chars.EMPTY) != -1 ? Characters.ALL : Characters.ALL_EXCEPT_EMPTY;
     }
 
+    /**
+     * Creates a new Characters instance containing all characters (including Chars.EMPTY) minus the given one.
+     *
+     * @param c the char to NOT include
+     * @return a new Characters object
+     */
     @NotNull
     public static Characters allBut(char c) {
         return new Characters(true, new char[] {c});
     }
 
+    /**
+     * Creates a new Characters instance containing all characters (including Chars.EMPTY) minus the given ones.
+     *
+     * @param chars the chars to NOT include
+     * @return a new Characters object
+     */
     @NotNull
     public static Characters allBut(char... chars) {
         return new Characters(true, chars.clone());

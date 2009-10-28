@@ -5,72 +5,59 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.HashSet;
 
-/*
- * Copyright 2008-2009 Mathias Doenitz, http://lis.to/
- *
- * This file is part of the listo java desktop client. The listo java desktop client is free software: you can
- * redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * The listo java desktop client is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with the listo java desktop client.
- * If not, see http://www.gnu.org/licenses/
+/**
+ * General utility methods for operating on directed graphs (consisting of DGraphNodes).
  */
-
 public class DGraphUtils {
 
     private DGraphUtils() {}
 
+    /**
+     * @param node a node
+     * @return true if this node is not null and has at least one child node.
+     */
     public static boolean hasChildren(DGraphNode<?> node) {
         return node != null && !node.getChildren().isEmpty();
     }
 
+    /**
+     * @param node a node
+     * @return the first child node of the given node or null if node is null or does not have any children
+     */
     public static <T extends DGraphNode<T>> T getFirstChild(T node) {
         return hasChildren(node) ? node.getChildren().get(0) : null;
     }
 
+    /**
+     * @param node a node
+     * @return the last child node of the given node or null if node is null or does not have any children
+     */
     public static <T extends DGraphNode<T>> T getLastChild(T node) {
         return hasChildren(node) ? node.getChildren().get(node.getChildren().size() - 1) : null;
     }
 
-    public static int countAll(DGraphNode<?> node) {
-        if (node == null) return 0;
-        int count = 1;
-        for (DGraphNode<?> child : node.getChildren()) {
-            count += countAll(child);
-        }
-        return count;
-    }
-
+    /**
+     * Counts all distinct nodes in the graph reachable from the given node.
+     * This method can properly deal with cycles in the graph.
+     * @param node the root node
+     * @return the number of distinct nodes
+     */
     public static <T extends DGraphNode<T>> int countAllDistinct(T node) {
         if (node == null) return 0;
         return collectAllNodes(node, new HashSet<T>()).size();
     }
 
-    public static <T extends DGraphNode<T>> T findEqual(T searchTreeRoot, T nodeToSearchFor) {
-        if (searchTreeRoot != null && nodeToSearchFor != null) {
-            if (searchTreeRoot.equals(nodeToSearchFor)) return searchTreeRoot;
-            if (hasChildren(searchTreeRoot)) {
-                for (T child : searchTreeRoot.getChildren()) {
-                    T found = findEqual(child, nodeToSearchFor);
-                    if (found != null) return found;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static <T extends DGraphNode<T>> boolean hasEqual(T searchTreeRoot, T nodeToSearchFor) {
-        return findEqual(searchTreeRoot, nodeToSearchFor) != null;
-    }
-
+    /**
+     * Collects all nodes from the graph reachable from the given node in the given collection.
+     * This method can properly deal with cycles in the graph.
+     * @param node the root node
+     * @param collection the collection to collect into
+     * @return the same collection passed as a parameter
+     */
     @NotNull
     public static <T extends DGraphNode<T>, C extends Collection<T>> C collectAllNodes(T node, @NotNull C collection) {
         // we don't recurse if the collecion already contains the node
-        // this costs a bit of performance but prevents infinite recursion in the case of graph loops
+        // this costs a bit of performance but prevents infinite recursion in the case of graph cycles
         if (node != null && !collection.contains(node)) {
             collection.add(node);
             for (T child : node.getChildren()) {
@@ -80,8 +67,14 @@ public class DGraphUtils {
         return collection;
     }
 
-    public static <T extends DGraphNode<T>> String printTree(T root, Formatter<T> formatter) {
-        return root == null ? "" : printTree(root, formatter, "", new StringBuilder()).toString();
+    /**
+     * Creates a string representation of the graph reachable from the given node using the given formatter.
+     * @param node the root node
+     * @param formatter the node formatter
+     * @return a new string
+     */
+    public static <T extends DGraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter) {
+        return node == null ? "" : printTree(node, formatter, "", new StringBuilder()).toString();
     }
 
     // private recursion helper

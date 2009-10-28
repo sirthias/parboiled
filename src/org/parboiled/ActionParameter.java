@@ -2,36 +2,50 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
+import org.parboiled.support.Converter;
+import static org.parboiled.support.ParseTreeUtils.collectNodesByLabel;
 import static org.parboiled.support.ParseTreeUtils.collectNodesByPath;
 import org.parboiled.utils.Preconditions;
 
 import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Encapsulates parameters passed to parser actions.
+ */
 abstract class ActionParameter {
 
-    protected final String path;
+    // the type of the action method parameter that is to be provided by this instance
     protected Class<?> expectedParameterType;
-
-    ActionParameter(String path) {
-        this.path = path;
-    }
 
     public void setExpectedType(Class<?> parameterType) {
         expectedParameterType = parameterType;
     }
 
-    protected ArrayList<org.parboiled.Node> collectPathNodes(MatcherContext context) {
-        return collectNodesByPath(context.getSubNodes(), path, new ArrayList<org.parboiled.Node>());
-    }
-
     abstract Object getValue(@NotNull MatcherContext context);
 
-    static class Node extends ActionParameter {
-        Node(String path) {
+    //////////////////////////////////// SPECIALIZATION //////////////////////////////////////////
+
+    /**
+     * The base class of all ActionParameters that operate on Node paths.
+     */
+    abstract static class PathBasedActionParameter extends ActionParameter {
+        protected final String path;
+
+        protected PathBasedActionParameter(String path) {
+            this.path = path;
+        }
+
+        protected ArrayList<org.parboiled.Node> collectPathNodes(MatcherContext context) {
+            return collectNodesByPath(context.getSubNodes(), path, new ArrayList<org.parboiled.Node>());
+        }
+    }
+
+    //////////////////////////////////// IMPLEMENTATIONS //////////////////////////////////////////
+
+    static class Node extends PathBasedActionParameter {
+        public Node(String path) {
             super(path);
         }
 
@@ -44,7 +58,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Nodes extends ActionParameter {
+    static class Nodes extends PathBasedActionParameter {
         public Nodes(String path) {
             super(path);
         }
@@ -59,7 +73,37 @@ abstract class ActionParameter {
         }
     }
 
-    static class Value extends ActionParameter {
+    static class NodeWithLabel extends PathBasedActionParameter {
+        public NodeWithLabel(String path) {
+            super(path);
+        }
+
+        Object getValue(@NotNull MatcherContext context) {
+            Checks.ensure(expectedParameterType.isAssignableFrom(org.parboiled.Node.class),
+                    "Illegal action argument in '%s', expected %s instead of %s",
+                    context.getPath(), expectedParameterType, org.parboiled.Node.class);
+            Preconditions.checkState(expectedParameterType.isAssignableFrom(org.parboiled.Node.class));
+            return context.getNodeByLabel(path);
+        }
+    }
+
+    static class NodesWithLabel extends PathBasedActionParameter {
+        public NodesWithLabel(String path) {
+            super(path);
+        }
+
+        Object getValue(@NotNull MatcherContext context) {
+            Class<?> componentType = expectedParameterType.getComponentType();
+            Checks.ensure(expectedParameterType.isArray() && componentType.isAssignableFrom(org.parboiled.Node.class),
+                    "Illegal action argument in '%s', expected %s instead of %s",
+                    context.getPath(), expectedParameterType, org.parboiled.Node[].class);
+            List<org.parboiled.Node> list = collectNodesByLabel(context.getSubNodes(), path,
+                    new ArrayList<org.parboiled.Node>());
+            return list.toArray((org.parboiled.Node[]) Array.newInstance(componentType, list.size()));
+        }
+    }
+
+    static class Value extends PathBasedActionParameter {
         public Value(String path) {
             super(path);
         }
@@ -75,7 +119,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Values extends ActionParameter {
+    static class Values extends PathBasedActionParameter {
         public Values(String path) {
             super(path);
         }
@@ -97,7 +141,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Text extends ActionParameter {
+    static class Text extends PathBasedActionParameter {
         public Text(String path) {
             super(path);
         }
@@ -109,7 +153,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Texts extends ActionParameter {
+    static class Texts extends PathBasedActionParameter {
         public Texts(String path) {
             super(path);
         }
@@ -126,7 +170,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Char extends ActionParameter {
+    static class Char extends PathBasedActionParameter {
         public Char(String path) {
             super(path);
         }
@@ -138,7 +182,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Chars extends ActionParameter {
+    static class Chars extends PathBasedActionParameter {
         public Chars(String path) {
             super(path);
         }
@@ -158,8 +202,7 @@ abstract class ActionParameter {
     static class FirstOfNonNull extends ActionParameter {
         private final Object[] args;
 
-        public FirstOfNonNull(Object[] args) {
-            super(null);
+        public FirstOfNonNull(@NotNull Object[] args) {
             this.args = args;
         }
 
@@ -190,14 +233,13 @@ abstract class ActionParameter {
         }
     }
 
-    static class ConvertToNumber<N extends Number> extends ActionParameter {
+    static class Convert<T> extends ActionParameter {
         private final Object arg;
-        private final Class<N> type;
+        private final Converter<T> converter;
 
-        public ConvertToNumber(Object arg, Class<N> type) {
-            super(null);
+        public Convert(Object arg, @NotNull Converter<T> converter) {
             this.arg = arg;
-            this.type = type;
+            this.converter = converter;
         }
 
         @Override
@@ -209,7 +251,6 @@ abstract class ActionParameter {
         }
 
         Object getValue(@NotNull MatcherContext context) {
-            Preconditions.checkState(expectedParameterType.isAssignableFrom(type));
             String text;
             if (arg instanceof ActionParameter) {
                 ActionParameter param = (ActionParameter) arg;
@@ -218,18 +259,8 @@ abstract class ActionParameter {
                 Preconditions.checkState(arg instanceof String);
                 text = (String) arg;
             }
-            if (text == null) return null;
-            if (type == Integer.class) return Integer.valueOf(text);
-            if (type == Long.class) return Long.valueOf(text);
-            if (type == Double.class) return Double.valueOf(text);
-            if (type == Float.class) return Float.valueOf(text);
-            if (type == Short.class) return Short.valueOf(text);
-            if (type == Byte.class) return Byte.valueOf(text);
-            if (type == BigInteger.class) return new BigInteger(text);
-            if (type == BigDecimal.class) return new BigDecimal(text);
-            throw new IllegalStateException("Unknown number type: " + type);
+            return text == null ? null : converter.parse(text);
         }
-
     }
 
 }

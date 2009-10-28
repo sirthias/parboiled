@@ -6,6 +6,9 @@ import org.parboiled.support.ParseError;
 
 import java.util.List;
 
+/**
+ * A Context object is available to parser actions methods during their runtime and provides various support functionality.
+ */
 public interface Context {
 
     /**
@@ -32,39 +35,48 @@ public interface Context {
     InputLocation getCurrentLocation();
 
     /**
-     * @return the list of parse errors so far generated
+     * @return the list of parse errors so far generated during the entire parsing run
      */
     @NotNull
     List<ParseError> getParseErrors();
 
     /**
-     * @param node the node to get the input text for
-     * @return the input text matched by the given node
+     * Returns the input text matched by the given Node.
+     *
+     * @param node the node
+     * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
     String getNodeText(Node node);
 
     /**
-     * @param node the node to get the input text for
-     * @return the input char matched by the given node or null, if the node is null or doesn't match exactly one char.
+     * Returns the first input character matched by the given Node.
+     *
+     * @param node the node
+     * @return null if node is null or did not match at least one character otherwise the first matched input char
      */
     Character getNodeChar(Node node);
 
     /**
-     * @return the full path name of the currently running Matcher.
+     * Returns the '/' separated full path name of the currently running Matcher.
+     *
+     * @return the path
      */
     @NotNull
     String getPath();
 
     /**
-     * Tries to find an already created parse tree node by its relative path.
+     * Returns the first Node underneath the given parents that matches the given path.
+     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Node
+     * relative to each of the given parent nodes.
+     * If the given collections of parents is null or empty or no node is found the method returns null.
      *
-     * @param path the path of the node to find relative to the current level
-     * @return the Node or null
+     * @param path the path to the Node being searched for
+     * @return the Node if found or null if not found
      */
     Node getNodeByPath(String path);
 
     /**
-     * Sets the value object of the node to be created for the current matcher
+     * Sets the value object of the node to be created for the current matcher.
      *
      * @param value the object
      */

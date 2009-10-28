@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Checks;
 import org.parboiled.support.Chars;
-import org.parboiled.utils.StringUtils2;
+import org.parboiled.utils.StringUtils;
 import org.parboiled.utils.Utils;
 
 class FirstOfMatcher extends AbstractMatcher {
@@ -39,7 +39,7 @@ class FirstOfMatcher extends AbstractMatcher {
         int count = getChildren().size();
         if (count == 0) return "";
         if (count == 1) return getChildren().get(0).toString();
-        return StringUtils2.join(Utils.subarray(getChildren().toArray(), 0, count - 1), ", ") +
+        return StringUtils.join(Utils.subarray(getChildren().toArray(), 0, count - 1), ", ") +
                 " or " + getChildren().get(count - 1);
     }
 

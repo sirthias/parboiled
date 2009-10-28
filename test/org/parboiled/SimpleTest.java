@@ -11,7 +11,7 @@ public class SimpleTest extends AbstractTest {
         }
 
         public Rule clause() {
-            return sequence(digit(), operator(), digit(), eof());
+            return sequence(digit(), operator(), digit(), eoi());
         }
 
         public Rule operator() {
@@ -33,7 +33,7 @@ public class SimpleTest extends AbstractTest {
                 "    [operator] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
-                "    [eof]\n");
+                "    [eoi]\n");
     }
 
 }
