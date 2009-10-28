@@ -38,7 +38,7 @@ public class BaseActions implements Actions {
      * @param value the object to be set as value object
      * @return ActionResult.CONTINUE
      */
-    ActionResult setValue(Object value) {
+    public ActionResult setValue(Object value) {
         getContext().setNodeValue(value);
         return ActionResult.CONTINUE;
     }
