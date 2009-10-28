@@ -1,5 +1,3 @@
-package org.parboiled.utils;
-
 /*
  * Copyright (C) 2007 Google Inc.
  *
@@ -15,6 +13,8 @@ package org.parboiled.utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package org.parboiled.utils;
 
 /**
  * Simple static methods to be called at the start of your own methods to verify
