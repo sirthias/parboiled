@@ -17,9 +17,9 @@
 package org.parboiled.examples.calculator;
 
 import org.parboiled.ActionResult;
-import org.parboiled.BaseActions;
+import org.parboiled.ActionsImpl;
 
-public class CalculatorActions extends BaseActions<Integer> {
+public class CalculatorActions extends ActionsImpl<Integer> {
 
     public ActionResult compute(Integer firstValue, Character[] operators, Integer[] values) {
         int value = firstValue != null ? firstValue : 0;

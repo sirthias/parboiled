@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator;
+package org.parboiled.examples.calculator2;
 
 import org.parboiled.Parboiled;
 import org.parboiled.ParsingResult;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import static org.parboiled.utils.DGraphUtils.printTree;
 import org.parboiled.utils.StringUtils;
+import org.parboiled.utils.ToStringFormatter;
 
 import java.util.Scanner;
 
@@ -33,10 +35,15 @@ public class Calculator {
 
             CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
             CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-            ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
+            ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
 
-            System.out.println(input + " = " + result.root.getValue() + '\n');
-            System.out.println(printNodeTree(result) + '\n');
+            CalcNode astRoot = result.root.getValue();
+            System.out.println(input + " = " + astRoot.getValue() + '\n');
+
+            System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
+
+            System.out.println("Abstract Syntax Tree:\n" +
+                    printTree(result.root.getValue(), new ToStringFormatter<CalcNode>()) + '\n');
 
             if (result.hasErrors()) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));

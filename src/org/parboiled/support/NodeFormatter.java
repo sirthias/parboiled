@@ -21,9 +21,9 @@ import org.parboiled.utils.Formatter;
 import org.parboiled.utils.StringUtils;
 
 /**
- * A simple Formatter<Node> that provides String representation for parse tree nodes.
+ * A simple Formatter<Node<V> that provides String representation for parse tree nodes.
  */
-public class NodeFormatter implements Formatter<Node> {
+public class NodeFormatter<V> implements Formatter<Node<V>> {
 
     private final InputBuffer inputBuffer;
 

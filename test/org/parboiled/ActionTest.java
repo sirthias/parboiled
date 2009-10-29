@@ -20,7 +20,7 @@ import org.testng.annotations.Test;
 
 public class ActionTest extends AbstractTest {
 
-    public static class ActionTestActions extends BaseActions<Object> {
+    public static class ActionTestActions extends ActionsImpl<Object> {
     }
 
     public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {

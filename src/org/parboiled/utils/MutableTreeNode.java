@@ -18,28 +18,16 @@ package org.parboiled.utils;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+public interface MutableTreeNode<T extends MutableTreeNode<T>> extends TreeNode<T> {
 
-/**
- * A simple, immutable DGraphNode implementation.
- *
- * @param <T>
- */
-public class ImmutableDGraphNode<T extends DGraphNode<T>> implements DGraphNode<T> {
+    void addChild(T child);
 
-    private final List<T> children;
+    void addChild(int index, T child);
 
-    public ImmutableDGraphNode() {
-        this(null);
-    }
+    void setChild(int index, T child);
 
-    public ImmutableDGraphNode(List<T> children) {
-        this.children = children != null ? ImmutableList.copyOf(children) : ImmutableList.<T>of();
-    }
+    void removeChild(@NotNull T child);
 
-    @NotNull
-    public List<T> getChildren() {
-        return children;
-    }
+    T removeChild(int index);
 
 }

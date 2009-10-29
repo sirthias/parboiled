@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.ast;
 
-/**
- * Convenience base class for parser actions. Provides a base implementation of the Actions interface.
- */
-public class BaseActions<V> implements Actions<V> {
+import org.parboiled.ActionResult;
+import org.parboiled.ActionsImpl;
 
-    private Context<V> context;
-
-    public Context<V> getContext() {
-        return context;
-    }
-
-    public void setContext(Context<V> context) {
-        this.context = context;
-    }
+public class AstActions<T, N extends AstNode<T, N>> extends ActionsImpl<N> {
 
     /**
-     * Sets the value of the parse tree node to be created for the current rule to the given object.
+     * Sets the ast node of the parse tree node to be created for the current rule.
      *
-     * @param value the object to be set as value object
+     * @param node the ast node
      * @return ActionResult.CONTINUE
      */
-    public ActionResult setValue(V value) {
-        getContext().setNodeValue(value);
-        return ActionResult.CONTINUE;
+    public ActionResult setAstNode(N node) {
+        return setValue(node);
     }
 
 }

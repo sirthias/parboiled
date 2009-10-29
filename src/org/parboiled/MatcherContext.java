@@ -19,8 +19,9 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
-import static org.parboiled.support.ParseTreeUtils.findNodeByLabel;
+import static org.parboiled.support.ParseTreeUtils.findNode;
 import org.parboiled.utils.Preconditions;
+import org.parboiled.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,11 @@ class MatcherContext<V> implements Context<V> {
         this.matcher = matcher;
         this.actions = actions;
         this.parseErrors = parseErrors;
+    }
+
+    @Override
+    public String toString() {
+        return getPath();
     }
 
     //////////////////////////////// CONTEXT INTERFACE ////////////////////////////////////
@@ -102,8 +108,12 @@ class MatcherContext<V> implements Context<V> {
         return findNodeByPath(subNodes, path);
     }
 
-    public Node<V> getNodeByLabel(String path) {
-        return findNodeByLabel(subNodes, path);
+    public Node<V> getNodeByLabel(final String label) {
+        return findNode(subNodes, new Predicate<Node<V>>() {
+            public boolean apply(Node<V> node) {
+                return StringUtils.startsWith(node.getLabel(), label);
+            }
+        });
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////

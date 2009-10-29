@@ -65,6 +65,7 @@ class ActionMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V>, A
         return result == ActionResult.CONTINUE;
     }
 
+    @SuppressWarnings({"unchecked"})
     private Object[] buildArguments(@NotNull MatcherContext context) {
         Object[] args = new Object[methodArguments.length];
         for (int i = 0; i < methodArguments.length; i++) {

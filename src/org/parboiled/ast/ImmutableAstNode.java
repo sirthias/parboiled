@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package org.parboiled.utils;
+package org.parboiled.ast;
 
-import org.jetbrains.annotations.NotNull;
+import org.parboiled.utils.ImmutableTreeNode;
 
 import java.util.List;
 
-/**
- * A simple, immutable DGraphNode implementation.
- *
- * @param <T>
- */
-public class ImmutableDGraphNode<T extends DGraphNode<T>> implements DGraphNode<T> {
+public class ImmutableAstNode<T, N extends ImmutableAstNode<T, N>> extends ImmutableTreeNode<N>
+        implements AstNode<T, N> {
 
-    private final List<T> children;
+    private final T type;
 
-    public ImmutableDGraphNode() {
-        this(null);
+    public ImmutableAstNode(T type, List<N> children) {
+        super(children);
+        this.type = type;
     }
 
-    public ImmutableDGraphNode(List<T> children) {
-        this.children = children != null ? ImmutableList.copyOf(children) : ImmutableList.<T>of();
-    }
-
-    @NotNull
-    public List<T> getChildren() {
-        return children;
+    public T getType() {
+        return type;
     }
 
 }

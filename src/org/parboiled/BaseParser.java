@@ -331,6 +331,19 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
+     * Creates an action parameter that evaluates to the first non-null node value found in a depth-first tree
+     * search under the first node found with the given prefix path.
+     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     *
+     * @param path the path to search for
+     * @return the action parameter
+     */
+    public V firstValue(String path) {
+        actionParameterStack.add(new ActionParameter.FirstValue<V>(path));
+        return null;
+    }
+
+    /**
      * Creates an action parameter that evaluates to the matched input text of the first Node found with the
      * given prefix path. The path is a '/' separated list of node label prefixes, relative to the current rule.
      *

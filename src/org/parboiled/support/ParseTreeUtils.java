@@ -116,18 +116,18 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the first Node underneath the given parent that matches the given label prefix.
+     * Returns the first Node underneath the given parent for which the given predicate evaluates to true.
      * If parent is null or no node is found the method returns null.
      *
      * @param parent the parent Node
-     * @param label  the label to look for
+     * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNodeByLabel(Node<V> parent, @NotNull String label) {
+    public static <V> Node<V> findNode(Node<V> parent, @NotNull Predicate<Node<V>> predicate) {
         if (parent != null) {
-            if (StringUtils.startsWith(parent.getLabel(), label)) return parent;
+            if (predicate.apply(parent)) return parent;
             if (hasChildren(parent)) {
-                Node<V> found = findNodeByLabel(parent.getChildren(), label);
+                Node<V> found = findNode(parent.getChildren(), predicate);
                 if (found != null) return found;
             }
         }
@@ -135,17 +135,17 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the first Node underneath the given parents that matches the given label prefix.
+     * Returns the first Node underneath the given parents for which the given predicate evaluates to true.
      * If parents is null or empty or no node is found the method returns null.
      *
      * @param parents the parent Nodes to look through
-     * @param label   the label to look for
+     * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNodeByLabel(Collection<Node<V>> parents, @NotNull String label) {
+    public static <V> Node<V> findNode(Collection<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
         if (parents != null && !parents.isEmpty()) {
             for (Node<V> child : parents) {
-                Node<V> found = findNodeByLabel(child, label);
+                Node<V> found = findNode(child, predicate);
                 if (found != null) return found;
             }
         }
@@ -218,8 +218,8 @@ public class ParseTreeUtils {
      * @param parsingResult the parsing result containing the parse tree
      * @return a new String
      */
-    public static String printNodeTree(@NotNull ParsingResult<?> parsingResult) {
-        return printTree(parsingResult.root, new NodeFormatter(parsingResult.inputBuffer));
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult) {
+        return printTree(parsingResult.root, new NodeFormatter<V>(parsingResult.inputBuffer));
     }
 
 }

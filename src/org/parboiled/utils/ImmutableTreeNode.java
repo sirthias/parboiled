@@ -41,15 +41,11 @@ public class ImmutableTreeNode<T extends TreeNode<T>> extends ImmutableDGraphNod
         return parent;
     }
 
-    // this method is private to assure immutability to the outside
-    private void setParent(T parent) {
-        this.parent = parent;
-    }
-
     @SuppressWarnings({"unchecked"})
     protected void acquireChildren() {
         for (T child : getChildren()) {
-            ((ImmutableTreeNode)child).setParent(this);
+            ImmutableTreeNode node = (ImmutableTreeNode) child;
+            if (node != null) node.parent = this;
         }
     }
 

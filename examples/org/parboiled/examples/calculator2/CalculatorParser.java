@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator;
+package org.parboiled.examples.calculator2;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
-public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
+public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
     public CalculatorParser(CalculatorActions actions) {
         super(actions);
@@ -36,34 +36,16 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
     public Rule expression() {
         return sequence(
                 term(),
-                zeroOrMore(
-                        enforcedSequence(
-                                firstOf('+', '-'),
-                                term()
-                        )
-                ),
-                actions.compute(
-                        value("term"),
-                        chars("z/e/firstOf"),
-                        values("z/e/term")
-                )
+                optional(enforcedSequence(firstOf('+', '-'), expression())),
+                actions.createAstNode(ch("o/e/firstOf"), value("term"), value("o/e/expression"), "+-")
         );
     }
 
     public Rule term() {
         return sequence(
                 factor(),
-                zeroOrMore(
-                        enforcedSequence(
-                                firstOf('*', '/'),
-                                factor()
-                        )
-                ),
-                actions.compute(
-                        value("factor"),
-                        chars("z/e/firstOf"),
-                        values("z/e/factor")
-                )
+                optional(enforcedSequence(firstOf('*', '/'), term())),
+                actions.createAstNode(ch("o/e/firstOf"), value("factor"), value("o/e/term"), "*/")
         );
     }
 
@@ -80,7 +62,7 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
     public Rule number() {
         return sequence(
                 oneOrMore(digit()),
-                actions.setValue(convertToInteger(text("oneOrMore")))
+                actions.createAstNode(convertToInteger(text("oneOrMore")))
         );
     }
 

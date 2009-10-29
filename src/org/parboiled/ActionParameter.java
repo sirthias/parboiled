@@ -19,8 +19,10 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
 import org.parboiled.support.Converter;
+import org.parboiled.support.Predicate;
 import static org.parboiled.support.ParseTreeUtils.collectNodesByLabel;
 import static org.parboiled.support.ParseTreeUtils.collectNodesByPath;
+import static org.parboiled.support.ParseTreeUtils.findNode;
 import org.parboiled.utils.Preconditions;
 
 import java.lang.reflect.Array;
@@ -35,7 +37,7 @@ abstract class ActionParameter<V> {
     // the type of the action method parameter that is to be provided by this instance
     protected Class<?> expectedParameterType;
 
-    public void setExpectedType(Class<?> parameterType) {
+    public void setExpectedType(Class parameterType) {
         expectedParameterType = parameterType;
     }
 
@@ -157,6 +159,28 @@ abstract class ActionParameter<V> {
         }
     }
 
+    static class FirstValue<V> extends PathBasedActionParameter<V> {
+        public FirstValue(String path) {
+            super(path);
+        }
+
+        Object getValue(@NotNull MatcherContext<V> context) {
+            org.parboiled.Node<V> parent = context.getNodeByPath(path);
+            if (parent == null) return null;
+            org.parboiled.Node<V> node = findNode(parent, new Predicate<org.parboiled.Node<V>>() {
+                public boolean apply(org.parboiled.Node<V> node) {
+                    return node.getValue() != null;
+                }
+            });
+            if (node == null) return null;
+            V value = node.getValue();
+            Checks.ensure(expectedParameterType.isAssignableFrom(value.getClass()),
+                    "Illegal action argument in '%s', cannot cast %s to %s",
+                    context.getPath(), value.getClass(), expectedParameterType);
+            return value;
+        }
+    }
+
     static class Text<V> extends PathBasedActionParameter<V> {
         public Text(String path) {
             super(path);
@@ -223,7 +247,7 @@ abstract class ActionParameter<V> {
         }
 
         @Override
-        public void setExpectedType(Class<?> parameterType) {
+        public void setExpectedType(Class parameterType) {
             super.setExpectedType(parameterType);
             for (Object arg : args) {
                 if (arg instanceof ActionParameter) {
@@ -260,7 +284,7 @@ abstract class ActionParameter<V> {
         }
 
         @Override
-        public void setExpectedType(Class<?> parameterType) {
+        public void setExpectedType(Class parameterType) {
             super.setExpectedType(parameterType);
             if (arg instanceof ActionParameter) {
                 ((ActionParameter) arg).setExpectedType(String.class);

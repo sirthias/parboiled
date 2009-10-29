@@ -24,12 +24,18 @@ import java.util.List;
 
 /**
  * A simple, immutable List implementation wrapping an array.
+ *
  * @param <T>
  */
 @SuppressWarnings({"unchecked"})
 public class ImmutableList<T> extends AbstractList<T> {
 
     public final static ImmutableList<?> EMPTY_LIST = new ImmutableList<Object>(new Object[0]);
+    private final static ImmutableList<?>[] NULL_LISTS = new ImmutableList<?>[] {
+            new ImmutableList<Object>(new Object[] {null}),
+            new ImmutableList<Object>(new Object[] {null, null}),
+            new ImmutableList<Object>(new Object[] {null, null, null})
+    };
 
     private final T[] array;
 
@@ -47,7 +53,7 @@ public class ImmutableList<T> extends AbstractList<T> {
     }
 
     public static <T> List<T> copyOf(@NotNull List<T> other) {
-        return other instanceof ImmutableList ? other : new ImmutableList<T>((T[]) other.toArray());
+        return other instanceof ImmutableList ? other : create((T[]) other.toArray());
     }
 
     public static <T> List<T> of() {
@@ -55,19 +61,33 @@ public class ImmutableList<T> extends AbstractList<T> {
     }
 
     public static <T> List<T> of(T a) {
-        return new ImmutableList<T>(arrayOf(a));
+        return create(arrayOf(a));
     }
 
     public static <T> List<T> of(T a, T b) {
-        return new ImmutableList<T>(arrayOf(a, b));
+        return create(arrayOf(a, b));
     }
 
     public static <T> List<T> of(T a, T b, T c) {
-        return new ImmutableList<T>(arrayOf(a, b, c));
+        return create(arrayOf(a, b, c));
     }
 
     public static <T> List<T> of(T... elements) {
+        return create(elements.clone());
+    }
+
+    private static <T> List<T> create(T[] elements) {
+        if (elements.length <= NULL_LISTS.length && allNull(elements)) {
+            return (List<T>) NULL_LISTS[elements.length - 1];
+        }
         return new ImmutableList<T>(elements);
+    }
+
+    private static <T> boolean allNull(T[] elements) {
+        for (T element : elements) {
+            if (element != null) return false;
+        }
+        return true;
     }
 
 }

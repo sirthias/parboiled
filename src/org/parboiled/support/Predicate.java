@@ -14,32 +14,10 @@
  * limitations under the License.
  */
 
-package org.parboiled.utils;
+package org.parboiled.support;
 
-import org.jetbrains.annotations.NotNull;
+public interface Predicate<T> {
 
-import java.util.List;
-
-/**
- * A simple, immutable DGraphNode implementation.
- *
- * @param <T>
- */
-public class ImmutableDGraphNode<T extends DGraphNode<T>> implements DGraphNode<T> {
-
-    private final List<T> children;
-
-    public ImmutableDGraphNode() {
-        this(null);
-    }
-
-    public ImmutableDGraphNode(List<T> children) {
-        this.children = children != null ? ImmutableList.copyOf(children) : ImmutableList.<T>of();
-    }
-
-    @NotNull
-    public List<T> getChildren() {
-        return children;
-    }
+    boolean apply(T input);
 
 }

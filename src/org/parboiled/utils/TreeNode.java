@@ -18,7 +18,7 @@ package org.parboiled.utils;
 
 /**
  * A specialization of a DGraphNode that contains a reference to its parent. 
- * @param <T>
+ * @param <T> the actual implementation type of this tree node
  */
 public interface TreeNode<T extends TreeNode<T>> extends DGraphNode<T> {
 
