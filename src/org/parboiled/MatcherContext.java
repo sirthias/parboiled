@@ -26,23 +26,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class MatcherContext implements Context {
+class MatcherContext<V> implements Context<V> {
 
-    private final MatcherContext parent;
+    private final MatcherContext<V> parent;
     private final InputLocation startLocation;
-    private final Matcher matcher;
-    private final Actions actions;
+    private final Matcher<V> matcher;
+    private final Actions<V> actions;
     private final List<ParseError> parseErrors;
 
     private InputLocation currentLocation;
-    private Node node;
-    private List<Node> subNodes;
+    private Node<V> node;
+    private List<Node<V>> subNodes;
     private String errorMessage;
-    private Object nodeValue;
+    private V nodeValue;
     private Object tag;
 
-    public MatcherContext(MatcherContext parent, @NotNull InputLocation startLocation, @NotNull Matcher matcher,
-                          Actions actions, @NotNull List<ParseError> parseErrors) {
+    public MatcherContext(MatcherContext<V> parent, @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher,
+                          Actions<V> actions, @NotNull List<ParseError> parseErrors) {
 
         this.parent = parent;
         this.startLocation = currentLocation = startLocation;
@@ -53,7 +53,7 @@ class MatcherContext implements Context {
 
     //////////////////////////////// CONTEXT INTERFACE ////////////////////////////////////
 
-    public MatcherContext getParent() {
+    public MatcherContext<V> getParent() {
         return parent;
     }
 
@@ -63,7 +63,7 @@ class MatcherContext implements Context {
     }
 
     @NotNull
-    public Matcher getMatcher() {
+    public Matcher<V> getMatcher() {
         return matcher;
     }
 
@@ -77,11 +77,11 @@ class MatcherContext implements Context {
         return currentLocation;
     }
 
-    public String getNodeText(Node node) {
+    public String getNodeText(Node<V> node) {
         return ParseTreeUtils.getNodeText(node, startLocation.inputBuffer);
     }
 
-    public Character getNodeChar(Node node) {
+    public Character getNodeChar(Node<V> node) {
         return ParseTreeUtils.getNodeChar(node, startLocation.inputBuffer);
     }
 
@@ -90,26 +90,26 @@ class MatcherContext implements Context {
         return parent == null ? "" : parent.getPath() + '/' + matcher.getLabel();
     }
 
-    public Object getNodeValue() {
+    public V getNodeValue() {
         return nodeValue;
     }
 
-    public void setNodeValue(Object value) {
+    public void setNodeValue(V value) {
         this.nodeValue = value;
     }
 
-    public Node getNodeByPath(String path) {
+    public Node<V> getNodeByPath(String path) {
         return findNodeByPath(subNodes, path);
     }
 
-    public Node getNodeByLabel(String path) {
+    public Node<V> getNodeByLabel(String path) {
         return findNodeByLabel(subNodes, path);
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
-    public MatcherContext createCopy(MatcherContext parent, Matcher matcher) {
-        return new MatcherContext(parent, currentLocation, matcher, actions, parseErrors);
+    public MatcherContext<V> createCopy(MatcherContext<V> parent, Matcher<V> matcher) {
+        return new MatcherContext<V>(parent, currentLocation, matcher, actions, parseErrors);
     }
 
     public void setCurrentLocation(InputLocation currentLocation) {
@@ -120,11 +120,11 @@ class MatcherContext implements Context {
         setCurrentLocation(getCurrentLocation().advance());
     }
 
-    public Node getNode() {
+    public Node<V> getNode() {
         return node;
     }
 
-    public List<Node> getSubNodes() {
+    public List<Node<V>> getSubNodes() {
         return subNodes;
     }
 
@@ -149,17 +149,17 @@ class MatcherContext implements Context {
     }
 
     public void createNode() {
-        node = new NodeImpl(matcher.getLabel(), subNodes, startLocation, currentLocation, nodeValue);
+        node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, nodeValue);
         if (parent != null) parent.addChildNode(node);
     }
 
-    public void addChildNode(@NotNull Node node) {
-        if (subNodes == null) subNodes = new ArrayList<Node>();
+    public void addChildNode(@NotNull Node<V> node) {
+        if (subNodes == null) subNodes = new ArrayList<Node<V>>();
         subNodes.add(node);
     }
 
-    public boolean runMatcher(@NotNull Matcher matcher, boolean enforced) {
-        MatcherContext innerContext = createCopy(this, matcher);
+    public boolean runMatcher(@NotNull Matcher<V> matcher, boolean enforced) {
+        MatcherContext<V> innerContext = createCopy(this, matcher);
         boolean matched = innerContext.runMatcher(enforced);
         if (matched) {
             setCurrentLocation(innerContext.getCurrentLocation());
@@ -179,12 +179,13 @@ class MatcherContext implements Context {
         return matched;
     }
 
+    @SuppressWarnings({"unchecked"})
     public Characters getFollowerChars() {
         Characters chars = Characters.NONE;
-        MatcherContext parent = this.parent;
+        MatcherContext<V> parent = this.parent;
         while (parent != null) {
             if (parent.getMatcher() instanceof FollowMatcher) {
-                FollowMatcher followMatcher = (FollowMatcher) parent.getMatcher();
+                FollowMatcher<V> followMatcher = (FollowMatcher<V>) parent.getMatcher();
                 chars = chars.add(followMatcher.getFollowerChars(parent));
                 if (!chars.contains(Chars.EMPTY)) return chars;
             }
@@ -214,12 +215,12 @@ class MatcherContext implements Context {
 
         // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
         // appears on the same tree level, however if we are the root ourselves we run in this context
-        MatcherContext parentContext = parent != null ? parent : this;
+        MatcherContext<V> parentContext = parent != null ? parent : this;
 
         // success, we have to skip only one char in order to be able to start the match
         // match the illegal char and createActions a node for it
-        IllegalCharactersMatcher illegalCharsMatcher = new IllegalCharactersMatcher(matcher.getExpectedString(),
-                Characters.of(lookAheadOne));
+        IllegalCharactersMatcher<V> illegalCharsMatcher =
+                new IllegalCharactersMatcher<V>(matcher.getExpectedString(), Characters.of(lookAheadOne));
         parentContext.runMatcher(illegalCharsMatcher, true);
 
         // retry the original match
@@ -250,10 +251,10 @@ class MatcherContext implements Context {
 
         // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
         // appears on the same tree level, however if we are the root ourselves we run in this context
-        MatcherContext parentContext = parent != null ? parent : this;
+        MatcherContext<V> parentContext = parent != null ? parent : this;
 
         // createActions a node for the illegal chars
-        parentContext.runMatcher(new IllegalCharactersMatcher(matcher.getExpectedString(), followerChars), true);
+        parentContext.runMatcher(new IllegalCharactersMatcher<V>(matcher.getExpectedString(), followerChars), true);
 
         // catch up with the advanced location
         setCurrentLocation(parentContext.getCurrentLocation());

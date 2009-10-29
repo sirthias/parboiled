@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
-class CharMatcher extends AbstractMatcher {
+class CharMatcher<V> extends AbstractMatcher<V> {
 
     public final char character;
 
@@ -45,7 +45,7 @@ class CharMatcher extends AbstractMatcher {
         }
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         if (character == Chars.ANY || character == Chars.EMPTY ||
                 context.getCurrentLocation().currentChar == character) {
             if (character != Chars.EMPTY) context.advanceInputLocation();

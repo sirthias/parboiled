@@ -25,12 +25,12 @@ import java.util.List;
 /**
  * A simple container for encapsulating the result of a parsing run.
  */
-public class ParsingResult {
+public class ParsingResult<V> {
 
     /**
      * The root node of the parse tree created by the parsing run.
      */
-    public final Node root;
+    public final Node<V> root;
 
     /**
      * The list of parse errors created during the parsing run.
@@ -42,7 +42,7 @@ public class ParsingResult {
      */
     public final InputBuffer inputBuffer;
 
-    ParsingResult(Node root, @NotNull List<ParseError> parseErrors, InputBuffer inputBuffer) {
+    ParsingResult(Node<V> root, @NotNull List<ParseError> parseErrors, InputBuffer inputBuffer) {
         this.root = root;
         this.parseErrors = parseErrors;
         this.inputBuffer = inputBuffer;

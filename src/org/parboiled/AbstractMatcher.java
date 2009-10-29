@@ -23,18 +23,20 @@ import org.parboiled.utils.Preconditions;
 /**
  * Abstract base class of most regular Matchers.
  */
-abstract class AbstractMatcher extends AbstractRule<Matcher> implements Matcher {
+abstract class AbstractMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
 
     protected AbstractMatcher() {
-        super(ImmutableList.<Matcher>of());
+        super(ImmutableList.<Matcher<V>>of());
     }
 
+    @SuppressWarnings({"unchecked"})
     protected AbstractMatcher(@NotNull Rule subRule) {
-        super(ImmutableList.of(subRule.toMatcher()));
+        super(ImmutableList.of((Matcher<V>)subRule.toMatcher()));
     }
 
+    @SuppressWarnings({"unchecked"})
     protected AbstractMatcher(@NotNull Rule[] subRules) {
-        super(ImmutableList.of(toMatchers(subRules)));
+        super(ImmutableList.<Matcher<V>>of(toMatchers(subRules)));
     }
 
     private static Matcher[] toMatchers(@NotNull Rule[] subRules) {

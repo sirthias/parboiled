@@ -22,7 +22,7 @@ import org.parboiled.support.Chars;
 import org.parboiled.support.InputLocation;
 import org.parboiled.utils.Preconditions;
 
-class CharRangeMatcher extends AbstractMatcher {
+class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
     public final char cLow;
     public final char cHigh;
@@ -39,7 +39,7 @@ class CharRangeMatcher extends AbstractMatcher {
         return label != null ? label : cLow + ".." + cHigh;
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         InputLocation currentLocation = context.getCurrentLocation();
         if (currentLocation.currentChar < cLow || currentLocation.currentChar > cHigh) return false;
 

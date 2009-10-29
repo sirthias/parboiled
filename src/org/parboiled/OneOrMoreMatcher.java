@@ -22,14 +22,14 @@ import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
 
-class OneOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
+class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     public OneOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Matcher matcher = getChildren().get(0);
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+        Matcher<V> matcher = getChildren().get(0);
 
         boolean matched = context.runMatcher(matcher, enforced);
         if (!matched) return false;
@@ -53,7 +53,7 @@ class OneOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
         return chars;
     }
 
-    public Characters getFollowerChars(MatcherContext context) {
+    public Characters getFollowerChars(MatcherContext<V> context) {
         // since this call is only legal when we are currently within a match of our sub matcher,
         // i.e. the submatcher can either match once more or the repetition can legally terminate which means
         // our follower set addition is incomplete -> add EMPTY

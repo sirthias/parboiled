@@ -23,7 +23,7 @@ import org.parboiled.support.InputLocation;
 /**
  * A Node represents a node in the parse tree created during a parsing run.
  */
-public interface Node extends TreeNode<Node> {
+public interface Node<V> extends TreeNode<Node<V>> {
 
     /**
      * @return the label of this node, usually set to the name of the matcher that created this node
@@ -45,6 +45,6 @@ public interface Node extends TreeNode<Node> {
     /**
      * @return the value object attached to this node
      */
-    Object getValue();
+    V getValue();
 
 }

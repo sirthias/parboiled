@@ -19,22 +19,17 @@ package org.parboiled;
 import net.sf.cglib.proxy.*;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Checks;
-import org.parboiled.support.InputBuffer;
-import org.parboiled.support.InputLocation;
-import org.parboiled.support.ParseError;
 import static org.parboiled.utils.Utils.arrayOf;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main class providing the high-level entrypoints into the parboiled library.
  */
-public class Parser {
+public class Parboiled {
 
-    private Parser() {}
+    private Parboiled() {}
 
     /**
      * Creates a parser object whose rule creation methods can then be used with the parse(...) method.
@@ -49,8 +44,9 @@ public class Parser {
      * @param parserConstructorArgs optional arguments to the parser class constructor
      * @return the ready to use parser instance
      */
-    public static <A extends Actions, P extends BaseParser<A>> P create(@NotNull Class<P> parserType, A actions,
-                                                                        Object... parserConstructorArgs) {
+    public static <V, A extends Actions<V>, P extends BaseParser<V, A>> P createParser(@NotNull Class<P> parserType,
+                                                                                       A actions,
+                                                                                       Object... parserConstructorArgs) {
         ActionInterceptor actionInterceptor = null;
         if (actions instanceof Factory) {
             Callback actionsCallback = ((Factory) actions).getCallback(1);
@@ -60,7 +56,7 @@ public class Parser {
         }
 
         Checks.ensure(actions == null || actionInterceptor != null,
-                "Illegal Actions instance, please use Parser.createActions(...) for creating your parser actions object");
+                "Illegal Actions instance, please use Parboiled.createActions(...) for creating your parser actions object");
 
         // intercept all no-arg Rule creation methods with a StagingInterceptor
         P parser = create(parserType, new StagingInterceptor(), new CallbackFilter() {
@@ -92,49 +88,13 @@ public class Parser {
      * @param constructorArgs optional arguments to the class constructor
      * @return the actions object for the parser creation
      */
-    public static <A extends Actions> A createActions(@NotNull Class<A> actionsType, Object... constructorArgs) {
+    public static <A extends Actions<?>> A createActions(@NotNull Class<A> actionsType, Object... constructorArgs) {
         return create(actionsType, new ActionInterceptor(), new CallbackFilter() {
             public int accept(Method method) {
                 // we need to intercept all methods that return an ActionResult, these are the "real" actions
                 return method.getReturnType() == ActionResult.class ? 1 : 0;
             }
         }, constructorArgs);
-    }
-
-    /**
-     * Runs the given parser rule against the given input string. Note that the rule must be created by a rule
-     * creation method from a parser object that was previously created with create(...).
-     *
-     * @param rule  the rule
-     * @param input the input string
-     * @return the ParsingResult for the run
-     */
-    @NotNull
-    public static ParsingResult parse(@NotNull Rule rule, @NotNull String input) {
-        Checks.ensure(rule instanceof StagingRule,
-                "Illegal rule instance, please use Parser.createActions(...) for creating your parser object");
-
-        // prepare
-        BaseParser<?> parser = ((StagingRule) rule).getParser();
-        InputBuffer inputBuffer = new InputBuffer(input);
-        InputLocation startLocation = new InputLocation(inputBuffer);
-        List<ParseError> parseErrors = new ArrayList<ParseError>();
-        Matcher matcher = rule.toMatcher();
-        MatcherContext context = new MatcherContext(null, startLocation, matcher, parser.actions, parseErrors);
-
-        // the matcher tree has already been built during the call to Parser.parse(...), usually immediately
-        // before the invocation of this method, we need to signal to the ActionInterceptor that rule construction
-        // is over and all further action calls should not continue to createActions ActionMatchers but actually be
-        // "routed through" to the actual action method implementations
-        if (parser.actions != null) {
-            ActionInterceptor actionInterceptor = (ActionInterceptor) ((Factory) parser.actions).getCallback(1);
-            actionInterceptor.setParser(null);
-        }
-
-        // run the actual matcher tree
-        context.runMatcher(true);
-
-        return new ParsingResult(context.getNode(), parseErrors, inputBuffer);
     }
 
     @SuppressWarnings({"unchecked"})

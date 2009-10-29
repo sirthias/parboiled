@@ -28,14 +28,14 @@ import java.util.List;
 /**
  * A Matcher that not actually matches input but rather invoking parser actions.
  */
-class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResult {
+class ActionMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V>, ActionResult {
 
-    private final Actions actionsObject;
+    private final Actions<V> actionsObject;
     private final MethodProxy methodProxy;
     private final Object[] methodArguments;
 
-    public ActionMatcher(Actions actionsObject, MethodProxy methodProxy, Object[] methodArguments) {
-        super(ImmutableList.<Matcher>of());
+    public ActionMatcher(Actions<V> actionsObject, MethodProxy methodProxy, Object[] methodArguments) {
+        super(ImmutableList.<Matcher<V>>of());
         this.actionsObject = actionsObject;
         this.methodProxy = methodProxy;
         this.methodArguments = methodArguments;
@@ -49,7 +49,7 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
         return "action '" + methodProxy.getSignature().getName() + '\'';
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         context = context.getParent(); // actions want to operate in the parent scope
         Object result;
         try {
@@ -80,7 +80,7 @@ class ActionMatcher extends AbstractRule<Matcher> implements Matcher, ActionResu
     }
 
     @NotNull
-    public List<Matcher> getChildren() {
+    public List<Matcher<V>> getChildren() {
         return ImmutableList.of();
     }
 

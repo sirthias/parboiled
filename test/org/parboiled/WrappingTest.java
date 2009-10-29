@@ -25,9 +25,9 @@ import org.testng.annotations.Test;
 
 public class WrappingTest extends AbstractTest {
 
-    public static class WrappingParser extends BaseParser<Actions> {
+    public static class WrappingParser extends BaseParser<Object, Actions<Object>> {
 
-        public WrappingParser(Actions actions) {
+        public WrappingParser(Actions<Object> actions) {
             super(actions);
         }
 
@@ -53,9 +53,10 @@ public class WrappingTest extends AbstractTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testRecursion() {
-        WrappingParser parser = Parser.create(WrappingParser.class, null);
+        WrappingParser parser = Parboiled.createParser(WrappingParser.class, null);
         Rule rule = parser.aOpB();
 
         Matcher matcher = rule.toMatcher();
@@ -74,7 +75,7 @@ public class WrappingTest extends AbstractTest {
         // verify that number and digit matchers only exist once
         assertEquals(countAllDistinct(matcher), 8);
 
-        test(rule, "123-54", "" +
+        test(parser, rule, "123-54", "" +
                 "[aOpB] '123-54'\n" +
                 "    [a] '123'\n" +
                 "        [digit] '1'\n" +

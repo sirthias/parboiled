@@ -22,15 +22,15 @@ import org.parboiled.utils.ImmutableTreeNode;
 
 import java.util.List;
 
-class NodeImpl extends ImmutableTreeNode<Node> implements Node {
+class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
 
     private final String label;
     private final InputLocation startLocation;
     private final InputLocation endLocation;
-    private final Object value;
+    private final V value;
 
-    public NodeImpl(String label, List<Node> children, @NotNull InputLocation startLocation,
-                    @NotNull InputLocation endLocation, Object value) {
+    public NodeImpl(String label, List<Node<V>> children, @NotNull InputLocation startLocation,
+                    @NotNull InputLocation endLocation, V value) {
         super(children);
         this.label = label;
         this.startLocation = startLocation;
@@ -52,7 +52,7 @@ class NodeImpl extends ImmutableTreeNode<Node> implements Node {
         return endLocation;
     }
 
-    public Object getValue() {
+    public V getValue() {
         return value;
     }
 

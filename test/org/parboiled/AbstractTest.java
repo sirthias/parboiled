@@ -23,8 +23,8 @@ import static org.testng.Assert.fail;
 
 abstract class AbstractTest {
 
-    public void test(Rule rule, String input, String expectedTree) {
-        ParsingResult parsingResult = Parser.parse(rule, input);
+    public <V> void test(BaseParser<V, ?> parser, Rule rule, String input, String expectedTree) {
+        ParsingResult<V> parsingResult = parser.parse(rule, input);
         if (!parsingResult.parseErrors.isEmpty()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +
@@ -37,8 +37,9 @@ abstract class AbstractTest {
         assertEqualsMultiline(actualTree, expectedTree);
     }
 
-    public void testFail(Rule rule, String input, String expectedTree, String expectedErrors) {
-        ParsingResult parsingResult = Parser.parse(rule, input);
+    public <V> void testFail(BaseParser<V, ?> parser, Rule rule, String input, String expectedTree,
+                             String expectedErrors) {
+        ParsingResult<V> parsingResult = parser.parse(rule, input);
         String actualTree = printNodeTree(parsingResult);
         assertEqualsMultiline(actualTree, expectedTree);
         assertEqualsMultiline(StringUtils.join(parsingResult.parseErrors, "---\n"), expectedErrors);

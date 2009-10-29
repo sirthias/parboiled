@@ -25,18 +25,18 @@ import java.util.List;
 /**
  * A Context object is available to parser actions methods during their runtime and provides various support functionality.
  */
-public interface Context {
+public interface Context<V> {
 
     /**
      * @return the parent context, i.e. the context for the currently running parent matcher
      */
-    Context getParent();
+    Context<V> getParent();
 
     /**
      * @return the matcher this context was constructed for
      */
     @NotNull
-    Matcher getMatcher();
+    Matcher<V> getMatcher();
 
     /**
      * @return the start location of the currently running rule match attempt
@@ -62,7 +62,7 @@ public interface Context {
      * @param node the node
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    String getNodeText(Node node);
+    String getNodeText(Node<V> node);
 
     /**
      * Returns the first input character matched by the given Node.
@@ -70,7 +70,7 @@ public interface Context {
      * @param node the node
      * @return null if node is null or did not match at least one character otherwise the first matched input char
      */
-    Character getNodeChar(Node node);
+    Character getNodeChar(Node<V> node);
 
     /**
      * Returns the '/' separated full path name of the currently running Matcher.
@@ -89,19 +89,19 @@ public interface Context {
      * @param path the path to the Node being searched for
      * @return the Node if found or null if not found
      */
-    Node getNodeByPath(String path);
+    Node<V> getNodeByPath(String path);
 
     /**
      * Sets the value object of the node to be created for the current matcher.
      *
      * @param value the object
      */
-    void setNodeValue(Object value);
+    void setNodeValue(V value);
 
     /**
      * @return the previously set value of the node to be created for the current matcher
      */
-    Object getNodeValue();
+    V getNodeValue();
 
 }
 

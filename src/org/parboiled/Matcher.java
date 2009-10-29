@@ -24,7 +24,7 @@ import org.parboiled.utils.DGraphNode;
  * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual
  * rule type specific matching logic.
  */
-public interface Matcher extends DGraphNode<Matcher> {
+public interface Matcher<V> extends DGraphNode<Matcher<V>> {
 
     /**
      * @return the label of the matcher (which is identical to the label of the Rule this matcher matches)
@@ -43,7 +43,7 @@ public interface Matcher extends DGraphNode<Matcher> {
      * @param enforced whether this match is required to succeed
      * @return true if the match was successful
      */
-    boolean match(@NotNull MatcherContext context, boolean enforced);
+    boolean match(@NotNull MatcherContext<V> context, boolean enforced);
 
     /**
      * @return all characters that this matcher can legally start a match with. Contains Chars.EMPTY if the

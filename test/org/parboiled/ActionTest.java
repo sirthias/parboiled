@@ -20,9 +20,12 @@ import org.testng.annotations.Test;
 
 public class ActionTest extends AbstractTest {
 
-    public static class ActionTestParser extends BaseParser<BaseActions> {
+    public static class ActionTestActions extends BaseActions<Object> {
+    }
 
-        public ActionTestParser(BaseActions actions) {
+    public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {
+
+        public ActionTestParser(ActionTestActions actions) {
             super(actions);
         }
 
@@ -41,8 +44,9 @@ public class ActionTest extends AbstractTest {
 
     @Test
     public void test() {
-        ActionTestParser parser = Parser.create(ActionTestParser.class, Parser.createActions(BaseActions.class));
-        test(parser.number(), "123", "" +
+        ActionTestActions actions = Parboiled.createActions(ActionTestActions.class);
+        ActionTestParser parser = Parboiled.createParser(ActionTestParser.class, actions);
+        test(parser, parser.number(), "123", "" +
                 "[number, {123}] '123'\n" +
                 "    [oneOrMore] '123'\n" +
                 "        [digit] '1'\n" +

@@ -23,15 +23,15 @@ import org.parboiled.support.Chars;
 import org.parboiled.utils.StringUtils;
 import org.parboiled.utils.Utils;
 
-class FirstOfMatcher extends AbstractMatcher {
+class FirstOfMatcher<V> extends AbstractMatcher<V> {
 
     public FirstOfMatcher(@NotNull Rule[] subRules) {
         super(subRules);
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         for (int i = 0; i < getChildren().size(); i++) {
-            Matcher matcher = getChildren().get(i);
+            Matcher<V> matcher = getChildren().get(i);
             boolean matched = context.runMatcher(matcher, false);
             if (matched) {
                 context.createNode();

@@ -19,13 +19,13 @@ package org.parboiled.examples.calculator;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
-public class CalculatorParser extends BaseParser<CalculatorActions> {
+public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
 
     public CalculatorParser(CalculatorActions actions) {
         super(actions);
     }
 
-    public Rule input() {
+    public Rule inputLine() {
         return enforcedSequence(
                 expression(),
                 actions.setValue(value("expression")),
@@ -43,9 +43,9 @@ public class CalculatorParser extends BaseParser<CalculatorActions> {
                         )
                 ),
                 actions.compute(
-                        value("term", Integer.class),
+                        value("term"),
                         chars("z/e/firstOf"),
-                        values("z/e/term", Integer.class)
+                        values("z/e/term")
                 )
         );
     }
@@ -60,9 +60,9 @@ public class CalculatorParser extends BaseParser<CalculatorActions> {
                         )
                 ),
                 actions.compute(
-                        value("factor", Integer.class),
+                        value("factor"),
                         chars("z/e/firstOf"),
-                        values("z/e/factor", Integer.class)
+                        values("z/e/factor")
                 )
         );
     }

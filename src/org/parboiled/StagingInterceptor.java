@@ -48,7 +48,7 @@ class StagingInterceptor implements MethodInterceptor {
         Rule innerRule = getRule(obj, method, proxy);
 
         // every call to the method receives its own StagingRule to set properties on (if required)
-        return new StagingRule(innerRule, (BaseParser<?>) obj);
+        return new StagingRule(innerRule, (BaseParser<?,?>) obj);
     }
 
     private Rule getRule(Object obj, Method method, MethodProxy methodProxy) throws Throwable {

@@ -22,14 +22,14 @@ import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
 
-class ZeroOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
+class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     public ZeroOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Matcher matcher = getChildren().get(0);
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+        Matcher<V> matcher = getChildren().get(0);
 
         InputLocation lastLocation = context.getCurrentLocation();
         while (context.runMatcher(matcher, false)) {
@@ -49,7 +49,7 @@ class ZeroOrMoreMatcher extends AbstractMatcher implements FollowMatcher {
         return chars;
     }
 
-    public Characters getFollowerChars(MatcherContext context) {
+    public Characters getFollowerChars(MatcherContext<V> context) {
         return getStarterChars().add(Chars.EMPTY);
     }
 

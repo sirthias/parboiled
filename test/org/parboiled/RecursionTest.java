@@ -20,9 +20,9 @@ import org.testng.annotations.Test;
 
 public class RecursionTest extends AbstractTest {
 
-    public static class RecursionParser extends BaseParser<Actions> {
+    public static class RecursionParser extends BaseParser<Object, Actions<Object>> {
 
-        public RecursionParser(Actions actions) {
+        public RecursionParser(Actions<Object> actions) {
             super(actions);
         }
 
@@ -35,8 +35,8 @@ public class RecursionTest extends AbstractTest {
 
     @Test
     public void testRecursion() {
-        RecursionParser parser = Parser.create(RecursionParser.class, null);
-        test(parser.lotsOfAs(), "AAA", "" +
+        RecursionParser parser = Parboiled.createParser(RecursionParser.class, null);
+        test(parser, parser.lotsOfAs(), "AAA", "" +
                 "[lotsOfAs] 'AAA'\n" +
                 "    ['A'] 'A'\n" +
                 "    [optional] 'AA'\n" +

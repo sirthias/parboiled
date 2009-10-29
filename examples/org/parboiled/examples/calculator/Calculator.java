@@ -16,7 +16,7 @@
 
 package org.parboiled.examples.calculator;
 
-import org.parboiled.Parser;
+import org.parboiled.Parboiled;
 import org.parboiled.ParsingResult;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.utils.StringUtils;
@@ -31,11 +31,9 @@ public class Calculator {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            CalculatorParser parser = Parser.create(
-                    CalculatorParser.class,
-                    Parser.createActions(CalculatorActions.class)
-            );
-            ParsingResult result = Parser.parse(parser.input(), input);
+            CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
+            CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
+            ParsingResult result = parser.parse(parser.inputLine(), input);
 
             System.out.println(input + " = " + result.root.getValue() + '\n');
             System.out.println(printNodeTree(result) + '\n');

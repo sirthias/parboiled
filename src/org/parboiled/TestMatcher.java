@@ -19,7 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 
-class TestMatcher extends AbstractMatcher {
+class TestMatcher<V> extends AbstractMatcher<V> {
 
     private final boolean inverted;
 
@@ -36,11 +36,11 @@ class TestMatcher extends AbstractMatcher {
         return (inverted ? "!(" : "&(") + getChildren().get(0) + ")";
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Matcher matcher = getChildren().get(0);
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+        Matcher<V> matcher = getChildren().get(0);
 
         // we run the test matcher in a detached context as it is not to affect the parse tree being built
-        MatcherContext tempContext = context.createCopy(null, matcher);
+        MatcherContext<V> tempContext = context.createCopy(null, matcher);
         boolean matched = tempContext.runMatcher(matcher, enforced && !inverted);
 
         return inverted ? !matched : matched;

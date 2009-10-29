@@ -34,6 +34,6 @@ public interface Rule {
      *
      * @return the Matcher for this rule
      */
-    Matcher toMatcher();
+    Matcher<?> toMatcher();
 
 }

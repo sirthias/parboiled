@@ -20,14 +20,14 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
-class OptionalMatcher extends AbstractMatcher {
+class OptionalMatcher<V> extends AbstractMatcher<V> {
 
     public OptionalMatcher(@NotNull Rule subRule) {
         super(subRule);
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        Matcher matcher = getChildren().get(0);
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+        Matcher<V> matcher = getChildren().get(0);
         context.runMatcher(matcher, false);
         context.createNode();
         return true;

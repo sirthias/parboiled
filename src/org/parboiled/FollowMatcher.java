@@ -23,13 +23,13 @@ import org.parboiled.support.Characters;
  * of all characters that can legally follow the currently running match.
  * Used during parse error recovery.
  */
-interface FollowMatcher {
+interface FollowMatcher<V> {
 
     /**
      * @param context the current context
      * @return all chars that can legally follow the match currently being evaluated.
      *         Contains (also) Chars.EMPTY if this matcher does not require more characters to be matched.
      */
-    Characters getFollowerChars(MatcherContext context);
+    Characters getFollowerChars(MatcherContext<V> context);
 
 }

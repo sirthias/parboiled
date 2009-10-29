@@ -20,11 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.utils.ImmutableList;
 
-class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
+class WrapMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
 
+    @SuppressWarnings({"unchecked"})
     WrapMatcher(@NotNull Rule innerRule) {
         // we cast directly instead of calling toMatcher(), for not triggering the LazyLoader proxy too early
-        super(ImmutableList.of((Matcher) innerRule));
+        super(ImmutableList.of((Matcher<V>) innerRule));
     }
 
     @Override
@@ -37,7 +38,7 @@ class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
         return this;
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         return getInner().match(context, enforced);
     }
 
@@ -54,7 +55,7 @@ class WrapMatcher extends AbstractRule<Matcher> implements Matcher {
         return getInner().getExpectedString();
     }
 
-    private Matcher getInner() {
+    private Matcher<V> getInner() {
         return getChildren().get(0);
     }
 

@@ -22,7 +22,7 @@ import org.parboiled.utils.ImmutableList;
 
 import java.util.List;
 
-class IllegalCharactersMatcher implements Matcher {
+class IllegalCharactersMatcher<V> implements Matcher<V> {
     private final String expected;
     private final Characters stopMatchChars;
 
@@ -41,7 +41,7 @@ class IllegalCharactersMatcher implements Matcher {
         return "!ILLEGAL!";
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         context.addUnexpectedInputError(context.getCurrentLocation().currentChar, expected);
         do {
             context.advanceInputLocation();
@@ -51,7 +51,7 @@ class IllegalCharactersMatcher implements Matcher {
     }
 
     @NotNull
-    public List<Matcher> getChildren() {
+    public List<Matcher<V>> getChildren() {
         return ImmutableList.of();
     }
 

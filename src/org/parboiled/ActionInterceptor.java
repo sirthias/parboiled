@@ -36,7 +36,7 @@ class ActionInterceptor implements MethodInterceptor {
     }
 
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        Preconditions.checkState(obj instanceof Actions);
+        Preconditions.checkState(obj instanceof Actions<?>);
 
         // if we have a non-null parser object set we are in the rule construction phase and do not actually invoke
         // the action method but construct an ActionMatcher
@@ -49,6 +49,7 @@ class ActionInterceptor implements MethodInterceptor {
     }
 
     // build real arguments by replacing null values with respective parameter objects from the parser
+    @SuppressWarnings({"unchecked"})
     private Object createActionMatcher(Object obj, Method method, Object[] args, MethodProxy proxy) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         ActionParameter[] params = parser.retrieveAndClearActionParameters();
@@ -68,7 +69,7 @@ class ActionInterceptor implements MethodInterceptor {
         }
         Preconditions.checkState(j == params.length);
 
-        return new ActionMatcher((Actions) obj, proxy, realArgs);
+        return new ActionMatcher((Actions<?>) obj, proxy, realArgs);
     }
 
 }

@@ -22,7 +22,7 @@ import org.parboiled.support.Chars;
 
 import java.util.List;
 
-class SequenceMatcher extends AbstractMatcher implements FollowMatcher {
+class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     private final boolean enforced;
 
@@ -31,10 +31,10 @@ class SequenceMatcher extends AbstractMatcher implements FollowMatcher {
         this.enforced = enforced;
     }
 
-    public boolean match(@NotNull MatcherContext context, boolean enforced) {
-        List<Matcher> children = getChildren();
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+        List<Matcher<V>> children = getChildren();
         for (int i = 0; i < children.size(); i++) {
-            Matcher matcher = children.get(i);
+            Matcher<V> matcher = children.get(i);
 
             // remember the current index in the context, so we can access it for building the current follower set
             context.setTag(i);
@@ -60,7 +60,7 @@ class SequenceMatcher extends AbstractMatcher implements FollowMatcher {
         return chars;
     }
 
-    public Characters getFollowerChars(MatcherContext context) {
+    public Characters getFollowerChars(MatcherContext<V> context) {
         int currentIndex = (Integer) context.getTag();
         return getStarterChars(currentIndex + 1);
     }

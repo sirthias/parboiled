@@ -18,11 +18,11 @@ package org.parboiled;
 
 class StagingRule implements Rule {
 
-    private final BaseParser<?> parser;
+    private final BaseParser<?, ?> parser;
     private final Rule innerRule;
     private String label;
 
-    StagingRule(Rule innerRule, BaseParser<?> parser) {
+    StagingRule(Rule innerRule, BaseParser<?, ?> parser) {
         this.innerRule = innerRule;
         this.parser = parser;
     }
@@ -32,11 +32,11 @@ class StagingRule implements Rule {
         return this;
     }
 
-    public BaseParser<?> getParser() {
+    public BaseParser<?, ?> getParser() {
         return parser;
     }
 
-    public Matcher toMatcher() {
+    public Matcher<?> toMatcher() {
         // the real rule is has been locked after creation,
         // so we need to inject a wrapper for setting properties
         if (label != null) {

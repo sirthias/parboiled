@@ -27,9 +27,9 @@ public class AbcnTest extends AbstractTest {
      * A ← a A? b
      * B ← b B? c
      */
-    public static class TestParser extends BaseParser<Actions> {
+    public static class TestParser extends BaseParser<Object, Actions<Object>> {
 
-        public TestParser(Actions actions) {
+        public TestParser(Actions<Object> actions) {
             super(actions);
         }
 
@@ -54,8 +54,8 @@ public class AbcnTest extends AbstractTest {
 
     @Test
     public void test() {
-        TestParser parser = Parser.create(TestParser.class, null);
-        test(parser.S(), "aabbcc", "" +
+        TestParser parser = Parboiled.createParser(TestParser.class, null);
+        test(parser, parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
@@ -72,8 +72,8 @@ public class AbcnTest extends AbstractTest {
 
     @Test
     public void testFail() {
-        TestParser parser = Parser.create(TestParser.class, null);
-        testFail(parser.S(), "aabbbcc", "" +
+        TestParser parser = Parboiled.createParser(TestParser.class, null);
+        testFail(parser, parser.S(), "aabbbcc", "" +
                 "[S] 'aabbbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +

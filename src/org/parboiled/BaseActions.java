@@ -17,18 +17,17 @@
 package org.parboiled;
 
 /**
- * Convenience base class for parser actions. Provides a base implementation of the Actions interface as well
- * as one very common used action.
+ * Convenience base class for parser actions. Provides a base implementation of the Actions interface.
  */
-public class BaseActions implements Actions {
+public class BaseActions<V> implements Actions<V> {
 
-    private Context context;
+    private Context<V> context;
 
-    public Context getContext() {
+    public Context<V> getContext() {
         return context;
     }
 
-    public void setContext(Context context) {
+    public void setContext(Context<V> context) {
         this.context = context;
     }
 
@@ -38,7 +37,7 @@ public class BaseActions implements Actions {
      * @param value the object to be set as value object
      * @return ActionResult.CONTINUE
      */
-    public ActionResult setValue(Object value) {
+    public ActionResult setValue(V value) {
         getContext().setNodeValue(value);
         return ActionResult.CONTINUE;
     }

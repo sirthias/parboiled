@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Encapsulates parameters passed to parser actions.
  */
-abstract class ActionParameter {
+abstract class ActionParameter<V> {
 
     // the type of the action method parameter that is to be provided by this instance
     protected Class<?> expectedParameterType;
@@ -39,33 +39,33 @@ abstract class ActionParameter {
         expectedParameterType = parameterType;
     }
 
-    abstract Object getValue(@NotNull MatcherContext context);
+    abstract Object getValue(@NotNull MatcherContext<V> context);
 
     //////////////////////////////////// SPECIALIZATION //////////////////////////////////////////
 
     /**
      * The base class of all ActionParameters that operate on Node paths.
      */
-    abstract static class PathBasedActionParameter extends ActionParameter {
+    abstract static class PathBasedActionParameter<V> extends ActionParameter<V> {
         protected final String path;
 
         protected PathBasedActionParameter(String path) {
             this.path = path;
         }
 
-        protected ArrayList<org.parboiled.Node> collectPathNodes(MatcherContext context) {
-            return collectNodesByPath(context.getSubNodes(), path, new ArrayList<org.parboiled.Node>());
+        protected ArrayList<org.parboiled.Node<V>> collectPathNodes(MatcherContext<V> context) {
+            return collectNodesByPath(context.getSubNodes(), path, new ArrayList<org.parboiled.Node<V>>());
         }
     }
 
     //////////////////////////////////// IMPLEMENTATIONS //////////////////////////////////////////
 
-    static class Node extends PathBasedActionParameter {
+    static class Node<V> extends PathBasedActionParameter<V> {
         public Node(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Checks.ensure(expectedParameterType.isAssignableFrom(org.parboiled.Node.class),
                     "Illegal action argument in '%s', expected %s instead of %s",
                     context.getPath(), expectedParameterType, org.parboiled.Node.class);
@@ -74,27 +74,27 @@ abstract class ActionParameter {
         }
     }
 
-    static class Nodes extends PathBasedActionParameter {
+    static class Nodes<V> extends PathBasedActionParameter<V> {
         public Nodes(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Class<?> componentType = expectedParameterType.getComponentType();
             Checks.ensure(expectedParameterType.isArray() && componentType.isAssignableFrom(org.parboiled.Node.class),
                     "Illegal action argument in '%s', expected %s instead of %s",
                     context.getPath(), expectedParameterType, org.parboiled.Node[].class);
-            List<org.parboiled.Node> list = collectPathNodes(context);
+            List<org.parboiled.Node<V>> list = collectPathNodes(context);
             return list.toArray((org.parboiled.Node[]) Array.newInstance(componentType, list.size()));
         }
     }
 
-    static class NodeWithLabel extends PathBasedActionParameter {
+    static class NodeWithLabel<V> extends PathBasedActionParameter<V> {
         public NodeWithLabel(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Checks.ensure(expectedParameterType.isAssignableFrom(org.parboiled.Node.class),
                     "Illegal action argument in '%s', expected %s instead of %s",
                     context.getPath(), expectedParameterType, org.parboiled.Node.class);
@@ -103,31 +103,31 @@ abstract class ActionParameter {
         }
     }
 
-    static class NodesWithLabel extends PathBasedActionParameter {
+    static class NodesWithLabel<V> extends PathBasedActionParameter<V> {
         public NodesWithLabel(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Class<?> componentType = expectedParameterType.getComponentType();
             Checks.ensure(expectedParameterType.isArray() && componentType.isAssignableFrom(org.parboiled.Node.class),
                     "Illegal action argument in '%s', expected %s instead of %s",
                     context.getPath(), expectedParameterType, org.parboiled.Node[].class);
-            List<org.parboiled.Node> list = collectNodesByLabel(context.getSubNodes(), path,
-                    new ArrayList<org.parboiled.Node>());
+            List<org.parboiled.Node<V>> list = collectNodesByLabel(context.getSubNodes(), path,
+                    new ArrayList<org.parboiled.Node<V>>());
             return list.toArray((org.parboiled.Node[]) Array.newInstance(componentType, list.size()));
         }
     }
 
-    static class Value extends PathBasedActionParameter {
+    static class Value<V> extends PathBasedActionParameter<V> {
         public Value(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
-            org.parboiled.Node node = context.getNodeByPath(path);
+        Object getValue(@NotNull MatcherContext<V> context) {
+            org.parboiled.Node<V> node = context.getNodeByPath(path);
             if (node == null || node.getValue() == null) return null;
-            Object value = node.getValue();
+            V value = node.getValue();
             Checks.ensure(expectedParameterType.isAssignableFrom(value.getClass()),
                     "Illegal action argument in '%s', cannot cast %s to %s",
                     context.getPath(), value.getClass(), expectedParameterType);
@@ -135,18 +135,18 @@ abstract class ActionParameter {
         }
     }
 
-    static class Values extends PathBasedActionParameter {
+    static class Values<V> extends PathBasedActionParameter<V> {
         public Values(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Class<?> componentType = expectedParameterType.getComponentType();
             Preconditions.checkState(expectedParameterType.isArray() && !componentType.isPrimitive());
-            List<org.parboiled.Node> nodes = collectPathNodes(context);
+            List<org.parboiled.Node<V>> nodes = collectPathNodes(context);
             Object array = Array.newInstance(componentType, nodes.size());
             for (int i = 0; i < nodes.size(); i++) {
-                Object value = nodes.get(i).getValue();
+                V value = nodes.get(i).getValue();
                 if (value == null) continue;
                 Checks.ensure(componentType.isAssignableFrom(value.getClass()),
                         "Illegal action argument in '%s', cannot cast value array component from %s to %s",
@@ -157,27 +157,27 @@ abstract class ActionParameter {
         }
     }
 
-    static class Text extends PathBasedActionParameter {
+    static class Text<V> extends PathBasedActionParameter<V> {
         public Text(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Preconditions.checkState(expectedParameterType.isAssignableFrom(String.class));
-            org.parboiled.Node node = context.getNodeByPath(path);
+            org.parboiled.Node<V> node = context.getNodeByPath(path);
             return context.getNodeText(node);
         }
     }
 
-    static class Texts extends PathBasedActionParameter {
+    static class Texts<V> extends PathBasedActionParameter<V> {
         public Texts(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Preconditions.checkState(
                     expectedParameterType.isArray() && expectedParameterType.getComponentType() == String.class);
-            List<org.parboiled.Node> nodes = collectPathNodes(context);
+            List<org.parboiled.Node<V>> nodes = collectPathNodes(context);
             String[] texts = new String[nodes.size()];
             for (int i = 0; i < nodes.size(); i++) {
                 texts[i] = context.getNodeText(nodes.get(i));
@@ -186,27 +186,27 @@ abstract class ActionParameter {
         }
     }
 
-    static class Char extends PathBasedActionParameter {
+    static class Char<V> extends PathBasedActionParameter<V> {
         public Char(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Preconditions.checkState(expectedParameterType.isAssignableFrom(Character.class));
-            org.parboiled.Node node = context.getNodeByPath(path);
+            org.parboiled.Node<V> node = context.getNodeByPath(path);
             return context.getNodeChar(node);
         }
     }
 
-    static class Chars extends PathBasedActionParameter {
+    static class Chars<V> extends PathBasedActionParameter<V> {
         public Chars(String path) {
             super(path);
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        Object getValue(@NotNull MatcherContext<V> context) {
             Preconditions.checkState(
                     expectedParameterType.isArray() && expectedParameterType.getComponentType() == Character.class);
-            List<org.parboiled.Node> nodes = collectPathNodes(context);
+            List<org.parboiled.Node<V>> nodes = collectPathNodes(context);
             Character[] chars = new Character[nodes.size()];
             for (int i = 0; i < nodes.size(); i++) {
                 chars[i] = context.getNodeChar(nodes.get(i));
@@ -215,7 +215,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class FirstOfNonNull extends ActionParameter {
+    static class FirstOfNonNull<V> extends ActionParameter<V> {
         private final Object[] args;
 
         public FirstOfNonNull(@NotNull Object[] args) {
@@ -232,10 +232,11 @@ abstract class ActionParameter {
             }
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        @SuppressWarnings({"unchecked"})
+        Object getValue(@NotNull MatcherContext<V> context) {
             for (Object arg : args) {
                 if (arg instanceof ActionParameter) {
-                    ActionParameter param = (ActionParameter) arg;
+                    ActionParameter<V> param = (ActionParameter<V>) arg;
                     arg = param.getValue(context);
                 }
                 if (arg != null) {
@@ -249,7 +250,7 @@ abstract class ActionParameter {
         }
     }
 
-    static class Convert<T> extends ActionParameter {
+    static class Convert<V,T> extends ActionParameter<V> {
         private final Object arg;
         private final Converter<T> converter;
 
@@ -266,10 +267,11 @@ abstract class ActionParameter {
             }
         }
 
-        Object getValue(@NotNull MatcherContext context) {
+        @SuppressWarnings({"unchecked"})
+        Object getValue(@NotNull MatcherContext<V> context) {
             String text;
             if (arg instanceof ActionParameter) {
-                ActionParameter param = (ActionParameter) arg;
+                ActionParameter<V> param = (ActionParameter<V>) arg;
                 text = (String) param.getValue(context);
             } else {
                 Preconditions.checkState(arg instanceof String);
