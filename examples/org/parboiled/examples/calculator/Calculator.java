@@ -17,9 +17,9 @@
 package org.parboiled.examples.calculator;
 
 import org.parboiled.Parboiled;
-import org.parboiled.ParsingResult;
+import org.parboiled.support.ParsingResult;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import org.parboiled.utils.StringUtils;
+import org.parboiled.common.StringUtils;
 
 import java.util.Scanner;
 
@@ -27,7 +27,7 @@ public class Calculator {
 
     public static void main(String[] args) {
         while (true) {
-            System.out.print("\nEnter an expression: ");
+            System.out.print("\nEnter an expression (single RETURN to exit): ");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 

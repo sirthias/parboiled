@@ -18,7 +18,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
-import org.parboiled.utils.ImmutableList;
+import org.parboiled.common.ImmutableList;
 
 class WrapMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
 

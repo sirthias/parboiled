@@ -17,8 +17,8 @@
 package org.parboiled.support;
 
 import org.parboiled.Node;
-import org.parboiled.utils.Formatter;
-import org.parboiled.utils.StringUtils;
+import org.parboiled.common.Formatter;
+import org.parboiled.common.StringUtils;
 
 /**
  * A simple Formatter<Node<V> that provides String representation for parse tree nodes.

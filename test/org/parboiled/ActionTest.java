@@ -20,7 +20,10 @@ import org.testng.annotations.Test;
 
 public class ActionTest extends AbstractTest {
 
-    public static class ActionTestActions extends ActionsImpl<Object> {
+    public static class ActionTestActions extends BaseActions<Object> {
+        public Integer timesTwo(Integer i) {
+            return i != null ? i * 2 : null;
+        }
     }
 
     public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {
@@ -32,7 +35,7 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    actions.setValue(convertToInteger(text("o")))
+                    set(actions.timesTwo(convertToInteger(text("o"))))
             );
         }
 

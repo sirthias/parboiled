@@ -18,12 +18,14 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.ParsingResult;
-import static org.parboiled.utils.DGraphUtils.hasChildren;
-import static org.parboiled.utils.DGraphUtils.printTree;
-import org.parboiled.utils.StringUtils;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.StringUtils;
+import org.parboiled.common.Utils;
+import static org.parboiled.trees.GraphUtils.hasChildren;
+import static org.parboiled.trees.GraphUtils.printTree;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * General utility methods for operating on parse trees.
@@ -47,20 +49,29 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the first Node underneath the given parents that matches the given path.
+     * Returns the node underneath the given parents that matches the given path.
      * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Node
-     * relative to each of the given parent nodes.
+     * relative to each of the given parent nodes. If there are several nodes that match the given path the method
+     * returns the first one unless the respective path segments has the special prefix "last:". In this case the
+     * method will return the last matching node.
+     * Example: "per/last:so/fix" will return the first node, whose label starts with "fix" under the last node,
+     * whose label starts with "so" under the first node, whose label starts with "per".
      * If the given collections of parents is null or empty or no node is found the method returns null.
      *
      * @param parents the parent Nodes to look through
      * @param path    the path to the Node being searched for
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNodeByPath(Collection<Node<V>> parents, @NotNull String path) {
+    public static <V> Node<V> findNodeByPath(List<Node<V>> parents, @NotNull String path) {
         if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
-            for (Node<V> child : parents) {
+            Iterable<Node<V>> iterable = parents;
+            if (prefix.startsWith("last:")) {
+                prefix = prefix.substring(5);
+                iterable = Utils.reverse(parents);
+            }
+            for (Node<V> child : iterable) {
                 if (StringUtils.startsWith(child.getLabel(), prefix)) {
                     return separatorIndex == -1 ? child : findNodeByPath(child, path.substring(separatorIndex + 1));
                 }
@@ -119,7 +130,7 @@ public class ParseTreeUtils {
      * Returns the first Node underneath the given parent for which the given predicate evaluates to true.
      * If parent is null or no node is found the method returns null.
      *
-     * @param parent the parent Node
+     * @param parent    the parent Node
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
@@ -138,7 +149,7 @@ public class ParseTreeUtils {
      * Returns the first Node underneath the given parents for which the given predicate evaluates to true.
      * If parents is null or empty or no node is found the method returns null.
      *
-     * @param parents the parent Nodes to look through
+     * @param parents   the parent Nodes to look through
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
@@ -176,8 +187,8 @@ public class ParseTreeUtils {
      * @return the same collection instance passed as a parameter
      */
     public static <V, C extends Collection<Node<V>>> C collectNodesByLabel(Collection<Node<V>> parents,
-                                                                     @NotNull String labelPrefix,
-                                                                     @NotNull C collection) {
+                                                                           @NotNull String labelPrefix,
+                                                                           @NotNull C collection) {
         if (parents != null && !parents.isEmpty()) {
             for (Node<V> child : parents) {
                 if (StringUtils.startsWith(child.getLabel(), labelPrefix)) {

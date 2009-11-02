@@ -16,25 +16,16 @@
 
 package org.parboiled.examples.calculator2;
 
-import org.parboiled.ActionResult;
-import org.parboiled.ast.AstActions;
-import static org.parboiled.ast.AstUtils.toLeftAssociativity;
+import org.parboiled.BaseActions;
 
-public class CalculatorActions extends AstActions<Character, CalcNode> {
+public class CalculatorActions extends BaseActions<CalcNode> {
 
-    public ActionResult createAstNode(Integer value) {
-        return setAstNode(new CalcNode(value));
+    public CalcNode createAst(Integer value) {
+        return new CalcNode(value);
     }
 
-    public ActionResult createAstNode(Character type, CalcNode left, CalcNode right, String convertOps) {
-        if (left == null) return setAstNode(right);
-        if (right == null) return setAstNode(left);
-
-        CalcNode node = new CalcNode(type, left, right);
-        if (right.isOneOf(convertOps)) {
-            node = toLeftAssociativity(node);
-        }
-        return setValue(node);
+    public CalcNode createAst(Character type, CalcNode left, CalcNode right) {
+        return new CalcNode(type, left, right);
     }
 
 }

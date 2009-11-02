@@ -18,8 +18,8 @@ package org.parboiled;
 
 import net.sf.cglib.proxy.*;
 import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.support.Checks;
-import static org.parboiled.utils.Utils.arrayOf;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -58,7 +58,7 @@ public class Parboiled {
         Checks.ensure(actions == null || actionInterceptor != null,
                 "Illegal Actions instance, please use Parboiled.createActions(...) for creating your parser actions object");
 
-        // intercept all no-arg Rule creation methods with a StagingInterceptor
+        // intercept all no-argument Rule creation methods with a StagingInterceptor
         P parser = create(parserType, new StagingInterceptor(), new CallbackFilter() {
             public int accept(Method method) {
                 boolean isRuleCreatingMethod = method.getReturnType() == Rule.class;
@@ -91,8 +91,10 @@ public class Parboiled {
     public static <A extends Actions<?>> A createActions(@NotNull Class<A> actionsType, Object... constructorArgs) {
         return create(actionsType, new ActionInterceptor(), new CallbackFilter() {
             public int accept(Method method) {
-                // we need to intercept all methods that return an ActionResult, these are the "real" actions
-                return method.getReturnType() == ActionResult.class ? 1 : 0;
+                // we intercept all methods we can properly wrap in an ActionCallParameter
+                // since we do not have a common placeholder for primitives we cannot intercept methods returning
+                // primitives
+                return method.getReturnType().isPrimitive() ? 0 : 1;
             }
         }, constructorArgs);
     }

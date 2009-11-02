@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.InputLocation;
-import org.parboiled.utils.Preconditions;
+import org.parboiled.common.Preconditions;
 
 class CharRangeMatcher<V> extends AbstractMatcher<V> {
 

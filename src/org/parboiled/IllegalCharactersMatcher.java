@@ -18,11 +18,8 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
-import org.parboiled.utils.ImmutableList;
 
-import java.util.List;
-
-class IllegalCharactersMatcher<V> implements Matcher<V> {
+class IllegalCharactersMatcher<V> extends SpecialMatcher<V> {
     private final String expected;
     private final Characters stopMatchChars;
 
@@ -50,16 +47,4 @@ class IllegalCharactersMatcher<V> implements Matcher<V> {
         return true;
     }
 
-    @NotNull
-    public List<Matcher<V>> getChildren() {
-        return ImmutableList.of();
-    }
-
-    public Characters getStarterChars() {
-        throw new IllegalStateException(); // should never be called
-    }
-
-    public String getExpectedString() {
-        throw new UnsupportedOperationException();
-    }
 }

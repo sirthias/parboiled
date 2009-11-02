@@ -18,7 +18,8 @@ package org.parboiled;
 
 import static org.parboiled.TestUtils.assertEqualsMultiline;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import org.parboiled.utils.StringUtils;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.common.StringUtils;
 import static org.testng.Assert.fail;
 
 abstract class AbstractTest {

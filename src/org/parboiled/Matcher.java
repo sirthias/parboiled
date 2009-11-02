@@ -18,13 +18,13 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
-import org.parboiled.utils.DGraphNode;
+import org.parboiled.trees.GraphNode;
 
 /**
  * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual
  * rule type specific matching logic.
  */
-public interface Matcher<V> extends DGraphNode<Matcher<V>> {
+public interface Matcher<V> extends GraphNode<Matcher<V>> {
 
     /**
      * @return the label of the matcher (which is identical to the label of the Rule this matcher matches)

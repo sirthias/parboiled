@@ -16,8 +16,8 @@
 
 package org.parboiled.examples.calculator2;
 
-import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.BaseParser;
 
 public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
@@ -28,41 +28,45 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
     public Rule inputLine() {
         return enforcedSequence(
                 expression(),
-                actions.setValue(value("expression")),
                 eoi()
         );
     }
 
     public Rule expression() {
         return sequence(
-                term(),
-                optional(enforcedSequence(firstOf('+', '-'), expression())),
-                actions.createAstNode(ch("o/e/firstOf"), value("term"), value("o/e/expression"), "+-")
+                term(), set(),
+                zeroOrMore(
+                        enforcedSequence(
+                                firstOf('+', '-'),
+                                term(), up(up(set(actions.createAst(ch("z/last:e/firstOf"), value(), lastValue()))))
+                        )
+                )
         );
     }
 
     public Rule term() {
         return sequence(
-                factor(),
-                optional(enforcedSequence(firstOf('*', '/'), term())),
-                actions.createAstNode(ch("o/e/firstOf"), value("factor"), value("o/e/term"), "*/")
+                factor(), set(),
+                zeroOrMore(
+                        enforcedSequence(
+                                firstOf('*', '/'),
+                                factor(), up(up(set(actions.createAst(ch("z/last:e/firstOf"), value(), lastValue()))))
+                        )
+                )
         );
     }
 
     public Rule factor() {
-        return sequence(
-                firstOf(
-                        number(),
-                        enforcedSequence('(', expression(), ')').label("parens")
-                ),
-                actions.setValue(firstValue("firstOf"))
+        return firstOf(
+                number(),
+                enforcedSequence('(', expression(), ')').label("parens")
         );
     }
 
     public Rule number() {
         return sequence(
                 oneOrMore(digit()),
-                actions.createAstNode(convertToInteger(text("oneOrMore")))
+                set(actions.createAst(convertToInteger(lastText())))
         );
     }
 

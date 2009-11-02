@@ -19,17 +19,25 @@ package org.parboiled.support;
 public class Checks {
 
     private Checks() {}
-    
+
     public static void ensure(boolean condition, String errorMessageFormat, Object... errorMessageArgs) {
         if (!condition) {
-            throw new ParserConstructionException(String.format(errorMessageFormat, errorMessageArgs));
+            fail(errorMessageFormat, errorMessageArgs);
         }
     }
 
     public static void ensure(boolean condition, String errorMessage) {
         if (!condition) {
-            throw new ParserConstructionException(errorMessage);
+            fail(errorMessage);
         }
+    }
+
+    public static void fail(String errorMessage) {
+        throw new ParserConstructionException(errorMessage);
+    }
+
+    public static void fail(String errorMessageFormat, Object... errorMessageArgs) {
+        throw new ParserConstructionException(String.format(errorMessageFormat, errorMessageArgs));
     }
 
 }

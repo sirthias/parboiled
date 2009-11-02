@@ -17,7 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.utils.TreeNode;
+import org.parboiled.trees.TreeNode;
 import org.parboiled.support.InputLocation;
 
 /**

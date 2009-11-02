@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Checks;
 import org.parboiled.support.Chars;
-import org.parboiled.utils.StringUtils;
-import org.parboiled.utils.Utils;
+import org.parboiled.common.StringUtils;
+import org.parboiled.common.Utils;
 
 class FirstOfMatcher<V> extends AbstractMatcher<V> {
 

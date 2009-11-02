@@ -20,7 +20,7 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.LazyLoader;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.parboiled.utils.Preconditions;
+import org.parboiled.common.Preconditions;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

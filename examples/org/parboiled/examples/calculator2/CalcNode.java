@@ -16,35 +16,36 @@
 
 package org.parboiled.examples.calculator2;
 
-import org.parboiled.ast.MutableLeftRightAstNodeImpl;
+import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
  * The AST node implementation for the calculator.
  * The type of the node is carried as a Character that can either contain an operator or be null. In this case
  * the AST node is a leaf.
  */
-public class CalcNode extends MutableLeftRightAstNodeImpl<Character, CalcNode> {
+public class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
 
     private int value;
+    private Character operator;
 
     public CalcNode(int value) {
+        super(null, null);
         this.value = value;
     }
 
-    public CalcNode(Character type, CalcNode left, CalcNode right) {
-        setType(type);
-        setLeft(left);
-        setRight(right);
+    public CalcNode(Character operator, CalcNode left, CalcNode right) {
+        super(left, right);
+        this.operator = operator;
     }
 
     public boolean isOneOf(String operations) {
-        return getType() != null && operations.indexOf(getType()) >= 0;
+        return operator != null && operations.indexOf(operator) >= 0;
     }
 
     public int getValue() {
-        if (getType() == null) return value;
+        if (operator == null) return value;
 
-        switch (getType()) {
+        switch (operator) {
             case '+':
                 return left().getValue() + right().getValue();
             case '-':
@@ -58,15 +59,11 @@ public class CalcNode extends MutableLeftRightAstNodeImpl<Character, CalcNode> {
         }
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
-
     @Override
     public String toString() {
-        return getType() == null ?
+        return operator == null ?
                 "Value " + value :
-                "Operator '" + getType() + '\'';
+                "Operator '" + operator + '\'';
     }
-    
+
 }

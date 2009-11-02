@@ -17,23 +17,26 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.ImmutableList;
+import org.parboiled.common.Preconditions;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.StringUtils;
 import org.parboiled.support.*;
-import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 import static org.parboiled.support.ParseTreeUtils.findNode;
-import org.parboiled.utils.Preconditions;
-import org.parboiled.utils.StringUtils;
+import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class MatcherContext<V> implements Context<V> {
+public class MatcherContext<V> implements Context<V> {
 
     private final MatcherContext<V> parent;
     private final InputLocation startLocation;
     private final Matcher<V> matcher;
     private final Actions<V> actions;
     private final List<ParseError> parseErrors;
+    private final Reference<Node<V>> lastNodeRef;
 
     private InputLocation currentLocation;
     private Node<V> node;
@@ -42,14 +45,21 @@ class MatcherContext<V> implements Context<V> {
     private V nodeValue;
     private Object tag;
 
-    public MatcherContext(MatcherContext<V> parent, @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher,
+    public MatcherContext(@NotNull InputLocation startLocation, @NotNull Matcher<V> matcher,
                           Actions<V> actions, @NotNull List<ParseError> parseErrors) {
+        this(null, startLocation, matcher, actions, parseErrors, new Reference<Node<V>>());
+    }
+
+    public MatcherContext(MatcherContext<V> parent, @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher,
+                          Actions<V> actions, @NotNull List<ParseError> parseErrors,
+                          @NotNull Reference<Node<V>> lastNodeRef) {
 
         this.parent = parent;
         this.startLocation = currentLocation = startLocation;
         this.matcher = matcher;
         this.actions = actions;
         this.parseErrors = parseErrors;
+        this.lastNodeRef = lastNodeRef;
     }
 
     @Override
@@ -83,11 +93,11 @@ class MatcherContext<V> implements Context<V> {
         return currentLocation;
     }
 
-    public String getNodeText(Node<V> node) {
+    public String getNodeText(Node<?> node) {
         return ParseTreeUtils.getNodeText(node, startLocation.inputBuffer);
     }
 
-    public Character getNodeChar(Node<V> node) {
+    public Character getNodeChar(Node<?> node) {
         return ParseTreeUtils.getNodeChar(node, startLocation.inputBuffer);
     }
 
@@ -104,6 +114,17 @@ class MatcherContext<V> implements Context<V> {
         this.nodeValue = value;
     }
 
+    public V getTreeValue() {
+        V treeValue = nodeValue;
+        if (subNodes != null) {
+            int i = subNodes.size();
+            while (treeValue == null && i-- > 0) {
+                treeValue = subNodes.get(i).getValue();
+            }
+        }
+        return treeValue;
+    }
+
     public Node<V> getNodeByPath(String path) {
         return findNodeByPath(subNodes, path);
     }
@@ -116,10 +137,18 @@ class MatcherContext<V> implements Context<V> {
         });
     }
 
+    public Node<V> getLastNode() {
+        return lastNodeRef.getTarget();
+    }
+
+    public List<Node<V>> getSubNodes() {
+        return subNodes != null ? ImmutableList.copyOf(subNodes) : ImmutableList.<Node<V>>of();
+    }
+
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public MatcherContext<V> createCopy(MatcherContext<V> parent, Matcher<V> matcher) {
-        return new MatcherContext<V>(parent, currentLocation, matcher, actions, parseErrors);
+        return new MatcherContext<V>(parent, currentLocation, matcher, actions, parseErrors, lastNodeRef);
     }
 
     public void setCurrentLocation(InputLocation currentLocation) {
@@ -132,10 +161,6 @@ class MatcherContext<V> implements Context<V> {
 
     public Node<V> getNode() {
         return node;
-    }
-
-    public List<Node<V>> getSubNodes() {
-        return subNodes;
     }
 
     public Object getTag() {
@@ -159,8 +184,9 @@ class MatcherContext<V> implements Context<V> {
     }
 
     public void createNode() {
-        node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, nodeValue);
+        node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
         if (parent != null) parent.addChildNode(node);
+        lastNodeRef.setTarget(node);
     }
 
     public void addChildNode(@NotNull Node<V> node) {

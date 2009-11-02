@@ -18,7 +18,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputLocation;
-import org.parboiled.utils.ImmutableTreeNode;
+import org.parboiled.trees.ImmutableTreeNode;
 
 import java.util.List;
 

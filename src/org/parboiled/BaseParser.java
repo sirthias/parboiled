@@ -18,8 +18,12 @@ package org.parboiled;
 
 import net.sf.cglib.proxy.Factory;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.actionparameters.*;
+import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameter;
+import org.parboiled.common.Converter;
+import org.parboiled.common.AbstractConverter;
+import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.support.*;
-import static org.parboiled.utils.Utils.arrayOf;
 
 import java.util.*;
 
@@ -37,9 +41,9 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      */
     public static final Object NULL = new Object();
 
-    private final Map<Character, Rule> charMatchers = new HashMap<Character, Rule>();
-    private final Map<String, Rule> stringMatchers = new HashMap<String, Rule>();
-    private final LinkedList<ActionParameter<V>> actionParameterStack = new LinkedList<ActionParameter<V>>();
+    protected final Map<Character, Rule> charMatchers = new HashMap<Character, Rule>();
+    protected final Map<String, Rule> stringMatchers = new HashMap<String, Rule>();
+    protected final Stack<ActionParameter> actionParameters = new Stack<ActionParameter>();
 
     /**
      * The immutable reference to your parser actions.
@@ -47,9 +51,9 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     public final A actions;
 
     /**
-     * Constructs a new parser rules object using the given actions.
+     * Constructs a new parser object using the given actions.
      *
-     * @param actions the parser actions (can be null, if not required)
+     * @param actions the parser actions (can be null)
      */
     public BaseParser(A actions) {
         this.actions = actions;
@@ -75,7 +79,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         InputLocation startLocation = new InputLocation(inputBuffer);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher<V> matcher = (Matcher<V>) rule.toMatcher();
-        MatcherContext<V> context = new MatcherContext<V>(null, startLocation, matcher, actions, parseErrors);
+        MatcherContext<V> context = new MatcherContext<V>(startLocation, matcher, actions, parseErrors);
 
         // the matcher tree has already been built during the call to Parboiled.parse(...), usually immediately
         // before the invocation of this method, we need to signal to the ActionInterceptor that rule construction
@@ -254,7 +258,38 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         return ch(Chars.EMPTY);
     }
 
+    /**
+     * Creates a special action rule that sets the value of the parse tree node to be created for the current rule
+     * to the value of the last node created during the current parsing run.
+     *
+     * @return a new rule
+     */
+    public Rule set() {
+        return set(lastValue());
+    }
+
+    /**
+     * Creates a special action rule that sets the value of the parse tree node to be created for the current rule
+     * to the given value.
+     *
+     * @param value the value to set
+     * @return a new rule
+     */
+    public Rule set(V value) {
+        return new SetValueMatcher<V>(value);
+    }
+
     ////////////////////////////////// ACTION PARAMETERS ///////////////////////////////////
+
+    /**
+     * Changes the context scope of all arguments to the current parent scope.
+     * @param argument the arguments to change to context for
+     * @return the result of the arguments
+     */
+    public <T> T up(T argument) {
+        actionParameters.add(new UpParameter(argument));
+        return null;
+    }
 
     /**
      * Creates an action parameter that evaluates to the first Node found with the given prefix path.
@@ -264,7 +299,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Node<V> node(@NotNull String path) {
-        actionParameterStack.add(new ActionParameter.Node<V>(path));
+        Object pathArg = mixInParameter(actionParameters, path);
+        actionParameters.add(new PathNodeParameter(pathArg));
         return null;
     }
 
@@ -275,34 +311,31 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public Node<V>[] nodes(@NotNull String path) {
-        actionParameterStack.add(new ActionParameter.Nodes<V>(path));
+    public List<Node<V>> nodes(@NotNull String path) {
+        Object pathArg = mixInParameter(actionParameters, path);
+        actionParameters.add(new PathNodesParameter(pathArg));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the first Node found matching the given label prefix.
-     * Caution: Since this only identifies nodes by their label and not by their paths nodes from arbitrary tree
-     * depths might be returned, which can be unindended, especially in recursive rules.
+     * Creates an action parameter that evaluates to the last node created during this parsing run.
      *
-     * @param labelPrefix the label prefix to be searched for
      * @return the action parameter
      */
-    public Node<V> nodeWithLabel(@NotNull String labelPrefix) {
-        actionParameterStack.add(new ActionParameter.NodeWithLabel<V>(labelPrefix));
+    public Node<V> lastNode() {
+        actionParameters.add(new LastNodeParameter());
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to an array of Nodes matching the given label prefix.
-     * Caution: Since this only identifies nodes by their label and not by their paths nodes from arbitrary tree
-     * depths might be returned, which can be unindended, especially in recursive rules.
+     * Creates an action parameter that evaluates to the tree value of the current rule level, i.e.,
+     * If there is an explicitly set value it is returned. Otherwise the last non-null child value, or, if there
+     * is no such value, null.
      *
-     * @param labelPrefix the label prefix to be searched for
      * @return the action parameter
      */
-    public Node<V>[] nodesWithLabel(@NotNull String labelPrefix) {
-        actionParameterStack.add(new ActionParameter.NodesWithLabel<V>(labelPrefix));
+    public V value() {
+        actionParameters.add(new TreeValueParameter());
         return null;
     }
 
@@ -314,7 +347,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public V value(String path) {
-        actionParameterStack.add(new ActionParameter.Value<V>(path));
+        actionParameters.add(new ValueParameter<V>(node(path)));
         return null;
     }
 
@@ -325,21 +358,18 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public V[] values(String path) {
-        actionParameterStack.add(new ActionParameter.Values<V>(path));
+    public List<V> values(String path) {
+        actionParameters.add(new ValuesParameter<V>(nodes(path)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the first non-null node value found in a depth-first tree
-     * search under the first node found with the given prefix path.
-     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to the value of the last node created during this parsing run.
      *
-     * @param path the path to search for
      * @return the action parameter
      */
-    public V firstValue(String path) {
-        actionParameterStack.add(new ActionParameter.FirstValue<V>(path));
+    public V lastValue() {
+        actionParameters.add(new ValueParameter<V>(lastNode()));
         return null;
     }
 
@@ -351,7 +381,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public String text(String path) {
-        actionParameterStack.add(new ActionParameter.Text<V>(path));
+        actionParameters.add(new TextParameter<V>(node(path)));
         return null;
     }
 
@@ -362,8 +392,19 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public String[] texts(String path) {
-        actionParameterStack.add(new ActionParameter.Texts<V>(path));
+    public List<String> texts(String path) {
+        actionParameters.add(new TextsParameter<V>(nodes(path)));
+        return null;
+    }
+
+    /**
+     * Creates an action parameter that evaluates to the matched input text of the
+     * last node created during this parsing run.
+     *
+     * @return the action parameter
+     */
+    public String lastText() {
+        actionParameters.add(new TextParameter<V>(lastNode()));
         return null;
     }
 
@@ -376,7 +417,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Character ch(String path) {
-        actionParameterStack.add(new ActionParameter.Char<V>(path));
+        actionParameters.add(new CharParameter<V>(node(path)));
         return null;
     }
 
@@ -388,31 +429,19 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public Character[] chars(String path) {
-        actionParameterStack.add(new ActionParameter.Chars<V>(path));
+    public List<Character> chars(String path) {
+        actionParameters.add(new CharsParameter<V>(nodes(path)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the first non-null action parameter passed as parameters.
+     * Creates an action parameter that evaluates to the first character of the matched input text of the
+     * last node created during this parsing run.
      *
-     * @param value      the first parameter
-     * @param value2     the second parameter
-     * @param moreValues more parameters
-     * @return the first non-null action parameter
+     * @return the action parameter
      */
-    @SuppressWarnings({"unchecked"})
-    public <T> T firstNonNull(T value, T value2, T... moreValues) {
-        Object[] args = new Object[moreValues.length + 2];
-        for (int i = args.length - 1; i >= 0; i--) {
-            Object arg = i == 0 ? value : i == 1 ? value2 : moreValues[i - 2];
-            if (arg == null) {
-                arg = actionParameterStack.removeLast();
-                Checks.ensure(arg != null, "Illegal argument list for firstNonNull(): null values are not allowed!");
-            }
-            args[i] = arg;
-        }
-        actionParameterStack.add(new ActionParameter.FirstOfNonNull<V>(args));
+    public Character lastChar() {
+        actionParameters.add(new CharParameter<V>(lastNode()));
         return null;
     }
 
@@ -424,12 +453,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public <T> T convert(String text, @NotNull Converter<T> converter) {
-        Object arg = text;
-        if (text == null) {
-            arg = actionParameterStack.removeLast();
-            Checks.ensure(arg != null, "Illegal argument list for convert(): null values are not allowed!");
-        }
-        actionParameterStack.add(new ActionParameter.Convert<V, T>(arg, converter));
+        Object textArg = mixInParameter(actionParameters, text);
+        actionParameters.add(new ConvertParameter<T>(textArg, converter));
         return null;
     }
 
@@ -440,7 +465,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Integer convertToInteger(String text) {
-        return convert(text, new Converter<Integer>() {
+        return convert(text, new AbstractConverter<Integer>(Integer.class) {
             public Integer parse(String string) {
                 return Integer.parseInt(string);
             }
@@ -454,7 +479,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Long convertToLong(String text) {
-        return convert(text, new Converter<Long>() {
+        return convert(text, new AbstractConverter<Long>(Long.class) {
             public Long parse(String string) {
                 return Long.parseLong(string);
             }
@@ -468,7 +493,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Float convertToFloat(String text) {
-        return convert(text, new Converter<Float>() {
+        return convert(text, new AbstractConverter<Float>(Float.class) {
             public Float parse(String string) {
                 return Float.parseFloat(string);
             }
@@ -482,19 +507,11 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Double convertToDouble(String text) {
-        return convert(text, new Converter<Double>() {
+        return convert(text, new AbstractConverter<Double>(Double.class) {
             public Double parse(String string) {
                 return Double.parseDouble(string);
             }
         });
-    }
-
-    ///************************* PACKAGE ***************************///
-
-    ActionParameter[] retrieveAndClearActionParameters() {
-        ActionParameter[] params = actionParameterStack.toArray(new ActionParameter[actionParameterStack.size()]);
-        actionParameterStack.clear();
-        return params;
     }
 
     ///************************* PRIVATE ***************************///
@@ -535,7 +552,19 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         if (obj instanceof String) {
             return cachedString((String) obj);
         }
+        if (obj == null) {
+            return newActionMatcher();
+        }
         throw new ParserConstructionException("\'" + obj + "\' is not a valid Rule");
+    }
+
+    private Rule newActionMatcher() {
+        ActionParameter parameter = (ActionParameter) mixInParameter(actionParameters, null);
+        Checks.ensure(parameter instanceof ActionCallParameter,
+                "Illegal parser action, don't you want to call a method on your actions object?");
+        ActionCallParameter actionCall = (ActionCallParameter) parameter;
+        actionCall.verifyReturnType(ActionResult.class);
+        return new ActionMatcher(actionCall);
     }
 
 }

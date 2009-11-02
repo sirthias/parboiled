@@ -17,11 +17,10 @@
 package org.parboiled.examples.calculator2;
 
 import org.parboiled.Parboiled;
-import org.parboiled.ParsingResult;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import static org.parboiled.utils.DGraphUtils.printTree;
-import org.parboiled.utils.StringUtils;
-import org.parboiled.utils.ToStringFormatter;
+import org.parboiled.support.ParsingResult;
+import static org.parboiled.trees.GraphUtils.printTree;
+import org.parboiled.common.StringUtils;
+import org.parboiled.common.ToStringFormatter;
 
 import java.util.Scanner;
 
@@ -29,7 +28,7 @@ public class Calculator {
 
     public static void main(String[] args) {
         while (true) {
-            System.out.print("\nEnter an expression: ");
+            System.out.print("\nEnter an expression (single RETURN to exit): ");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
@@ -40,10 +39,10 @@ public class Calculator {
             CalcNode astRoot = result.root.getValue();
             System.out.println(input + " = " + astRoot.getValue() + '\n');
 
-            System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
+            // System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
 
             System.out.println("Abstract Syntax Tree:\n" +
-                    printTree(result.root.getValue(), new ToStringFormatter<CalcNode>()) + '\n');
+                    printTree(result.root.getValue(), new ToStringFormatter<CalcNode>(null)) + '\n');
 
             if (result.hasErrors()) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));

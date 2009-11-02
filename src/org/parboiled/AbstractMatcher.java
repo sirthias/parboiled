@@ -17,8 +17,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.utils.ImmutableList;
-import org.parboiled.utils.Preconditions;
+import org.parboiled.common.ImmutableList;
+import org.parboiled.common.Preconditions;
 
 /**
  * Abstract base class of most regular Matchers.

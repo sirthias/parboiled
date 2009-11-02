@@ -17,8 +17,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.utils.DGraphNode;
-import org.parboiled.utils.ImmutableDGraphNode;
+import org.parboiled.trees.GraphNode;
+import org.parboiled.trees.ImmutableGraphNode;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ import java.util.List;
  * Abstract base class of all Rules.
  * @param <T>
  */
-abstract class AbstractRule<T extends DGraphNode<T>> extends ImmutableDGraphNode<T> implements Rule {
+abstract class AbstractRule<T extends GraphNode<T>> extends ImmutableGraphNode<T> implements Rule {
 
     private String label;
     private boolean locked;

@@ -28,7 +28,6 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
     public Rule inputLine() {
         return enforcedSequence(
                 expression(),
-                actions.setValue(value("expression")),
                 eoi()
         );
     }
@@ -36,51 +35,30 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
     public Rule expression() {
         return sequence(
                 term(),
-                zeroOrMore(
-                        enforcedSequence(
-                                firstOf('+', '-'),
-                                term()
-                        )
-                ),
-                actions.compute(
-                        value("term"),
-                        chars("z/e/firstOf"),
-                        values("z/e/term")
-                )
+                zeroOrMore(enforcedSequence(firstOf('+', '-'), term())),
+                actions.compute(value("term"), chars("z/e/firstOf"), values("z/e/term"))
         );
     }
 
     public Rule term() {
         return sequence(
                 factor(),
-                zeroOrMore(
-                        enforcedSequence(
-                                firstOf('*', '/'),
-                                factor()
-                        )
-                ),
-                actions.compute(
-                        value("factor"),
-                        chars("z/e/firstOf"),
-                        values("z/e/factor")
-                )
+                zeroOrMore(enforcedSequence(firstOf('*', '/'), factor())),
+                actions.compute(value("factor"), chars("z/e/firstOf"), values("z/e/factor"))
         );
     }
 
     public Rule factor() {
-        return sequence(
-                firstOf(
-                        number(),
-                        enforcedSequence('(', expression(), ')').label("parens")
-                ),
-                actions.setValue(firstValue("firstOf"))
+        return firstOf(
+                number(),
+                enforcedSequence('(', expression(), ')').label("parens")
         );
     }
 
     public Rule number() {
         return sequence(
                 oneOrMore(digit()),
-                actions.setValue(convertToInteger(text("oneOrMore")))
+                set(convertToInteger(text("oneOrMore")))
         );
     }
 

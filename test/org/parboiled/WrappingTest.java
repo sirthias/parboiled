@@ -17,9 +17,9 @@
 package org.parboiled;
 
 import static org.parboiled.TestUtils.assertEqualsMultiline;
-import static org.parboiled.utils.DGraphUtils.countAllDistinct;
-import static org.parboiled.utils.DGraphUtils.printTree;
-import org.parboiled.utils.ToStringFormatter;
+import static org.parboiled.trees.GraphUtils.countAllDistinct;
+import static org.parboiled.trees.GraphUtils.printTree;
+import org.parboiled.common.ToStringFormatter;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 

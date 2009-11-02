@@ -17,21 +17,23 @@
 package org.parboiled.examples.calculator;
 
 import org.parboiled.ActionResult;
-import org.parboiled.ActionsImpl;
+import org.parboiled.BaseActions;
 
-public class CalculatorActions extends ActionsImpl<Integer> {
+import java.util.List;
 
-    public ActionResult compute(Integer firstValue, Character[] operators, Integer[] values) {
+public class CalculatorActions extends BaseActions<Integer> {
+
+    public ActionResult compute(Integer firstValue, List<Character> operators, List<Integer> values) {
         int value = firstValue != null ? firstValue : 0;
-        for (int i = 0; i < operators.length; i++) {
-            if (operators[i] != null && values[i] != null) {
-                value = performOperation(value, operators[i], values[i]);
-            }
+        for (int i = 0; i < operators.size(); i++) {
+            value = performOperation(value, operators.get(i), values.get(i));
         }
-        return setValue(value);
+        getContext().setNodeValue(value);
+        return ActionResult.CONTINUE;
     }
 
     private int performOperation(int value1, Character operator, Integer value2) {
+        if (operator == null || value2 == null) return value1;
         switch (operator) {
             case '+':
                 return value1 + value2;

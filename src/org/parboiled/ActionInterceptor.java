@@ -18,14 +18,15 @@ package org.parboiled;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.parboiled.support.Checks;
-import org.parboiled.utils.Preconditions;
+import org.parboiled.actionparameters.ActionCallParameter;
+import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameters;
+import org.parboiled.common.Preconditions;
 
 import java.lang.reflect.Method;
 
 /**
  * This interceptor intercepts all action method calls to the parser action object.
- * In the rule creation phase it creates the respective ActionMatcher for the call and returns it.
+ * In the rule creation phase it creates an ActionCallParameter for the call,
  */
 class ActionInterceptor implements MethodInterceptor {
 
@@ -43,33 +44,18 @@ class ActionInterceptor implements MethodInterceptor {
         // however, actions might also be called by other actions during the parsing run (i.e. after rule construction)
         // in this case the parser object will have been set to null and we should directly invoke the action method
         if (parser != null) {
-            return createActionMatcher(obj, method, args, proxy);
+            return newActionCallParameter(obj, method, args, proxy);
         }
         return proxy.invokeSuper(obj, args);
     }
 
-    // build real arguments by replacing null values with respective parameter objects from the parser
     @SuppressWarnings({"unchecked"})
-    private Object createActionMatcher(Object obj, Method method, Object[] args, MethodProxy proxy) {
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        ActionParameter[] params = parser.retrieveAndClearActionParameters();
-        Object[] realArgs = new Object[args.length];
-
-        int j = 0;
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            if (arg == null) {
-                Checks.ensure(params.length > j, "Illegal argument list for action '%': " +
-                        "null values are not allowed! (Please use BaseParser.NULL)", proxy.getSignature().getName());
-                ActionParameter param = params[j++];
-                param.setExpectedType(parameterTypes[i]);
-                arg = param;
-            }
-            realArgs[i] = arg;
-        }
-        Preconditions.checkState(j == params.length);
-
-        return new ActionMatcher((Actions<?>) obj, proxy, realArgs);
+    private Object newActionCallParameter(Object obj, Method method, Object[] args, MethodProxy proxy) {
+        Object[] params = mixInParameters(parser.actionParameters, args);
+        ActionCallParameter actionCall = new ActionCallParameter((Actions) obj, method, params, proxy);
+        actionCall.verifyReturnType(method.getReturnType());
+        parser.actionParameters.add(actionCall);
+        return null;
     }
 
 }
