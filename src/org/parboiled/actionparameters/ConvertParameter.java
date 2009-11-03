@@ -35,6 +35,6 @@ public class ConvertParameter<T> extends ActionParameterWithArgument<String> {
 
     @Override
     public String toString() {
-        return "convert to " + returnType.getSimpleName() + '(' + argument + ')';
+        return "CONVERT to " + returnType.getSimpleName() + '(' + argument + ')';
     }
 }

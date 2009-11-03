@@ -36,13 +36,13 @@ public class UpParameter implements ActionParameter {
     @SuppressWarnings({"ConstantConditions"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         MatcherContext<?> parentContext = context.getParent();
-        Checks.ensure(parentContext != null, "Illegal up() call, already at root level");
+        Checks.ensure(parentContext != null, "Illegal UP() call, already at root level");
         return ActionParameterUtils.resolve(argument, parentContext);
     }
 
     @Override
     public String toString() {
-        return "up(" + argument + ')';
+        return "UP(" + argument + ')';
     }
 
 }

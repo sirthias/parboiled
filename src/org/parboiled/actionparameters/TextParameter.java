@@ -32,7 +32,7 @@ public class TextParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
     @Override
     public String toString() {
-        return "text(" + argument + ')';
+        return "TEXT(" + argument + ')';
     }
 
 }

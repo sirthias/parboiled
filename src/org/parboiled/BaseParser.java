@@ -268,7 +268,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param argument the arguments to change to context for
      * @return the result of the arguments
      */
-    public <T> T up(T argument) {
+    public <T> T UP(T argument) {
         Object arg = mixInParameter(actionParameters, argument);
         actionParameters.add(new UpParameter(arg));
         return null;
@@ -280,7 +280,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param argument the arguments to change to context for
      * @return the result of the arguments
      */
-    public <T> T down(T argument) {
+    public <T> T DOWN(T argument) {
         Object arg = mixInParameter(actionParameters, argument);
         actionParameters.add(new DownParameter(arg));
         return null;
@@ -293,7 +293,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public Node<V> node(@NotNull String path) {
+    public Node<V> NODE(@NotNull String path) {
         Object arg = mixInParameter(actionParameters, path);
         actionParameters.add(new PathNodeParameter(arg));
         return null;
@@ -306,7 +306,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public List<Node<V>> nodes(@NotNull String path) {
+    public List<Node<V>> NODES(@NotNull String path) {
         Object pathArg = mixInParameter(actionParameters, path);
         actionParameters.add(new PathNodesParameter(pathArg));
         return null;
@@ -317,7 +317,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      *
      * @return the action parameter
      */
-    public Node<V> lastNode() {
+    public Node<V> LAST_NODE() {
         actionParameters.add(new LastNodeParameter());
         return null;
     }
@@ -329,7 +329,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      *
      * @return the action parameter
      */
-    public V value() {
+    public V VALUE() {
         actionParameters.add(new TreeValueParameter<V>(nodeValueType));
         return null;
     }
@@ -341,8 +341,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public V value(String path) {
-        node(path);
+    public V VALUE(String path) {
+        NODE(path);
         actionParameters.add(new ValueParameter<V>(nodeValueType, actionParameters.pop()));
         return null;
     }
@@ -354,8 +354,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public List<V> values(String path) {
-        nodes(path);
+    public List<V> VALUES(String path) {
+        NODES(path);
         actionParameters.add(new ValuesParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -365,8 +365,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      *
      * @return the action parameter
      */
-    public V lastValue() {
-        lastNode();
+    public V LAST_VALUE() {
+        LAST_NODE();
         actionParameters.add(new ValueParameter<V>(nodeValueType, actionParameters.pop()));
         return null;
     }
@@ -378,8 +378,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public String text(String path) {
-        node(path);
+    public String TEXT(String path) {
+        NODE(path);
         actionParameters.add(new TextParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -391,8 +391,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public List<String> texts(String path) {
-        nodes(path);
+    public List<String> TEXTS(String path) {
+        NODES(path);
         actionParameters.add(new TextsParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -403,8 +403,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      *
      * @return the action parameter
      */
-    public String lastText() {
-        lastNode();
+    public String LAST_TEXT() {
+        LAST_NODE();
         actionParameters.add(new TextParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -417,8 +417,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public Character ch(String path) {
-        node(path);
+    public Character CHAR(String path) {
+        NODE(path);
         actionParameters.add(new CharParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -431,8 +431,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public List<Character> chars(String path) {
-        nodes(path);
+    public List<Character> CHARS(String path) {
+        NODES(path);
         actionParameters.add(new CharsParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -443,8 +443,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      *
      * @return the action parameter
      */
-    public Character lastChar() {
-        lastNode();
+    public Character LAST_CHAR() {
+        LAST_NODE();
         actionParameters.add(new CharParameter<V>(actionParameters.pop()));
         return null;
     }
@@ -455,8 +455,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      *
      * @return a new rule
      */
-    public ActionResult set() {
-        lastValue();
+    public ActionResult SET() {
+        LAST_VALUE();
         actionParameters.add(new SetValueParameter<V>(actionParameters.pop(), nodeValueType));
         return null;
     }
@@ -468,7 +468,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param value the value to set
      * @return a new rule
      */
-    public ActionResult set(V value) {
+    public ActionResult SET(V value) {
         Object valueArg = mixInParameter(actionParameters, value);
         actionParameters.add(new SetValueParameter<V>(valueArg, nodeValueType));
         return null;
@@ -491,7 +491,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param converter the converter to use
      * @return the action parameter
      */
-    public <T> T convert(String text, @NotNull Converter<T> converter) {
+    public <T> T CONVERT(String text, @NotNull Converter<T> converter) {
         Object textArg = mixInParameter(actionParameters, text);
         List<Class<?>> convertedTypes = Utils.getTypeArguments(Converter.class, converter.getClass());
         Preconditions.checkArgument(convertedTypes.size() == 1, "Illegal converter");
@@ -505,8 +505,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param text the text (parameter) to convert
      * @return the action parameter
      */
-    public Integer convertToInteger(String text) {
-        return convert(text, new Converter<Integer>() {
+    public Integer CONVERT_TO_INTEGER(String text) {
+        return CONVERT(text, new Converter<Integer>() {
             public Integer parse(String string) {
                 return Integer.parseInt(string);
             }
@@ -519,8 +519,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param text the text (parameter) to convert
      * @return the action parameter
      */
-    public Long convertToLong(String text) {
-        return convert(text, new Converter<Long>() {
+    public Long CONVERT_TO_LONG(String text) {
+        return CONVERT(text, new Converter<Long>() {
             public Long parse(String string) {
                 return Long.parseLong(string);
             }
@@ -533,8 +533,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param text the text (parameter) to convert
      * @return the action parameter
      */
-    public Float convertToFloat(String text) {
-        return convert(text, new Converter<Float>() {
+    public Float CONVERT_TO_FLOAT(String text) {
+        return CONVERT(text, new Converter<Float>() {
             public Float parse(String string) {
                 return Float.parseFloat(string);
             }
@@ -547,8 +547,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param text the text (parameter) to convert
      * @return the action parameter
      */
-    public Double convertToDouble(String text) {
-        return convert(text, new Converter<Double>() {
+    public Double CONVERT_TO_DOUBLE(String text) {
+        return CONVERT(text, new Converter<Double>() {
             public Double parse(String string) {
                 return Double.parseDouble(string);
             }

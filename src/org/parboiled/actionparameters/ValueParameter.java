@@ -33,7 +33,7 @@ public class ValueParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
     @Override
     public String toString() {
-        return "value(" + argument + ')';
+        return "VALUE(" + argument + ')';
     }
 
 }

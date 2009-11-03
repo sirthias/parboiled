@@ -36,7 +36,7 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
         return sequence(
                 term(),
                 zeroOrMore(enforcedSequence(firstOf('+', '-'), term())),
-                actions.compute(value("term"), chars("z/e/firstOf"), values("z/e/term"))
+                actions.compute(VALUE("term"), CHARS("z/e/firstOf"), VALUES("z/e/term"))
         );
     }
 
@@ -44,7 +44,7 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
         return sequence(
                 factor(),
                 zeroOrMore(enforcedSequence(firstOf('*', '/'), factor())),
-                actions.compute(value("factor"), chars("z/e/firstOf"), values("z/e/factor"))
+                actions.compute(VALUE("factor"), CHARS("z/e/firstOf"), VALUES("z/e/factor"))
         );
     }
 
@@ -58,7 +58,7 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
     public Rule number() {
         return sequence(
                 oneOrMore(digit()),
-                set(convertToInteger(lastText()))
+                SET(CONVERT_TO_INTEGER(LAST_TEXT()))
         );
     }
 

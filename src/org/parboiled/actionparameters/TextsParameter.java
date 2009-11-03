@@ -38,7 +38,7 @@ public class TextsParameter<V> extends ActionParameterWithArgument<List<Node<V>>
 
     @Override
     public String toString() {
-        return "texts(" + argument + ')';
+        return "TEXTS(" + argument + ')';
     }
     
 }

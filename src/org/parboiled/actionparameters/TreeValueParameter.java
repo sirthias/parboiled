@@ -31,7 +31,7 @@ public class TreeValueParameter<V> extends BaseActionParameter {
 
     @Override
     public String toString() {
-        return "value";
+        return "VALUE";
     }
 
 }

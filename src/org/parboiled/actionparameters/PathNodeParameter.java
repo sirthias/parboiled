@@ -32,7 +32,7 @@ public class PathNodeParameter extends ActionParameterWithArgument<String> {
 
     @Override
     public String toString() {
-        return "node(" + argument + ')';
+        return "NODE(" + argument + ')';
     }
 
 }

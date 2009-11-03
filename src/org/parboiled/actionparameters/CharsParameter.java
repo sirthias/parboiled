@@ -38,7 +38,7 @@ public class CharsParameter<V> extends ActionParameterWithArgument<List<Node<V>>
 
     @Override
     public String toString() {
-        return "chars(" + argument + ')';
+        return "CHARS(" + argument + ')';
     }
 
 }

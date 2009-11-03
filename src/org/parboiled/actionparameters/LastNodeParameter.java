@@ -32,7 +32,7 @@ public class LastNodeParameter extends BaseActionParameter {
 
     @Override
     public String toString() {
-        return "lastNode";
+        return "LAST_NODE";
     }
 
 }

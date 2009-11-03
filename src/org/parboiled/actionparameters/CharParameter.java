@@ -33,7 +33,7 @@ public class CharParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
     @Override
     public String toString() {
-        return "ch(" + argument + ')';
+        return "CHAR(" + argument + ')';
     }
 
 }

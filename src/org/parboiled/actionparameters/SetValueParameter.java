@@ -35,7 +35,7 @@ public class SetValueParameter<V> extends ActionParameterWithArgument<V> {
 
     @Override
     public String toString() {
-        return "set(" + argument + ')';
+        return "SET(" + argument + ')';
     }
 
 }

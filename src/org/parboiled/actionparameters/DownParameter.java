@@ -36,13 +36,13 @@ public class DownParameter implements ActionParameter {
     @SuppressWarnings({"ConstantConditions"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         MatcherContext<?> subContext = context.getSubContext();
-        Checks.ensure(subContext != null, "Illegal down() call, already at leaf level");
+        Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
         return ActionParameterUtils.resolve(argument, subContext);
     }
 
     @Override
     public String toString() {
-        return "down(" + argument + ')';
+        return "DOWN(" + argument + ')';
     }
 
 }

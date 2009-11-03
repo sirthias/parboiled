@@ -35,7 +35,7 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    set(actions.timesTwo(convertToInteger(lastText())))
+                    SET(actions.timesTwo(CONVERT_TO_INTEGER(LAST_TEXT())))
             );
         }
 
