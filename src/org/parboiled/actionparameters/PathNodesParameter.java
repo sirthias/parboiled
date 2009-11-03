@@ -23,7 +23,6 @@ import org.parboiled.support.ParseTreeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collection;
 
 public class PathNodesParameter extends ActionParameterWithArgument<String> {
 
@@ -35,7 +34,12 @@ public class PathNodesParameter extends ActionParameterWithArgument<String> {
     public Object resolve(@NotNull MatcherContext<?> context) {
         List<? extends Node<?>> subNodes = context.getSubNodes();
         String path = resolveArgument(context);
-        return ParseTreeUtils.collectNodesByPath((Collection<Node<Object>>) subNodes, path, new ArrayList());
+        return ParseTreeUtils.collectNodesByPath((List<Node<Object>>) subNodes, path, new ArrayList());
+    }
+
+    @Override
+    public String toString() {
+        return "nodes(" + argument + ')';
     }
 
 }

@@ -17,7 +17,6 @@
 package org.parboiled.actionparameters;
 
 import org.parboiled.common.Preconditions;
-import org.parboiled.BaseParser;
 
 abstract class BaseActionParameter implements ActionParameter {
 
@@ -28,7 +27,7 @@ abstract class BaseActionParameter implements ActionParameter {
     }
 
     public void verifyReturnType(Class<?> returnType) {
-        Preconditions.checkState(returnType.isAssignableFrom(this.returnType));
+        Preconditions.checkState(returnType.isAssignableFrom(this.returnType), "Illegal action parameter type");
     }
 
 }

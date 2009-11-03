@@ -19,7 +19,6 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
-import static org.parboiled.actionparameters.ActionParameterUtils.maskNull;
 
 public class CharParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
@@ -29,7 +28,12 @@ public class CharParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
     @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return maskNull(context.getNodeChar(resolveArgument(context)));
+        return context.getNodeChar(resolveArgument(context));
+    }
+
+    @Override
+    public String toString() {
+        return "ch(" + argument + ')';
     }
 
 }

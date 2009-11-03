@@ -35,4 +35,10 @@ public class CharsParameter<V> extends ActionParameterWithArgument<List<Node<V>>
         }
         return values;
     }
+
+    @Override
+    public String toString() {
+        return "chars(" + argument + ')';
+    }
+
 }

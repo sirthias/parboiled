@@ -19,7 +19,6 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
-import static org.parboiled.actionparameters.ActionParameterUtils.maskNull;
 
 public class PathNodeParameter extends ActionParameterWithArgument<String> {
 
@@ -28,6 +27,12 @@ public class PathNodeParameter extends ActionParameterWithArgument<String> {
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return maskNull(context.getNodeByPath(resolveArgument(context)));
+        return context.getNodeByPath(resolveArgument(context));
     }
+
+    @Override
+    public String toString() {
+        return "node(" + argument + ')';
+    }
+
 }

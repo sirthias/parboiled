@@ -35,4 +35,10 @@ public class TextsParameter<V> extends ActionParameterWithArgument<List<Node<V>>
         }
         return values;
     }
+
+    @Override
+    public String toString() {
+        return "texts(" + argument + ')';
+    }
+    
 }

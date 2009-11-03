@@ -17,22 +17,25 @@
 package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.ActionResult;
 import org.parboiled.MatcherContext;
-import org.parboiled.Node;
 
-public class TextParameter<V> extends ActionParameterWithArgument<Node<V>> {
+public class SetValueParameter<V> extends ActionParameterWithArgument<V> {
 
-    public TextParameter(Object node) {
-        super(String.class, node, Node.class);
+    public SetValueParameter(Object value, Class<V> nodeValueType) {
+        super(ActionResult.class, value, nodeValueType);
     }
 
+    @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return context.getNodeText(resolveArgument(context));
+        MatcherContext<V> vContext = (MatcherContext<V>) context;
+        vContext.setNodeValue(resolveArgument(context));
+        return ActionResult.CONTINUE;
     }
 
     @Override
     public String toString() {
-        return "text(" + argument + ')';
+        return "set(" + argument + ')';
     }
 
 }

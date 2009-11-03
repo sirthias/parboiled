@@ -18,16 +18,20 @@ package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import static org.parboiled.actionparameters.ActionParameterUtils.maskNull;
 
-public class TreeValueParameter extends BaseActionParameter {
+public class TreeValueParameter<V> extends BaseActionParameter {
 
-    public TreeValueParameter() {
-        super(Object.class);
+    public TreeValueParameter(Class<V> returnType) {
+        super(returnType);
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return maskNull(context.getTreeValue());
+        return context.getTreeValue();
+    }
+
+    @Override
+    public String toString() {
+        return "value";
     }
 
 }

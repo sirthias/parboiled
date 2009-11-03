@@ -35,7 +35,7 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    set(actions.timesTwo(convertToInteger(text("o"))))
+                    set(actions.timesTwo(convertToInteger(lastText())))
             );
         }
 
@@ -50,7 +50,7 @@ public class ActionTest extends AbstractTest {
         ActionTestActions actions = Parboiled.createActions(ActionTestActions.class);
         ActionTestParser parser = Parboiled.createParser(ActionTestParser.class, actions);
         test(parser, parser.number(), "123", "" +
-                "[number, {123}] '123'\n" +
+                "[number, {246}] '123'\n" +
                 "    [oneOrMore] '123'\n" +
                 "        [digit] '1'\n" +
                 "        [digit] '2'\n" +

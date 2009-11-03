@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.actionparameters.ActionParameterUtils;
+import org.parboiled.MatcherContext;
+import org.parboiled.support.Checks;
 
-public class SetValueMatcher<V> extends SpecialMatcher<V> {
-    private final V value;
+public class NullParameter implements ActionParameter {
 
-    public SetValueMatcher(V value) {
-        this.value = value;
+    public void verifyReturnType(Class<?> returnType) {
+        Checks.ensure(!returnType.isPrimitive(), "Illegal argument type, cannot use NULL() for primitive types");
     }
 
-    public String getLabel() {
-        return "set value";
+    public Object resolve(@NotNull MatcherContext<?> context) {
+        return null;
     }
 
-    @SuppressWarnings({"unchecked"})
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        context = context.getParent(); // actions want to operate in the parent scope
-        Object value = ActionParameterUtils.resolve(this.value, context);
-        context.setNodeValue((V) value);
-        return true;
+    @Override
+    public String toString() {
+        return "null";
     }
 
 }

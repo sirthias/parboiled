@@ -33,6 +33,11 @@ public interface Context<V> {
     Context<V> getParent();
 
     /**
+     * @return the current sub context, if there is one
+     */
+    Context<V> getSubContext();
+
+    /**
      * @return the matcher this context was constructed for
      */
     @NotNull

@@ -17,7 +17,6 @@
 package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.BaseParser;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Preconditions;
 import org.parboiled.support.Checks;
@@ -37,7 +36,7 @@ public class ActionParameterUtils {
     public static Object mixInParameter(Stack<ActionParameter> actionParameters, Object arg) {
         if (arg == null) {
             Checks.ensure(!actionParameters.isEmpty(),
-                    "Illegal argument: null values are not allowed! (Please use special NULL value)");
+                    "Illegal action argument: null values are not allowed! (Please use special NULL value)");
             arg = actionParameters.pop();
         }
         return arg;
@@ -73,9 +72,6 @@ public class ActionParameterUtils {
         if (argument instanceof ActionParameter) {
             return ((ActionParameter) argument).resolve(context);
         }
-        if (argument == BaseParser.NULL) {
-            return null;
-        }
         return argument;
     }
 
@@ -83,16 +79,8 @@ public class ActionParameterUtils {
         if (argument instanceof ActionParameter) {
             ((ActionParameter) argument).verifyReturnType(requiredArgumentType);
         } else {
-            if (argument == null || argument == BaseParser.NULL) {
-                Preconditions.checkState(!requiredArgumentType.isPrimitive());
-            } else {
-                Preconditions.checkState(requiredArgumentType.isAssignableFrom(argument.getClass()));
-            }
+            Preconditions.checkState(requiredArgumentType.isAssignableFrom(argument.getClass()));
         }
-    }
-
-    public static Object maskNull(Object returnResult) {
-        return returnResult != null ? returnResult : BaseParser.NULL;
     }
 
 }

@@ -16,12 +16,11 @@
 
 package org.parboiled.actionparameters;
 
-import net.sf.cglib.core.Signature;
 import net.sf.cglib.proxy.MethodProxy;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Actions;
 import org.parboiled.MatcherContext;
-import static org.parboiled.actionparameters.ActionParameterUtils.maskNull;
+import org.parboiled.common.StringUtils;
 import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 import org.parboiled.support.ParsingException;
 
@@ -55,8 +54,7 @@ public class ActionCallParameter extends BaseActionParameter {
         try {
             actionsObject.setContext(context);
             Object[] resolvedArgs = ActionParameterUtils.resolve(args, context);
-            Object result = proxy.invokeSuper(actionsObject, resolvedArgs);
-            return maskNull(result);
+            return proxy.invokeSuper(actionsObject, resolvedArgs);
         } catch (ParsingException pex) {
             context.addError(pex.getMessage());
             return null;
@@ -65,8 +63,14 @@ public class ActionCallParameter extends BaseActionParameter {
         }
     }
 
-    public String getMethodName() {
-        return method.getName();
+    @Override
+    public String toString() {
+        return new StringBuilder("action ")
+                .append(method.getName())
+                .append('(')
+                .append(StringUtils.join(args, ", "))
+                .append(')')
+                .toString();
     }
 
 }

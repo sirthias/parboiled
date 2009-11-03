@@ -16,8 +16,8 @@
 
 package org.parboiled.examples.calculator2;
 
-import org.parboiled.Rule;
 import org.parboiled.BaseParser;
+import org.parboiled.Rule;
 
 public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
@@ -34,11 +34,13 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
     public Rule expression() {
         return sequence(
-                term(), set(),
+                term(),
+                set(),
                 zeroOrMore(
                         enforcedSequence(
                                 firstOf('+', '-'),
-                                term(), up(up(set(actions.createAst(ch("z/last:e/firstOf"), value(), lastValue()))))
+                                term(),
+                                up(up(set(actions.createAst(down(down(ch("firstOf"))), value(), lastValue()))))
                         )
                 )
         );
@@ -46,11 +48,13 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
     public Rule term() {
         return sequence(
-                factor(), set(),
+                factor(),
+                set(),
                 zeroOrMore(
                         enforcedSequence(
                                 firstOf('*', '/'),
-                                factor(), up(up(set(actions.createAst(ch("z/last:e/firstOf"), value(), lastValue()))))
+                                factor(),
+                                up(up(set(actions.createAst(down(down(ch("firstOf"))), value(), lastValue()))))
                         )
                 )
         );

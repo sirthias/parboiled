@@ -31,9 +31,4 @@ public interface Converter<T> {
      */
     T parse(String string);
 
-    /**
-     * @return the target type that this Converter can convert to 
-     */
-    Class<T> getTargetType();
-
 }

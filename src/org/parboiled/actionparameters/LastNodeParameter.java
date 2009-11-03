@@ -19,7 +19,6 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
-import static org.parboiled.actionparameters.ActionParameterUtils.maskNull;
 
 public class LastNodeParameter extends BaseActionParameter {
 
@@ -28,7 +27,12 @@ public class LastNodeParameter extends BaseActionParameter {
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return maskNull(context.getLastNode());
+        return context.getLastNode();
+    }
+
+    @Override
+    public String toString() {
+        return "lastNode";
     }
 
 }

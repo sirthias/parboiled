@@ -19,16 +19,21 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
-import static org.parboiled.actionparameters.ActionParameterUtils.maskNull;
 
 public class ValueParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
-    public ValueParameter(Object node) {
-        super(Object.class, node, Node.class);
+    public ValueParameter(Class<V> returnType, Object node) {
+        super(returnType, node, Node.class);
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         Node<V> node = resolveArgument(context);
-        return maskNull(node == null ? null : node.getValue());
+        return node == null ? null : node.getValue();
     }
+
+    @Override
+    public String toString() {
+        return "value(" + argument + ')';
+    }
+
 }

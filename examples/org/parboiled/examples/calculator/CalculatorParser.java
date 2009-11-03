@@ -58,7 +58,7 @@ public class CalculatorParser extends BaseParser<Integer, CalculatorActions> {
     public Rule number() {
         return sequence(
                 oneOrMore(digit()),
-                set(convertToInteger(text("oneOrMore")))
+                set(convertToInteger(lastText()))
         );
     }
 

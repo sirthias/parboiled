@@ -17,26 +17,26 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.actionparameters.ActionCallParameter;
+import org.parboiled.actionparameters.ActionParameter;
 
 /**
  * A Matcher that not actually matches input but rather invoking parser actions.
  */
 class ActionMatcher<V> extends SpecialMatcher<V> implements ActionResult {
 
-    private final ActionCallParameter actionCall;
+    private final ActionParameter action;
 
-    public ActionMatcher(ActionCallParameter actionCall) {
-        this.actionCall = actionCall;
+    public ActionMatcher(ActionParameter action) {
+        action.verifyReturnType(ActionResult.class);
+        this.action = action;
     }
 
     public String getLabel() {
-        return "action '" + actionCall.getMethodName() + '\'';
+        return "run " + action;
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        context = context.getParent(); // actions want to operate in the parent scope
-        Object result = actionCall.resolve(context);
+        Object result = action.resolve(context);
         return result == ActionResult.CONTINUE;
     }
 

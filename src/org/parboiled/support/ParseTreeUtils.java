@@ -107,13 +107,18 @@ public class ParseTreeUtils {
      * @param collection the collection to collect the found Nodes into
      * @return the same collection instance passed as a parameter
      */
-    public static <V, C extends Collection<Node<V>>> C collectNodesByPath(Collection<Node<V>> parents,
+    public static <V, C extends Collection<Node<V>>> C collectNodesByPath(List<Node<V>> parents,
                                                                           @NotNull String path,
                                                                           @NotNull C collection) {
         if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
-            for (Node<V> child : parents) {
+            Iterable<Node<V>> iterable = parents;
+            if (prefix.startsWith("last:")) {
+                prefix = prefix.substring(5);
+                iterable = Utils.reverse(parents);
+            }
+            for (Node<V> child : iterable) {
                 if (StringUtils.startsWith(child.getLabel(), prefix)) {
                     if (separatorIndex == -1) {
                         collection.add(child);
@@ -153,7 +158,7 @@ public class ParseTreeUtils {
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNode(Collection<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
+    public static <V> Node<V> findNode(List<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
         if (parents != null && !parents.isEmpty()) {
             for (Node<V> child : parents) {
                 Node<V> found = findNode(child, predicate);
@@ -164,37 +169,74 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Collects all Nodes underneath the given parent that match the given label (prefix).
+     * Returns the last Node underneath the given parent for which the given predicate evaluates to true.
+     * If parent is null or no node is found the method returns null.
      *
-     * @param parent      the parent Node
-     * @param labelPrefix the path to the Nodes being searched for
-     * @param collection  the collection to collect the found Nodes into
-     * @return the same collection instance passed as a parameter
+     * @param parent    the parent Node
+     * @param predicate the predicate
+     * @return the Node if found or null if not found
      */
-    public static <V, C extends Collection<Node<V>>> C collectNodesByLabel(Node<V> parent,
-                                                                           @NotNull String labelPrefix,
-                                                                           @NotNull C collection) {
-        return parent != null && hasChildren(parent) ?
-                collectNodesByPath(parent.getChildren(), labelPrefix, collection) : collection;
+    public static <V> Node<V> findLastNode(Node<V> parent, @NotNull Predicate<Node<V>> predicate) {
+        if (parent != null) {
+            if (predicate.apply(parent)) return parent;
+            if (hasChildren(parent)) {
+                Node<V> found = findLastNode(parent.getChildren(), predicate);
+                if (found != null) return found;
+            }
+        }
+        return null;
     }
 
     /**
-     * Collects all Nodes underneath the given parents that match the given label (prefix).
+     * Returns the last Node underneath the given parents for which the given predicate evaluates to true.
+     * If parents is null or empty or no node is found the method returns null.
      *
-     * @param parents     the parent Nodes to look through
-     * @param labelPrefix the path to the Nodes being searched for
-     * @param collection  the collection to collect the found Nodes into
+     * @param parents   the parent Nodes to look through
+     * @param predicate the predicate
+     * @return the Node if found or null if not found
+     */
+    public static <V> Node<V> findLastNode(List<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
+        if (parents != null && !parents.isEmpty()) {
+            for (Node<V> child : Utils.reverse(parents)) {
+                Node<V> found = findLastNode(child, predicate);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Collects all Nodes underneath the given parent for which the given predicate evaluates to true.
+     *
+     * @param parent     the parent Node
+     * @param predicate  the predicate
+     * @param collection the collection to collect the found Nodes into
      * @return the same collection instance passed as a parameter
      */
-    public static <V, C extends Collection<Node<V>>> C collectNodesByLabel(Collection<Node<V>> parents,
-                                                                           @NotNull String labelPrefix,
-                                                                           @NotNull C collection) {
+    public static <V, C extends Collection<Node<V>>> C collectNodes(Node<V> parent,
+                                                                    @NotNull Predicate<Node<V>> predicate,
+                                                                    @NotNull C collection) {
+        return parent != null && hasChildren(parent) ?
+                collectNodes(parent.getChildren(), predicate, collection) : collection;
+    }
+
+    /**
+     * Collects all Nodes underneath the given parents for which the given predicate evaluates to true.
+     *
+     * @param parents    the parent Nodes to look through
+     * @param predicate  the predicate
+     * @param collection the collection to collect the found Nodes into
+     * @return the same collection instance passed as a parameter
+     */
+    public static <V, C extends Collection<Node<V>>> C collectNodes(List<Node<V>> parents,
+                                                                    @NotNull Predicate<Node<V>> predicate,
+                                                                    @NotNull C collection) {
         if (parents != null && !parents.isEmpty()) {
             for (Node<V> child : parents) {
-                if (StringUtils.startsWith(child.getLabel(), labelPrefix)) {
+                if (predicate.apply(child)) {
                     collection.add(child);
                 }
-                collectNodesByPath(child, labelPrefix, collection);
+                collectNodes(child, predicate, collection);
             }
         }
         return collection;

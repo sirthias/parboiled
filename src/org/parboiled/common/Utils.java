@@ -18,10 +18,8 @@ package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * General utility methods.
@@ -158,6 +156,101 @@ public final class Utils {
                 };
             }
         };
+    }
+
+    /**
+     * Gets the actual type arguments that are used in a given implementation of a given generic base class or interface.
+     * (Based on code copyright 2007 by Ian Robertson).
+     *
+     * @param base           the generic base class or interface
+     * @param implementation the type (potentially) implementing the given base class or interface
+     * @return a list of the raw classes for the actual type arguments.
+     */
+    @NotNull
+    public static List<Class<?>> getTypeArguments(@NotNull Class<?> base, @NotNull Class<?> implementation) {
+        Map<Type, Type> resolvedTypes = new HashMap<Type, Type>();
+
+        // first we need to resolve all supertypes up to the required base class or interface
+        // and find the right Type for it
+        Type type;
+
+        Queue<Type> toCheck = new LinkedList<Type>();
+        toCheck.add(implementation);
+        while (true) {
+            // if we have checked everything and not found the base class we return an empty list
+            if (toCheck.isEmpty()) return ImmutableList.of();
+
+            type = toCheck.remove();
+            Class<?> clazz;
+
+            if (type instanceof Class) {
+                // there is no useful information for us in raw types, so just keep going up the inheritance chain
+                clazz = (Class) type;
+                if (base.isInterface()) {
+                    // if we are actually looking for the type parameters to an interface we also need to
+                    // look at all the ones implemented by the given current one
+                    toCheck.addAll(Arrays.asList(clazz.getGenericInterfaces()));
+                }
+            } else if (type instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                clazz = (Class) parameterizedType.getRawType();
+
+                // for instances of ParameterizedType we extract and remember all type arguments
+                TypeVariable<?>[] typeParameters = clazz.getTypeParameters();
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                for (int i = 0; i < actualTypeArguments.length; i++) {
+                    resolvedTypes.put(typeParameters[i], actualTypeArguments[i]);
+                }
+            } else {
+                return ImmutableList.of();
+            }
+
+            // we can stop if we have reached the sought for base type
+            if (base.equals(getClass(type))) break;
+
+            toCheck.add(clazz.getGenericSuperclass());
+        }
+
+        // finally, for each actual type argument provided to baseClass,
+        // determine (if possible) the raw class for that type argument.
+        Type[] actualTypeArguments;
+        if (type instanceof Class) {
+            actualTypeArguments = ((Class) type).getTypeParameters();
+        } else {
+            actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+        }
+        List<Class<?>> typeArgumentsAsClasses = new ArrayList<Class<?>>();
+        // resolve types by chasing down type variables.
+        for (Type baseType : actualTypeArguments) {
+            while (resolvedTypes.containsKey(baseType)) {
+                baseType = resolvedTypes.get(baseType);
+            }
+            typeArgumentsAsClasses.add(getClass(baseType));
+        }
+        return typeArgumentsAsClasses;
+    }
+
+    /**
+     * Get the underlying class for a type, or null if the type is a variable type.
+     * (Copyright 2007 by Ian Robertson).
+     *
+     * @param type the type
+     * @return the underlying class
+     */
+
+    public static Class<?> getClass(Type type) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            return getClass(((ParameterizedType) type).getRawType());
+        } else if (type instanceof GenericArrayType) {
+            Type componentType = ((GenericArrayType) type).getGenericComponentType();
+            Class<?> componentClass = getClass(componentType);
+            if (componentClass != null) {
+                return Array.newInstance(componentClass, 0).getClass();
+            }
+        }
+        return null;
     }
 
 }

@@ -18,6 +18,7 @@ package org.parboiled.examples.calculator2;
 
 import org.parboiled.Parboiled;
 import org.parboiled.support.ParsingResult;
+import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.trees.GraphUtils.printTree;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.ToStringFormatter;
@@ -39,7 +40,7 @@ public class Calculator {
             CalcNode astRoot = result.root.getValue();
             System.out.println(input + " = " + astRoot.getValue() + '\n');
 
-            // System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
+            System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
 
             System.out.println("Abstract Syntax Tree:\n" +
                     printTree(result.root.getValue(), new ToStringFormatter<CalcNode>(null)) + '\n');

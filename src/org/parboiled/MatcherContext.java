@@ -38,6 +38,7 @@ public class MatcherContext<V> implements Context<V> {
     private final List<ParseError> parseErrors;
     private final Reference<Node<V>> lastNodeRef;
 
+    private MatcherContext<V> subContext;
     private InputLocation currentLocation;
     private Node<V> node;
     private List<Node<V>> subNodes;
@@ -71,6 +72,10 @@ public class MatcherContext<V> implements Context<V> {
 
     public MatcherContext<V> getParent() {
         return parent;
+    }
+
+    public MatcherContext<V> getSubContext() {
+        return subContext;
     }
 
     @NotNull
@@ -195,11 +200,21 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public boolean runMatcher(@NotNull Matcher<V> matcher, boolean enforced) {
-        MatcherContext<V> innerContext = createCopy(this, matcher);
-        boolean matched = innerContext.runMatcher(enforced);
-        if (matched) {
-            setCurrentLocation(innerContext.getCurrentLocation());
+        if (matcher instanceof ActionMatcher) {
+            // special case: ActionMatchers need no sub context and no error recovery
+            return matcher.match(this, enforced);
         }
+
+        // we execute the given matcher in a new sub context and store this sub context instance as a field
+        // in rare cases (error recovery) we might be recursing back into ourselves
+        // so we need to save and restore it
+        MatcherContext<V> oldSubContext = subContext;
+        subContext = createCopy(this, matcher);
+        boolean matched = subContext.runMatcher(enforced);
+        if (matched) {
+            setCurrentLocation(subContext.getCurrentLocation());
+        }
+        subContext = oldSubContext;
         return matched;
     }
 
