@@ -26,6 +26,8 @@ import java.util.*;
  */
 public final class Utils {
 
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
     private Utils() {}
 
     /**

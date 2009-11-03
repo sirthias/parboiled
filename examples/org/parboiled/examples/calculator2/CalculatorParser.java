@@ -61,15 +61,16 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
     public Rule factor() {
         return firstOf(
                 number(),
-                enforcedSequence('(', expression(), ')').label("parens")
+                parens()
         );
     }
 
+    public Rule parens() {
+        return enforcedSequence('(', expression(), ')');
+    }
+
     public Rule number() {
-        return sequence(
-                oneOrMore(digit()),
-                SET(actions.createAst(CONVERT_TO_INTEGER(LAST_TEXT())))
-        );
+        return sequence(oneOrMore(digit()), SET(actions.createAst(CONVERT_TO_INTEGER(LAST_TEXT()))));
     }
 
     public Rule digit() {

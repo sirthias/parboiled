@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 
-public class IllegalCharactersMatcher<V> extends SpecialMatcher<V> {
+public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
     private final String expected;
     private final Characters stopMatchChars;
 
@@ -46,6 +46,10 @@ public class IllegalCharactersMatcher<V> extends SpecialMatcher<V> {
         } while (!stopMatchChars.contains(context.getCurrentLocation().currentChar));
         context.createNode();
         return true;
+    }
+
+    public Characters getStarterChars() {
+        throw new IllegalStateException(); // should never be called
     }
 
 }

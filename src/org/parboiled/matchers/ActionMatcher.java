@@ -20,11 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.actionparameters.ActionParameter;
 import org.parboiled.ActionResult;
 import org.parboiled.MatcherContext;
+import org.parboiled.support.Characters;
 
 /**
  * A Matcher that not actually matches input but rather invoking parser actions.
  */
-public class ActionMatcher<V> extends SpecialMatcher<V> implements ActionResult {
+public class ActionMatcher<V> extends AbstractMatcher<V> implements ActionResult {
 
     private final ActionParameter action;
 
@@ -42,4 +43,8 @@ public class ActionMatcher<V> extends SpecialMatcher<V> implements ActionResult 
         return result == ActionResult.CONTINUE;
     }
 
+    public Characters getStarterChars() {
+        return Characters.ONLY_EMPTY;
+    }
+    
 }

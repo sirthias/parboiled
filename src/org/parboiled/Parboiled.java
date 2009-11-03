@@ -54,12 +54,11 @@ public class Parboiled {
                 actionInterceptor = (ActionInterceptor) actionsCallback;
             }
         }
-
         Checks.ensure(actions == null || actionInterceptor != null,
                 "Illegal Actions instance, please use Parboiled.createActions(...) for creating your parser actions object");
 
-        // intercept all no-argument Rule creation methods with a StagingInterceptor
-        P parser = create(parserType, new StagingInterceptor(), new CallbackFilter() {
+        // intercept all no-argument Rule creation methods with a RuleInterceptor
+        P parser = create(parserType, new RuleInterceptor(), new CallbackFilter() {
             public int accept(Method method) {
                 boolean isRuleCreatingMethod = method.getReturnType() == Rule.class;
                 boolean hasNoParameters = method.getParameterTypes().length == 0;

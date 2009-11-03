@@ -24,8 +24,8 @@ import org.parboiled.common.Converter;
 import org.parboiled.common.Preconditions;
 import org.parboiled.common.Utils;
 import static org.parboiled.common.Utils.arrayOf;
-import org.parboiled.support.*;
 import org.parboiled.matchers.*;
+import org.parboiled.support.*;
 
 import java.util.*;
 
@@ -71,16 +71,14 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(@NotNull Rule rule, @NotNull String input) {
-        Checks.ensure(rule instanceof StagingRule,
-                "Illegal rule instance, please use Parboiled.createActions(...) for creating this parser");
-        Checks.ensure(((StagingRule) rule).getParser() == this,
-                "Illegal rule instance, it was not created by this parser");
+        Checks.ensure(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor,
+                "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
 
         // prepare
         InputBuffer inputBuffer = new InputBuffer(input);
         InputLocation startLocation = new InputLocation(inputBuffer);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
-        Matcher<V> matcher = (Matcher<V>) rule.toMatcher();
+        Matcher<V> matcher = (Matcher<V>) rule;
         MatcherContext<V> context = new MatcherContext<V>(startLocation, matcher, actions, parseErrors);
 
         // the matcher tree has already been built during the call to Parboiled.parse(...), usually immediately
@@ -560,7 +558,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     private Rule cachedChar(char c) {
         Rule matcher = charMatchers.get(c);
         if (matcher == null) {
-            matcher = ((AbstractRule) ch(c)).lock();
+            matcher = ch(c);
             charMatchers.put(c, matcher);
         }
         return matcher;
@@ -569,7 +567,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     private Rule cachedString(String string) {
         Rule matcher = stringMatchers.get(string);
         if (matcher == null) {
-            matcher = ((AbstractRule) string(string)).lock();
+            matcher = string(string);
             stringMatchers.put(string, matcher);
         }
         return matcher;

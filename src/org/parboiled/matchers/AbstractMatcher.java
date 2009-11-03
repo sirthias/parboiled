@@ -20,11 +20,14 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
 import org.parboiled.Rule;
+import org.parboiled.trees.ImmutableGraphNode;
 
 /**
  * Abstract base class of most regular Matchers.
  */
-abstract class AbstractMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
+public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V> {
+
+    private String label;
 
     protected AbstractMatcher() {
         super(ImmutableList.<Matcher<V>>of());
@@ -32,7 +35,7 @@ abstract class AbstractMatcher<V> extends AbstractRule<Matcher<V>> implements Ma
 
     @SuppressWarnings({"unchecked"})
     protected AbstractMatcher(@NotNull Rule subRule) {
-        super(ImmutableList.of((Matcher<V>)subRule.toMatcher()));
+        super(ImmutableList.of((Matcher<V>)subRule));
     }
 
     @SuppressWarnings({"unchecked"})
@@ -44,13 +47,17 @@ abstract class AbstractMatcher<V> extends AbstractRule<Matcher<V>> implements Ma
         Preconditions.checkArgument(subRules.length > 0);
         Matcher[] matchers = new Matcher[subRules.length];
         for (int i = 0; i < subRules.length; i++) {
-            matchers[i] = subRules[i].toMatcher();
+            matchers[i] = (Matcher) subRules[i];
         }
         return matchers;
     }
 
-    // implementation of toMatcher() from the Rule interface
-    public Matcher toMatcher() {
+    public String getLabel() {
+        return label;
+    }
+
+    public AbstractMatcher<V> label(String label) {
+        this.label = label;
         return this;
     }
 
@@ -60,10 +67,7 @@ abstract class AbstractMatcher<V> extends AbstractRule<Matcher<V>> implements Ma
 
     @Override
     public String toString() {
-        String label = getLabel();
-        if (label != null) return label;
-        label = getClass().getSimpleName();
-        return label.substring(0, label.length() - 7); // remove the "Matcher" ending
+        return getLabel();
     }
 
 }

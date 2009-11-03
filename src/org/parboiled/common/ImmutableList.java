@@ -17,7 +17,6 @@
 package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Preconditions;
 
 import java.util.AbstractList;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.List;
 @SuppressWarnings({"unchecked"})
 public class ImmutableList<T> extends AbstractList<T> {
 
-    public final static ImmutableList<?> EMPTY_LIST = new ImmutableList<Object>(new Object[0]);
+    public final static ImmutableList<?> EMPTY_LIST = new ImmutableList<Object>(Utils.EMPTY_OBJECT_ARRAY);
 
     private final T[] array;
 
