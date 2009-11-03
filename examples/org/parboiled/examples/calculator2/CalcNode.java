@@ -38,10 +38,6 @@ public class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
         this.operator = operator;
     }
 
-    public boolean isOneOf(String operations) {
-        return operator != null && operations.indexOf(operator) >= 0;
-    }
-
     public int getValue() {
         if (operator == null) return value;
 

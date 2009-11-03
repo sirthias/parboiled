@@ -67,19 +67,6 @@ public final class Utils {
         return obj == null ? "" : obj.toString();
     }
 
-    /**
-     * Tests whether all elements of the given array are null.
-     *
-     * @param elements the array
-     * @return true if all elements are null
-     */
-    public static <T> boolean allElementsNull(@NotNull T[] elements) {
-        for (T element : elements) {
-            if (element != null) return false;
-        }
-        return true;
-    }
-
     // Subarrays
     //-----------------------------------------------------------------------
     /**
