@@ -21,6 +21,8 @@ import net.sf.cglib.proxy.LazyLoader;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.parboiled.common.Preconditions;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.AbstractRule;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
+import org.parboiled.Rule;
+import org.parboiled.MatcherContext;
 
-class TestMatcher<V> extends AbstractMatcher<V> {
+public class TestMatcher<V> extends AbstractMatcher<V> {
 
     private final boolean inverted;
 

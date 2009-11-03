@@ -14,35 +14,28 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
-import org.parboiled.common.ImmutableList;
+import org.parboiled.support.Chars;
+import org.parboiled.Rule;
+import org.parboiled.MatcherContext;
 
-import java.util.List;
+public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
-abstract class SpecialMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
-
-    public SpecialMatcher() {
-        super(ImmutableList.<Matcher<V>>of());
+    public OptionalMatcher(@NotNull Rule subRule) {
+        super(subRule);
     }
 
-    public Matcher toMatcher() {
-        return this;
-    }
-
-    @NotNull
-    public List<Matcher<V>> getChildren() {
-        return ImmutableList.of();
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+        Matcher<V> matcher = getChildren().get(0);
+        context.runMatcher(matcher, false);
+        context.createNode();
+        return true;
     }
 
     public Characters getStarterChars() {
-        return Characters.ONLY_EMPTY;
+        return getChildren().get(0).getStarterChars().add(Chars.EMPTY);
     }
-
-    public String getExpectedString() {
-        return "successful execution of " + getLabel();
-    }
-
 }

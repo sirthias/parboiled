@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 
-class IllegalCharactersMatcher<V> extends SpecialMatcher<V> {
+public class IllegalCharactersMatcher<V> extends SpecialMatcher<V> {
     private final String expected;
     private final Characters stopMatchChars;
 

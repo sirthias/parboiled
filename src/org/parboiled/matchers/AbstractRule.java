@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.trees.GraphNode;
 import org.parboiled.trees.ImmutableGraphNode;
+import org.parboiled.Rule;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import java.util.List;
  * Abstract base class of all Rules.
  * @param <T>
  */
-abstract class AbstractRule<T extends GraphNode<T>> extends ImmutableGraphNode<T> implements Rule {
+public abstract class AbstractRule<T extends GraphNode<T>> extends ImmutableGraphNode<T> implements Rule {
 
     private String label;
     private boolean locked;

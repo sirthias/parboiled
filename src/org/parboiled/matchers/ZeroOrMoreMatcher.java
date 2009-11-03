@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
+import org.parboiled.Rule;
+import org.parboiled.MatcherContext;
 
-class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
+public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     public ZeroOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);

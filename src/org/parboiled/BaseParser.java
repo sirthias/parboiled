@@ -25,6 +25,7 @@ import org.parboiled.common.Preconditions;
 import org.parboiled.common.Utils;
 import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.support.*;
+import org.parboiled.matchers.*;
 
 import java.util.*;
 
@@ -559,7 +560,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     private Rule cachedChar(char c) {
         Rule matcher = charMatchers.get(c);
         if (matcher == null) {
-            matcher = ((AbstractMatcher) ch(c)).lock();
+            matcher = ((AbstractRule) ch(c)).lock();
             charMatchers.put(c, matcher);
         }
         return matcher;
@@ -568,7 +569,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     private Rule cachedString(String string) {
         Rule matcher = stringMatchers.get(string);
         if (matcher == null) {
-            matcher = ((AbstractMatcher) string(string)).lock();
+            matcher = ((AbstractRule) string(string)).lock();
             stringMatchers.put(string, matcher);
         }
         return matcher;

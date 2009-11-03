@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.common.ImmutableList;
+import org.parboiled.Rule;
+import org.parboiled.MatcherContext;
 
-class WrapMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
+public class WrapMatcher<V> extends AbstractRule<Matcher<V>> implements Matcher<V> {
 
     @SuppressWarnings({"unchecked"})
-    WrapMatcher(@NotNull Rule innerRule) {
+    public WrapMatcher(@NotNull Rule innerRule) {
         // we cast directly instead of calling toMatcher(), for not triggering the LazyLoader proxy too early
         super(ImmutableList.of((Matcher<V>) innerRule));
     }

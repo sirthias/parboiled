@@ -20,6 +20,7 @@ import static org.parboiled.TestUtils.assertEqualsMultiline;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.parboiled.trees.GraphUtils.printTree;
 import org.parboiled.common.ToStringFormatter;
+import org.parboiled.matchers.Matcher;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 

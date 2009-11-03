@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.actionparameters.ActionParameter;
+import org.parboiled.ActionResult;
+import org.parboiled.MatcherContext;
 
 /**
  * A Matcher that not actually matches input but rather invoking parser actions.
  */
-class ActionMatcher<V> extends SpecialMatcher<V> implements ActionResult {
+public class ActionMatcher<V> extends SpecialMatcher<V> implements ActionResult {
 
     private final ActionParameter action;
 

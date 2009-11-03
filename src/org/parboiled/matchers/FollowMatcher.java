@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.parboiled.support.Characters;
+import org.parboiled.MatcherContext;
 
 /**
  * Matchers that match sequences of other matchers also implement this interface which provides access to the set
  * of all characters that can legally follow the currently running match.
  * Used during parse error recovery.
  */
-interface FollowMatcher<V> {
+public interface FollowMatcher<V> {
 
     /**
      * @param context the current context

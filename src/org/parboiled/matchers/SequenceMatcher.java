@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
+import org.parboiled.Rule;
+import org.parboiled.MatcherContext;
 
 import java.util.List;
 
-class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
+public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     private final boolean enforced;
 

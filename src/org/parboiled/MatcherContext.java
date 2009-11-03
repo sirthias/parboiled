@@ -24,6 +24,10 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNode;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
+import org.parboiled.matchers.ActionMatcher;
+import org.parboiled.matchers.FollowMatcher;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.IllegalCharactersMatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;

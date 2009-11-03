@@ -19,6 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParseError;
+import org.parboiled.matchers.Matcher;
 
 import java.util.List;
 

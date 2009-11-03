@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
@@ -22,8 +22,10 @@ import org.parboiled.support.Checks;
 import org.parboiled.support.Chars;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
+import org.parboiled.Rule;
+import org.parboiled.MatcherContext;
 
-class FirstOfMatcher<V> extends AbstractMatcher<V> {
+public class FirstOfMatcher<V> extends AbstractMatcher<V> {
 
     public FirstOfMatcher(@NotNull Rule[] subRules) {
         super(subRules);

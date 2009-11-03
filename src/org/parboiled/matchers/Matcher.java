@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.trees.GraphNode;
+import org.parboiled.MatcherContext;
 
 /**
  * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual

@@ -18,7 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Context;
-import org.parboiled.Matcher;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
 

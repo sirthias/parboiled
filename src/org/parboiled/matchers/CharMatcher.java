@@ -14,46 +14,50 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
-import org.parboiled.support.InputLocation;
-import org.parboiled.common.Preconditions;
+import org.parboiled.MatcherContext;
 
-class CharRangeMatcher<V> extends AbstractMatcher<V> {
+public class CharMatcher<V> extends AbstractMatcher<V> {
 
-    public final char cLow;
-    public final char cHigh;
+    public final char character;
 
-    public CharRangeMatcher(char cLow, char cHigh) {
-        Preconditions.checkArgument(cLow < cHigh && !Chars.isSpecial(cLow) && !Chars.isSpecial(cHigh));
-        this.cLow = cLow;
-        this.cHigh = cHigh;
+    public CharMatcher(char character) {
+        this.character = character;
     }
 
     @Override
     public String getLabel() {
         String label = super.getLabel();
-        return label != null ? label : cLow + ".." + cHigh;
+        if (label != null) return label;
+
+        switch (character) {
+            case Chars.EOI:
+                return "EOI";
+            case Chars.ANY:
+                return "ANY";
+            case Chars.EMPTY:
+                return "EMPTY";
+            default:
+                return "\'" + character + '\'';
+        }
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        InputLocation currentLocation = context.getCurrentLocation();
-        if (currentLocation.currentChar < cLow || currentLocation.currentChar > cHigh) return false;
-
-        context.advanceInputLocation();
-        context.createNode();
-        return true;
+        if (character == Chars.ANY || character == Chars.EMPTY ||
+                context.getCurrentLocation().currentChar == character) {
+            if (character != Chars.EMPTY) context.advanceInputLocation();
+            context.createNode();
+            return true;
+        }
+        return false;
     }
 
     public Characters getStarterChars() {
-        Characters chars = Characters.NONE;
-        for (char c = cLow; c <= cHigh; c++) {
-            chars = chars.add(c);
-        }
-        return chars;
+        return Characters.of(character);
     }
 
 }

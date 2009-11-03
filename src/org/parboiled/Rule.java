@@ -16,6 +16,8 @@
 
 package org.parboiled;
 
+import org.parboiled.matchers.Matcher;
+
 /**
  * Represents a parsing rule.
  */

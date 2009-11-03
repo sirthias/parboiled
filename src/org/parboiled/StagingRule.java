@@ -16,6 +16,9 @@
 
 package org.parboiled;
 
+import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.WrapMatcher;
+
 class StagingRule implements Rule {
 
     private final BaseParser<?, ?> parser;

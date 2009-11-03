@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
+import org.parboiled.Rule;
 
 /**
  * Abstract base class of most regular Matchers.
