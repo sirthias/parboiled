@@ -14,6 +14,6 @@ goto end
 
 :usage
 echo Missing argument!
-echo Example usage: run_example org.parboiled.examples.calculator.Calculator
+echo Example usage: run_example org.parboiled.examples.calculator.Main
 
 :end

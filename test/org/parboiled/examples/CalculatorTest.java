@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.examples;
 
 import org.parboiled.examples.calculator.CalculatorActions;
 import org.parboiled.examples.calculator.CalculatorParser;
+import org.parboiled.AbstractTest;
+import org.parboiled.Parboiled;
 import org.testng.annotations.Test;
 
 public class CalculatorTest extends AbstractTest {

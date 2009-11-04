@@ -19,6 +19,7 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 
 public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
     private final String expected;
@@ -32,7 +33,7 @@ public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
      */
     public IllegalCharactersMatcher(@NotNull String expected, @NotNull Characters stopMatchChars) {
         this.expected = expected;
-        this.stopMatchChars = stopMatchChars;
+        this.stopMatchChars = stopMatchChars.add(Chars.EOI); // we also stop at EOI
     }
 
     public String getLabel() {

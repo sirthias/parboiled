@@ -272,7 +272,7 @@ public class ParseTreeUtils {
      * @return a new String
      */
     public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult) {
-        return printTree(parsingResult.root, new NodeFormatter<V>(parsingResult.inputBuffer));
+        return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer));
     }
 
 }

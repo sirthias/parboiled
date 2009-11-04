@@ -29,7 +29,7 @@ public class ParsingResult<V> {
     /**
      * The root node of the parse tree created by the parsing run.
      */
-    public final Node<V> root;
+    public final Node<V> parseTreeRoot;
 
     /**
      * The list of parse errors created during the parsing run.
@@ -41,8 +41,9 @@ public class ParsingResult<V> {
      */
     public final InputBuffer inputBuffer;
 
-    public ParsingResult(Node<V> root, @NotNull List<ParseError> parseErrors, InputBuffer inputBuffer) {
-        this.root = root;
+    public ParsingResult(@NotNull Node<V> parseTreeRoot, @NotNull List<ParseError> parseErrors,
+                         @NotNull InputBuffer inputBuffer) {
+        this.parseTreeRoot = parseTreeRoot;
         this.parseErrors = parseErrors;
         this.inputBuffer = inputBuffer;
     }

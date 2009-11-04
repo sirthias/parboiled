@@ -14,41 +14,35 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.examples;
 
-import org.parboiled.examples.calculator2.CalculatorActions;
-import org.parboiled.examples.calculator2.CalculatorParser;
-import org.parboiled.examples.calculator2.CalcNode;
+import org.parboiled.examples.calculator3.CalculatorActions;
+import org.parboiled.examples.calculator3.CalculatorParser;
+import org.parboiled.examples.calculator3.CalcNode;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.AbstractTest;
+import org.parboiled.Parboiled;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.Test;
 
-public class Calculator2Test extends AbstractTest {
+public class Calculator3Test extends AbstractTest {
 
     private final CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
     private final CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
 
     @Test
     public void test() {
-        test("1+2", 3);
-        test("1+2-3+4", 4);
-        test("1-2-3", -4);
-        test("1-(2-3)", 2);
-        test("1*2+3", 5);
-        test("1+2*3", 7);
-        test("1*2*3", 6);
-        test("3*4/6", 2);
-        test("24/6/2", 2);
-        test("1-2*3-4", -9);
-        test("1-2*3-4*5-6", -31);
-        test("1-24/6/2-(5+7)", -13);
-        test("((1+2)*3-(4-5))/5", 2);
+        test("1 + 2 +3", 6);
+        test("1-2.0- -3.5", 2.5);
+        test("13+SQRT( 2*50 )^2 ", 113);
+        test("-0.10 * 10^(3+1)", -1000);
+        test("1-2*3^4/5+6", -25.4);
     }
 
-    private void test(String input, int value) {
+    private void test(String input, double value) {
         ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
-        int resultValue = result.root.getValue().getValue();
+        double resultValue = result.parseTreeRoot.getValue().getValue();
         assertFalse(result.hasErrors());
         assertEquals(resultValue, value);
     }

@@ -22,7 +22,7 @@ import org.parboiled.support.ParsingResult;
 import org.parboiled.common.StringUtils;
 import static org.testng.Assert.fail;
 
-abstract class AbstractTest {
+public abstract class AbstractTest {
 
     public <V> void test(BaseParser<V, ?> parser, Rule rule, String input, String expectedTree) {
         ParsingResult<V> parsingResult = parser.parse(rule, input);

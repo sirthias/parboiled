@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator;
+package org.parboiled.examples.abc;
 
 import org.parboiled.Parboiled;
-import org.parboiled.support.ParsingResult;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.common.StringUtils;
+import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import org.parboiled.support.ParsingResult;
 
 import java.util.Scanner;
 
-public class Calculator {
+public class Main {
 
     public static void main(String[] args) {
         while (true) {
@@ -31,11 +31,10 @@ public class Calculator {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-            CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-            ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
+            AbcParser parser = Parboiled.createParser(AbcParser.class, null);
+            ParsingResult<?> result = parser.parse(parser.S(), input);
 
-            System.out.println(input + " = " + result.root.getValue() + '\n');
+            System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println(printNodeTree(result) + '\n');
 
             if (result.hasErrors()) {

@@ -14,47 +14,18 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.examples;
 
 import org.testng.annotations.Test;
+import org.parboiled.examples.abc.AbcParser;
+import org.parboiled.AbstractTest;
+import org.parboiled.Parboiled;
 
-@SuppressWarnings({"InfiniteRecursion"})
-public class AbcnTest extends AbstractTest {
-
-    /**
-     * The classic non-context free language example { a^n b^n c^n : n >= 1 }
-     * S ← &(A c) a+ B !(a/b/c)
-     * A ← a A? b
-     * B ← b B? c
-     */
-    public static class TestParser extends BaseParser<Object, Actions<Object>> {
-
-        public TestParser(Actions<Object> actions) {
-            super(actions);
-        }
-
-        public Rule S() {
-            return sequence(
-                    test(sequence(A(), 'c')),
-                    oneOrMore('a'),
-                    B(),
-                    testNot(firstOf('a', 'b', 'c'))
-            );
-        }
-
-        public Rule A() {
-            return sequence('a', optional(A()), 'b');
-        }
-
-        public Rule B() {
-            return sequence('b', optional(B()), 'c');
-        }
-
-    }
+public class AbcTest extends AbstractTest {
 
     @Test
     public void test() {
-        TestParser parser = Parboiled.createParser(TestParser.class, null);
+        AbcParser parser = Parboiled.createParser(AbcParser.class, null);
         test(parser, parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
@@ -72,7 +43,7 @@ public class AbcnTest extends AbstractTest {
 
     @Test
     public void testFail() {
-        TestParser parser = Parboiled.createParser(TestParser.class, null);
+        AbcParser parser = Parboiled.createParser(AbcParser.class, null);
         testFail(parser, parser.S(), "aabbbcc", "" +
                 "[S] 'aabbbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +

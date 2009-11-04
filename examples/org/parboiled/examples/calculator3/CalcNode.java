@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator2;
+package org.parboiled.examples.calculator3;
 
 import org.parboiled.trees.ImmutableBinaryTreeNode;
 
@@ -25,10 +25,10 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
  */
 public class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
 
-    private int value;
+    private double value;
     private Character operator;
 
-    public CalcNode(int value) {
+    public CalcNode(double value) {
         super(null, null);
         this.value = value;
     }
@@ -38,9 +38,9 @@ public class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
         this.operator = operator;
     }
 
-    public int getValue() {
+    public double getValue() {
         if (operator == null) return value;
-        if (left() == null || right() == null) return 0;
+        if (left() == null || right() == null) return Double.NaN;
 
         switch (operator) {
             case '+':
@@ -51,6 +51,10 @@ public class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
                 return left().getValue() * right().getValue();
             case '/':
                 return left().getValue() / right().getValue();
+            case '^':
+                return Math.pow(left().getValue(), right().getValue());
+            case 'R':
+                return Math.sqrt(left().getValue());
             default:
                 throw new IllegalStateException();
         }
