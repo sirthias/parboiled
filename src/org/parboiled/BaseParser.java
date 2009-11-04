@@ -38,9 +38,19 @@ import java.util.*;
  */
 public abstract class BaseParser<V, A extends Actions<V>> {
 
-    private final Map<Character, Rule> charMatchers = new HashMap<Character, Rule>();
-    private final Map<String, Rule> stringMatchers = new HashMap<String, Rule>();
-    private final Class<V> nodeValueType; // the type of V, i.e. the value field of the parse tree nodes
+    /**
+     * Cache of frequently used, bottom level rules. Per default used character and string matching rules.
+     */
+    private final Map<Object, Rule> ruleCache = new HashMap<Object, Rule>();
+
+    /**
+     * The actual type of the V type argument, i.e. the value field of the generated parse tree nodes.
+     */
+    private final Class<V> nodeValueType;
+
+    /**
+     * Stack for action parameters. Used for creation of actual arguments to action methods.
+     */
     final Stack<ActionParameter> actionParameters = new Stack<ActionParameter>();
 
     /**
@@ -70,7 +80,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the ParsingResult for the run
      */
     @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(@NotNull Rule rule, @NotNull String input) {
+    public ParsingResult<V> parse(Rule rule, @NotNull String input) {
         Checks.ensure(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor,
                 "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
 
@@ -78,7 +88,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         InputBuffer inputBuffer = new InputBuffer(input);
         InputLocation startLocation = new InputLocation(inputBuffer);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
-        Matcher<V> matcher = (Matcher<V>) rule;
+        Matcher<V> matcher = (Matcher<V>) toRule(rule);
         MatcherContext<V> context = new MatcherContext<V>(startLocation, matcher, actions, parseErrors);
 
         // the matcher tree has already been built during the call to Parboiled.parse(...), usually immediately
@@ -100,8 +110,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Explicitly creates a rule matching the given character.
-     * Normally you can just specify the character literal directly in you rule description. However, if you want
-     * to specify special rule attributes (like a label) you can also use this wrapper.
+     * Normally you can just specify the character literal directly in you rule description.
+     * However, you can also use this wrapper.
      *
      * @param c the char to match
      * @return a new rule
@@ -123,15 +133,19 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Explicitly creates a rule matching the given string.
-     * Normally you can just specify the string literal directly in you rule description. However, if you want
-     * to specify special rule attributes (like a label) you can also use this wrapper.
+     * Normally you can just specify the string literal directly in you rule description.
+     * However, you can also use this wrapper.
      *
      * @param string the string to match
      * @return a new rule
      */
-    public Rule string(@NotNull String string) {
+    public Rule string(String string) {
         Rule[] matchers = new Rule[string.length()];
-        for (int i = 0; i < string.length(); i++) matchers[i] = cachedChar(string.charAt(i));
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            Rule rule = cached(c);
+            matchers[i] = rule != null ? rule : cache(c, ch(c));
+        }
         return new SequenceMatcher(matchers, false).label(string);
     }
 
@@ -144,7 +158,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    public Rule firstOf(@NotNull Object rule, Object rule2, Object... moreRules) {
+    public Rule firstOf(Object rule, Object rule2, Object... moreRules) {
         return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
     }
 
@@ -155,7 +169,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param rule the subrule
      * @return a new rule
      */
-    public Rule oneOrMore(@NotNull Object rule) {
+    public Rule oneOrMore(Object rule) {
         return new OneOrMoreMatcher(toRule(rule)).label("oneOrMore");
     }
 
@@ -166,7 +180,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param rule the subrule
      * @return a new rule
      */
-    public Rule optional(@NotNull Object rule) {
+    public Rule optional(Object rule) {
         return new OptionalMatcher(toRule(rule)).label("optional");
     }
 
@@ -178,7 +192,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    public Rule sequence(@NotNull Object rule, Object rule2, Object... moreRules) {
+    public Rule sequence(Object rule, Object rule2, Object... moreRules) {
         return new SequenceMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules))), false).label("sequence");
     }
 
@@ -192,7 +206,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    public Rule enforcedSequence(@NotNull Object rule, Object rule2, Object... moreRules) {
+    public Rule enforcedSequence(Object rule, Object rule2, Object... moreRules) {
         return new SequenceMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules))), true).label("enforcedSequence");
     }
 
@@ -204,7 +218,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param rule the subrule
      * @return a new rule
      */
-    public Rule test(@NotNull Object rule) {
+    public Rule test(Object rule) {
         return new TestMatcher(toRule(rule), false);
     }
 
@@ -216,7 +230,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param rule the subrule
      * @return a new rule
      */
-    public Rule testNot(@NotNull Object rule) {
+    public Rule testNot(Object rule) {
         return new TestMatcher(toRule(rule), true);
     }
 
@@ -227,7 +241,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param rule the subrule
      * @return a new rule
      */
-    public Rule zeroOrMore(@NotNull Object rule) {
+    public Rule zeroOrMore(Object rule) {
         return new ZeroOrMoreMatcher(toRule(rule)).label("zeroOrMore");
     }
 
@@ -291,7 +305,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public Node<V> NODE(@NotNull String path) {
+    public Node<V> NODE(String path) {
         Object arg = mixInParameter(actionParameters, path);
         actionParameters.add(new PathNodeParameter(arg));
         return null;
@@ -304,7 +318,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param path the path to search for
      * @return the action parameter
      */
-    public List<Node<V>> NODES(@NotNull String path) {
+    public List<Node<V>> NODES(String path) {
         Object pathArg = mixInParameter(actionParameters, path);
         actionParameters.add(new PathNodesParameter(pathArg));
         return null;
@@ -489,11 +503,12 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param converter the converter to use
      * @return the action parameter
      */
-    public <T> T CONVERT(String text, @NotNull Converter<T> converter) {
+    public <T> T CONVERT(String text, Converter<T> converter) {
+        Object converterArg = mixInParameter(actionParameters, converter);
         Object textArg = mixInParameter(actionParameters, text);
-        List<Class<?>> convertedTypes = Utils.getTypeArguments(Converter.class, converter.getClass());
+        List<Class<?>> convertedTypes = Utils.getTypeArguments(Converter.class, converterArg.getClass());
         Preconditions.checkArgument(convertedTypes.size() == 1, "Illegal converter");
-        actionParameters.add(new ConvertParameter<T>(convertedTypes.get(0), textArg, converter));
+        actionParameters.add(new ConvertParameter(convertedTypes.get(0), textArg, converterArg));
         return null;
     }
 
@@ -553,24 +568,23 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         });
     }
 
-    ///************************* PRIVATE ***************************///
+    ///************************* HELPER METHODS ***************************///
 
-    private Rule cachedChar(char c) {
-        Rule matcher = charMatchers.get(c);
-        if (matcher == null) {
-            matcher = ch(c);
-            charMatchers.put(c, matcher);
-        }
-        return matcher;
+    protected Rule fromCharLiteral(char c) {
+        return ch(c);
     }
 
-    private Rule cachedString(String string) {
-        Rule matcher = stringMatchers.get(string);
-        if (matcher == null) {
-            matcher = string(string);
-            stringMatchers.put(string, matcher);
-        }
-        return matcher;
+    protected Rule fromStringLiteral(String string) {
+        return string(string);
+    }
+
+    protected Rule cached(Object key) {
+        return ruleCache.get(key);
+    }
+
+    protected Rule cache(Object key, Rule rule) {
+        ruleCache.put(key, rule);
+        return rule;
     }
 
     private Rule[] toRules(@NotNull Object[] objects) {
@@ -587,10 +601,12 @@ public abstract class BaseParser<V, A extends Actions<V>> {
             return (Rule) obj;
         }
         if (obj instanceof Character) {
-            return cachedChar((Character) obj);
+            Rule rule = cached(obj);
+            return rule != null ? rule : cache(obj, fromCharLiteral((Character) obj));
         }
         if (obj instanceof String) {
-            return cachedString((String) obj);
+            Rule rule = cached(obj);
+            return rule != null ? rule : cache(obj, fromStringLiteral((String) obj));
         }
         if (obj instanceof ActionParameter) {
             return new ActionMatcher((ActionParameter) obj);

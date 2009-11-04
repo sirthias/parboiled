@@ -20,17 +20,18 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Converter;
 
-public class ConvertParameter<T> extends ActionParameterWithArgument<String> {
+public class ConvertParameter extends ActionParameterWithArgument<String> {
 
-    private final Converter<T> converter;
+    private final Object converter;
 
-    public ConvertParameter(@NotNull Class<?> returnType, Object arg, @NotNull Converter<T> converter) {
+    public ConvertParameter(@NotNull Class<?> returnType, Object arg, Object converter) {
         super(returnType, arg, String.class);
         this.converter = converter;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return converter.parse(resolveArgument(context));
+        Converter resolvedConverter = (Converter) ActionParameterUtils.resolve(converter, context);
+        return resolvedConverter.parse(resolveArgument(context));
     }
 
     @Override
