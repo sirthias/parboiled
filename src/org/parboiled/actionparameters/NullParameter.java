@@ -20,6 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Checks;
 
+/**
+ * An ActionParameter that simply evaluates to null.
+ */
 public class NullParameter implements ActionParameter {
 
     public void verifyReturnType(Class<?> returnType) {

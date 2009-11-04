@@ -19,6 +19,10 @@ package org.parboiled.actionparameters;
 import org.parboiled.MatcherContext;
 import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 
+/**
+ * Specialized base type for ActionParameters that themselves take an argument.
+ * @param <A> the type of the value this ActionParameter resolves to.
+ */
 abstract class ActionParameterWithArgument<A> extends BaseActionParameter {
 
     protected final Object argument;

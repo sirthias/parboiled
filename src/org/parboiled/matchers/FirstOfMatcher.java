@@ -25,6 +25,10 @@ import org.parboiled.common.Utils;
 import org.parboiled.Rule;
 import org.parboiled.MatcherContext;
 
+/**
+ * A Matcher trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
+ * @param <V>
+ */
 public class FirstOfMatcher<V> extends AbstractMatcher<V> {
 
     public FirstOfMatcher(@NotNull Rule[] subRules) {

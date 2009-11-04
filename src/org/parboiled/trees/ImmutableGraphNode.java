@@ -22,7 +22,7 @@ import org.parboiled.common.ImmutableList;
 import java.util.List;
 
 /**
- * A simple, immutable DGraphNode implementation.
+ * A simple, immutable GraphNode implementation.
  *
  * @param <T>
  */

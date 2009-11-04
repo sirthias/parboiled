@@ -23,6 +23,10 @@ import org.parboiled.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An ActionParameter that evaluates to the values set on the parse tree nodes passed in as argument.
+ * @param <V> the node value type
+ */
 public class ValuesParameter<V> extends ActionParameterWithArgument<List<Node<V>>> {
     
     public ValuesParameter(Object nodes) {

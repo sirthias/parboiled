@@ -17,7 +17,8 @@
 package org.parboiled.trees;
 
 /**
- * A specialization of a GraphNode that contains a reference to its parent. 
+ * A specialization of a GraphNode that contains a reference to its parent thereby making the graph a tree
+ * (since each node can now have only one parent node).
  * @param <T> the actual implementation type of this tree node
  */
 public interface TreeNode<T extends TreeNode<T>> extends GraphNode<T> {

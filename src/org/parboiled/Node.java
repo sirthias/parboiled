@@ -21,12 +21,12 @@ import org.parboiled.trees.TreeNode;
 import org.parboiled.support.InputLocation;
 
 /**
- * A Node represents a node in the parse tree created during a parsing run.
+ * Represents a node in the parse tree created during a parsing run.
  */
 public interface Node<V> extends TreeNode<Node<V>> {
 
     /**
-     * @return the label of this node, usually set to the name of the matcher that created this node
+     * @return the label of this node, set to the name of the matcher that created this node
      */
     String getLabel();
 

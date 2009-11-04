@@ -19,12 +19,15 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 
+/**
+ * An ActionParameter defines just that, a late-bound parameter to an action call.
+ */
 public interface ActionParameter {
 
     /**
      * Checks whether the return type of this ActionParameter is assignable to the given expected type.
      * If not an exception is thrown.
-     * @param returnType the type that this action parameter is supposed to be compatible to
+     * @param returnType the type that this action parameter is supposed to be assignable to
      */
     void verifyReturnType(Class<?> returnType);
 

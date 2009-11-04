@@ -16,6 +16,10 @@
 
 package org.parboiled.support;
 
+/**
+ * A simple container holding a reference to another object.
+ * @param <T>
+ */
 public class Reference<T> {
 
     private T target;

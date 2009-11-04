@@ -34,12 +34,15 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
     public Rule expression() {
         return sequence(
-                term(), SET(),
+                term(), SET(), // the SET() sets the value of the "expression" to the value of the "term"
                 zeroOrMore(
                         enforcedSequence(
                                 firstOf('+', '-'),
                                 term(),
                                 UP(UP(SET(actions.createAst(DOWN(DOWN(CHAR("firstOf"))), VALUE(), LAST_VALUE()))))
+                                // this creates a new AST node and sets it as the value of the "expression"
+                                // the node contains the operator ('+' or '-'), the old "expression" value as left
+                                // child and the value of the "term" following the operator as right child
                         )
                 )
         );
@@ -70,7 +73,10 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
     }
 
     public Rule number() {
-        return sequence(oneOrMore(digit()), SET(actions.createAst(CONVERT_TO_INTEGER(LAST_TEXT()))));
+        return sequence(
+                oneOrMore(digit()),
+                SET(actions.createAst(CONVERT_TO_INTEGER(LAST_TEXT())))
+        );
     }
 
     public Rule digit() {

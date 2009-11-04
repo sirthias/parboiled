@@ -24,6 +24,10 @@ import org.parboiled.MatcherContext;
 
 import java.util.List;
 
+/**
+ * A Matcher that executes all of its sub matcher in sequence and only succeeds, if all sub matchers succeed.
+ * @param <V>
+ */
 public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     private final boolean enforced;

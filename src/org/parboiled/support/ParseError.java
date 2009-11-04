@@ -18,10 +18,13 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Context;
-import org.parboiled.matchers.Matcher;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
+import org.parboiled.matchers.Matcher;
 
+/**
+ * Immutable class holding all values describing a certain error encountered during a parsing run.
+ */
 public class ParseError {
 
     private final Context context;
@@ -72,12 +75,13 @@ public class ParseError {
         return getClass().getSimpleName() + ": " + errorMessage;
     }
 
-    public static String createMessageSuffix(@NotNull InputLocation start, @NotNull InputLocation end) {
+    public static String createMessageSuffix(@NotNull InputBuffer inputBuffer, @NotNull InputLocation start,
+                                             @NotNull InputLocation end) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(" (line %s, pos %s):", start.row + 1, start.column + 1));
         sb.append('\n');
 
-        String line = StringUtils.getLine(start.inputBuffer.getBuffer(), start.row);
+        String line = StringUtils.getLine(inputBuffer.getBuffer(), start.row);
         sb.append(line);
         sb.append('\n');
 

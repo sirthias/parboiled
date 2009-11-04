@@ -24,8 +24,8 @@ import java.util.List;
  */
 public class ImmutableTreeNode<T extends TreeNode<T>> extends ImmutableGraphNode<T> implements TreeNode<T> {
 
-    // we cannot make the parent field final since otherwise we can't createActions a tree hierarchy with parents linking to
-    // their children and vice versa. So we design this for a bottom UP tree construction strategy were children
+    // we cannot make the parent field final since otherwise we can't create a tree hierarchy with parents linking to
+    // their children and vice versa. So we design this for a bottom up tree construction strategy were children
     // are created first and then "acquired" by their parents
     private T parent;
 

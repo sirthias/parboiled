@@ -16,6 +16,10 @@
 
 package org.parboiled.trees;
 
+/**
+ * A TreeNode specialization with only two child nodes, left and right.
+ * @param <N>
+ */
 public interface BinaryTreeNode<N extends BinaryTreeNode<N>> extends TreeNode<N> {
 
     /**

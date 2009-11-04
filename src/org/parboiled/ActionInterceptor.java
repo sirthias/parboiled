@@ -26,7 +26,8 @@ import java.lang.reflect.Method;
 
 /**
  * This interceptor intercepts all action method calls to the parser action object.
- * In the rule creation phase it creates an ActionCallParameter for the call,
+ * In the rule creation phase it creates an ActionCallParameter for the call. Later, during the parsing run, it
+ * simply delegates to the underlying method on the parser action object.
  */
 class ActionInterceptor implements MethodInterceptor {
 

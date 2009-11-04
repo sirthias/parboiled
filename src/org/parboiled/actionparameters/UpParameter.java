@@ -21,6 +21,10 @@ import org.parboiled.MatcherContext;
 import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 import org.parboiled.support.Checks;
 
+/**
+ * An ActionParameter that simply returns the result of its argument. However, it changes the context in which
+ * to evaluate the argument to one Context level up the Context chain.
+ */
 public class UpParameter implements ActionParameter {
 
     protected final Object argument;

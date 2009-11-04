@@ -22,6 +22,10 @@ import org.parboiled.support.Chars;
 import org.parboiled.Rule;
 import org.parboiled.MatcherContext;
 
+/**
+ * A Matcher that tries its sub matcher once against the input and always succeeds.
+ * @param <V>
+ */
 public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
     public OptionalMatcher(@NotNull Rule subRule) {

@@ -22,6 +22,10 @@ import org.parboiled.trees.ImmutableTreeNode;
 
 import java.util.List;
 
+/**
+ * An immutable implementation of the Node interface.
+ * @param <V>
+ */
 class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
 
     private final String label;

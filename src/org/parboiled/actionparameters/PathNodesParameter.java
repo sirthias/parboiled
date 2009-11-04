@@ -24,6 +24,10 @@ import org.parboiled.support.ParseTreeUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An ActionParameter that returns all parse tree nodes found under the given path in the current Context scope
+ * as a list.
+ */
 public class PathNodesParameter extends ActionParameterWithArgument<String> {
 
     public PathNodesParameter(Object path) {

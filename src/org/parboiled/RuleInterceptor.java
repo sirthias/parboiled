@@ -31,10 +31,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Interceptor for the Rule creation methods of the parser rule object.
- * Provides the following functionality to the Rule-creating, no-arg instance methods of the parser object:
- * - Caches Rules created by such methods, so subsequent calls return the same Rule instance
- * - Automatically labels all created Rule objects with the name of the respective creation method
+ * Interceptor for the rule creation methods of the parser rule object.
+ * Provides the following functionality to the rule-creating, no-arg instance methods of the parser object:
+ * - Caches rules created by such methods, so subsequent calls return the same rule instance
+ * - Automatically labels all created rule objects with the name of the respective creation method
  * - Prevents infinite recursions during rule construction by inserting proxy objects where required
  */
 class RuleInterceptor implements MethodInterceptor {

@@ -16,6 +16,10 @@
 
 package org.parboiled.trees;
 
+/**
+ * A simple MutableBinaryTreeNode implementation based on the MutableTreeNodeImpl.
+ * @param <N>
+ */
 public class MutableBinaryTreeNodeImpl<N extends MutableBinaryTreeNode<N>> extends MutableTreeNodeImpl<N>
         implements BinaryTreeNode<N> {
 

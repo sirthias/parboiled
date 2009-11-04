@@ -34,12 +34,12 @@ import java.util.*;
  *
  * @param <V> The type of the value field of the parse tree nodes created by this parser.
  * @param <A> The type of the parser Actions you would like to use in your rules. If you don't need any parser
- * actions (e.g. for very simple examples) you can just use the Actions interface directly.
+ * actions (e.g. for very simple examples) you can just use the Actions<Object> interface directly.
  */
 public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
-     * Cache of frequently used, bottom level rules. Per default used character and string matching rules.
+     * Cache of frequently used, bottom level rules. Per default used for character and string matching rules.
      */
     private final Map<Object, Rule> ruleCache = new HashMap<Object, Rule>();
 
@@ -73,7 +73,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Runs the given parser rule against the given input string. Note that the rule must have been created by
-     * a rule creation method of this parser object, which must have been created with Parser.create(...).
+     * a rule creation method of this parser object, which must have been created with Parboiled.create(...).
      *
      * @param rule  the rule
      * @param input the input string
@@ -89,11 +89,11 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         InputLocation startLocation = new InputLocation(inputBuffer);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
-        MatcherContext<V> context = new MatcherContext<V>(startLocation, matcher, actions, parseErrors);
+        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors);
 
         // the matcher tree has already been built during the call to Parboiled.parse(...), usually immediately
         // before the invocation of this method, we need to signal to the ActionInterceptor that rule construction
-        // is over and all further action calls should not continue to createActions ActionMatchers but actually be
+        // is over and all further action calls should not continue to create ActionCallParameters but actually be
         // "routed through" to the actual action method implementations
         if (actions != null) {
             ActionInterceptor actionInterceptor = (ActionInterceptor) ((Factory) actions).getCallback(1);
@@ -109,9 +109,9 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     ////////////////////////////////// RULE CREATION ///////////////////////////////////
 
     /**
-     * Explicitly creates a rule matching the given character.
-     * Normally you can just specify the character literal directly in you rule description.
-     * However, you can also use this wrapper.
+     * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
+     * directly in you rule description. However, if you want to not go through fromCharLiteral(), e.g. because you
+     * redefined it, you can also use this wrapper.
      *
      * @param c the char to match
      * @return a new rule
@@ -132,9 +132,9 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Explicitly creates a rule matching the given string.
-     * Normally you can just specify the string literal directly in you rule description.
-     * However, you can also use this wrapper.
+     * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
+     * directly in you rule description. However, if you want to not go through fromStringLiteral(), e.g. because you
+     * redefined it, you can also use this wrapper.
      *
      * @param string the string to match
      * @return a new rule
@@ -213,7 +213,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     /**
      * Creates a new rule that acts as a syntactic predicate, i.e. tests the given subrule against the current
      * input position without actually matching any characters. Succeeds if the subrule succeeds and fails if the
-     * subrule rails.
+     * subrule rails. Since this rule does not actually consume any input it will never create a parse tree node.
      *
      * @param rule the subrule
      * @return a new rule
@@ -225,7 +225,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     /**
      * Creates a new rule that acts as an inverse syntactic predicate, i.e. tests the given subrule against the current
      * input position without actually matching any characters. Succeeds if the subrule fails and fails if the
-     * subrule succeeds.
+     * subrule succeeds. Since this rule does not actually consume any input it will never create a parse tree node.
      *
      * @param rule the subrule
      * @return a new rule
@@ -255,7 +255,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Matches any character and therefore always succeeds.
+     * Matches any character (even EOI) and therefore always succeeds.
      *
      * @return a new rule
      */
@@ -278,54 +278,56 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * Changes the context scope of all arguments to the current parent scope.
      *
      * @param argument the arguments to change to context for
-     * @return the result of the arguments
+     * @return the result of the argument
      */
     public <T> T UP(T argument) {
-        Object arg = mixInParameter(actionParameters, argument);
-        actionParameters.add(new UpParameter(arg));
+        actionParameters.add(new UpParameter(mixInParameter(actionParameters, argument)));
         return null;
     }
 
     /**
-     * Changes the context scope of all arguments to the current sub scope.
+     * Changes the context scope of all arguments to the current sub scope. This will only work if this call is
+     * at some level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always at
+     * the bottom of the context chain.
      *
      * @param argument the arguments to change to context for
-     * @return the result of the arguments
+     * @return the result of the argument
      */
     public <T> T DOWN(T argument) {
-        Object arg = mixInParameter(actionParameters, argument);
-        actionParameters.add(new DownParameter(arg));
+        actionParameters.add(new DownParameter(mixInParameter(actionParameters, argument)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the first Node found with the given prefix path.
-     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to the parse tree node found under the given prefix path.
+     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
+     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public Node<V> NODE(String path) {
-        Object arg = mixInParameter(actionParameters, path);
-        actionParameters.add(new PathNodeParameter(arg));
+        actionParameters.add(new PathNodeParameter(mixInParameter(actionParameters, path)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to an array of Nodes found with the given prefix path.
-     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to a list of all parse tree nodes found under the given prefix path.
+     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
+     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public List<Node<V>> NODES(String path) {
-        Object pathArg = mixInParameter(actionParameters, path);
-        actionParameters.add(new PathNodesParameter(pathArg));
+        actionParameters.add(new PathNodesParameter(mixInParameter(actionParameters, path)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the last node created during this parsing run.
+     * Creates an action parameter that evaluates to the last node created during this parsing run. This last node
+     * is independent of the current context scope, i.e. {@link #UP(Object)} or {@link #DOWN(Object)} have no influence
+     * on it.
      *
      * @return the action parameter
      */
@@ -335,8 +337,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Creates an action parameter that evaluates to the tree value of the current rule level, i.e.,
-     * If there is an explicitly set value it is returned. Otherwise the last non-null child value, or, if there
+     * Creates an action parameter that evaluates to the tree value of the current context scope level, i.e.,
+     * if there is an explicitly set value it is returned. Otherwise the last non-null child value, or, if there
      * is no such value, null.
      *
      * @return the action parameter
@@ -347,147 +349,195 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Creates an action parameter that evaluates to the value of the first Node found with the given prefix path.
-     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to the value of the given node.
+     *
+     * @param node the node the get the value from
+     * @return the action parameter
+     */
+    public V VALUE(Node<V> node) {
+        actionParameters.add(new ValueParameter<V>(nodeValueType, mixInParameter(actionParameters, node)));
+        return null;
+    }
+
+    /**
+     * Creates an action parameter that evaluates to the value of the node found under the given prefix path.
+     * Equivalent to <pre>VALUE(NODE(path))</pre>.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public V VALUE(String path) {
-        NODE(path);
-        actionParameters.add(new ValueParameter<V>(nodeValueType, actionParameters.pop()));
+        return VALUE(NODE(path));
+    }
+
+    /**
+     * Creates an action parameter that evaluates to a list of the values of all given nodes.
+     *
+     * @param nodes the nodes to get the values from
+     * @return the action parameter
+     */
+    public List<V> VALUES(List<Node<V>> nodes) {
+        actionParameters.add(new ValuesParameter<V>(mixInParameter(actionParameters, nodes)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to an array of node value for the Nodes found with the
-     * given prefix path. The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to a list of the values of all nodes found under the given prefix path.
+     * Equivalent to <pre>VALUES(NODES(path))</pre>.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public List<V> VALUES(String path) {
-        NODES(path);
-        actionParameters.add(new ValuesParameter<V>(actionParameters.pop()));
-        return null;
+        return VALUES(NODES(path));
     }
 
     /**
      * Creates an action parameter that evaluates to the value of the last node created during this parsing run.
+     * Equivalent to <pre>VALUE(LAST_NODE())</pre>.
      *
      * @return the action parameter
      */
     public V LAST_VALUE() {
-        LAST_NODE();
-        actionParameters.add(new ValueParameter<V>(nodeValueType, actionParameters.pop()));
+        return VALUE(LAST_NODE());
+    }
+
+    /**
+     * Creates an action parameter that evaluates to the input text matched by the given parse tree node.
+     *
+     * @param node the parse tree node
+     * @return the action parameter
+     */
+    public String TEXT(Node<V> node) {
+        actionParameters.add(new TextParameter<V>(mixInParameter(actionParameters, node)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the matched input text of the first Node found with the
-     * given prefix path. The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to the input text matched by the node found under the given prefix path.
+     * Equivalent to <pre>TEXT(NODE(path))</pre>.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public String TEXT(String path) {
-        NODE(path);
-        actionParameters.add(new TextParameter<V>(actionParameters.pop()));
+        return TEXT(NODE(path));
+    }
+
+    /**
+     * Creates an action parameter that evaluates to a list of the input texts matched by all given nodes.
+     *
+     * @param nodes the nodes
+     * @return the action parameter
+     */
+    public List<String> TEXTS(List<Node<V>> nodes) {
+        actionParameters.add(new TextsParameter<V>(mixInParameter(actionParameters, nodes)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to an array of input texts matched by the Nodes found with the
-     * given prefix path. The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to a list of the input texts matched by of all nodes found
+     * under the given prefix path.
+     * Equivalent to <pre>TEXTS(NODES(path))</pre>.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public List<String> TEXTS(String path) {
-        NODES(path);
-        actionParameters.add(new TextsParameter<V>(actionParameters.pop()));
-        return null;
+        return TEXTS(NODES(path));
     }
 
     /**
-     * Creates an action parameter that evaluates to the matched input text of the
-     * last node created during this parsing run.
+     * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
+     * Equivalent to <pre>TEXT(LAST_NODE())</pre>.
      *
      * @return the action parameter
      */
     public String LAST_TEXT() {
-        LAST_NODE();
-        actionParameters.add(new TextParameter<V>(actionParameters.pop()));
+        return TEXT(LAST_NODE());
+    }
+
+    /**
+     * Creates an action parameter that evaluates to the first character of the input text matched by the given parse tree node.
+     *
+     * @param node the parse tree node
+     * @return the action parameter
+     */
+    public Character CHAR(Node<V> node) {
+        actionParameters.add(new CharParameter<V>(mixInParameter(actionParameters, node)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to the first character of the matched input text of the first Node
-     * found with the given prefix path.
-     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to the first character of the input text matched by the node found under the given prefix path.
+     * Equivalent to <pre>CHAR(NODE(path))</pre>.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public Character CHAR(String path) {
-        NODE(path);
-        actionParameters.add(new CharParameter<V>(actionParameters.pop()));
+        return CHAR(NODE(path));
+    }
+
+    /**
+     * Creates an action parameter that evaluates to a list of the first characters of the input texts matched by all given nodes.
+     *
+     * @param nodes the nodes
+     * @return the action parameter
+     */
+    public List<Character> CHARS(List<Node<V>> nodes) {
+        actionParameters.add(new CharsParameter<V>(mixInParameter(actionParameters, nodes)));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to an array of the first characters of the input texts matched
-     * by the Nodes found with the given prefix path.
-     * The path is a '/' separated list of node label prefixes, relative to the current rule.
+     * Creates an action parameter that evaluates to a list of the first characters of the input texts matched by of all nodes found
+     * under the given prefix path.
+     * Equivalent to <pre>CHARS(NODES(path))</pre>.
      *
      * @param path the path to search for
      * @return the action parameter
      */
     public List<Character> CHARS(String path) {
-        NODES(path);
-        actionParameters.add(new CharsParameter<V>(actionParameters.pop()));
-        return null;
+        return CHARS(NODES(path));
     }
 
     /**
-     * Creates an action parameter that evaluates to the first character of the matched input text of the
-     * last node created during this parsing run.
+     * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
+     * Equivalent to <pre>CHAR(LAST_NODE())</pre>.
      *
      * @return the action parameter
      */
     public Character LAST_CHAR() {
-        LAST_NODE();
-        actionParameters.add(new CharParameter<V>(actionParameters.pop()));
-        return null;
+        return CHAR(LAST_NODE());
     }
 
     /**
-     * Creates a special action rule that sets the value of the parse tree node to be created for the current rule
-     * to the value of the last node created during the current parsing run.
+     * Creates a special action rule that sets the value of the parse tree node to be created for the current context
+     * scope to the value of the last node created during the current parsing run.
+     * Equivalent to <pre>SET(LAST_VALUE())</pre>.
      *
      * @return a new rule
      */
     public ActionResult SET() {
-        LAST_VALUE();
-        actionParameters.add(new SetValueParameter<V>(actionParameters.pop(), nodeValueType));
-        return null;
+        return SET(LAST_VALUE());
     }
 
     /**
-     * Creates a special action rule that sets the value of the parse tree node to be created for the current rule
-     * to the given value.
+     * Creates a special action rule that sets the value of the parse tree node to be created for the current context
+     * scope to the given value.
      *
      * @param value the value to set
      * @return a new rule
      */
     public ActionResult SET(V value) {
-        Object valueArg = mixInParameter(actionParameters, value);
-        actionParameters.add(new SetValueParameter<V>(valueArg, nodeValueType));
+        actionParameters.add(new SetValueParameter<V>(mixInParameter(actionParameters, value), nodeValueType));
         return null;
     }
 
     /**
-     * Creates an action parameter that evaluates to null.
+     * Creates an action parameter that evaluates to null. You cannot use <b>null</b> directly in an action call
+     * expression. Use this method instead.
      *
      * @return the action parameter
      */
@@ -570,10 +620,26 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     ///************************* HELPER METHODS ***************************///
 
+    /**
+     * Used internally to convert the given character literal to a parser rule.
+     * You can override this method, e.g. for specifying a sequence that automatically matches all trailing
+     * whitespace after the character.
+     *
+     * @param c the character
+     * @return the rule
+     */
     protected Rule fromCharLiteral(char c) {
         return ch(c);
     }
 
+    /**
+     * Used internally to convert the given string literal to a parser rule.
+     * You can override this method, e.g. for specifying a sequence that automatically matches all trailing
+     * whitespace after the string.
+     *
+     * @param string the string
+     * @return the rule
+     */
     protected Rule fromStringLiteral(String string) {
         return string(string);
     }

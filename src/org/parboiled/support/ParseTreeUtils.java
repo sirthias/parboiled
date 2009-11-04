@@ -35,9 +35,13 @@ public class ParseTreeUtils {
     private ParseTreeUtils() {}
 
     /**
-     * Returns the first Node underneath the given parent that matches the given path.
-     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Node
-     * relative to the given parent.
+     * Returns the parse tree node underneath the given parent that matches the given path.
+     * The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
+     * relative to the given parent node. If there are several nodes that match the given path the method
+     * returns the first one unless the respective path segments has the special prefix "last:". In this case the
+     * method will return the last matching node.
+     * Example: "per/last:so/fix" will return the first node, whose label starts with "fix" under the last node,
+     * whose label starts with "so" under the first node, whose label starts with "per".
      * If parent is null or no node is found the method returns null.
      *
      * @param parent the parent Node
@@ -50,12 +54,7 @@ public class ParseTreeUtils {
 
     /**
      * Returns the node underneath the given parents that matches the given path.
-     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Node
-     * relative to each of the given parent nodes. If there are several nodes that match the given path the method
-     * returns the first one unless the respective path segments has the special prefix "last:". In this case the
-     * method will return the last matching node.
-     * Example: "per/last:so/fix" will return the first node, whose label starts with "fix" under the last node,
-     * whose label starts with "so" under the first node, whose label starts with "per".
+     * See {@link #findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
      * If the given collections of parents is null or empty or no node is found the method returns null.
      *
      * @param parents the parent Nodes to look through
@@ -81,9 +80,9 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Collects all Nodes underneath the given parent that match the given path.
-     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Nodes
-     * relative to the given parent.
+     * Collects all nodes underneath the given parent that match the given path.
+     * The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
+     * relative to the given parent node.
      *
      * @param parent     the parent Node
      * @param path       the path to the Nodes being searched for
@@ -98,9 +97,9 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Collects all Nodes underneath the given parents that match the given path.
-     * The path is a '/' separated list of Node label prefixes describing the ancestor chain of the sought for Nodes
-     * relative to each of the given parent nodes.
+     * Collects all nodes underneath the given parents that match the given path.
+     * The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
+     * relative to the given parent nodes.
      *
      * @param parents    the parent Nodes to look through
      * @param path       the path to the Nodes being searched for
@@ -132,7 +131,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the first Node underneath the given parent for which the given predicate evaluates to true.
+     * Returns the first node underneath the given parent for which the given predicate evaluates to true.
      * If parent is null or no node is found the method returns null.
      *
      * @param parent    the parent Node
@@ -151,7 +150,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the first Node underneath the given parents for which the given predicate evaluates to true.
+     * Returns the first node underneath the given parents for which the given predicate evaluates to true.
      * If parents is null or empty or no node is found the method returns null.
      *
      * @param parents   the parent Nodes to look through
@@ -169,7 +168,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the last Node underneath the given parent for which the given predicate evaluates to true.
+     * Returns the last node underneath the given parent for which the given predicate evaluates to true.
      * If parent is null or no node is found the method returns null.
      *
      * @param parent    the parent Node
@@ -188,7 +187,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the last Node underneath the given parents for which the given predicate evaluates to true.
+     * Returns the last node underneath the given parents for which the given predicate evaluates to true.
      * If parents is null or empty or no node is found the method returns null.
      *
      * @param parents   the parent Nodes to look through
@@ -206,7 +205,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Collects all Nodes underneath the given parent for which the given predicate evaluates to true.
+     * Collects all nodes underneath the given parent for which the given predicate evaluates to true.
      *
      * @param parent     the parent Node
      * @param predicate  the predicate
@@ -221,7 +220,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Collects all Nodes underneath the given parents for which the given predicate evaluates to true.
+     * Collects all nodes underneath the given parents for which the given predicate evaluates to true.
      *
      * @param parents    the parent Nodes to look through
      * @param predicate  the predicate
@@ -243,7 +242,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the input text matched by the given Node.
+     * Returns the input text matched by the given node.
      *
      * @param node        the node
      * @param inputBuffer the underlying inputBuffer
@@ -254,7 +253,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the first input character matched by the given Node.
+     * Returns the first input character matched by the given node.
      *
      * @param node        the node
      * @param inputBuffer the underlying inputBuffer

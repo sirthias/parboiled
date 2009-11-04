@@ -21,6 +21,11 @@ import org.parboiled.support.Characters;
 import org.parboiled.Rule;
 import org.parboiled.MatcherContext;
 
+/**
+ * A special Matcher not actually matching any input but rather trying its sub matcher against the current input
+ * position. Succeeds if the sub matcher would succeed (not inverted) or fail (inverted).
+ * @param <V>
+ */
 public class TestMatcher<V> extends AbstractMatcher<V> {
 
     private final boolean inverted;
@@ -42,6 +47,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         Matcher<V> matcher = getChildren().get(0);
 
         // we run the test matcher in a detached context as it is not to affect the parse tree being built
+        // i.e. the test matcher never generates a parse tree node
         MatcherContext<V> tempContext = context.createCopy(null, matcher);
         boolean matched = tempContext.runMatcher(matcher, enforced && !inverted);
 

@@ -23,7 +23,7 @@ import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 
 /**
- * A Matcher that not actually matches input but rather invoking parser actions.
+ * A Matcher that not actually matches input but rather resolves an ActionParameter in the current rule context.
  */
 public class ActionMatcher<V> extends AbstractMatcher<V> implements ActionResult {
 

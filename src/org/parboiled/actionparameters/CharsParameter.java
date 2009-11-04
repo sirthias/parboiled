@@ -23,6 +23,11 @@ import org.parboiled.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An ActionParameter that evaluates to a list of the first characters of the matched input texts of the
+ * parse tree nodes passed in as an List<Node<V>> argument.
+ * @param <V>
+ */
 public class CharsParameter<V> extends ActionParameterWithArgument<List<Node<V>>> {
     public CharsParameter(Object nodes) {
         super(List.class, nodes, List.class);

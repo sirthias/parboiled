@@ -20,6 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.ActionResult;
 import org.parboiled.MatcherContext;
 
+/**
+ * A special ActionParameter that sets the value passed in as argument on the node to be created for the rule
+ * corresponding to the current Context scope.
+ *
+ * @param <V>
+ */
 public class SetValueParameter<V> extends ActionParameterWithArgument<V> {
 
     public SetValueParameter(Object value, Class<V> nodeValueType) {

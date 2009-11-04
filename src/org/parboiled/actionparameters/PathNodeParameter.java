@@ -20,6 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
 
+/**
+ * An ActionParameter that returns the parse tree node found under the given path in the current Context scope.
+ */
 public class PathNodeParameter extends ActionParameterWithArgument<String> {
 
     public PathNodeParameter(Object path) {

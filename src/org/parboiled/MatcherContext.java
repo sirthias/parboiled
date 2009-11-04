@@ -19,28 +19,54 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
-import org.parboiled.common.Predicate;
-import org.parboiled.common.StringUtils;
-import org.parboiled.support.*;
-import static org.parboiled.support.ParseTreeUtils.findNode;
-import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.FollowMatcher;
-import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.IllegalCharactersMatcher;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.support.*;
+import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * <p>The Context implementation orchestrating most of the matching process.</p>
+ * <p>The parsing process works as following:</br>
+ * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
+ * created a root MatcherContext is instantiated for the root rule (Matcher).
+ * A subsequent call to {@link #runMatcher(boolean)} starts the parsing process.</p>
+ * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext, boolean)} passing itself to the Matcher
+ * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
+ * {@link #runMatcher(org.parboiled.matchers.Matcher, boolean)} on its Context, which creates a sub context of the
+ * current MatcherContext and runs the given sub matcher in it.</p>
+ * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
+ * instances serve as a kind of companion objects to the matchers, providing them with support for building the
+ * parse tree nodes, keeping track of input locations and error recovery.</p>
+ * <p>At each point during the parsing process the matchers and action methods have access to the current MatcherContext
+ * and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p> 
+ * @param <V> the node value type
+ */
 public class MatcherContext<V> implements Context<V> {
 
+    // small helper class encapsulating all objects that do not change across Context levels
+    private static class Invariables<V> {
+        private final InputBuffer inputBuffer;
+        private final List<ParseError> parseErrors;
+        private final Reference<Node<V>> lastNodeRef;
+
+        private Invariables(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
+                            @NotNull Reference<Node<V>> lastNodeRef) {
+            this.inputBuffer = inputBuffer;
+            this.parseErrors = parseErrors;
+            this.lastNodeRef = lastNodeRef;
+        }
+    }
+
+    private final Invariables<V> invariables;
     private final MatcherContext<V> parent;
     private final InputLocation startLocation;
     private final Matcher<V> matcher;
-    private final Actions<V> actions;
-    private final List<ParseError> parseErrors;
-    private final Reference<Node<V>> lastNodeRef;
 
     private MatcherContext<V> subContext;
     private InputLocation currentLocation;
@@ -50,21 +76,18 @@ public class MatcherContext<V> implements Context<V> {
     private V nodeValue;
     private Object tag;
 
-    public MatcherContext(@NotNull InputLocation startLocation, @NotNull Matcher<V> matcher,
-                          Actions<V> actions, @NotNull List<ParseError> parseErrors) {
-        this(null, startLocation, matcher, actions, parseErrors, new Reference<Node<V>>());
+    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
+                          @NotNull Matcher<V> matcher, @NotNull List<ParseError> parseErrors) {
+        this(null, new Invariables<V>(inputBuffer, parseErrors, new Reference<Node<V>>()), startLocation, matcher);
     }
 
-    public MatcherContext(MatcherContext<V> parent, @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher,
-                          Actions<V> actions, @NotNull List<ParseError> parseErrors,
-                          @NotNull Reference<Node<V>> lastNodeRef) {
+    private MatcherContext(MatcherContext<V> parent, @NotNull Invariables<V> invariables,
+                           @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher) {
 
         this.parent = parent;
         this.startLocation = currentLocation = startLocation;
         this.matcher = matcher;
-        this.actions = actions;
-        this.parseErrors = parseErrors;
-        this.lastNodeRef = lastNodeRef;
+        this.invariables = invariables;
     }
 
     @Override
@@ -82,6 +105,10 @@ public class MatcherContext<V> implements Context<V> {
         return subContext;
     }
 
+    public InputBuffer getInputBuffer() {
+        return invariables.inputBuffer;
+    }
+
     @NotNull
     public InputLocation getStartLocation() {
         return startLocation;
@@ -94,7 +121,7 @@ public class MatcherContext<V> implements Context<V> {
 
     @NotNull
     public List<ParseError> getParseErrors() {
-        return Collections.unmodifiableList(parseErrors);
+        return Collections.unmodifiableList(invariables.parseErrors);
     }
 
     @NotNull
@@ -103,11 +130,11 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public String getNodeText(Node<?> node) {
-        return ParseTreeUtils.getNodeText(node, startLocation.inputBuffer);
+        return ParseTreeUtils.getNodeText(node, invariables.inputBuffer);
     }
 
     public Character getNodeChar(Node<?> node) {
-        return ParseTreeUtils.getNodeChar(node, startLocation.inputBuffer);
+        return ParseTreeUtils.getNodeChar(node, invariables.inputBuffer);
     }
 
     @NotNull
@@ -138,16 +165,8 @@ public class MatcherContext<V> implements Context<V> {
         return findNodeByPath(subNodes, path);
     }
 
-    public Node<V> getNodeByLabel(final String label) {
-        return findNode(subNodes, new Predicate<Node<V>>() {
-            public boolean apply(Node<V> node) {
-                return StringUtils.startsWith(node.getLabel(), label);
-            }
-        });
-    }
-
     public Node<V> getLastNode() {
-        return lastNodeRef.getTarget();
+        return invariables.lastNodeRef.getTarget();
     }
 
     public List<Node<V>> getSubNodes() {
@@ -157,7 +176,7 @@ public class MatcherContext<V> implements Context<V> {
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public MatcherContext<V> createCopy(MatcherContext<V> parent, Matcher<V> matcher) {
-        return new MatcherContext<V>(parent, currentLocation, matcher, actions, parseErrors, lastNodeRef);
+        return new MatcherContext<V>(parent, invariables, currentLocation, matcher);
     }
 
     public void setCurrentLocation(InputLocation currentLocation) {
@@ -165,7 +184,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void advanceInputLocation() {
-        setCurrentLocation(getCurrentLocation().advance());
+        setCurrentLocation(getCurrentLocation().advance(invariables.inputBuffer));
     }
 
     public Node<V> getNode() {
@@ -184,7 +203,7 @@ public class MatcherContext<V> implements Context<V> {
         addError(new StringBuilder()
                 .append("Invalid input ").append(illegalChar != Chars.EOI ? "\'" + illegalChar + '\'' : "EOI")
                 .append(", expected ").append(expected)
-                .append(ParseError.createMessageSuffix(startLocation, currentLocation))
+                .append(ParseError.createMessageSuffix(invariables.inputBuffer, startLocation, currentLocation))
                 .toString());
     }
 
@@ -195,7 +214,7 @@ public class MatcherContext<V> implements Context<V> {
     public void createNode() {
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
         if (parent != null) parent.addChildNode(node);
-        lastNodeRef.setTarget(node);
+        invariables.lastNodeRef.setTarget(node);
     }
 
     public void addChildNode(@NotNull Node<V> node) {
@@ -229,7 +248,8 @@ public class MatcherContext<V> implements Context<V> {
             matched = true;
         }
         if (errorMessage != null) {
-            parseErrors.add(new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage));
+            invariables.parseErrors
+                    .add(new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage));
         }
         return matched;
     }
@@ -263,7 +283,7 @@ public class MatcherContext<V> implements Context<V> {
     private boolean trySingleSymbolDeletion() {
         Characters starterChars = matcher.getStarterChars();
         Preconditions.checkState(!starterChars.contains(Chars.EMPTY));
-        char lookAheadOne = getCurrentLocation().lookAhead(1);
+        char lookAheadOne = getCurrentLocation().lookAhead(invariables.inputBuffer, 1);
         if (!starterChars.contains(lookAheadOne)) {
             return false;
         }

@@ -20,6 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Converter;
 
+/**
+ * An ActionParameter that takes two arguments, a string and a Converter. It evaluates to the result of the
+ * Converter applied to the string.
+ */
 public class ConvertParameter extends ActionParameterWithArgument<String> {
 
     private final Object converter;
@@ -36,6 +40,6 @@ public class ConvertParameter extends ActionParameterWithArgument<String> {
 
     @Override
     public String toString() {
-        return "CONVERT to " + returnType.getSimpleName() + '(' + argument + ')';
+        return "convert to " + returnType.getSimpleName() + '(' + argument + ')';
     }
 }

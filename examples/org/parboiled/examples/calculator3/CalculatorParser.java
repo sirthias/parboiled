@@ -34,12 +34,15 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
     public Rule expression() {
         return sequence(
-                term(), SET(),
+                term(), SET(), // the SET() sets the value of the "expression" to the value of the "term"
                 zeroOrMore(
                         enforcedSequence(
                                 firstOf('+', '-'),
                                 term(),
                                 UP(UP(SET(actions.createAst(DOWN(DOWN(CHAR("firstOf"))), VALUE(), LAST_VALUE()))))
+                                // this creates a new AST node and sets it as the value of the "expression"
+                                // the node contains the operator ('+' or '-'), the old "expression" value as left
+                                // child and the value of the "term" following the operator as right child
                         )
                 )
         );
@@ -99,7 +102,7 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
                         optional(sequence(ch('.'), oneOrMore(digit())))
                 ),
                 SET(actions.createAst(CONVERT_TO_DOUBLE(LAST_TEXT()))),
-                zeroOrMore(whiteSpace())
+                whiteSpace()
         );
     }
 
@@ -117,11 +120,16 @@ public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
     @Override
     protected Rule fromCharLiteral(char c) {
+        // we redefine the rule creation for character literals to also match trailing whitespace
+        // this way we don't have to insert extra whitespace() rules after each character literal
+        // however, we now have to wrap character matching rules we don't want to be "space swallowing"
+        // with the ch(...) rule creator
         return sequence(ch(c), whiteSpace());
     }
 
     @Override
     protected Rule fromStringLiteral(String string) {
+        // same thing for string literals
         return sequence(string(string), whiteSpace());
     }
 

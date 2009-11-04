@@ -20,6 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
 
+/**
+ * An ActionParameter that evaluates to the matched input string of the parse tree node passed in as argument.
+ * @param <V> the node value type
+ */
 public class TextParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
     public TextParameter(Object node) {

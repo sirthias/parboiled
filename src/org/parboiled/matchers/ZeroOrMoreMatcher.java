@@ -24,6 +24,10 @@ import org.parboiled.support.InputLocation;
 import org.parboiled.Rule;
 import org.parboiled.MatcherContext;
 
+/**
+ * A Matcher that repeatedly tries its sub matcher against the input. Always succeeds.
+ * @param <V>
+ */
 public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
     public ZeroOrMoreMatcher(@NotNull Rule subRule) {

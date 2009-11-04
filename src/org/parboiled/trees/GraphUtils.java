@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * General utility methods for operating on directed graphs (consisting of DGraphNodes).
+ * General utility methods for operating on directed graphs (consisting of GraphNodes).
  */
 public class GraphUtils {
 

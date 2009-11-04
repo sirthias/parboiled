@@ -21,6 +21,10 @@ import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
+/**
+ * Special Matcher invoked during error recovery. Matches all input characters not in a given follower set.
+ * @param <V>
+ */
 public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
     private final String expected;
     private final Characters stopMatchChars;

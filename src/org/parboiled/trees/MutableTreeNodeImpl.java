@@ -43,19 +43,32 @@ public class MutableTreeNodeImpl<T extends MutableTreeNode<T>> implements Mutabl
 
     public void addChild(int index, T child) {
         Preconditions.checkElementIndex(index, children.size() + 1);
-        if (child != null && child.getParent() != null && child.getParent() != this) {
+
+        // detach new child from old parent
+        if (child != null && child.getParent() != this) {
             TreeUtils.removeChild(child.getParent(), child);
         }
+
+        // attach new child
         children.add(index, child);
         setParent(child, this);
     }
 
     public void setChild(int index, T child) {
         Preconditions.checkElementIndex(index, children.size());
+
+        // detach old child
         T old = children.get(index);
         if (old == child) return;
-        children.set(index, child);
         setParent(old, null);
+
+        // detach new child from old parent
+        if (child != null && child.getParent() != this) {
+            TreeUtils.removeChild(child.getParent(), child);
+        }
+
+        // attach new child
+        children.set(index, child);
         setParent(child, this);
     }
 

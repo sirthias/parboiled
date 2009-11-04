@@ -21,6 +21,10 @@ import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.MatcherContext;
 
+/**
+ * A Matcher matching a single character.
+ * @param <V>
+ */
 public class CharMatcher<V> extends AbstractMatcher<V> {
 
     public final char character;

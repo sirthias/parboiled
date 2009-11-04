@@ -23,6 +23,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * An ActionParameter that evaluates to a list containing the the matched input strings of the parse tree nodes
+ * passed in as argument.
+ * @param <V> the node value type
+ */
 public class TextsParameter<V> extends ActionParameterWithArgument<List<Node<V>>> {
     public TextsParameter(Object nodes) {
         super(List.class, nodes, List.class);

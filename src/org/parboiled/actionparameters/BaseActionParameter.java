@@ -18,6 +18,9 @@ package org.parboiled.actionparameters;
 
 import org.parboiled.common.Preconditions;
 
+/**
+ * Base implementation of an ActionParameter that checks for compatibility with the given return type.
+ */
 abstract class BaseActionParameter implements ActionParameter {
 
     protected final Class<?> returnType;

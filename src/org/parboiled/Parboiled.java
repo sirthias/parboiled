@@ -32,15 +32,17 @@ public class Parboiled {
     private Parboiled() {}
 
     /**
-     * Creates a parser object whose rule creation methods can then be used with the parse(...) method.
-     * Since parboiled needs to extends your parser object with certain extra logic (e.g. to prevent infinite recursions
+     * Creates a parser object whose rule creation methods can then be used with the
+     * {@link BaseParser#parse(Rule, String)} method.
+     * Since parboiled needs to extend your parser object with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
-     * Still your parser object can be of any type (even though it is usually derived from BaseParser) and can
-     * define arbitrary constructors.
-     * If you want to use an non-default constructor you also have to provide its arguments to this method.
+     * Also your parser object has to be derived from BaseParser and define a constructor that takes the accompanying
+     * actions object as its first parameter. If you want to use any other constructor parameters you can provide
+     * them to this method using the parserConstructorArgs argument.
      *
      * @param parserType            the type of the parser to create
-     * @param actions               the action object to use (if not null it must have been created with createActions(...)
+     * @param actions               the action object to use (if not null it must have been created with
+     *                              {@link #createActions(Class, Object[])} )
      * @param parserConstructorArgs optional arguments to the parser class constructor
      * @return the ready to use parser instance
      */
@@ -76,11 +78,10 @@ public class Parboiled {
     }
 
     /**
-     * Creates an action object whose actual action methods (the ones returning an ActionResult) can be directly used
-     * in your rule definitions.
+     * Creates an action object whose methods can then be used directly in your rule definitions.
      * Since parboiled needs to extends your parser actions object with certain extra logic you cannot create your
-     * actions object yourself, but have to go through this method. Still your actions object can be of any base type
-     * (even though it is often times derived from BaseActions) and can define arbitrary constructors.
+     * actions object yourself, but have to go through this method. Still your actions object can be of any type (as
+     * long as it implements the {@link org.parboiled.Actions} interface) and can define arbitrary constructors.
      * If you want to use an non-default constructor you also have to provide its arguments to this method.
      *
      * @param actionsType     the type of the action object to create

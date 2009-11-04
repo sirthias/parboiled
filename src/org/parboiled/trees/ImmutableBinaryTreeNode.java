@@ -18,6 +18,10 @@ package org.parboiled.trees;
 
 import org.parboiled.common.ImmutableList;
 
+/**
+ * A simple immutable implementation of the BinaryTreeNode interface.
+ * @param <N>
+ */
 public class ImmutableBinaryTreeNode<N extends BinaryTreeNode<N>> extends ImmutableTreeNode<N>
         implements BinaryTreeNode<N> {
 

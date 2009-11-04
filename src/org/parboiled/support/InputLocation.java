@@ -18,8 +18,10 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Immutable value container identifying a certain position in an InputBuffer.
+ */
 public class InputLocation {
-    public final InputBuffer inputBuffer;
     public final int index;
     public final int row;
     public final int column;
@@ -30,14 +32,13 @@ public class InputLocation {
     }
 
     private InputLocation(@NotNull InputBuffer inputBuffer, int index, int row, int column) {
-        this.inputBuffer = inputBuffer;
         this.index = index;
         this.row = row;
         this.column = column;
         this.currentChar = inputBuffer.charAt(index);
     }
 
-    public InputLocation advance() {
+    public InputLocation advance(@NotNull InputBuffer inputBuffer) {
         switch (currentChar) {
             case Chars.EOI:
                 return this;
@@ -48,7 +49,7 @@ public class InputLocation {
         }
     }
 
-    public char lookAhead(int delta) {
+    public char lookAhead(@NotNull InputBuffer inputBuffer, int delta) {
         return inputBuffer.charAt(index + delta);
     }
 

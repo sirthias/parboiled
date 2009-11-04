@@ -26,6 +26,9 @@ import org.parboiled.support.ParsingException;
 
 import java.lang.reflect.Method;
 
+/**
+ * An ActionParameter that wraps a method call on the parser actions object.
+ */
 public class ActionCallParameter extends BaseActionParameter {
     private final Actions actionsObject;
     private final Method method;

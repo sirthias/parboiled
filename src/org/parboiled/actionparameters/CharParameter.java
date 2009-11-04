@@ -20,6 +20,11 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
 
+/**
+ * An ActionParameter that evaluates to the first character of the matched input text of the parse tree node
+ * passed in as argument.
+ * @param <V> the node value type
+ */
 public class CharParameter<V> extends ActionParameterWithArgument<Node<V>> {
 
     public CharParameter(Object node) {
