@@ -17,33 +17,43 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.trees.TreeNode;
 import org.parboiled.support.InputLocation;
+import org.parboiled.trees.TreeNode;
 
 /**
  * Represents a node in the parse tree created during a parsing run.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public interface Node<V> extends TreeNode<Node<V>> {
 
     /**
-     * @return the label of this node, set to the name of the matcher that created this node
+     * Returns the label of this node which is equal to the name of the rule that created this node
+     *
+     * @return the label of this node
      */
     String getLabel();
 
     /**
-     * @return the start location of this nodes text in the underlying input buffer.
+     * Returns the start location of this nodes text in the underlying input buffer.
+     *
+     * @return the start location
      */
     @NotNull
     InputLocation getStartLocation();
 
     /**
-     * @return the end location of this nodes text in the underlying input buffer.
+     * Returns the end location of this nodes text in the underlying input buffer.
+     *
+     * @return the end location
      */
     @NotNull
     InputLocation getEndLocation();
 
     /**
-     * @return the value object attached to this node
+     * Returns the value object attached to this node.
+     *
+     * @return the value object
      */
     V getValue();
 

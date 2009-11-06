@@ -23,12 +23,15 @@ import java.util.List;
 /**
  * A node in a directed graph (that may have cycles).
  * The children list may include null entries as well as multiple entries referencing the same child.
- * @param <T>
+ *
+ * @param <T> the actual implementation type.
  */
 public interface GraphNode<T extends GraphNode<T>> {
 
     /**
-     * @return the sub nodes of this node
+     * Returns the sub nodes of this node.
+     *
+     * @return the sub nodes
      */
     @NotNull
     List<T> getChildren();

@@ -26,45 +26,61 @@ import java.util.List;
 
 /**
  * A Context object is available to parser actions methods during their runtime and provides various support functionality.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public interface Context<V> {
 
     /**
-     * @return the parent context, i.e. the context for the currently running parent matcher
+     * Returns the parent context, i.e. the context for the currently running parent matcher.
+     *
+     * @return the parent context
      */
     Context<V> getParent();
 
     /**
-     * @return the current sub context, only available if the action call leading to this method was wrapped with
-     *         one or more {@link BaseParser#UP(Object)} calls.
+     * Returns the current sub context, which will only be non-null if the action call leading to this method was
+     * wrapped with one or more {@link BaseParser#UP(Object)} calls.
+     *
+     * @return the current sub context.
      */
     Context<V> getSubContext();
 
     /**
-     * @return the InputBuffer the parser is currently running against
+     * Returns the InputBuffer the parser is currently running against
+     *
+     * @return the InputBuffer
      */
     InputBuffer getInputBuffer();
 
     /**
-     * @return the matcher this context was constructed for
+     * Returns the Matcher this context was constructed for.
+     *
+     * @return the matcher
      */
     @NotNull
     Matcher<V> getMatcher();
 
     /**
-     * @return the start location of the currently running rule match attempt
+     * Returns the start location of the currently running rule match attempt.
+     *
+     * @return the start location
      */
     @NotNull
     InputLocation getStartLocation();
 
     /**
-     * @return the current location in the input buffer
+     * Returns the current location in the input buffer.
+     *
+     * @return the current location
      */
     @NotNull
     InputLocation getCurrentLocation();
 
     /**
-     * @return the list of parse errors so far generated during the entire parsing run
+     * Returns the list of parse errors so far generated during the entire parsing run.
+     *
+     * @return the list of parse errors
      */
     @NotNull
     List<ParseError> getParseErrors();
@@ -109,6 +125,10 @@ public interface Context<V> {
     Node<V> getNodeByPath(String path);
 
     /**
+     * Returns the last node created during this parsing run. The last node is independent from the current context
+     * scope, i.e. all context along the context chain would return the same object at any given point in the
+     * parsing process.
+     *
      * @return the last node created during this parsing run.
      */
     Node<V> getLastNode();
@@ -121,19 +141,23 @@ public interface Context<V> {
     void setNodeValue(V value);
 
     /**
-     * @return the previously set value of the node to be created at the current context scope
+     * Returns the previously set value of the node to be created at the current context scope.
+     *
+     * @return the previously set value
      */
     V getNodeValue();
 
     /**
      * If this context has an explicitly set node value (see {@link #setNodeValue(Object)}) it is returned.
-     * Otherwise the method return the last non-null value of this levels subnodes.
+     * Otherwise the method return the last non-null value of the already created subnodes.
      *
      * @return a node value or null
      */
     V getTreeValue();
 
     /**
+     * Returns the parse tree subnodes already created in the current context scope.
+     *
      * @return the parse tree subnodes already created in the current context scope
      */
     List<Node<V>> getSubNodes();

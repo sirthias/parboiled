@@ -18,12 +18,15 @@ package org.parboiled;
 
 /**
  * Interface that has to be implemented by classes containing parser action methods.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public interface Actions<V> {
 
     /**
      * Called immediately before any parser action method invocation. Informs the Actions object about the
-     * Context to be used for the coming action call.
+     * context to be used for the coming action call.
+     *
      * @param context the context
      */
     void setContext(Context<V> context);

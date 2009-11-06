@@ -17,7 +17,8 @@
 package org.parboiled;
 
 /**
- * Marker interface used for the return values of parser action methods.
+ * Marker interface used for the return values of parser action methods. Parser action methods you want to use
+ * directly in your parser rule descriptions must return an ActionResult.
  */
 public interface ActionResult {
 

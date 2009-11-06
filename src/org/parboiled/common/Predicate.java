@@ -18,12 +18,12 @@ package org.parboiled.common;
 
 /**
  * A simple predicate returning a boolean for a given input, based on some logic.
+ *
  * @param <T>
  */
 public interface Predicate<T> {
 
     /**
-     *
      * @param input the input to evaluate
      * @return true if the input satisfies the predicate logic
      */

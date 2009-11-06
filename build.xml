@@ -4,32 +4,41 @@
     <!-- can be overridden at the command line with -Dversion= -->
     <property name="version" value="snapshot"/>
 
+    <path id="compile.classpath">
+        <pathelement location="lib/cglib/cglib-nodep-2.2.jar"/>
+        <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
+        <pathelement location="lib/annotations.jar"/>
+    </path>
+
+    <taskdef name="javacn" classname="org.parboiled.ant.Javacn">
+        <classpath>
+            <pathelement location="lib/javacn/asm-3.2.jar"/>
+            <pathelement location="lib/javacn/javacn.jar"/>
+        </classpath>
+    </taskdef>
+
     <target name="clean" description="Remove all generated files">
         <delete dir="build"/>
     </target>
 
     <target name="compile" description="Compile main and example sources">
         <mkdir dir="build/classes"/>
-        <javac debug="on" destdir="build/classes" source="1.5" target="1.5" encoding="utf8">
+        <javacn debug="on" destdir="build/classes" source="1.5" target="1.5" encoding="utf8">
             <src location="src"/>
             <src location="examples"/>
-            <classpath>
-                <fileset dir="lib" includes="**/*.jar"/>
-            </classpath>
+            <classpath refid="compile.classpath"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
-        </javac>
+        </javacn>
     </target>
 
     <target name="compile.test" depends="compile" description="Compile test sources">
         <mkdir dir="build/test-classes"/>
-        <javac debug="on" destdir="build/test-classes" source="1.5" target="1.5" encoding="utf8">
+        <javacn debug="on" destdir="build/test-classes" source="1.5" target="1.5" encoding="utf8">
             <src location="test"/>
-            <classpath>
-                <pathelement path="build/classes"/>
-                <fileset dir="lib" includes="**/*.jar"/>
-            </classpath>
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
-        </javac>
+        </javacn>
     </target>
 
     <target name="test" depends="compile.test" description="Run all tests">
@@ -37,12 +46,26 @@
 
         <testng parallel="true" suitename="All Tests" outputdir="test-output" haltonfailure="true">
             <classfileset dir="build/test-classes" includes="**/*Test.class"/>
-            <classpath>
-                <pathelement path="build/classes"/>
-                <pathelement path="build/test-classes"/>
-                <fileset dir="lib" includes="**/*.jar"/>
-            </classpath>
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+            <classpath location="build/test-classes"/>
         </testng>
+    </target>
+
+    <target name="javadoc" description="Builds javadoc">
+        <delete includeemptydirs="true">
+            <fileset dir="javadoc" includes="**/*"/>
+        </delete>
+        <javadoc destdir="javadoc" windowtitle="parboiled ${version} API">
+            <packageset dir="src" defaultexcludes="yes">
+                <include name="org/parboiled/**"/>
+                <exclude name="org/parboiled/actionparameters/**"/>
+                <exclude name="org/parboiled/matchers/**"/>
+                <exclude name="org/parboiled/MatcherContext*"/>
+            </packageset>
+            <classpath refid="compile.classpath"/>
+            <link href="http://java.sun.com/javase/6/docs/api"/>
+        </javadoc>
     </target>
 
     <target name="manifest">
@@ -60,7 +83,7 @@
             <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
             <attribute name="Bundle-Version" value="${version}"/>
             <attribute name="Bundle-Description"
-                       value="parboiled, a Java 1.5+ library providing a light-weight and easy-to-use, yet powerful PEG parsing facility."/>
+                       value="parboiled, a Java 1.5+ library providing a light-weight and easy-to-use, yet powerful PEG parsing facility"/>
             <attribute name="Bundle-Name" value="parboiled"/>
             <attribute name="Bundle-DocURL" value="http://www.parboiled.org"/>
             <attribute name="Bundle-Vendor" value="parboiled.org"/>
@@ -75,14 +98,14 @@
         </jar>
     </target>
 
-    <target name="jar.source" depends="manifest" description="Create a .jar file with main sources">
+    <target name="jar.source" depends="manifest" description="Create a .jar with main sources">
         <zip destfile="build/parboiled-${version}-src.jar">
             <fileset dir="src"/>
             <fileset dir="build" includes="META-INF/*"/>
         </zip>
     </target>
 
-    <target name="jar.examples" depends="compile" description="Creates .jar files for examples">
+    <target name="jar.examples" depends="compile" description="Creates .jar for examples">
         <jar destfile="build/parboiled-${version}-examples.jar">
             <fileset dir="build/classes" includes="org/parboiled/examples/**"/>
         </jar>
@@ -91,7 +114,15 @@
         </zip>
     </target>
 
-    <target name="dist" depends="test, jar, jar.source, jar.examples" description="Compiles, tests and jars everything">
+    <target name="jar.javadoc" depends="javadoc" description="Creates a .jar containing javadocs">
+        <mkdir dir="build"/>
+        <zip destfile="build/parboiled-${version}-javadoc.jar">
+            <fileset dir="javadoc"/>
+        </zip>
+    </target>
+
+    <target name="dist" depends="clean, test, jar, jar.source, jar.examples, jar.javadoc"
+            description="Compiles, tests and jars everything">
         <copy file="lib/cglib/cglib-nodep-2.2.jar" todir="build"/>
     </target>
 

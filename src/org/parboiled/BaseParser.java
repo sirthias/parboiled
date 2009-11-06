@@ -73,7 +73,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Runs the given parser rule against the given input string. Note that the rule must have been created by
-     * a rule creation method of this parser object, which must have been created with Parboiled.create(...).
+     * a rule creation method of this parser object, which must have been created with
+     * {@link Parboiled#createParser(Class, Actions, Object[])}.
      *
      * @param rule  the rule
      * @param input the input string
@@ -91,10 +92,10 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors);
 
-        // the matcher tree has already been built during the call to Parboiled.parse(...), usually immediately
-        // before the invocation of this method, we need to signal to the ActionInterceptor that rule construction
-        // is over and all further action calls should not continue to create ActionCallParameters but actually be
-        // "routed through" to the actual action method implementations
+        // the matcher tree has already been built, usually immediately before the invocation of this method,
+        // we need to signal to the ActionInterceptor that rule construction is over and all further action
+        // calls should not continue to create ActionCallParameters but actually be "routed through" to the
+        // actual action method implementations
         if (actions != null) {
             ActionInterceptor actionInterceptor = (ActionInterceptor) ((Factory) actions).getCallback(1);
             actionInterceptor.setParser(null);
@@ -110,8 +111,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
-     * directly in you rule description. However, if you want to not go through fromCharLiteral(), e.g. because you
-     * redefined it, you can also use this wrapper.
+     * directly in you rule description. However, if you want to not go through {@link #fromCharLiteral(char)},
+     * e.g. because you redefined it, you can also use this wrapper.
      *
      * @param c the char to match
      * @return a new rule
@@ -133,8 +134,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
-     * directly in you rule description. However, if you want to not go through fromStringLiteral(), e.g. because you
-     * redefined it, you can also use this wrapper.
+     * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
+     * e.g. because you redefined it, you can also use this wrapper.
      *
      * @param string the string to match
      * @return a new rule
@@ -255,7 +256,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Matches any character (even EOI) and therefore always succeeds.
+     * Matches any character (even {@link org.parboiled.support.Chars#EOI}) and therefore always succeeds.
      *
      * @return a new rule
      */
@@ -300,7 +301,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the parse tree node found under the given prefix path.
-     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
+     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
      * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
      *
      * @param path the path to search for
@@ -361,7 +362,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the value of the node found under the given prefix path.
-     * Equivalent to <pre>VALUE(NODE(path))</pre>.
+     * Equivalent to <code>VALUE(NODE(path))</code>.
      *
      * @param path the path to search for
      * @return the action parameter
@@ -383,7 +384,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to a list of the values of all nodes found under the given prefix path.
-     * Equivalent to <pre>VALUES(NODES(path))</pre>.
+     * Equivalent to <code>VALUES(NODES(path))</code>.
      *
      * @param path the path to search for
      * @return the action parameter
@@ -394,7 +395,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the value of the last node created during this parsing run.
-     * Equivalent to <pre>VALUE(LAST_NODE())</pre>.
+     * Equivalent to <code>VALUE(LAST_NODE())</code>.
      *
      * @return the action parameter
      */
@@ -415,7 +416,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the input text matched by the node found under the given prefix path.
-     * Equivalent to <pre>TEXT(NODE(path))</pre>.
+     * Equivalent to <code>TEXT(NODE(path))</code>.
      *
      * @param path the path to search for
      * @return the action parameter
@@ -438,7 +439,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     /**
      * Creates an action parameter that evaluates to a list of the input texts matched by of all nodes found
      * under the given prefix path.
-     * Equivalent to <pre>TEXTS(NODES(path))</pre>.
+     * Equivalent to <code>TEXTS(NODES(path))</code>.
      *
      * @param path the path to search for
      * @return the action parameter
@@ -449,7 +450,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
-     * Equivalent to <pre>TEXT(LAST_NODE())</pre>.
+     * Equivalent to <code>TEXT(LAST_NODE())</code>.
      *
      * @return the action parameter
      */
@@ -470,7 +471,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the first character of the input text matched by the node found under the given prefix path.
-     * Equivalent to <pre>CHAR(NODE(path))</pre>.
+     * Equivalent to <code>CHAR(NODE(path))</code>.
      *
      * @param path the path to search for
      * @return the action parameter
@@ -493,7 +494,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     /**
      * Creates an action parameter that evaluates to a list of the first characters of the input texts matched by of all nodes found
      * under the given prefix path.
-     * Equivalent to <pre>CHARS(NODES(path))</pre>.
+     * Equivalent to <code>CHARS(NODES(path))</code>.
      *
      * @param path the path to search for
      * @return the action parameter
@@ -504,7 +505,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
-     * Equivalent to <pre>CHAR(LAST_NODE())</pre>.
+     * Equivalent to <code>CHAR(LAST_NODE())</code>.
      *
      * @return the action parameter
      */
@@ -515,7 +516,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     /**
      * Creates a special action rule that sets the value of the parse tree node to be created for the current context
      * scope to the value of the last node created during the current parsing run.
-     * Equivalent to <pre>SET(LAST_VALUE())</pre>.
+     * Equivalent to <code>SET(LAST_VALUE())</code>.
      *
      * @return a new rule
      */

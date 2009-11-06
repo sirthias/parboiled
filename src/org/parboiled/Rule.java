@@ -17,8 +17,7 @@
 package org.parboiled;
 
 /**
- * Marker interface for parser rule production methods.
+ * Marker interface for return values parser rule production methods.
  */
 public interface Rule {
-
 }

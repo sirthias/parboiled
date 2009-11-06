@@ -18,16 +18,21 @@ package org.parboiled.trees;
 
 /**
  * A TreeNode specialization with only two child nodes, left and right.
- * @param <N>
+ *
+ * @param <N> the actual implementation type of this tree node
  */
 public interface BinaryTreeNode<N extends BinaryTreeNode<N>> extends TreeNode<N> {
 
     /**
+     * Returns the left sub node.
+     *
      * @return the left sub node
      */
     N left();
 
     /**
+     * Returns the right sub node.
+     *
      * @return the right sub node
      */
     N right();
