@@ -53,10 +53,8 @@
     </target>
 
     <target name="javadoc" description="Builds javadoc">
-        <delete includeemptydirs="true">
-            <fileset dir="javadoc" includes="**/*"/>
-        </delete>
-        <javadoc destdir="javadoc" windowtitle="parboiled ${version} API">
+        <mkdir dir="build/javadoc"/>
+        <javadoc destdir="build/javadoc" windowtitle="parboiled ${version} API">
             <packageset dir="src" defaultexcludes="yes">
                 <include name="org/parboiled/**"/>
                 <exclude name="org/parboiled/actionparameters/**"/>
@@ -115,9 +113,8 @@
     </target>
 
     <target name="jar.javadoc" depends="javadoc" description="Creates a .jar containing javadocs">
-        <mkdir dir="build"/>
         <zip destfile="build/parboiled-${version}-javadoc.jar">
-            <fileset dir="javadoc"/>
+            <fileset dir="build/javadoc"/>
         </zip>
     </target>
 
