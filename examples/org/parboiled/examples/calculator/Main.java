@@ -36,7 +36,7 @@ public class Main {
             ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
-            System.out.println(printNodeTree(result) + '\n');
+            System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
 
             if (result.hasErrors()) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));

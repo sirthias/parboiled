@@ -1,8 +1,12 @@
 @echo off
 if "%1" == "" goto usage
 
+echo Running 'ant compile'...
+
 call ant compile >nul 2>&1
 if errorlevel 1 goto error
+
+echo Starting '%1'...
 java -cp "build/classes;lib/cglib/cglib-nodep-2.2.jar" %1
 
 goto end
