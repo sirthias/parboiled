@@ -16,20 +16,18 @@
 
 package org.parboiled.examples;
 
-import org.parboiled.examples.calculator3.CalculatorActions;
-import org.parboiled.examples.calculator3.CalculatorParser;
-import org.parboiled.examples.calculator3.CalcNode;
-import org.parboiled.support.ParsingResult;
 import org.parboiled.AbstractTest;
 import org.parboiled.Parboiled;
+import org.parboiled.examples.calculator3.CalcNode;
+import org.parboiled.examples.calculator3.CalculatorParser;
+import org.parboiled.support.ParsingResult;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.Test;
 
 public class Calculator3Test extends AbstractTest {
 
-    private final CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-    private final CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
+    private final CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
 
     @Test
     public void test() {

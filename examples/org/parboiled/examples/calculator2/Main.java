@@ -32,8 +32,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-            CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
+            CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
             ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
 
             CalcNode astRoot = result.parseTreeRoot.getValue();

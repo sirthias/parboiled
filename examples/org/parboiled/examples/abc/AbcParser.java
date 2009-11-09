@@ -29,10 +29,6 @@ import org.parboiled.Rule;
 @SuppressWarnings({"InfiniteRecursion"})
 public class AbcParser extends BaseParser<Object, Actions<Object>> {
 
-    public AbcParser(Actions<Object> actions) {
-        super(actions);
-    }
-
     public Rule S() {
         return sequence(
                 test(sequence(A(), 'c')),

@@ -28,8 +28,8 @@ public class ActionTest extends AbstractTest {
 
     public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {
 
-        public ActionTestParser(ActionTestActions actions) {
-            super(actions);
+        public ActionTestParser() {
+            super(Parboiled.createActions(ActionTestActions.class));
         }
 
         public Rule number() {
@@ -47,8 +47,7 @@ public class ActionTest extends AbstractTest {
 
     @Test
     public void test() {
-        ActionTestActions actions = Parboiled.createActions(ActionTestActions.class);
-        ActionTestParser parser = Parboiled.createParser(ActionTestParser.class, actions);
+        ActionTestParser parser = Parboiled.createParser(ActionTestParser.class);
         test(parser, parser.number(), "123", "" +
                 "[number, {246}] '123'\n" +
                 "    [oneOrMore] '123'\n" +

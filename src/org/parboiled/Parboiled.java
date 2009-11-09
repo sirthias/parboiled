@@ -16,10 +16,12 @@
 
 package org.parboiled;
 
-import net.sf.cglib.proxy.*;
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.CallbackFilter;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.NoOp;
 import org.jetbrains.annotations.NotNull;
-import static org.parboiled.common.Utils.arrayOf;
-import org.parboiled.support.Checks;
+import org.parboiled.support.ParserConstructionException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -34,47 +36,25 @@ public class Parboiled {
     /**
      * Creates a parser object whose rule creation methods can then be used with the
      * {@link BaseParser#parse(Rule, String)} method.
-     * Since parboiled needs to extend your parser object with certain extra logic (e.g. to prevent infinite recursions
+     * Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
-     * Also your parser object has to be derived from BaseParser and define a constructor that takes the accompanying
-     * actions object as its first parameter. If you want to use any other constructor parameters you can provide
-     * them to this method using the parserConstructorArgs argument.
+     * Also your parser class has to be derived from BaseParser. If you want to use a non-default constructor you also
+     * have to provide its arguments to this method.
      *
-     * @param parserType            the type of the parser to create
-     * @param actions               the action object to use (if not null it must have been created with
-     *                              {@link #createActions(Class, Object[])} )
-     * @param parserConstructorArgs optional arguments to the parser class constructor
+     * @param parserType      the type of the parser to create
+     * @param constructorArgs optional arguments to the parser class constructor
      * @return the ready to use parser instance
      */
     public static <V, A extends Actions<V>, P extends BaseParser<V, A>> P createParser(@NotNull Class<P> parserType,
-                                                                                       A actions,
-                                                                                       Object... parserConstructorArgs) {
-        ActionInterceptor actionInterceptor = null;
-        if (actions instanceof Factory) {
-            Callback actionsCallback = ((Factory) actions).getCallback(1);
-            if (actionsCallback instanceof ActionInterceptor) {
-                actionInterceptor = (ActionInterceptor) actionsCallback;
-            }
-        }
-        Checks.ensure(actions == null || actionInterceptor != null,
-                "Illegal Actions instance, please use Parboiled.createActions(...) for creating your parser actions object");
-
-        // intercept all no-argument Rule creation methods with a RuleInterceptor
-        P parser = create(parserType, new RuleInterceptor(), new CallbackFilter() {
+                                                                                       Object... constructorArgs) {
+        // intercept all no-argument rule creation methods with a RuleInterceptor
+        return create(parserType, new RuleInterceptor(), new CallbackFilter() {
             public int accept(Method method) {
                 boolean isRuleCreatingMethod = method.getReturnType() == Rule.class;
                 boolean hasNoParameters = method.getParameterTypes().length == 0;
                 return isRuleCreatingMethod && hasNoParameters ? 1 : 0;
             }
-        }, arrayOf(actions, parserConstructorArgs));
-
-        if (actions != null) {
-            // signal to the ActionInterceptor that we are in the rule construction phase by informing it
-            // about the parser object instance
-            //noinspection ConstantConditions
-            actionInterceptor.setParser(parser);
-        }
-        return parser;
+        }, constructorArgs);
     }
 
     /**
@@ -82,11 +62,11 @@ public class Parboiled {
      * Since parboiled needs to extends your parser actions object with certain extra logic you cannot create your
      * actions object yourself, but have to go through this method. Still your actions object can be of any type (as
      * long as it implements the {@link org.parboiled.Actions} interface) and can define arbitrary constructors.
-     * If you want to use an non-default constructor you also have to provide its arguments to this method.
+     * If you want to use a non-default constructor you also have to provide its arguments to this method.
      *
      * @param actionsType     the type of the action object to create
      * @param constructorArgs optional arguments to the class constructor
-     * @return the actions object for the parser creation
+     * @return the actions object to be used for the parser creation
      */
     public static <A extends Actions<?>> A createActions(@NotNull Class<A> actionsType, Object... constructorArgs) {
         return create(actionsType, new ActionInterceptor(), new CallbackFilter() {
@@ -125,7 +105,7 @@ public class Parboiled {
             }
             return constructor;
         }
-        throw new RuntimeException("No constructor found for the given arguments");
+        throw new ParserConstructionException("No constructor found for the given arguments");
     }
 
 }

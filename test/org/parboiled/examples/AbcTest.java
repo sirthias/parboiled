@@ -25,7 +25,7 @@ public class AbcTest extends AbstractTest {
 
     @Test
     public void test() {
-        AbcParser parser = Parboiled.createParser(AbcParser.class, null);
+        AbcParser parser = Parboiled.createParser(AbcParser.class);
         test(parser, parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
@@ -43,7 +43,7 @@ public class AbcTest extends AbstractTest {
 
     @Test
     public void testFail() {
-        AbcParser parser = Parboiled.createParser(AbcParser.class, null);
+        AbcParser parser = Parboiled.createParser(AbcParser.class);
         testFail(parser, parser.S(), "aabbbcc", "" +
                 "[S] 'aabbbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +

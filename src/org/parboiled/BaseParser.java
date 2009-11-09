@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Factory;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.actionparameters.*;
@@ -59,22 +60,50 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     public final A actions;
 
     /**
-     * Constructs a new parser object using the given actions.
+     * Constructs a new parser instance without parser actions.
+     */
+    protected BaseParser() {
+        this(null);
+    }
+
+    /**
+     * Constructs a new parser instance using the given actions instance. Note that if the actions instance is not null
+     * it must have been created with {@link Parboiled#createActions(Class, Object[])} )}.
      *
      * @param actions the parser actions (can be null)
      */
     @SuppressWarnings({"unchecked"})
-    public BaseParser(A actions) {
+    protected BaseParser(A actions) {
         this.actions = actions;
+
         List<Class<?>> typeArguments = Utils.getTypeArguments(BaseParser.class, getClass());
         Preconditions.checkState(typeArguments.size() == 2);
         nodeValueType = (Class<V>) typeArguments.get(0);
+
+        if (actions != null) {
+            verifyActionsObject();
+        }
+    }
+
+    private void verifyActionsObject() {
+        if (actions instanceof Factory) {
+            Callback actionsCallback = ((Factory) actions).getCallback(1);
+            if (actionsCallback instanceof ActionInterceptor) {
+                ActionInterceptor actionInterceptor = (ActionInterceptor) actionsCallback;
+                // signal to the ActionInterceptor that we are in the rule construction phase
+                // by informing it about the parser object instance
+                actionInterceptor.setParser(this);
+                return;
+            }
+        }
+        Checks.fail("Illegal Actions instance, please use Parboiled.createActions(...) " +
+                "for creating your parser actions object");
     }
 
     /**
      * Runs the given parser rule against the given input string. Note that the rule must have been created by
      * a rule creation method of this parser object, which must have been created with
-     * {@link Parboiled#createParser(Class, Actions, Object[])}.
+     * {@link Parboiled#createParser(Class, Object[])}.
      *
      * @param rule  the rule
      * @param input the input string

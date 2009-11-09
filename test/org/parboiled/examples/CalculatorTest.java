@@ -16,19 +16,16 @@
 
 package org.parboiled.examples;
 
-import org.parboiled.examples.calculator.CalculatorActions;
-import org.parboiled.examples.calculator.CalculatorParser;
 import org.parboiled.AbstractTest;
 import org.parboiled.Parboiled;
+import org.parboiled.examples.calculator.CalculatorParser;
 import org.testng.annotations.Test;
 
 public class CalculatorTest extends AbstractTest {
 
     @Test
     public void test() {
-        CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         test(parser, parser.inputLine(), "1+5", "" +
                 "[inputLine, {6}] '1+5'\n" +
                 "    [expression, {6}] '1+5'\n" +
@@ -53,9 +50,7 @@ public class CalculatorTest extends AbstractTest {
 
     @Test
     public void testSingleSymbolDeletion() {
-        CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         testFail(parser, parser.inputLine(), "(8-6))", "" +
                 "[inputLine, {2}] '(8-6))'\n" +
                 "    [expression, {2}] '(8-6)'\n" +
@@ -93,9 +88,7 @@ public class CalculatorTest extends AbstractTest {
 
     @Test
     public void testSingleSymbolInsertion() {
-        CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         testFail(parser, parser.inputLine(), "(8-6", "" +
                 "[inputLine, {2}] '(8-6'\n" +
                 "    [expression, {2}] '(8-6'\n" +
@@ -132,9 +125,7 @@ public class CalculatorTest extends AbstractTest {
 
     @Test
     public void testResynchronization1() {
-        CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         testFail(parser, parser.inputLine(), "2*xxx(4-1)", "" +
                 "[inputLine, {1}] '2*xxx(4-1)'\n" +
                 "    [expression, {1}] '2*xxx(4-1'\n" +
@@ -173,9 +164,7 @@ public class CalculatorTest extends AbstractTest {
 
     @Test
     public void testResynchronization2() {
-        CalculatorActions actions = Parboiled.createActions(CalculatorActions.class);
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class, actions);
-
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         testFail(parser, parser.inputLine(), "2*)(6-4)*3", "" +
                 "[inputLine, {12}] '2*)(6-4)*3'\n" +
                 "    [expression, {12}] '2*)(6-4)*3'\n" +

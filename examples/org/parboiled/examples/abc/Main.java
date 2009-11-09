@@ -31,7 +31,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            AbcParser parser = Parboiled.createParser(AbcParser.class, null);
+            AbcParser parser = Parboiled.createParser(AbcParser.class);
             ParsingResult<?> result = parser.parse(parser.S(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');

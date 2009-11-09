@@ -18,11 +18,12 @@ package org.parboiled.examples.calculator2;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.Parboiled;
 
 public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
 
-    public CalculatorParser(CalculatorActions actions) {
-        super(actions);
+    public CalculatorParser() {
+        super(Parboiled.createActions(CalculatorActions.class));
     }
 
     public Rule inputLine() {

@@ -22,10 +22,6 @@ public class RecursionTest extends AbstractTest {
 
     public static class RecursionParser extends BaseParser<Object, Actions<Object>> {
 
-        public RecursionParser(Actions<Object> actions) {
-            super(actions);
-        }
-
         @SuppressWarnings({"InfiniteRecursion"})
         public Rule lotsOfAs() {
             return sequence('A', optional(lotsOfAs()));
@@ -35,7 +31,7 @@ public class RecursionTest extends AbstractTest {
 
     @Test
     public void testRecursion() {
-        RecursionParser parser = Parboiled.createParser(RecursionParser.class, null);
+        RecursionParser parser = Parboiled.createParser(RecursionParser.class);
         test(parser, parser.lotsOfAs(), "AAA", "" +
                 "[lotsOfAs] 'AAA'\n" +
                 "    ['A'] 'A'\n" +
