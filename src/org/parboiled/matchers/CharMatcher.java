@@ -17,12 +17,13 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
-import org.parboiled.MatcherContext;
 
 /**
  * A Matcher matching a single character.
+ *
  * @param <V>
  */
 public class CharMatcher<V> extends AbstractMatcher<V> {
@@ -51,13 +52,19 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        if (character == Chars.ANY || character == Chars.EMPTY ||
-                context.getCurrentLocation().currentChar == character) {
+        if (matches(context)) {
             if (character != Chars.EMPTY) context.advanceInputLocation();
             context.createNode();
             return true;
         }
         return false;
+    }
+
+    public boolean matches(MatcherContext<V> context) {
+        char current = context.getCurrentLocation().currentChar;
+        return character == Chars.EMPTY ||
+                (character == Chars.ANY && current != Chars.EOI) ||
+                character == current;
     }
 
     public Characters getStarterChars() {

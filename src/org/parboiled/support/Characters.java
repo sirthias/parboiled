@@ -22,16 +22,19 @@ import java.util.Arrays;
 
 /**
  * An immutable, set-like aggregation of (relatively few) characters that allows for an inverted semantic (all chars
- * except these few) and proper treatment of Chars.EMPTY and Chars.ANY.
- * The latter has the special meaning of "all characters except the EMPTY char".
+ * except these few) and proper treatment of the special characters defined in {@link Chars}.
  */
 public class Characters {
 
     private static final char[] NO_CHARS = new char[0];
     public static final Characters NONE = new Characters(false, NO_CHARS);
-    public static final Characters ALL = new Characters(true, NO_CHARS);
+    public static final Characters ONLY_EOI = Characters.of(Chars.EOI);
     public static final Characters ONLY_EMPTY = Characters.of(Chars.EMPTY);
+    public static final Characters ONLY_EOI_AND_EMPTY = Characters.of(Chars.EOI, Chars.EMPTY);
+    public static final Characters ALL = new Characters(true, NO_CHARS);
+    public static final Characters ALL_EXCEPT_EOI = Characters.allBut(Chars.EOI);
     public static final Characters ALL_EXCEPT_EMPTY = Characters.allBut(Chars.EMPTY);
+    public static final Characters ALL_EXCEPT_EOI_AND_EMPTY = Characters.allBut(Chars.EOI, Chars.EMPTY);
 
     // if the set is negative its semantics change from "includes all characters in the set" to
     // "includes all characters not in the set"
@@ -52,7 +55,9 @@ public class Characters {
     @NotNull
     public Characters add(char c) {
         if (c == Chars.ANY) {
-            return contains(Chars.EMPTY) ? Characters.ALL : Characters.ALL_EXCEPT_EMPTY;
+            return contains(Chars.EOI) ?
+                    (contains(Chars.EMPTY) ? Characters.ALL : Characters.ALL_EXCEPT_EMPTY) :
+                    (contains(Chars.EMPTY) ? Characters.ALL_EXCEPT_EOI : Characters.ALL_EXCEPT_EOI_AND_EMPTY);
         }
         return negative ? removeFromChars(c) : addToChars(c);
     }
@@ -66,21 +71,24 @@ public class Characters {
     @NotNull
     public Characters remove(char c) {
         if (c == Chars.ANY) {
-            return contains(Chars.EMPTY) ? Characters.ONLY_EMPTY : Characters.NONE;
+            return contains(Chars.EOI) ?
+                    (contains(Chars.EMPTY) ? Characters.ONLY_EOI_AND_EMPTY : Characters.ONLY_EOI) :
+                    (contains(Chars.EMPTY) ? Characters.ONLY_EMPTY : Characters.NONE);
         }
         return negative ? addToChars(c) : removeFromChars(c);
     }
 
     /**
      * Checks whether this instance contains the given character.
-     * If c is Chars.ANY the method will only return true if all non EMPTY characters are actually included.
+     * If c is Chars.ANY the method will only return true if all non-EOI and non-EMPTY characters are actually included.
      *
      * @param c the character to check for
      * @return true if this instance contains c
      */
     public boolean contains(char c) {
         if (c == Chars.ANY) {
-            return negative && (chars.length == 0 || (chars.length == 1 && contains(Chars.EMPTY)));
+            return negative && (chars.length == 0 || equals(Characters.ONLY_EOI) || equals(
+                    Characters.ONLY_EMPTY) || equals(Characters.ONLY_EOI_AND_EMPTY));
         }
         return indexOf(chars, c) == -1 ? negative : !negative;
     }
@@ -232,31 +240,37 @@ public class Characters {
     }
 
     /**
-     * Creates a new Characters instance containing only the given char or all non-EMPTY characters if c is Chars.ANY.
+     * Creates a new Characters instance containing only the given char or, if c is {@link Chars#ANY},
+     * or all non-EOI, non-EMPTY characters.
      *
      * @param c the char
      * @return a new Characters object
      */
     @NotNull
     public static Characters of(char c) {
-        return c == Chars.ANY ? Characters.ALL_EXCEPT_EMPTY : new Characters(false, new char[] {c});
+        return c == Chars.ANY ? Characters.ALL_EXCEPT_EOI_AND_EMPTY : new Characters(false, new char[] {c});
     }
 
     /**
      * Creates a new Characters instance containing only the given chars.
-     * Chars.ANY will be expanded to all characters if it is contained in the given array.
+     * {@link Chars#ANY} will be expanded to all non-EOI, non-EMPTY characters if it is contained in the given array.
      *
      * @param chars the chars
      * @return a new Characters object
      */
     @NotNull
     public static Characters of(char... chars) {
-        return !(indexOf(chars, Chars.ANY) != -1) ? new Characters(false, chars.clone()) :
-                indexOf(chars, Chars.EMPTY) != -1 ? Characters.ALL : Characters.ALL_EXCEPT_EMPTY;
+        return indexOf(chars, Chars.ANY) == -1 ? new Characters(false, chars.clone()) :
+                indexOf(chars, Chars.EOI) == -1 ?
+                        (indexOf(chars, Chars.EMPTY) == -1 ?
+                                Characters.ALL_EXCEPT_EOI_AND_EMPTY : Characters.ALL_EXCEPT_EMPTY) :
+                        (indexOf(chars, Chars.EMPTY) == -1 ?
+                                Characters.ALL_EXCEPT_EOI : Characters.ALL);
     }
 
     /**
-     * Creates a new Characters instance containing all characters (including Chars.EMPTY) minus the given one.
+     * Creates a new Characters instance containing all characters (including {@link Chars#EOI} and {@link Chars#EMPTY})
+     * minus the given one.
      *
      * @param c the char to NOT include
      * @return a new Characters object
@@ -267,7 +281,8 @@ public class Characters {
     }
 
     /**
-     * Creates a new Characters instance containing all characters (including Chars.EMPTY) minus the given ones.
+     * Creates a new Characters instance containing all characters (including {@link Chars#EOI} and {@link Chars#EMPTY})
+     * minus the given ones.
      *
      * @param chars the chars to NOT include
      * @return a new Characters object

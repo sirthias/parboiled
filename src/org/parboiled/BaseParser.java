@@ -285,7 +285,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Matches any character (even {@link org.parboiled.support.Chars#EOI}) and therefore always succeeds.
+     * Matches any character except {@link org.parboiled.support.Chars#EOI}.
      *
      * @return a new rule
      */

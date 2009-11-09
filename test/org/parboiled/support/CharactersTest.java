@@ -30,8 +30,8 @@ public class CharactersTest {
         assertEquals(Characters.NONE.add('A').toString(), "[A]");
         assertEquals(Characters.ONLY_EMPTY.add('A').toString(), "[A,EMPTY]");
         assertEquals(Characters.ALL.add('A'), Characters.ALL);
-        assertEquals(Characters.NONE.add(Chars.ANY), Characters.ALL_EXCEPT_EMPTY);
-        assertEquals(Characters.ONLY_EMPTY.add(Chars.ANY), Characters.ALL);
+        assertEquals(Characters.NONE.add(Chars.ANY), Characters.ALL_EXCEPT_EOI_AND_EMPTY);
+        assertEquals(Characters.ONLY_EMPTY.add(Chars.ANY), Characters.ALL_EXCEPT_EOI);
         assertEquals(Characters.ALL.add(Chars.ANY), Characters.ALL);
 
         assertEquals(Characters.NONE.remove('A'), Characters.NONE);

@@ -16,15 +16,34 @@
 
 package org.parboiled.support;
 
+/**
+ * Defines special meaning characters that are mapped to reserved Unicode non-characters
+ * (guaranteed to never actually denote a real unicode char).
+ */
 public class Chars {
 
     private Chars() {}
 
-    // special, reserved Unicode non-characters (guaranteed to never actually denote a real char) we use for special meaning
-    public static final char EOI = '\uFFFF'; // end of inputLine
+    /**
+     * End Of Input
+     */
+    public static final char EOI = '\uFFFF';
+
+    /**
+     * any character except {@link Chars#EOI}
+     */
     public static final char ANY = '\uFFFE';
+
+    /**
+     * The empty char.
+     */
     public static final char EMPTY = '\uFFFD';
 
+    /**
+     * Determines wheter c is a special char
+     * @param c the char
+     * @return true if c is special
+     */
     public static boolean isSpecial(char c) {
         return c == EOI || c == ANY || c == EMPTY;
     }
