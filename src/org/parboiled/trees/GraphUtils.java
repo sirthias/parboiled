@@ -30,6 +30,8 @@ public class GraphUtils {
     private GraphUtils() {}
 
     /**
+     * Returns true if this node is not null and has at least one child node.
+     *
      * @param node a node
      * @return true if this node is not null and has at least one child node.
      */
@@ -38,6 +40,8 @@ public class GraphUtils {
     }
 
     /**
+     * Returns the first child node of the given node or null if node is null or does not have any children.
+     *
      * @param node a node
      * @return the first child node of the given node or null if node is null or does not have any children
      */
@@ -46,6 +50,8 @@ public class GraphUtils {
     }
 
     /**
+     * Returns the last child node of the given node or null if node is null or does not have any children.
+     *
      * @param node a node
      * @return the last child node of the given node or null if node is null or does not have any children
      */
@@ -56,6 +62,7 @@ public class GraphUtils {
     /**
      * Counts all distinct nodes in the graph reachable from the given node.
      * This method can properly deal with cycles in the graph.
+     *
      * @param node the root node
      * @return the number of distinct nodes
      */
@@ -67,7 +74,8 @@ public class GraphUtils {
     /**
      * Collects all nodes from the graph reachable from the given node in the given collection.
      * This method can properly deal with cycles in the graph.
-     * @param node the root node
+     *
+     * @param node       the root node
      * @param collection the collection to collect into
      * @return the same collection passed as a parameter
      */
@@ -86,7 +94,8 @@ public class GraphUtils {
 
     /**
      * Creates a string representation of the graph reachable from the given node using the given formatter.
-     * @param node the root node
+     *
+     * @param node      the root node
      * @param formatter the node formatter
      * @return a new string
      */
@@ -96,7 +105,7 @@ public class GraphUtils {
 
     // private recursion helper
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
-                                                                  String indent, StringBuilder sb) {
+                                                                    String indent, StringBuilder sb) {
         String line = formatter.format(node);
         if (line != null) {
             sb.append(indent).append(line).append("\n");

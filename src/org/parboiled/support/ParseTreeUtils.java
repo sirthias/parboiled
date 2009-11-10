@@ -35,13 +35,13 @@ public class ParseTreeUtils {
     private ParseTreeUtils() {}
 
     /**
-     * Returns the parse tree node underneath the given parent that matches the given path.
-     * The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
+     * <p>Returns the parse tree node underneath the given parent that matches the given path.</p>
+     * <p>The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
      * relative to the given parent node. If there are several nodes that match the given path the method
      * returns the first one unless the respective path segments has the special prefix "last:". In this case the
-     * method will return the last matching node.
-     * Example: "per/last:so/fix" will return the first node, whose label starts with "fix" under the last node,
-     * whose label starts with "so" under the first node, whose label starts with "per".
+     * method will return the last matching node.</p>
+     * <p><b>Example:</b> "per/last:so/fix" will return the first node, whose label starts with "fix" under the last
+     * node, whose label starts with "so" under the first node, whose label starts with "per".</p>
      * If parent is null or no node is found the method returns null.
      *
      * @param parent the parent Node

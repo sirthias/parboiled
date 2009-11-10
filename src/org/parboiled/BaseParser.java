@@ -635,7 +635,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Creates an action parameter that converts the given text parameter to an Double.
+     * Creates an action parameter that converts the given text parameter to a Double.
      *
      * @param text the text (parameter) to convert
      * @return the action parameter
