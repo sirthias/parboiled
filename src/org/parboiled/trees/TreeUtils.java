@@ -22,7 +22,7 @@ public class TreeUtils {
 
     private TreeUtils() {}
 
-    public static <T extends MutableTreeNode<T>> T getRoot(T node) {
+    public static <T extends TreeNode<T>> T getRoot(T node) {
         if (node == null) return null;
         if (node.getParent() != null) return getRoot(node.getParent());
         return node;
