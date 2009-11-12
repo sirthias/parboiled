@@ -89,21 +89,21 @@
         </manifest>
     </target>
 
-    <target name="jar" depends="compile, manifest" description="Build main library jar">
+    <target name="jar" depends="compile, manifest" description="Build main library JAR">
         <jar destfile="build/parboiled-${version}.jar" manifest="build/META-INF/MANIFEST.MF">
-            <fileset dir="build/classes" excludes="org.parboiled.examples/**"/>
+            <fileset dir="build/classes" excludes="org/parboiled/examples/**"/>
             <fileset dir="build" includes="META-INF/*"/>
         </jar>
     </target>
 
-    <target name="jar.source" depends="manifest" description="Create a .jar with main sources">
+    <target name="jar.source" depends="manifest" description="Create a JAR with main sources">
         <zip destfile="build/parboiled-${version}-src.jar">
             <fileset dir="src"/>
             <fileset dir="build" includes="META-INF/*"/>
         </zip>
     </target>
 
-    <target name="jar.examples" depends="compile" description="Creates .jar for examples">
+    <target name="jar.examples" depends="compile" description="Creates JARs for examples">
         <jar destfile="build/parboiled-${version}-examples.jar">
             <fileset dir="build/classes" includes="org/parboiled/examples/**"/>
         </jar>
@@ -112,7 +112,7 @@
         </zip>
     </target>
 
-    <target name="jar.javadoc" depends="javadoc" description="Creates a .jar containing javadocs">
+    <target name="jar.javadoc" depends="javadoc" description="Creates a JAR containing javadocs">
         <zip destfile="build/parboiled-${version}-javadoc.jar">
             <fileset dir="build/javadoc"/>
         </zip>
