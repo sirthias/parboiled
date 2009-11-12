@@ -78,7 +78,7 @@ public class CalculatorTest extends AbstractTest {
                 "                    [')'] ')'\n" +
                 "            [zeroOrMore]\n" +
                 "        [zeroOrMore]\n" +
-                "    [!ILLEGAL!] ')'\n" +
+                "    [ILLEGAL] ')'\n" +
                 "    [eoi]\n",
                 "ParseError: Invalid input ')', expected eoi (line 1, pos 6):\n" +
                         "(8-6))\n" +
@@ -139,7 +139,7 @@ public class CalculatorTest extends AbstractTest {
                 "                    [firstOf] '*'\n" +
                 "                        ['*'] '*'\n" +
                 "                    [factor]\n" +
-                "                    [!ILLEGAL!] 'xxx(4'\n" +
+                "                    [ILLEGAL] 'xxx(4'\n" +
                 "        [zeroOrMore, {1}] '-1'\n" +
                 "            [enforcedSequence, {1}] '-1'\n" +
                 "                [firstOf] '-'\n" +
@@ -150,7 +150,7 @@ public class CalculatorTest extends AbstractTest {
                 "                            [oneOrMore] '1'\n" +
                 "                                [digit] '1'\n" +
                 "                    [zeroOrMore]\n" +
-                "    [!ILLEGAL!] ')'\n" +
+                "    [ILLEGAL] ')'\n" +
                 "    [eoi]\n",
                 "ParseError: Invalid input 'x', expected number or parens (line 1, pos 3):\n" +
                         "2*xxx(4-1)\n" +
@@ -177,7 +177,7 @@ public class CalculatorTest extends AbstractTest {
                 "                [enforcedSequence, {2}] '*)(6-4)'\n" +
                 "                    [firstOf] '*'\n" +
                 "                        ['*'] '*'\n" +
-                "                    [!ILLEGAL!] ')'\n" +
+                "                    [ILLEGAL] ')'\n" +
                 "                    [factor, {2}] '(6-4)'\n" +
                 "                        [parens, {2}] '(6-4)'\n" +
                 "                            ['('] '('\n" +

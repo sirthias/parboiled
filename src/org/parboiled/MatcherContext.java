@@ -325,7 +325,7 @@ public class MatcherContext<V> implements Context<V> {
         createNode(); // createActions an empty match node
 
         // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
-        // appears on the same tree level, however if we are the root ourselves we run in this context
+        // appears on the same tree level, however if we are at the root ourselves we run in this context
         MatcherContext<V> parentContext = parent != null ? parent : this;
 
         // createActions a node for the illegal chars

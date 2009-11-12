@@ -41,7 +41,7 @@ public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
     }
 
     public String getLabel() {
-        return "!ILLEGAL!";
+        return "ILLEGAL";
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
