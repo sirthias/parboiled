@@ -118,7 +118,7 @@
         </zip>
     </target>
 
-    <target name="dist" depends="clean, test, jar, jar.source, jar.examples, jar.javadoc"
+    <target name="dist" depends="clean, test, jar, jar.source, jar.javadoc"
             description="Compiles, tests and jars everything">
         <copy file="lib/cglib/cglib-nodep-2.2.jar" todir="build"/>
     </target>

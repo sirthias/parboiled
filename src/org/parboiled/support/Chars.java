@@ -30,14 +30,14 @@ public class Chars {
     public static final char EOI = '\uFFFF';
 
     /**
-     * any character except {@link Chars#EOI}
-     */
-    public static final char ANY = '\uFFFE';
-
-    /**
      * The empty char.
      */
-    public static final char EMPTY = '\uFFFD';
+    public static final char EMPTY = '\uFFFE';
+
+    /**
+     * any character except {@link Chars#EOI}
+     */
+    public static final char ANY = '\uFDEF';
 
     /**
      * Determines wheter c is a special char

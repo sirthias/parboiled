@@ -1,0 +1,8 @@
+Version 0.8.0.1 (2009-11-12)
+----------------------------
+- Fixed definition of special characters to be fully compatible with the unicode standard  
+
+
+Version 0.8.0.0 (2009-11-12)
+----------------------------
+first public release
