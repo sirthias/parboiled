@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -73,8 +74,9 @@ public class SparqlTest {
     protected List<TextInfo> getTextInfos() throws Exception {
         List<TextInfo> textInfos = new ArrayList<TextInfo>();
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(getClass().getResourceAsStream("SparqlTest.gunit")));
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                ClassLoader.getSystemClassLoader().getResourceAsStream("res/SparqlTest.gunit"),
+                Charset.forName("UTF8")));
         while (in.ready()) {
             if (in.read() == '<' && in.ready() && in.read() == '<') {
                 in.readLine();

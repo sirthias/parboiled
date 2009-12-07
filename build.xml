@@ -39,6 +39,9 @@
             <classpath location="build/classes"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
+        <copy toDir="build/test-classes">
+            <fileset dir="test" includes="res/**"/>
+        </copy>
     </target>
 
     <target name="test" depends="compile.test" description="Run all tests">
@@ -48,7 +51,7 @@
             <classfileset dir="build/test-classes" includes="**/*Test.class"/>
             <classpath refid="compile.classpath"/>
             <classpath location="build/classes"/>
-            <classpath location="build/test-classes"/>
+            <classpath location="build/test-classes"/>            
         </testng>
     </target>
 
