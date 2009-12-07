@@ -53,7 +53,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     public Characters getStarterChars() {
         Characters characters = getChildren().get(0).getStarterChars();
-        return inverted ? Characters.ALL.remove(characters) : characters;
+        return inverted ? Characters.ALL_EXCEPT_EMPTY.remove(characters) : characters;
     }
 
     @Override

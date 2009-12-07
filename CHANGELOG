@@ -1,8 +1,9 @@
-Version 0.8.1.0 (2009-11-12)
+Version 0.8.1.0 (2009-12-07)
 ----------------------------
 - Fixed definition of special characters to be fully compatible with the unicode standard
-- Added SPARQL parser example (incl. test), thanks to Ken Wenzel from http://www.iwu.fraunhofer.de
+- Fixed IllegalStateException during parse error recovery of testNot() rules
 - Added support for case independent matching of characters and strings
+- Added SPARQL parser example (incl. test), thanks to Ken Wenzel from http://www.iwu.fraunhofer.de
 
 Version 0.8.0.0 (2009-11-12)
 ----------------------------

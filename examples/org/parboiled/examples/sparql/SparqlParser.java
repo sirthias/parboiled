@@ -379,16 +379,6 @@ public class SparqlParser extends BaseParser<Object, Actions<Object>> {
                                 ch('\\'), ch('`'), charRange('\u0000', '\u0020'))),
                         any())),
                 '>');
-
-        // FIXME using oneOrMore (although incorrect in this case) reveals bug
-        // in parboiled parser
-        // -> an illegal state exception is thrown
-        //
-        // return sequence(LESS(), //
-        // oneOrMore(sequence(testNot(firstOf(LESS(), GREATER(), '"',
-        // OPEN_CURLY_BRACE(), CLOSE_CURLY_BRACE(), '|', '^',
-        // '\\', '`', charRange('\u0000', '\u0020'))), any())), //
-        // GREATER());
     }
 
     public Rule BLANK_NODE_LABEL() {
