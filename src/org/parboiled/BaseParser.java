@@ -147,7 +147,17 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public Rule ch(char c) {
-        return new CharMatcher(c);
+        return new CharMatcher<V>(c);
+    }
+
+    /**
+     * Explicitly creates a rule matching the given character ignoring the case.
+     *
+     * @param c the char to match independently of its case
+     * @return a new rule
+     */
+    public Rule charIgnoreCase(char c) {
+        return Character.isLetter(c) ? new CharIgnoreCaseMatcher<V>(c) : ch(c);
     }
 
     /**
@@ -158,7 +168,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public Rule charRange(char cLow, char cHigh) {
-        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(cLow, cHigh);
+        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher<V>(cLow, cHigh);
     }
 
     /**
@@ -175,6 +185,24 @@ public abstract class BaseParser<V, A extends Actions<V>> {
             char c = string.charAt(i);
             Rule rule = cached(c);
             matchers[i] = rule != null ? rule : cache(c, ch(c));
+        }
+        return new SequenceMatcher(matchers, false).label(string);
+    }
+
+    /**
+     * Explicitly creates a rule matching the given string in a case-independent fashion.
+     *
+     * @param string the string to match
+     * @return a new rule
+     */
+    public Rule stringIgnoreCase(String string) {
+        Rule[] matchers = new Rule[string.length()];
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            boolean letter = Character.isLetter(c);
+            Object key = letter ? new IgnoreCaseWrapper(c) : c;
+            Rule rule = cached(key);
+            matchers[i] = rule != null ? rule : cache(key, letter ? charIgnoreCase(c) : ch(c));
         }
         return new SequenceMatcher(matchers, false).label(string);
     }
@@ -710,4 +738,24 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         throw new ParserConstructionException("\'" + obj + "\' is not a valid Rule or parser action");
     }
 
+    /**
+     * Wrapper for rule cache keys that are used for explicit "ignore-case matchers"
+     */
+    protected static class IgnoreCaseWrapper {
+        private final Object key;
+
+        public IgnoreCaseWrapper(Object key) {
+            this.key = key;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return this == o || o instanceof IgnoreCaseWrapper && key.equals(((IgnoreCaseWrapper) o).key);
+        }
+
+        @Override
+        public int hashCode() {
+            return key.hashCode();
+        }
+    }
 }

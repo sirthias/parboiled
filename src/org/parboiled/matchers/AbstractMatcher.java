@@ -56,6 +56,10 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return label;
     }
 
+    public boolean hasLabel() {
+        return label != null;
+    }
+
     public AbstractMatcher<V> label(String label) {
         this.label = label;
         return this;

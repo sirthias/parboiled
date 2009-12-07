@@ -1,7 +1,8 @@
-Version 0.8.0.1 (2009-11-12)
+Version 0.8.1.0 (2009-11-12)
 ----------------------------
-- Fixed definition of special characters to be fully compatible with the unicode standard  
-
+- Fixed definition of special characters to be fully compatible with the unicode standard
+- Added SPARQL parser example (incl. test), thanks to Ken Wenzel from http://www.iwu.fraunhofer.de
+- Added support for case independent matching of characters and strings
 
 Version 0.8.0.0 (2009-11-12)
 ----------------------------

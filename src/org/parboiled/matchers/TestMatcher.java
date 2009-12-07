@@ -37,10 +37,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public String getLabel() {
-        String label = super.getLabel();
-        if (label != null) return label;
-
-        return (inverted ? "!(" : "&(") + getChildren().get(0) + ")";
+        return hasLabel() ? super.getLabel() : (inverted ? "!(" : "&(") + getChildren().get(0) + ")";
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {

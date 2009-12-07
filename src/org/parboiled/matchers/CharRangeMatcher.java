@@ -36,8 +36,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public String getLabel() {
-        String label = super.getLabel();
-        return label != null ? label : cLow + ".." + cHigh;
+        return hasLabel() ? super.getLabel() : cLow + ".." + cHigh;
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {

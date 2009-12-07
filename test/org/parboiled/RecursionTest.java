@@ -24,7 +24,7 @@ public class RecursionTest extends AbstractTest {
 
         @SuppressWarnings({"InfiniteRecursion"})
         public Rule lotsOfAs() {
-            return sequence('A', optional(lotsOfAs()));
+            return sequence(charIgnoreCase('a'), optional(lotsOfAs()));
         }
 
     }
@@ -32,15 +32,15 @@ public class RecursionTest extends AbstractTest {
     @Test
     public void testRecursion() {
         RecursionParser parser = Parboiled.createParser(RecursionParser.class);
-        test(parser, parser.lotsOfAs(), "AAA", "" +
-                "[lotsOfAs] 'AAA'\n" +
-                "    ['A'] 'A'\n" +
-                "    [optional] 'AA'\n" +
-                "        [lotsOfAs] 'AA'\n" +
-                "            ['A'] 'A'\n" +
+        test(parser, parser.lotsOfAs(), "AaA", "" +
+                "[lotsOfAs] 'AaA'\n" +
+                "    ['a/A'] 'A'\n" +
+                "    [optional] 'aA'\n" +
+                "        [lotsOfAs] 'aA'\n" +
+                "            ['a/A'] 'a'\n" +
                 "            [optional] 'A'\n" +
                 "                [lotsOfAs] 'A'\n" +
-                "                    ['A'] 'A'\n" +
+                "                    ['a/A'] 'A'\n" +
                 "                    [optional]\n");
     }
 

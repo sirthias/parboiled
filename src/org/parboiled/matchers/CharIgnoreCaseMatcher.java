@@ -16,22 +16,20 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
-import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
-/**
- * A Matcher matching a single character.
- *
- * @param <V>
- */
-public class CharMatcher<V> extends AbstractMatcher<V> {
+public class CharIgnoreCaseMatcher<V> extends CharMatcher<V> {
 
-    public final char character;
+    public final char characterUp;
 
-    public CharMatcher(char character) {
-        this.character = character;
+    public CharIgnoreCaseMatcher(char character) {
+        super(Character.toLowerCase(character));
+        this.characterUp = Character.toUpperCase(character);
+    }
+
+    @Override
+    public AbstractMatcher<V> label(String label) {
+        return super.label(label);
     }
 
     @Override
@@ -46,26 +44,13 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
             case Chars.EMPTY:
                 return "EMPTY";
             default:
-                return "\'" + character + '\'';
+                return "\'" + character + '/' + characterUp + '\'';
         }
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        char current = context.getCurrentLocation().currentChar;
-        if (matches(current)) {
-            if (character != Chars.EMPTY) context.advanceInputLocation();
-            context.createNode();
-            return true;
-        }
-        return false;
-    }
-
+    @Override
     public boolean matches(char current) {
-        return character == Chars.EMPTY || (character == Chars.ANY && current != Chars.EOI) || character == current;
-    }
-
-    public Characters getStarterChars() {
-        return Characters.of(character);
+        return super.matches(current) || current == characterUp;
     }
 
 }
