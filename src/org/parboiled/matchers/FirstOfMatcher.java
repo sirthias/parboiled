@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Checks;
 import org.parboiled.support.Chars;
+import org.parboiled.support.InputLocation;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
 import org.parboiled.Rule;
@@ -38,8 +39,12 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         for (int i = 0; i < getChildren().size(); i++) {
             Matcher<V> matcher = getChildren().get(i);
+
+            InputLocation lastLocation = context.getCurrentLocation();
             boolean matched = context.runMatcher(matcher, false);
             if (matched) {
+                Checks.ensure(context.getCurrentLocation().index > lastLocation.index,
+                    "The inner rule of FirstOf rule '%s' must not allow empty matches", context.getPath());
                 context.createNode();
                 return true;
             }
@@ -52,7 +57,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
         for (Matcher matcher : getChildren()) {
             chars = chars.add(matcher.getStarterChars());
             Checks.ensure(!chars.contains(Chars.EMPTY),
-                    "Rule '{}' allows empty matches, unlikely to be correct as a sub rule of an FirstOf-Rule");
+                    "Rule '%s' allows empty matches, unlikely to be correct as a sub rule of a FirstOf-Rule", matcher);
         }
         return chars;
     }

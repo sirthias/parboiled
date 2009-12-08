@@ -17,13 +17,17 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.Characters;
-import org.parboiled.Rule;
 import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
+import org.parboiled.support.Checks;
+import org.parboiled.support.InputLocation;
 
 /**
  * A special Matcher not actually matching any input but rather trying its sub matcher against the current input
  * position. Succeeds if the sub matcher would succeed (not inverted) or fail (inverted).
+ *
  * @param <V>
  */
 public class TestMatcher<V> extends AbstractMatcher<V> {
@@ -46,13 +50,19 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         // we run the test matcher in a detached context as it is not to affect the parse tree being built
         // i.e. the test matcher never generates a parse tree node
         MatcherContext<V> tempContext = context.createCopy(null, matcher);
+        InputLocation lastLocation = tempContext.getCurrentLocation();
         boolean matched = tempContext.runMatcher(matcher, enforced && !inverted);
+        Checks.ensure(!matched || tempContext.getCurrentLocation().index > lastLocation.index,
+                    "The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
 
         return inverted ? !matched : matched;
     }
 
     public Characters getStarterChars() {
-        Characters characters = getChildren().get(0).getStarterChars();
+        Matcher<V> matcher = getChildren().get(0);
+        Characters characters = matcher.getStarterChars();
+        Checks.ensure(!characters.contains(Chars.EMPTY),
+                "Rule '%s' allows empty matches, unlikely to be correct as a sub rule of a Test/TestNot-Rule", matcher);
         return inverted ? Characters.ALL_EXCEPT_EMPTY.remove(characters) : characters;
     }
 

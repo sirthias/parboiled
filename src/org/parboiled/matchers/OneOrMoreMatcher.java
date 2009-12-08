@@ -54,8 +54,10 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
     }
 
     public Characters getStarterChars() {
-        Characters chars = getChildren().get(0).getStarterChars();
-        Checks.ensure(!chars.contains(Chars.EMPTY), "Sub rule of an OneOrMore-rule must not allow empty matches");
+        Matcher<V> matcher = getChildren().get(0);
+        Characters chars = matcher.getStarterChars();
+        Checks.ensure(!chars.contains(Chars.EMPTY),
+                "Rule '%s' must not allow empty matches as sub-rule of an OneOrMore-rule", matcher);
         return chars;
     }
 

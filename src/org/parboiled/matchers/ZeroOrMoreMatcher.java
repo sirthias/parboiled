@@ -50,8 +50,10 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
     }
 
     public Characters getStarterChars() {
-        Characters chars = getChildren().get(0).getStarterChars();
-        Checks.ensure(!chars.contains(Chars.EMPTY), "Sub rule of an ZeroOrMore-rule must not allow empty matches");
+        Matcher<V> matcher = getChildren().get(0);
+        Characters chars = matcher.getStarterChars();
+        Checks.ensure(!chars.contains(Chars.EMPTY),
+                "Rule '%s' must not allow empty matches as sub-rule of a ZeroOrMore-rule", matcher);
         return chars;
     }
 
