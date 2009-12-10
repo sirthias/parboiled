@@ -147,7 +147,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public Rule ch(char c) {
-        return new CharMatcher<V>(c);
+        return new CharMatcher(c);
     }
 
     /**
@@ -157,7 +157,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public Rule charIgnoreCase(char c) {
-        return Character.isLetter(c) ? new CharIgnoreCaseMatcher<V>(c) : ch(c);
+        return Character.isLetter(c) ? new CharIgnoreCaseMatcher(c) : ch(c);
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public Rule charRange(char cLow, char cHigh) {
-        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher<V>(cLow, cHigh);
+        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(cLow, cHigh);
     }
 
     /**
@@ -179,7 +179,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param string the string to match
      * @return a new rule
      */
-    public Rule string(String string) {
+    public Rule string(@NotNull String string) {
+        if (string.length() == 1) return ch(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
@@ -196,6 +197,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public Rule stringIgnoreCase(String string) {
+        if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
