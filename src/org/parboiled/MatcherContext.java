@@ -44,7 +44,8 @@ import java.util.List;
  * instances serve as a kind of companion objects to the matchers, providing them with support for building the
  * parse tree nodes, keeping track of input locations and error recovery.</p>
  * <p>At each point during the parsing process the matchers and action methods have access to the current MatcherContext
- * and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p> 
+ * and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p>
+ *
  * @param <V> the node value type
  */
 public class MatcherContext<V> implements Context<V> {
@@ -248,8 +249,7 @@ public class MatcherContext<V> implements Context<V> {
             matched = true;
         }
         if (errorMessage != null) {
-            invariables.parseErrors
-                    .add(new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage));
+            addParserError(new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage));
         }
         return matched;
     }
@@ -333,6 +333,14 @@ public class MatcherContext<V> implements Context<V> {
 
         // catch up with the advanced location
         setCurrentLocation(parentContext.getCurrentLocation());
+    }
+
+    private void addParserError(ParseError error) {
+        // do not add the error if we already have one at the exact same input location
+        for (ParseError parseError : invariables.parseErrors) {
+            if (parseError.getErrorStart() == error.getErrorStart()) return;
+        }
+        invariables.parseErrors.add(error);
     }
 
 }
