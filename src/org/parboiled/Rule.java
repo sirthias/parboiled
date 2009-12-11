@@ -17,7 +17,16 @@
 package org.parboiled;
 
 /**
- * Marker interface for return values parser rule production methods.
+ * Describes the return values of parser rule production methods.
  */
 public interface Rule {
+
+    /**
+     * Attaches a label to this Rule.
+     *
+     * @param label the label
+     * @return this Rule
+     */
+    Rule label(String label);
+
 }

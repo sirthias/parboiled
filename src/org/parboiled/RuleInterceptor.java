@@ -69,10 +69,17 @@ class RuleInterceptor implements MethodInterceptor {
         rules.put(method, proxyRule);
 
         // call the actual rule creation method (which might recurse into itself or any ancestor)
-        // and arm the proxy with the actual rule, so all Rules that have so far received the proxy object
-        // from now on "call through" to the actual Rule
         AbstractMatcher matcher = (AbstractMatcher) proxy.invokeSuper(obj, Utils.EMPTY_OBJECT_ARRAY);
-        realRule.setTarget(matcher.label(method.getName()));
+
+        // label if not yet locked
+        if (!matcher.isLocked()) {
+            matcher.label(method.getName());
+            matcher.lock(); // lock the rule to prevent any further change of this particular instance
+        }
+
+        // arm the proxy with the actual rule, so all Rules that have so far received the proxy object
+        // from now on "call through" to the actual Rule
+        realRule.setTarget(matcher);
 
         // finally we put the actual rule into the cache overwriting the previously put proxy
         // so the proxy is only used by rules that recursed into the current method during their execution

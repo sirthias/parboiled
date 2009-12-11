@@ -28,11 +28,6 @@ public class CharIgnoreCaseMatcher<V> extends CharMatcher<V> {
     }
 
     @Override
-    public AbstractMatcher<V> label(String label) {
-        return super.label(label);
-    }
-
-    @Override
     public String getLabel() {
         if (hasLabel()) return super.getLabel();
 

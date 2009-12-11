@@ -26,6 +26,7 @@ import org.parboiled.support.Chars;
  * @param <V>
  */
 public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
+    
     private final String expected;
     private final Characters stopMatchChars;
 

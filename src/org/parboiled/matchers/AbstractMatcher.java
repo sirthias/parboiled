@@ -25,8 +25,9 @@ import org.parboiled.trees.ImmutableGraphNode;
 /**
  * Abstract base class of most regular Matchers.
  */
-public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V> {
+public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
 
+    private boolean locked;
     private String label;
 
     protected AbstractMatcher() {
@@ -52,17 +53,39 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return matchers;
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public AbstractMatcher<V> lock() {
+        locked = true;
+        return this;
+    }
+
     public String getLabel() {
         return label;
     }
 
-    public boolean hasLabel() {
-        return label != null;
+    @SuppressWarnings({"unchecked"})
+    public AbstractMatcher<V> label(String label) {
+        if (!isLocked()) {
+            this.label = label;
+            return this;
+        }
+
+        // if we are locked we are not allowed to change the label anymore
+        // therefore we need to create a shallow copy, apply the label to it and return the copy
+        try {
+            AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
+            clone.label = label;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException();
+        }
     }
 
-    public AbstractMatcher<V> label(String label) {
-        this.label = label;
-        return this;
+    public boolean hasLabel() {
+        return label != null;
     }
 
     public String getExpectedString() {
