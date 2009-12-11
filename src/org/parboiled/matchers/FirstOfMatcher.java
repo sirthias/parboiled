@@ -63,6 +63,9 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     }
 
     public String getExpectedString() {
+        String label = super.getExpectedString();
+        if (!"firstOf".equals(label)) return label;
+        
         int count = getChildren().size();
         if (count == 0) return "";
         if (count == 1) return getChildren().get(0).toString();

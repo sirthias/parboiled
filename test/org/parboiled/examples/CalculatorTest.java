@@ -152,7 +152,7 @@ public class CalculatorTest extends AbstractTest {
                 "                    [zeroOrMore]\n" +
                 "    [ILLEGAL] ')'\n" +
                 "    [eoi]\n",
-                "ParseError: Invalid input 'x', expected number or parens (line 1, pos 3):\n" +
+                "ParseError: Invalid input 'x', expected factor (line 1, pos 3):\n" +
                         "2*xxx(4-1)\n" +
                         "  ^\n" +
                         "---\n" +
@@ -208,7 +208,7 @@ public class CalculatorTest extends AbstractTest {
                 "                                [digit] '3'\n" +
                 "        [zeroOrMore]\n" +
                 "    [eoi]\n",
-                "ParseError: Invalid input ')', expected number or parens (line 1, pos 3):\n" +
+                "ParseError: Invalid input ')', expected factor (line 1, pos 3):\n" +
                         "2*)(6-4)*3\n" +
                         "  ^\n"
         );
