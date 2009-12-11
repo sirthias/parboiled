@@ -18,7 +18,7 @@ package org.parboiled.trees;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.Predicate;
+import org.parboiled.common.Function;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -106,31 +106,35 @@ public class GraphUtils {
 
     /**
      * Creates a string representation of the graph reachable from the given node using the given formatter.
-     * If a non-null descendIntofilter is given only nodes the filter evaluates to true for are descended into.
-     * This is useful for preventing the printing of certain (e.g. trivial) tree branches at a certain height.
+     * If a non-null filter function is given its result is used to determine whether a particular node is
+     * print and/or its subtree printed.
      *
-     * @param node              the root node
-     * @param formatter         the node formatter
-     * @param descendIntofilter optional node filter selecting the nodes to descend into for tree printing
+     * @param node      the root node
+     * @param formatter the node formatter
+     * @param filter    optional node filter selecting the nodes to descend into for tree printing
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter,
-                                                            Predicate<GraphNode<T>> descendIntofilter) {
-        return node == null ? "" : printTree(node, formatter, "", new StringBuilder(), descendIntofilter).toString();
+                                                            Function<T, Printability> filter) {
+        return node == null ? "" : printTree(node, formatter, "", new StringBuilder(), filter).toString();
     }
 
     // private recursion helper
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
                                                                     String indent, StringBuilder sb,
-                                                                    Predicate<GraphNode<T>> descendIntofilter) {
-        String line = formatter.format(node);
-        if (line != null) {
-            sb.append(indent).append(line).append("\n");
-            indent += "    ";
+                                                                    Function<T, Printability> filter) {
+        Printability printability = filter != null ? filter.apply(node) : Printability.PrintAndDescend;
+        if (printability == Printability.PrintAndDescend || printability == Printability.Print) {
+            String line = formatter.format(node);
+            if (line != null) {
+                sb.append(indent).append(line).append("\n");
+                indent += "    ";
+            }
         }
-        if (hasChildren(node) && (descendIntofilter == null || descendIntofilter.apply(node))) {
+        if ((printability == Printability.PrintAndDescend || printability == Printability.Descend) &&
+                hasChildren(node)) {
             for (T sub : node.getChildren()) {
-                printTree(sub, formatter, indent, sb, descendIntofilter);
+                printTree(sub, formatter, indent, sb, filter);
             }
         }
         return sb;

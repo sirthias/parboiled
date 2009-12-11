@@ -187,7 +187,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
             Rule rule = cached(c);
             matchers[i] = rule != null ? rule : cache(c, ch(c));
         }
-        return new SequenceMatcher(matchers, false).label(string);
+        return new SequenceMatcher(matchers, false).label('"' + string + '"');
     }
 
     /**
@@ -206,7 +206,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
             Rule rule = cached(key);
             matchers[i] = rule != null ? rule : cache(key, letter ? charIgnoreCase(c) : ch(c));
         }
-        return new SequenceMatcher(matchers, false).label(string);
+        return new SequenceMatcher(matchers, false).label('"' + string + '"');
     }
 
     /**

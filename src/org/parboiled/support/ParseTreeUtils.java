@@ -18,11 +18,13 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.common.Function;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
+import org.parboiled.trees.Printability;
 
 import java.util.Collection;
 import java.util.List;
@@ -271,7 +273,21 @@ public class ParseTreeUtils {
      * @return a new String
      */
     public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult) {
-        return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer));
+        return printNodeTree(parsingResult, null);
+    }
+
+    /**
+     * Creates a readable string represenation of the parse tree in thee given ParsingResult object.
+     * If a non-null filter function is given its result is used to determine whether a particular node is
+     * print and/or its subtree printed.
+     *
+     * @param parsingResult the parsing result containing the parse tree
+     * @param filter        optional node filter selecting the nodes to print and/or descend into for tree printing
+     * @return a new String
+     */
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult,
+                                           Function<Node<V>, Printability> filter) {
+        return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
     }
 
 }
