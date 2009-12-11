@@ -1,3 +1,13 @@
+Version 0.8.2.0 (2009-12-11)
+----------------------------
+- Added option for manual rule label change
+- Added error filter to only report the first parse error at a specific input location
+- Added string matching optimization for one-letter strings
+- Added some more parser structure validation checks
+- Improved customizability of parse tree printouts
+- Improved naming of firstOf-rules in parse errors and parse tree printing
+- Updated SparqlParser example
+
 Version 0.8.1.0 (2009-12-07)
 ----------------------------
 - Fixed definition of special characters to be fully compatible with the unicode standard
