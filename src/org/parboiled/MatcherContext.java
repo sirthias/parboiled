@@ -19,10 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
-import org.parboiled.matchers.ActionMatcher;
-import org.parboiled.matchers.FollowMatcher;
-import org.parboiled.matchers.IllegalCharactersMatcher;
-import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
@@ -214,8 +211,10 @@ public class MatcherContext<V> implements Context<V> {
 
     public void createNode() {
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
-        if (parent != null) parent.addChildNode(node);
-        invariables.lastNodeRef.setTarget(node);
+        if (!(matcher instanceof TestMatcher)) { // special case: TestMatchers do not add nodes
+            if (parent != null) parent.addChildNode(node);
+            invariables.lastNodeRef.setTarget(node);
+        }
     }
 
     public void addChildNode(@NotNull Node<V> node) {
@@ -267,6 +266,10 @@ public class MatcherContext<V> implements Context<V> {
             parent = parent.parent;
         }
         return chars.remove(Chars.EMPTY).add(Chars.EOI);
+    }
+
+    public boolean inPredicate() {
+        return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////

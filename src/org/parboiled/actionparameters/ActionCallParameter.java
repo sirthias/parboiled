@@ -23,6 +23,7 @@ import org.parboiled.MatcherContext;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 import org.parboiled.support.ParsingException;
+import org.parboiled.support.SkipInPredicates;
 
 import java.lang.reflect.Method;
 
@@ -34,6 +35,7 @@ public class ActionCallParameter extends BaseActionParameter {
     private final Method method;
     private final MethodProxy proxy;
     private final Object[] args;
+    private final boolean skipInPredicates;
 
     public ActionCallParameter(@NotNull Actions actions, @NotNull Method method, @NotNull Object[] params,
                                @NotNull MethodProxy proxy) {
@@ -42,6 +44,7 @@ public class ActionCallParameter extends BaseActionParameter {
         this.method = method;
         this.args = params;
         this.proxy = proxy;
+        this.skipInPredicates = method.getAnnotation(SkipInPredicates.class) != null;
     }
 
     public void verifyReturnType(Class returnType) {
@@ -55,6 +58,8 @@ public class ActionCallParameter extends BaseActionParameter {
     @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         try {
+            if (skipInPredicates && context.inPredicate()) return null;
+
             actionsObject.setContext(context);
             Object[] resolvedArgs = ActionParameterUtils.resolve(args, context);
             return proxy.invokeSuper(actionsObject, resolvedArgs);

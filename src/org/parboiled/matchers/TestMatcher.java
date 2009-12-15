@@ -45,16 +45,12 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        Matcher<V> matcher = getChildren().get(0);
-
-        // we run the test matcher in a detached context as it is not to affect the parse tree being built
-        // i.e. the test matcher never generates a parse tree node
-        MatcherContext<V> tempContext = context.createCopy(null, matcher);
-        InputLocation lastLocation = tempContext.getCurrentLocation();
-        boolean matched = tempContext.runMatcher(matcher, enforced && !inverted);
-        if (matched && tempContext.getCurrentLocation() == lastLocation) {
+        InputLocation lastLocation = context.getCurrentLocation();
+        boolean matched = context.runMatcher(getChildren().get(0), enforced && !inverted);
+        if (matched && context.getCurrentLocation() == lastLocation) {
             Checks.fail("The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
         }
+        context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
 
         return inverted ? !matched : matched;
     }

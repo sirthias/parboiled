@@ -40,7 +40,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> implements ActionResult
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         Object result = action.resolve(context);
-        return result == ActionResult.CONTINUE;
+        return result != ActionResult.CANCEL_MATCH;
     }
 
     public Characters getStarterChars() {
