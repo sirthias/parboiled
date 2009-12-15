@@ -704,10 +704,21 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         return string(string);
     }
 
+    /**
+     * Returns the rule cache content for the given key.
+     * @param key the cache key
+     * @return the cached rule or null
+     */
     protected Rule cached(Object key) {
         return ruleCache.get(key);
     }
 
+    /**
+     * Caches the given rule in the rule cache under the given key and return the rule.
+     * @param key the key to store the rule under in the cache
+     * @param rule the rule to cache
+     * @return the rule
+     */
     protected Rule cache(Object key, Rule rule) {
         ruleCache.put(key, rule);
         return rule;
@@ -723,21 +734,34 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     private Rule toRule(Object obj) {
         obj = mixInParameter(actionParameters, obj);
-        if (obj instanceof Rule) {
-            return (Rule) obj;
-        }
-        if (obj instanceof Character) {
-            Rule rule = cached(obj);
-            return rule != null ? rule : cache(obj, fromCharLiteral((Character) obj));
-        }
-        if (obj instanceof String) {
-            Rule rule = cached(obj);
-            return rule != null ? rule : cache(obj, fromStringLiteral((String) obj));
-        }
-        if (obj instanceof ActionParameter) {
-            return new ActionMatcher((ActionParameter) obj);
-        }
+
+        if (obj instanceof Rule) return (Rule) obj;
+
+        Rule rule = cached(obj);
+        if (rule != null) return rule;
+        
+        if (obj instanceof Character) return cache(obj, fromCharLiteral((Character) obj));
+        if (obj instanceof String) return cache(obj, fromStringLiteral((String) obj));
+        if (obj instanceof ActionParameter) return new ActionMatcher((ActionParameter) obj);
+
+        rule = fromUserObject(obj);
+        if (rule != null) return cache(obj, rule);
+
         throw new ParserConstructionException("\'" + obj + "\' is not a valid Rule or parser action");
+    }
+
+    /**
+     * Attempts to convert the given object into a rule.
+     * Override this method in order to be able to use custom objects directly in your rule specification.
+     * The method should return null if the given object cannot be converted into a rule (which is all the
+     * default implementation does).
+     * Note that the results are automatically cached, so the method is never called twice for equal objects.
+     * @param obj the object to convert
+     * @return the rule for the object or null
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    protected Rule fromUserObject(Object obj) {
+        return null;
     }
 
     /**
