@@ -52,8 +52,9 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         MatcherContext<V> tempContext = context.createCopy(null, matcher);
         InputLocation lastLocation = tempContext.getCurrentLocation();
         boolean matched = tempContext.runMatcher(matcher, enforced && !inverted);
-        Checks.ensure(!matched || tempContext.getCurrentLocation().index > lastLocation.index,
-                    "The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
+        if (matched && tempContext.getCurrentLocation() == lastLocation) {
+            Checks.fail("The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
+        }
 
         return inverted ? !matched : matched;
     }

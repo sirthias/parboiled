@@ -17,15 +17,16 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
-import org.parboiled.Rule;
-import org.parboiled.MatcherContext;
 
 /**
  * A Matcher that repeatedly tries its sub matcher against the input. Succeeds if its sub matcher succeeds at least once.
+ *
  * @param <V>
  */
 public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
@@ -44,8 +45,9 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
         InputLocation lastLocation = context.getCurrentLocation();
         while (context.runMatcher(matcher, false)) {
             InputLocation currentLocation = context.getCurrentLocation();
-            Checks.ensure(currentLocation.index > lastLocation.index,
-                    "The inner rule of OneOrMore rule '%s' must not allow empty matches", context.getPath());
+            if (currentLocation == lastLocation) {
+                Checks.fail("The inner rule of OneOrMore rule '%s' must not allow empty matches", context.getPath());
+            }
             lastLocation = currentLocation;
         }
 

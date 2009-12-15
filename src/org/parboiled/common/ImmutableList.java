@@ -42,7 +42,6 @@ public class ImmutableList<T> extends AbstractList<T> {
     }
 
     public T get(int index) {
-        Preconditions.checkElementIndex(index, size());
         return array[index];
     }
 

@@ -17,17 +17,20 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Checks;
-import org.parboiled.support.Chars;
-import org.parboiled.support.InputLocation;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
-import org.parboiled.Rule;
-import org.parboiled.MatcherContext;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
+import org.parboiled.support.Checks;
+import org.parboiled.support.InputLocation;
+
+import java.util.List;
 
 /**
  * A Matcher trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
+ *
  * @param <V>
  */
 public class FirstOfMatcher<V> extends AbstractMatcher<V> {
@@ -37,14 +40,17 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
-        for (int i = 0; i < getChildren().size(); i++) {
-            Matcher<V> matcher = getChildren().get(i);
+        List<Matcher<V>> children = getChildren();
+        int size = children.size();
+        for (int i = 0; i < size; i++) {
+            Matcher<V> matcher = children.get(i);
 
             InputLocation lastLocation = context.getCurrentLocation();
             boolean matched = context.runMatcher(matcher, false);
             if (matched) {
-                Checks.ensure(context.getCurrentLocation().index > lastLocation.index,
-                    "The inner rule of FirstOf rule '%s' must not allow empty matches", context.getPath());
+                if (context.getCurrentLocation() == lastLocation) {
+                    Checks.fail("The inner rule of FirstOf rule '%s' must not allow empty matches", context.getPath());
+                }
                 context.createNode();
                 return true;
             }
@@ -65,7 +71,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     public String getExpectedString() {
         String label = super.getExpectedString();
         if (!"firstOf".equals(label)) return label;
-        
+
         int count = getChildren().size();
         if (count == 0) return "";
         if (count == 1) return getChildren().get(0).toString();
