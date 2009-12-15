@@ -1,3 +1,9 @@
+Version 0.8.3.0 (2009-12-15)
+----------------------------
+- Improved parsing speed by factor 4 after first basic CPU profiling
+- Added @SkipInPredicates annotation for action methods
+- Added option for convenient rule creation from user objects (suggested by Manuel Brotz)
+
 Version 0.8.2.0 (2009-12-11)
 ----------------------------
 - Added option for manual rule label change
