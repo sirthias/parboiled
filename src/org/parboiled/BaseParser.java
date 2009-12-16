@@ -754,7 +754,13 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         return rule;
     }
 
-    private Rule[] toRules(@NotNull Object[] objects) {
+    /**
+     * Converts the given object array to an array of rules.
+     *
+     * @param objects the objects to convert
+     * @return the rules corresponding to the given objects
+     */
+    protected Rule[] toRules(@NotNull Object[] objects) {
         Rule[] rules = new Rule[objects.length];
         for (int i = 0; i < objects.length; i++) {
             rules[i] = toRule(objects[i]);
@@ -762,7 +768,13 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         return rules;
     }
 
-    private Rule toRule(Object obj) {
+    /**
+     * Converts the given object to a rule.
+     *
+     * @param obj the object to convert
+     * @return the rule corresponding to the given object
+     */
+    protected Rule toRule(Object obj) {
         obj = mixInParameter(actionParameters, obj);
 
         if (obj instanceof Rule) return (Rule) obj;
