@@ -26,7 +26,7 @@ public abstract class AbstractTest {
 
     public <V> void test(BaseParser<V, ?> parser, Rule rule, String input, String expectedTree) {
         ParsingResult<V> parsingResult = parser.parse(rule, input);
-        if (!parsingResult.parseErrors.isEmpty()) {
+        if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +
                     "\n--- ParseTree ---\n" +

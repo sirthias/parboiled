@@ -596,6 +596,34 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
+     * Creates a special predicate that evaluates to true if the two arguments evaluate to objects that are equal,
+     * or more correctly if the following expression evaluates to true:
+     * <code>a == b || (a != null && a.equals(b))</code>.
+     *
+     * @param a the first parameter
+     * @param b the second parameter
+     * @return a new rule
+     */
+    public ActionResult EQUALS(Object a, Object b) {
+        actionParameters.add(
+                new EqualsParameter(mixInParameter(actionParameters, a), mixInParameter(actionParameters, b))
+        );
+        return null;
+    }
+
+    /**
+     * Creates a wrapper for an action call that negates the result of the inner action,
+     * i.e. flips {@link ActionResult#CONTINUE} to {@link ActionResult#CANCEL_MATCH} and vice versa.
+     *
+     * @param inner the inner action result to negate
+     * @return a new rule
+     */
+    public ActionResult NOT(ActionResult inner) {
+        actionParameters.add(new NotParameter(mixInParameter(actionParameters, inner)));
+        return null;
+    }
+
+    /**
      * Creates an action parameter that evaluates to null. You cannot use <b>null</b> directly in an action call
      * expression. Use this method instead.
      *
@@ -706,6 +734,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Returns the rule cache content for the given key.
+     *
      * @param key the cache key
      * @return the cached rule or null
      */
@@ -715,7 +744,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
     /**
      * Caches the given rule in the rule cache under the given key and return the rule.
-     * @param key the key to store the rule under in the cache
+     *
+     * @param key  the key to store the rule under in the cache
      * @param rule the rule to cache
      * @return the rule
      */
@@ -739,7 +769,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
         Rule rule = cached(obj);
         if (rule != null) return rule;
-        
+
         if (obj instanceof Character) return cache(obj, fromCharLiteral((Character) obj));
         if (obj instanceof String) return cache(obj, fromStringLiteral((String) obj));
         if (obj instanceof ActionParameter) return new ActionMatcher((ActionParameter) obj);
@@ -756,6 +786,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * The method should return null if the given object cannot be converted into a rule (which is all the
      * default implementation does).
      * Note that the results are automatically cached, so the method is never called twice for equal objects.
+     *
      * @param obj the object to convert
      * @return the rule for the object or null
      */
