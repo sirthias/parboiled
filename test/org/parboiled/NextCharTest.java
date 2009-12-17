@@ -16,23 +16,25 @@
 
 package org.parboiled;
 
-/**
- * Convenience base class for parser actions. Provides a base implementation of the Actions interface.
- */
-public class BaseActions<V> implements Actions<V> {
+import org.testng.annotations.Test;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
-    private Context<V> context;
+public class NextCharTest extends AbstractTest {
 
-    public Context<V> getContext() {
-        return context;
+    public static class NextCharTestParser extends BaseParser<Object, Actions<Object>> {
+
+        public Rule clause() {
+            return sequence(EQUALS(NEXT_CHAR(), 'a'), any(), eoi());
+        }
+
     }
 
-    public void setContext(Context<V> context) {
-        this.context = context;
-    }
-
-    public ActionResult toActionResult(boolean value) {
-        return value ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
+    @Test
+    public void test() {
+        NextCharTestParser parser = Parboiled.createParser(NextCharTestParser.class);
+        assertFalse(parser.parse(parser.clause(), "a").hasErrors());
+        assertTrue(parser.parse(parser.clause(), "b").hasErrors());
     }
 
 }

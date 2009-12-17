@@ -16,27 +16,25 @@
 
 package org.parboiled.actionparameters;
 
-import org.parboiled.ActionResult;
-import org.parboiled.MatcherContext;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
 
 /**
- * A special ActionParameter that negates the result of an inner action.
+ * An ActionParameter that simply returns the next input character about to be matched.
  */
-public class NotParameter extends ActionParameterWithArgument<ActionResult> {
+public class NextCharParameter extends BaseActionParameter {
 
-    public NotParameter(Object argument) {
-        super(ActionResult.class, argument, ActionResult.class);
+    public NextCharParameter() {
+        super(Character.class);
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return resolveArgument(context) == ActionResult.CANCEL_MATCH ?
-                ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
+        return context.getCurrentLocation().currentChar;
     }
 
     @Override
     public String toString() {
-        return "NOT(" + argument + ')';
+        return "NEXT_CHAR()";
     }
 
 }

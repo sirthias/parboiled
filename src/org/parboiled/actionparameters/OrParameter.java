@@ -16,27 +16,36 @@
 
 package org.parboiled.actionparameters;
 
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.ActionResult;
 import org.parboiled.MatcherContext;
-import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.StringUtils;
 
 /**
- * A special ActionParameter that negates the result of an inner action.
+ * A special ActionParameter that returns ActionResult.CONTINUE as soon as the first inner action returns
+ * anything but ActionResult.CANCEL_MATCH.
  */
-public class NotParameter extends ActionParameterWithArgument<ActionResult> {
+public class OrParameter extends BaseActionParameter {
 
-    public NotParameter(Object argument) {
-        super(ActionResult.class, argument, ActionResult.class);
+    private final Object[] arguments;
+
+    public OrParameter(Object[] arguments) {
+        super(ActionResult.class);
+        this.arguments = arguments;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return resolveArgument(context) == ActionResult.CANCEL_MATCH ?
-                ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
+        for (Object argument : arguments) {
+            if (ActionParameterUtils.resolve(argument, context) != ActionResult.CANCEL_MATCH) {
+                return ActionResult.CONTINUE;
+            }
+        }
+        return ActionResult.CANCEL_MATCH;
     }
 
     @Override
     public String toString() {
-        return "NOT(" + argument + ')';
+        return "OR(" + StringUtils.join(arguments, ", ") + ')';
     }
 
 }

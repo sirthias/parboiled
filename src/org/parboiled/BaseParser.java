@@ -21,6 +21,7 @@ import net.sf.cglib.proxy.Factory;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.actionparameters.*;
 import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameter;
+import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameters;
 import org.parboiled.common.Converter;
 import org.parboiled.common.Preconditions;
 import org.parboiled.common.Utils;
@@ -624,6 +625,32 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
+     * Creates a wrapper for a number action calls that only returns {@link ActionResult#CONTINUE} if all sub actions
+     * do not return {@link ActionResult#CANCEL_MATCH}.
+     *
+     * @param firstSubAction the first sub action
+     * @param other          the other sub actions
+     * @return a new rule
+     */
+    public ActionResult AND(ActionResult firstSubAction, ActionResult... other) {
+        actionParameters.add(new AndParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[])other))));
+        return null;
+    }
+
+    /**
+     * Creates a wrapper for a number action calls that return {@link ActionResult#CONTINUE} as soon as the first
+     * sub action return anything but {@link ActionResult#CANCEL_MATCH}.
+     *
+     * @param firstSubAction the first sub action
+     * @param other          the other sub actions
+     * @return a new rule
+     */
+    public ActionResult OR(ActionResult firstSubAction, ActionResult... other) {
+        actionParameters.add(new OrParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[])other))));
+        return null;
+    }
+
+    /**
      * Creates an action parameter that evaluates to null. You cannot use <b>null</b> directly in an action call
      * expression. Use this method instead.
      *
@@ -631,6 +658,16 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      */
     public Object NULL() {
         actionParameters.add(new NullParameter());
+        return null;
+    }
+
+    /**
+     * Creates an action parameter that evaluates to the next input character about to be matched.
+     *
+     * @return the action parameter
+     */
+    public Character NEXT_CHAR() {
+        actionParameters.add(new NextCharParameter());
         return null;
     }
 

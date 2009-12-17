@@ -20,23 +20,17 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
-public class NotEqualTest extends AbstractTest {
+public class AndOrNotTest extends AbstractTest {
 
     public static class NotEqualTestParser extends BaseParser<Object, Actions<Object>> {
 
-        public Rule equalClause() {
+        public Rule clause() {
             return sequence(
                     digit().label("a"),
                     digit().label("b"),
                     EQUALS(TEXT("a"), TEXT("b")),
-                    eoi());
-        }
-
-        public Rule notEqualClause() {
-            return sequence(
-                    digit().label("a"),
-                    digit().label("b"),
-                    NOT(EQUALS(TEXT("a"), TEXT("b"))),
+                    AND(EQUALS(TEXT("a"), TEXT("b")), EQUALS(1, 1)),
+                    OR(EQUALS(1, 2), NOT(EQUALS(1, 2))),
                     eoi());
         }
 
@@ -49,10 +43,8 @@ public class NotEqualTest extends AbstractTest {
     @Test
     public void test() {
         NotEqualTestParser parser = Parboiled.createParser(NotEqualTestParser.class);
-        assertFalse(parser.parse(parser.equalClause(), "22").hasErrors());
-        assertTrue(parser.parse(parser.equalClause(), "23").hasErrors());
-        assertFalse(parser.parse(parser.notEqualClause(), "23").hasErrors());
-        assertTrue(parser.parse(parser.notEqualClause(), "22").hasErrors());
+        assertFalse(parser.parse(parser.clause(), "22").hasErrors());
+        assertTrue(parser.parse(parser.clause(), "23").hasErrors());
     }
 
 }
