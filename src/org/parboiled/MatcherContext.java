@@ -22,6 +22,7 @@ import org.parboiled.common.Preconditions;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
+import static org.parboiled.support.ParseTreeUtils.findNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,6 +162,10 @@ public class MatcherContext<V> implements Context<V> {
 
     public Node<V> getNodeByPath(String path) {
         return findNodeByPath(subNodes, path);
+    }
+
+    public Node<V> getNodeByLabel(String labelPrefix) {
+        return subNodes != null ? findNode(subNodes, new LabelPrefixPredicate<V>(labelPrefix)) : null;
     }
 
     public Node<V> getLastNode() {

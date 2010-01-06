@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.parboiled.actionparameters;
+package org.parboiled.support;
 
-import org.parboiled.common.Preconditions;
+import org.parboiled.Node;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.StringUtils;
 
-/**
- * Base implementation of an ActionParameter that checks for compatibility with the given return type.
- */
-abstract class BaseActionParameter implements ActionParameter {
+public class LabelPrefixPredicate<V> implements Predicate<Node<V>> {
+    private final String labelPrefix;
 
-    protected final Class<?> returnType;
-
-    public BaseActionParameter(Class returnType) {
-        this.returnType = returnType;
+    public LabelPrefixPredicate(String labelPrefix) {
+        this.labelPrefix = labelPrefix;
     }
 
-    public void verifyReturnType(Class<?> returnType) {
-        Preconditions.checkState(returnType.isAssignableFrom(this.returnType), "Illegal action parameter type");
+    public boolean apply(Node<V> input) {
+        return input != null && StringUtils.startsWith(input.getLabel(), labelPrefix);
     }
-
 }

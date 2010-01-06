@@ -110,7 +110,7 @@ public interface Context<V> {
     String getPath();
 
     /**
-     * <p>Returns the node that matches the given path.
+     * <p>Returns the first node that matches the given path.
      * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a
      * description of the path argument.</p>
      * <p><b>Caution</b>: Be aware of the current state of the parse tree when calling this method.
@@ -123,6 +123,19 @@ public interface Context<V> {
      * @return the node if found or null if not found
      */
     Node<V> getNodeByPath(String path);
+
+    /**
+     * <p>Returns the first node that matches the given labelPrefix.
+     * <p><b>Caution</b>: Be aware of the current state of the parse tree when calling this method.
+     * You can only reference nodes that have already been created. Since parse tree nodes are immutable they are
+     * only created when their complete subtrees are fully determined. This means that all parent nodes have not yet
+     * been created when you call this method. Note that you can still access the value objects of future parent
+     * nodes through the getParent() chain.</p>
+     *
+     * @param labelPrefix the label prefix to search for
+     * @return the node if found or null if not found
+     */
+    Node<V> getNodeByLabel(String labelPrefix);
 
     /**
      * Returns the last node created during this parsing run. The last node is independent from the current context
