@@ -19,31 +19,34 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
+import org.parboiled.common.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * An ActionParameter that evaluates to the values set on the parse tree nodes passed in as argument.
- * @param <V> the node value type
  */
-public class ValuesParameter<V> extends ActionParameterWithArgument<List<Node<V>>> {
-    
+public class ValuesParameter implements ActionParameter {
+    private final Object nodes;
+
     public ValuesParameter(Object nodes) {
-        super(List.class, nodes, List.class);
+        this.nodes = nodes;
     }
 
+    @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
-        List<V> values = new ArrayList<V>();
-        for (Node<V> node : resolveArgument(context)) {
-            values.add(node.getValue());
+        List values = new ArrayList();
+        for (Object node : ActionParameterUtils.resolve(nodes, context, List.class)) {
+            Preconditions.checkArgument(node instanceof Node);
+            values.add(((Node)node).getValue());
         }
         return values;
     }
 
     @Override
     public String toString() {
-        return "VALUES(" + argument + ')';
+        return "VALUES(" + nodes + ')';
     }
 
 }

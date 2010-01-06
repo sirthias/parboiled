@@ -19,6 +19,7 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
+import org.parboiled.common.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,24 +27,26 @@ import java.util.List;
 /**
  * An ActionParameter that evaluates to a list of the first characters of the matched input texts of the
  * parse tree nodes passed in as an List<Node<V>> argument.
- * @param <V>
  */
-public class CharsParameter<V> extends ActionParameterWithArgument<List<Node<V>>> {
+public class CharsParameter implements ActionParameter {
+    private final Object nodes;
+
     public CharsParameter(Object nodes) {
-        super(List.class, nodes, List.class);
+        this.nodes = nodes;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         List<Character> values = new ArrayList<Character>();
-        for (Node<V> node : resolveArgument(context)) {
-            values.add(context.getNodeChar(node));
+        for (Object node : ActionParameterUtils.resolve(nodes, context, List.class)) {
+            Preconditions.checkArgument(node instanceof Node);
+            values.add(context.getNodeChar((Node) node));
         }
         return values;
     }
 
     @Override
     public String toString() {
-        return "CHARS(" + argument + ')';
+        return "CHARS(" + nodes + ')';
     }
 
 }

@@ -22,11 +22,7 @@ import org.parboiled.MatcherContext;
 /**
  * An ActionParameter that simply returns the next input character about to be matched.
  */
-public class NextCharParameter extends BaseActionParameter {
-
-    public NextCharParameter() {
-        super(Character.class);
-    }
+public class NextCharParameter implements ActionParameter {
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         return context.getCurrentLocation().currentChar;

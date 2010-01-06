@@ -23,14 +23,15 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A special ActionParameter that negates the result of an inner action.
  */
-public class NotParameter extends ActionParameterWithArgument<ActionResult> {
+public class NotParameter implements ActionParameter {
+    private final Object argument;
 
     public NotParameter(Object argument) {
-        super(ActionResult.class, argument, ActionResult.class);
+        this.argument = argument;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return resolveArgument(context) == ActionResult.CANCEL_MATCH ?
+        return ActionParameterUtils.resolve(argument, context, ActionResult.class) == ActionResult.CANCEL_MATCH ?
                 ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
     }
 

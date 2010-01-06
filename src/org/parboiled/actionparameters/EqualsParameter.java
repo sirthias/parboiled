@@ -25,20 +25,19 @@ import org.parboiled.common.Utils;
  * A special ActionParameter that sets the value passed in as argument on the node to be created for the rule
  * corresponding to the current Context scope.
  */
-public class EqualsParameter extends BaseActionParameter {
+public class EqualsParameter implements ActionParameter {
 
     private final Object a;
     private final Object b;
 
     public EqualsParameter(Object a, Object b) {
-        super(ActionResult.class);
         this.a = a;
         this.b = b;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        Object resolvedA = ActionParameterUtils.resolve(a, context);
-        Object resolvedB = ActionParameterUtils.resolve(b, context);
+        Object resolvedA = ActionParameterUtils.resolve(a, context, null);
+        Object resolvedB = ActionParameterUtils.resolve(b, context, null);
         return Utils.equals(resolvedA, resolvedB) ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
     }
 

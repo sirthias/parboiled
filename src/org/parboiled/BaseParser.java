@@ -24,7 +24,6 @@ import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameter
 import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameters;
 import org.parboiled.common.Converter;
 import org.parboiled.common.Preconditions;
-import org.parboiled.common.Utils;
 import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
@@ -44,11 +43,6 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * Cache of frequently used, bottom level rules. Per default used for character and string matching rules.
      */
     private final Map<Object, Rule> ruleCache = new HashMap<Object, Rule>();
-
-    /**
-     * The actual type of the V type argument, i.e. the value field of the generated parse tree nodes.
-     */
-    private final Class<V> nodeValueType;
 
     /**
      * Stack for action parameters. Used for creation of actual arguments to action methods.
@@ -76,11 +70,6 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     @SuppressWarnings({"unchecked"})
     protected BaseParser(A actions) {
         this.actions = actions;
-
-        List<Class<?>> typeArguments = Utils.getTypeArguments(BaseParser.class, getClass());
-        Preconditions.checkState(typeArguments.size() == 2);
-        nodeValueType = (Class<V>) typeArguments.get(0);
-
         if (actions != null) {
             verifyActionsObject();
         }
@@ -360,7 +349,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
-     * Creates an action parameter that evaluates to the parse tree node found under the given prefix path.
+     * Creates an action parameter that evaluates to the first parse tree node found under the given prefix path.
      * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
      * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
      *
@@ -386,6 +375,32 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     }
 
     /**
+     * Creates an action parameter that evaluates to the first parse tree node found with the given label prefix.
+     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
+     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
+     *
+     * @param labelPrefix the label prefix
+     * @return the action parameter
+     */
+    public Node<V> NODE_BY_LABEL(String labelPrefix) {
+        actionParameters.add(new LabelNodeParameter(mixInParameter(actionParameters, labelPrefix)));
+        return null;
+    }
+
+    /**
+     * Creates an action parameter that evaluates to a list of all parse tree nodes found under the given prefix path.
+     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
+     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
+     *
+     * @param labelPrefix the label prefix
+     * @return the action parameter
+     */
+    public List<Node<V>> NODES_BY_LABEL(String labelPrefix) {
+        actionParameters.add(new LabelNodesParameter(mixInParameter(actionParameters, labelPrefix)));
+        return null;
+    }
+
+    /**
      * Creates an action parameter that evaluates to the last node created during this parsing run. This last node
      * is independent of the current context scope, i.e. {@link #UP(Object)} or {@link #DOWN(Object)} have no influence
      * on it.
@@ -405,7 +420,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public V VALUE() {
-        actionParameters.add(new TreeValueParameter<V>(nodeValueType));
+        actionParameters.add(new TreeValueParameter());
         return null;
     }
 
@@ -416,7 +431,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public V VALUE(Node<V> node) {
-        actionParameters.add(new ValueParameter<V>(nodeValueType, mixInParameter(actionParameters, node)));
+        actionParameters.add(new ValueParameter(mixInParameter(actionParameters, node)));
         return null;
     }
 
@@ -438,7 +453,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public List<V> VALUES(List<Node<V>> nodes) {
-        actionParameters.add(new ValuesParameter<V>(mixInParameter(actionParameters, nodes)));
+        actionParameters.add(new ValuesParameter(mixInParameter(actionParameters, nodes)));
         return null;
     }
 
@@ -470,7 +485,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public String TEXT(Node<V> node) {
-        actionParameters.add(new TextParameter<V>(mixInParameter(actionParameters, node)));
+        actionParameters.add(new TextParameter(mixInParameter(actionParameters, node)));
         return null;
     }
 
@@ -492,7 +507,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public List<String> TEXTS(List<Node<V>> nodes) {
-        actionParameters.add(new TextsParameter<V>(mixInParameter(actionParameters, nodes)));
+        actionParameters.add(new TextsParameter(mixInParameter(actionParameters, nodes)));
         return null;
     }
 
@@ -525,7 +540,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public Character CHAR(Node<V> node) {
-        actionParameters.add(new CharParameter<V>(mixInParameter(actionParameters, node)));
+        actionParameters.add(new CharParameter(mixInParameter(actionParameters, node)));
         return null;
     }
 
@@ -547,7 +562,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the action parameter
      */
     public List<Character> CHARS(List<Node<V>> nodes) {
-        actionParameters.add(new CharsParameter<V>(mixInParameter(actionParameters, nodes)));
+        actionParameters.add(new CharsParameter(mixInParameter(actionParameters, nodes)));
         return null;
     }
 
@@ -592,7 +607,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public ActionResult SET(V value) {
-        actionParameters.add(new SetValueParameter<V>(mixInParameter(actionParameters, value), nodeValueType));
+        actionParameters.add(new SetValueParameter(mixInParameter(actionParameters, value)));
         return null;
     }
 
@@ -633,7 +648,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public ActionResult AND(ActionResult firstSubAction, ActionResult... other) {
-        actionParameters.add(new AndParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[])other))));
+        actionParameters
+                .add(new AndParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[]) other))));
         return null;
     }
 
@@ -646,7 +662,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return a new rule
      */
     public ActionResult OR(ActionResult firstSubAction, ActionResult... other) {
-        actionParameters.add(new OrParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[])other))));
+        actionParameters
+                .add(new OrParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[]) other))));
         return null;
     }
 
@@ -681,9 +698,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
     public <T> T CONVERT(String text, Converter<T> converter) {
         Object converterArg = mixInParameter(actionParameters, converter);
         Object textArg = mixInParameter(actionParameters, text);
-        List<Class<?>> convertedTypes = Utils.getTypeArguments(Converter.class, converterArg.getClass());
-        Preconditions.checkArgument(convertedTypes.size() == 1, "Illegal converter");
-        actionParameters.add(new ConvertParameter(convertedTypes.get(0), textArg, converterArg));
+        Preconditions.checkNotNull(converterArg);
+        actionParameters.add(new ConvertParameter(textArg, converterArg));
         return null;
     }
 

@@ -28,22 +28,23 @@ import java.util.List;
  * An ActionParameter that returns all parse tree nodes found under the given path in the current Context scope
  * as a list.
  */
-public class PathNodesParameter extends ActionParameterWithArgument<String> {
+public class PathNodesParameter implements ActionParameter{
+    private final Object path;
 
     public PathNodesParameter(Object path) {
-        super(List.class, path, String.class);
+        this.path = path;
     }
 
     @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         List<? extends Node<?>> subNodes = context.getSubNodes();
-        String path = resolveArgument(context);
+        String path = ActionParameterUtils.resolve(this.path, context, String.class);
         return ParseTreeUtils.collectNodesByPath((List<Node<Object>>) subNodes, path, new ArrayList());
     }
 
     @Override
     public String toString() {
-        return "NODES(" + argument + ')';
+        return "NODES(" + path + ')';
     }
 
 }

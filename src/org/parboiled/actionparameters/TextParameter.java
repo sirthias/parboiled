@@ -22,21 +22,21 @@ import org.parboiled.Node;
 
 /**
  * An ActionParameter that evaluates to the matched input string of the parse tree node passed in as argument.
- * @param <V> the node value type
  */
-public class TextParameter<V> extends ActionParameterWithArgument<Node<V>> {
+public class TextParameter implements ActionParameter {
+    private final Object node;
 
     public TextParameter(Object node) {
-        super(String.class, node, Node.class);
+        this.node = node;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return context.getNodeText(resolveArgument(context));
+        return context.getNodeText(ActionParameterUtils.resolve(node, context, Node.class));
     }
 
     @Override
     public String toString() {
-        return "TEXT(" + argument + ')';
+        return "TEXT(" + node + ')';
     }
 
 }

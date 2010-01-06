@@ -20,8 +20,8 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Actions;
 import org.parboiled.MatcherContext;
+import org.parboiled.ActionResult;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 import org.parboiled.support.ParsingException;
 import org.parboiled.support.SkipInPredicates;
 
@@ -30,38 +30,30 @@ import java.lang.reflect.Method;
 /**
  * An ActionParameter that wraps a method call on the parser actions object.
  */
-public class ActionCallParameter extends BaseActionParameter {
+public class ActionCallParameter implements ActionParameter {
     private final Actions actionsObject;
     private final Method method;
     private final MethodProxy proxy;
     private final Object[] args;
+    private final Class<?>[] parameterTypes;
     private final boolean skipInPredicates;
 
     public ActionCallParameter(@NotNull Actions actions, @NotNull Method method, @NotNull Object[] params,
                                @NotNull MethodProxy proxy) {
-        super(method.getReturnType());
         this.actionsObject = actions;
         this.method = method;
         this.args = params;
         this.proxy = proxy;
+        this.parameterTypes = method.getParameterTypes();
         this.skipInPredicates = method.getAnnotation(SkipInPredicates.class) != null;
-    }
-
-    public void verifyReturnType(Class returnType) {
-        for (int i = 0; i < args.length; i++) {
-            Class argType = method.getParameterTypes()[i];
-            verifyArgumentType(args[i], argType);
-        }
-        super.verifyReturnType(returnType);
     }
 
     @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         try {
-            if (skipInPredicates && context.inPredicate()) return null;
-
+            if (skipInPredicates && context.inPredicate()) return ActionResult.CONTINUE;
             actionsObject.setContext(context);
-            Object[] resolvedArgs = ActionParameterUtils.resolve(args, context);
+            Object[] resolvedArgs = ActionParameterUtils.resolve(args, context, parameterTypes);
             return proxy.invokeSuper(actionsObject, resolvedArgs);
         } catch (ParsingException pex) {
             context.addError(pex.getMessage());

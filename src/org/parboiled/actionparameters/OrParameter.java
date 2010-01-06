@@ -25,18 +25,17 @@ import org.parboiled.common.StringUtils;
  * A special ActionParameter that returns ActionResult.CONTINUE as soon as the first inner action returns
  * anything but ActionResult.CANCEL_MATCH.
  */
-public class OrParameter extends BaseActionParameter {
+public class OrParameter implements ActionParameter {
 
     private final Object[] arguments;
 
     public OrParameter(Object[] arguments) {
-        super(ActionResult.class);
         this.arguments = arguments;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         for (Object argument : arguments) {
-            if (ActionParameterUtils.resolve(argument, context) != ActionResult.CANCEL_MATCH) {
+            if (ActionParameterUtils.resolve(argument, context, ActionResult.class) != ActionResult.CANCEL_MATCH) {
                 return ActionResult.CONTINUE;
             }
         }

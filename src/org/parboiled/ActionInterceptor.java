@@ -54,7 +54,6 @@ class ActionInterceptor implements MethodInterceptor {
     private Object newActionCallParameter(Object obj, Method method, Object[] args, MethodProxy proxy) {
         Object[] params = mixInParameters(parser.actionParameters, args);
         ActionCallParameter actionCall = new ActionCallParameter((Actions) obj, method, params, proxy);
-        actionCall.verifyReturnType(method.getReturnType());
         parser.actionParameters.add(actionCall);
         return null;
     }

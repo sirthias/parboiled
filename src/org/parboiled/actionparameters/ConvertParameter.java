@@ -19,27 +19,30 @@ package org.parboiled.actionparameters;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Converter;
+import org.parboiled.common.Preconditions;
 
 /**
  * An ActionParameter that takes two arguments, a string and a Converter. It evaluates to the result of the
  * Converter applied to the string.
  */
-public class ConvertParameter extends ActionParameterWithArgument<String> {
+public class ConvertParameter implements ActionParameter {
 
+    private final Object argument;
     private final Object converter;
 
-    public ConvertParameter(@NotNull Class<?> returnType, Object arg, Object converter) {
-        super(returnType, arg, String.class);
+    public ConvertParameter(Object argument, Object converter) {
+        this.argument = argument;
         this.converter = converter;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        Converter resolvedConverter = (Converter) ActionParameterUtils.resolve(converter, context);
-        return resolvedConverter.parse(resolveArgument(context));
+        Converter resolvedConverter = ActionParameterUtils.resolve(converter, context, Converter.class);
+        Preconditions.checkNotNull(resolvedConverter);
+        return resolvedConverter.parse(ActionParameterUtils.resolve(argument, context, String.class));
     }
 
     @Override
     public String toString() {
-        return "convert to " + returnType.getSimpleName() + '(' + argument + ')';
+        return "convert using " + converter.getClass().getSimpleName() + '(' + argument + ')';
     }
 }

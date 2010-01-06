@@ -26,18 +26,17 @@ import org.parboiled.common.StringUtils;
  * otherwise ActionResult.CANCEL_MATCH is returned. Note that the result is short-circuited, i.e. the evaluation of
  * sub actions will stop as soon as the first ActionResult.CANCEL_MATCH is encountered.
  */
-public class AndParameter extends BaseActionParameter {
+public class AndParameter implements ActionParameter {
 
     private final Object[] arguments;
 
     public AndParameter(Object[] arguments) {
-        super(ActionResult.class);
         this.arguments = arguments;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         for (Object argument : arguments) {
-            if (ActionParameterUtils.resolve(argument, context) == ActionResult.CANCEL_MATCH) {
+            if (ActionParameterUtils.resolve(argument, context, ActionResult.class) == ActionResult.CANCEL_MATCH) {
                 return ActionResult.CANCEL_MATCH;
             }
         }

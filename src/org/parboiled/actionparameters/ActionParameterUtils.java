@@ -31,8 +31,9 @@ public class ActionParameterUtils {
     /**
      * Creates a new Object array with the same elements as the given arguments, except for all null values.
      * These are replaced with the ActionParameters popped of the given ActionParameter Stack.
+     *
      * @param actionParameters the action parameters to mix in
-     * @param arguments the arguments to mix into
+     * @param arguments        the arguments to mix into
      * @return a new Object array with all argument null values replaced with the corresponding ActionParameters.
      */
     public static Object[] mixInParameters(Stack<ActionParameter> actionParameters, Object... arguments) {
@@ -45,8 +46,9 @@ public class ActionParameterUtils {
 
     /**
      * Returns either the given arg Object itself (if not null) or the last ActionParameter popped of the given stack.
+     *
      * @param actionParameters the ActionParameter stack
-     * @param arg the argument object
+     * @param arg              the argument object
      * @return arg or the last ActionParameter on the stack
      */
     public static Object mixInParameter(Stack<ActionParameter> actionParameters, Object arg) {
@@ -62,14 +64,16 @@ public class ActionParameterUtils {
      * Creates and returns a new Object array with the same elements except for all ActionParameters.
      * These are resolved to their values.
      *
-     * @param arguments the original arguments
-     * @param context   the context in which to resolve all ActionParameters
+     * @param arguments             the original arguments
+     * @param context               the context in which to resolve all ActionParameters
+     * @param expectedArgumentTypes the types the arguments are expected to be compatible to
      * @return a new Object array with all ActionParameters resolved
      */
-    public static Object[] resolve(@NotNull Object[] arguments, @NotNull MatcherContext<?> context) {
+    public static Object[] resolve(@NotNull Object[] arguments, @NotNull MatcherContext<?> context,
+                                   @NotNull Class<?>[] expectedArgumentTypes) {
         Object[] args = new Object[arguments.length];
         for (int i = 0; i < arguments.length; i++) {
-            args[i] = resolve(arguments[i], context);
+            args[i] = resolve(arguments[i], context, expectedArgumentTypes[i]);
         }
         return args;
     }
@@ -78,30 +82,17 @@ public class ActionParameterUtils {
      * If the given argument is an ActionParameter it is resolved to its value and the value returned.
      * All other arguments are returned unchanged.
      *
-     * @param argument the original argument
-     * @param context  the context in which to resolve a potential ActionParameter
+     * @param argument     the original argument
+     * @param context      the context in which to resolve a potential ActionParameter
+     * @param expectedType the type the argument is expected to resolve to or null, if no check is required
      * @return the resolved Object
      */
     @SuppressWarnings({"unchecked"})
-    public static Object resolve(Object argument, @NotNull MatcherContext<?> context) {
-        if (argument instanceof ActionParameter) {
-            return ((ActionParameter) argument).resolve(context);
-        }
-        return argument;
-    }
-
-    /**
-     * Checks whether the given argument can be assigned to the given argument type.
-     * If the argument is an ActionParameter its result type is verified accordingly.
-     * @param argument the argument
-     * @param requiredArgumentType the required type
-     */
-    public static void verifyArgumentType(Object argument, Class<?> requiredArgumentType) {
-        if (argument instanceof ActionParameter) {
-            ((ActionParameter) argument).verifyReturnType(requiredArgumentType);
-        } else {
-            Preconditions.checkState(requiredArgumentType.isAssignableFrom(argument.getClass()));
-        }
+    public static <T> T resolve(Object argument, @NotNull MatcherContext<?> context, Class<T> expectedType) {
+        Object arg = argument instanceof ActionParameter ? ((ActionParameter) argument).resolve(context) : argument;
+        Preconditions
+                .checkArgument(arg == null || expectedType == null || expectedType.isAssignableFrom(arg.getClass()));
+        return (T) arg;
     }
 
 }

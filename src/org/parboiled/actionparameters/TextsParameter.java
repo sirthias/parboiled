@@ -18,6 +18,7 @@ package org.parboiled.actionparameters;
 
 import org.parboiled.Node;
 import org.parboiled.MatcherContext;
+import org.parboiled.common.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -26,24 +27,26 @@ import java.util.ArrayList;
 /**
  * An ActionParameter that evaluates to a list containing the the matched input strings of the parse tree nodes
  * passed in as argument.
- * @param <V> the node value type
  */
-public class TextsParameter<V> extends ActionParameterWithArgument<List<Node<V>>> {
+public class TextsParameter implements ActionParameter {
+    private final Object nodes;
+
     public TextsParameter(Object nodes) {
-        super(List.class, nodes, List.class);
+        this.nodes = nodes;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         List<String> values = new ArrayList<String>();
-        for (Node<V> node : resolveArgument(context)) {
-            values.add(context.getNodeText(node));
+        for (Object node : ActionParameterUtils.resolve(nodes, context, List.class)) {
+            Preconditions.checkArgument(node instanceof Node);
+            values.add(context.getNodeText((Node) node));
         }
         return values;
     }
 
     @Override
     public String toString() {
-        return "TEXTS(" + argument + ')';
+        return "TEXTS(" + nodes + ')';
     }
     
 }

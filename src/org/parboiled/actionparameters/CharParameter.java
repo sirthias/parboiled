@@ -23,22 +23,22 @@ import org.parboiled.Node;
 /**
  * An ActionParameter that evaluates to the first character of the matched input text of the parse tree node
  * passed in as argument.
- * @param <V> the node value type
  */
-public class CharParameter<V> extends ActionParameterWithArgument<Node<V>> {
+public class CharParameter implements ActionParameter {
+    private final Object node;
 
     public CharParameter(Object node) {
-        super(Character.class, node, Node.class);
+        this.node = node;
     }
 
     @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return context.getNodeChar(resolveArgument(context));
+        return context.getNodeChar(ActionParameterUtils.resolve(node, context, Node.class));
     }
 
     @Override
     public String toString() {
-        return "CHAR(" + argument + ')';
+        return "CHAR(" + node + ')';
     }
 
 }

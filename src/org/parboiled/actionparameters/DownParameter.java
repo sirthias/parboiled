@@ -18,7 +18,6 @@ package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 import org.parboiled.support.Checks;
 
 /**
@@ -33,15 +32,11 @@ public class DownParameter implements ActionParameter {
         this.argument = argument;
     }
 
-    public void verifyReturnType(Class returnType) {
-        verifyArgumentType(argument, returnType);
-    }
-
     @SuppressWarnings({"ConstantConditions"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         MatcherContext<?> subContext = context.getSubContext();
         Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
-        return ActionParameterUtils.resolve(argument, subContext);
+        return ActionParameterUtils.resolve(argument, subContext, null);
     }
 
     @Override

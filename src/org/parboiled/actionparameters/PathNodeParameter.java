@@ -18,24 +18,24 @@ package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Node;
 
 /**
  * An ActionParameter that returns the parse tree node found under the given path in the current Context scope.
  */
-public class PathNodeParameter extends ActionParameterWithArgument<String> {
+public class PathNodeParameter implements ActionParameter {
+    private final Object path;
 
     public PathNodeParameter(Object path) {
-        super(Node.class, path, String.class);
+        this.path = path;
     }
 
     public Object resolve(@NotNull MatcherContext<?> context) {
-        return context.getNodeByPath(resolveArgument(context));
+        return context.getNodeByPath(ActionParameterUtils.resolve(path, context, String.class));
     }
 
     @Override
     public String toString() {
-        return "NODE(" + argument + ')';
+        return "NODE(" + path + ')';
     }
 
 }

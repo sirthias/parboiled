@@ -23,25 +23,23 @@ import org.parboiled.MatcherContext;
 /**
  * A special ActionParameter that sets the value passed in as argument on the node to be created for the rule
  * corresponding to the current Context scope.
- *
- * @param <V>
  */
-public class SetValueParameter<V> extends ActionParameterWithArgument<V> {
+public class SetValueParameter implements ActionParameter {
+    private final Object value;
 
-    public SetValueParameter(Object value, Class<V> nodeValueType) {
-        super(ActionResult.class, value, nodeValueType);
+    public SetValueParameter(Object value) {
+        this.value = value;
     }
 
     @SuppressWarnings({"unchecked"})
     public Object resolve(@NotNull MatcherContext<?> context) {
-        MatcherContext<V> vContext = (MatcherContext<V>) context;
-        vContext.setNodeValue(resolveArgument(context));
+        ((MatcherContext)context).setNodeValue(ActionParameterUtils.resolve(value, context, null));
         return ActionResult.CONTINUE;
     }
 
     @Override
     public String toString() {
-        return "SET(" + argument + ')';
+        return "SET(" + value + ')';
     }
 
 }

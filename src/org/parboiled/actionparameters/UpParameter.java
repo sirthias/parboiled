@@ -18,7 +18,6 @@ package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import static org.parboiled.actionparameters.ActionParameterUtils.verifyArgumentType;
 import org.parboiled.support.Checks;
 
 /**
@@ -33,15 +32,11 @@ public class UpParameter implements ActionParameter {
         this.argument = argument;
     }
 
-    public void verifyReturnType(Class returnType) {
-        verifyArgumentType(argument, returnType);
-    }
-
     @SuppressWarnings({"ConstantConditions"})
     public Object resolve(@NotNull MatcherContext<?> context) {
         MatcherContext<?> parentContext = context.getParent();
         Checks.ensure(parentContext != null, "Illegal UP() call, already at root level");
-        return ActionParameterUtils.resolve(argument, parentContext);
+        return ActionParameterUtils.resolve(argument, parentContext, null);
     }
 
     @Override

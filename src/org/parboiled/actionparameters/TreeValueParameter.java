@@ -21,13 +21,8 @@ import org.parboiled.MatcherContext;
 
 /**
  * An ActionParameter that evaluates to the tree value for the rule corresponding to the current Context scope.
- * @param <V> the node value type
  */
-public class TreeValueParameter<V> extends BaseActionParameter {
-
-    public TreeValueParameter(Class<V> returnType) {
-        super(returnType);
-    }
+public class TreeValueParameter implements ActionParameter {
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         return context.getTreeValue();

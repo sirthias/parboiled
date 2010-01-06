@@ -25,13 +25,6 @@ import org.parboiled.MatcherContext;
 public interface ActionParameter {
 
     /**
-     * Checks whether the return type of this ActionParameter is assignable to the given expected type.
-     * If not an exception is thrown.
-     * @param returnType the type that this action parameter is supposed to be assignable to
-     */
-    void verifyReturnType(Class<?> returnType);
-
-    /**
      * Resolves this parameter in this given context.
      * @param context the context
      * @return the value of this parameter in the given context

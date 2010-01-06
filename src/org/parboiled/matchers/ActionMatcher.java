@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.actionparameters.ActionParameter;
 import org.parboiled.ActionResult;
 import org.parboiled.MatcherContext;
+import org.parboiled.common.Preconditions;
 import org.parboiled.support.Characters;
 
 /**
@@ -30,7 +31,6 @@ public class ActionMatcher<V> extends AbstractMatcher<V> implements ActionResult
     private final ActionParameter action;
 
     public ActionMatcher(ActionParameter action) {
-        action.verifyReturnType(ActionResult.class);
         this.action = action;
     }
 
@@ -40,6 +40,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> implements ActionResult
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
         Object result = action.resolve(context);
+        Preconditions.checkArgument(result instanceof ActionResult, "Action does not evaluate to ActionResult");
         return result != ActionResult.CANCEL_MATCH;
     }
 

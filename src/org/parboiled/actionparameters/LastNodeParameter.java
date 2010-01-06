@@ -18,17 +18,12 @@ package org.parboiled.actionparameters;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Node;
 
 /**
  * An ActionParameter that returns the last parse tree node created during the current parsing run, independently
  * of the current Context scope.
  */
-public class LastNodeParameter extends BaseActionParameter {
-
-    public LastNodeParameter() {
-        super(Node.class);
-    }
+public class LastNodeParameter implements ActionParameter {
 
     public Object resolve(@NotNull MatcherContext<?> context) {
         return context.getLastNode();
