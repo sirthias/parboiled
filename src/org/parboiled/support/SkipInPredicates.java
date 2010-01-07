@@ -27,6 +27,6 @@ import java.lang.annotation.ElementType;
  * contains a test or testNot rule the method body will not be run but rather simply return null.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface SkipInPredicates {
 }

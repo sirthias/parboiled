@@ -24,6 +24,12 @@ public class ActionTest extends AbstractTest {
         public Integer timesTwo(Integer i) {
             return i != null ? i * 2 : null;
         }
+
+        public ActionResult addOne() {
+            Integer i = (Integer) getContext().getNodeValue();
+            getContext().setNodeValue(i + 1);
+            return ActionResult.CONTINUE;
+        }
     }
 
     public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {
@@ -35,7 +41,13 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    SET(actions.timesTwo(CONVERT_TO_INTEGER(LAST_TEXT())))
+                    SET(actions.timesTwo(CONVERT_TO_INTEGER(LAST_TEXT()))),
+                    actions.addOne(),
+                    new Action() {
+                        public ActionResult run() {
+                            return actions.addOne();
+                        }
+                    }
             );
         }
 
@@ -49,7 +61,7 @@ public class ActionTest extends AbstractTest {
     public void test() {
         ActionTestParser parser = Parboiled.createParser(ActionTestParser.class);
         test(parser, parser.number(), "123", "" +
-                "[number, {246}] '123'\n" +
+                "[number, {248}] '123'\n" +
                 "    [oneOrMore] '123'\n" +
                 "        [digit] '1'\n" +
                 "        [digit] '2'\n" +
