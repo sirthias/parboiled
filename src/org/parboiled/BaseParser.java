@@ -815,7 +815,10 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      */
     protected Rule[] toRules(@NotNull Object[] objects) {
         Rule[] rules = new Rule[objects.length];
-        for (int i = 0; i < objects.length; i++) {
+
+        // we need to process the sub rule objects in reverse order so as to correctly mix in parameters
+        // from the parameter stack
+        for (int i = objects.length - 1; i >= 0; i--) {
             rules[i] = toRule(objects[i]);
         }
         return rules;
@@ -837,6 +840,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
         if (obj instanceof Character) return cache(obj, fromCharLiteral((Character) obj));
         if (obj instanceof String) return cache(obj, fromStringLiteral((String) obj));
+        if (obj instanceof Action) obj = new ActionObjectParameter((Action) obj);
         if (obj instanceof ActionParameter) return new ActionMatcher((ActionParameter) obj);
 
         rule = fromUserObject(obj);
