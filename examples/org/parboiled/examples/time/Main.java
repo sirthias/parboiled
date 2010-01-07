@@ -26,12 +26,13 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+        TimeParser parser = Parboiled.createParser(TimeParser.class);
+        
         while (true) {
             System.out.print("\nEnter a time (hh:mm(:ss)?, hh(mm(ss)?)? or h(mm)?, single RETURN to exit): ");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            TimeParser parser = Parboiled.createParser(TimeParser.class);
             ParsingResult<?> result = parser.parse(parser.time(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');

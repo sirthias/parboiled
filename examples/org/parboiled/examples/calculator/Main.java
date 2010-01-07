@@ -26,12 +26,13 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
+        
         while (true) {
             System.out.print("\nEnter an expression (single RETURN to exit): ");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
             ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');

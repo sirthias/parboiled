@@ -14,33 +14,39 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.abc;
+package org.parboiled.examples.rpn;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import org.parboiled.support.LeafNodeFilter;
+import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        AbcParser parser = Parboiled.createParser(AbcParser.class);
+        RpnParser parser = Parboiled.createParser(RpnParser.class);
         
         while (true) {
-            System.out.print("\nEnter an expression (single RETURN to exit): ");
+            System.out.print("\nEnter an RPN expression, separate operands by a blank (single RETURN to exit): ");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<?> result = parser.parse(parser.S(), input);
+            ParsingResult<Node> result = parser.parse(parser.operation(), input);
 
-            System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
-            System.out.println(printNodeTree(result) + '\n');
+            System.out.println(ParseTreeUtils.printNodeTree(result,
+                    new LeafNodeFilter<Node>("number", "binarySymbol").skipEmptyOptionals()));
 
+            List<BigDecimal> output = result.parseTreeRoot.getValue().getResult();
             if (result.hasErrors()) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));
             }
+            System.out.println(result.parseTreeRoot.getValue().getWarnings());
+            System.out.println("Result: " + (output.size() == 1 ? output.get(0) : output.toString()));
         }
     }
 
