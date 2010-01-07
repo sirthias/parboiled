@@ -41,7 +41,7 @@ public class LeafNodeFilter<V> implements Function<Node<V>, Printability> {
      *
      * @param leafNodeLabels the labels of the nodes to mark as print tree leaves
      */
-    public LeafNodeFilter(String[] leafNodeLabels) {
+    public LeafNodeFilter(String... leafNodeLabels) {
         this.leafNodeLabels = leafNodeLabels.clone();
         Arrays.sort(this.leafNodeLabels);
     }
@@ -93,7 +93,7 @@ public class LeafNodeFilter<V> implements Function<Node<V>, Printability> {
      * @param leafNodeLabels the labels of the nodes to mark as print tree leaves
      * @return a new LeafNodeFilter
      */
-    public static <V> LeafNodeFilter<V> create(String[] leafNodeLabels) {
+    public static <V> LeafNodeFilter<V> create(String... leafNodeLabels) {
         return new LeafNodeFilter<V>(leafNodeLabels);
     }
 

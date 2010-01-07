@@ -1,3 +1,14 @@
+Version 0.8.4.0 (2010-01-07)
+----------------------------
+- Fixed incorrect ordering of action calls when several calls are present in one rule
+- Fixed test/testNot rules throwing ParserConstructionException at EOI
+- Added action helpers: EQUALS, AND, OR, NOT, NEXT_CHAR, NODE_BY_LABEL and NODES_BY_LABEL
+- Added Time and RPN example (thanks to Reinier Zwitserloot from http://projectlombok.org for the RPN code) 
+- Added Action interface enabling stand-alone action objects within rule creation expressions
+- Added SplitParserTest, testing splitting of one grammar into several parser objects
+- Simplified ActionParameter infrastructure, now allows casting of action parameters
+- Changed access of BaseParser.toRule(s) from private to protected to allow for easy conversion of custom objects
+
 Version 0.8.3.0 (2009-12-15)
 ----------------------------
 - Improved parsing speed by factor 4 after first basic CPU profiling
