@@ -26,10 +26,10 @@ public class ActionTest extends AbstractTest {
             return i != null ? i * 2 : null;
         }
 
-        public ActionResult addOne() {
+        public boolean addOne() {
             Integer i = (Integer) getContext().getNodeValue();
             getContext().setNodeValue(i + 1);
-            return ActionResult.CONTINUE;
+            return true;
         }
     }
 
@@ -43,7 +43,7 @@ public class ActionTest extends AbstractTest {
                     SET(actions.timesTwo(CONVERT_TO_INTEGER(LAST_TEXT()))),
                     actions.addOne(),
                     new Action() {
-                        public ActionResult run() {
+                        public boolean run() {
                             return actions.addOne();
                         }
                     }

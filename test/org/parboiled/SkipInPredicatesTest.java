@@ -16,7 +16,6 @@
 
 package org.parboiled;
 
-import org.parboiled.support.SkipInPredicates;
 import org.parboiled.test.AbstractTest;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
@@ -26,15 +25,14 @@ public class SkipInPredicatesTest extends AbstractTest {
     public static class ActionTestActions extends BaseActions<Object> {
         public int count = 0;
 
-        @SkipInPredicates
-        public ActionResult count1() {
+        public boolean count1() {
             count++;
-            return ActionResult.CONTINUE;
+            return true;
         }
 
-        public ActionResult count2() {
+        public boolean count2() {
             count++;
-            return ActionResult.CONTINUE;
+            return true;
         }
     }
 

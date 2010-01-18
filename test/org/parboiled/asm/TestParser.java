@@ -16,18 +16,17 @@
 
 package org.parboiled.asm;
 
-import org.parboiled.ActionResult;
 import org.parboiled.Rule;
 import org.parboiled.examples.calculator3.CalculatorParser;
 
 @SuppressWarnings({"UnusedDeclaration"})
 class TestActions {
-    public ActionResult action1() {
-        return ActionResult.CONTINUE;
+    public boolean action1() {
+        return true;
     }
 
-    public ActionResult action2(char c) {
-        return ActionResult.CONTINUE;
+    public boolean action2(char c) {
+        return true;
     }
 }
 

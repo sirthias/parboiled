@@ -33,19 +33,17 @@ public class InstructionGraphNode implements Value {
     public final boolean isAction;
     public final boolean isMagicUp;
     public final boolean isMagicDown;
-    public final boolean isMagicSkipInPredicates;
     public final boolean isCallOnContextAware;
 
     public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex, BasicValue resultValue,
                                 List<Value> predecessors, boolean isAction, boolean magicUp, boolean magicDown,
-                                boolean magicSkipInPredicates, boolean callOnContextAware) {
+                                boolean callOnContextAware) {
         this.instruction = instruction;
         this.instructionIndex = instructionIndex;
         this.basicValue = resultValue;
         this.isAction = isAction;
         isMagicUp = magicUp;
         isMagicDown = magicDown;
-        isMagicSkipInPredicates = magicSkipInPredicates;
         isCallOnContextAware = callOnContextAware;
         this.predecessors.addAll(predecessors);
     }
@@ -55,7 +53,7 @@ public class InstructionGraphNode implements Value {
     }
 
     public boolean isMagicWrapper() {
-        return isMagicUp || isMagicDown || isMagicSkipInPredicates;
+        return isMagicUp || isMagicDown;
     }
 
     @Override

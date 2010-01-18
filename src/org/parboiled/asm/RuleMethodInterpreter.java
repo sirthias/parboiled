@@ -38,8 +38,6 @@ class RuleMethodInterpreter extends BasicInterpreter {
 
     private static final String UP_DOWN_DESCRIPTOR =
             Type.getMethodDescriptor(Types.OBJECT_TYPE, new Type[] {Types.OBJECT_TYPE});
-    private static final String SKIP_IN_PREDICATES_DESCRIPTOR =
-            Type.getMethodDescriptor(Types.ACTION_RESULT_TYPE, new Type[] {Types.ACTION_RESULT_TYPE});
 
     private final ParserClassNode classNode;
     private final RuleMethodInfo methodInfo;
@@ -132,10 +130,9 @@ class RuleMethodInterpreter extends BasicInterpreter {
                 index,
                 resultBasicValue,
                 Arrays.asList(prevNodes),
-                resultBasicValue != null && Types.ACTION_RESULT_TYPE.equals(resultBasicValue.getType()),
+                resultBasicValue != null && Type.BOOLEAN_TYPE.equals(resultBasicValue.getType()),
                 isOwnerMethod(insn, "UP", UP_DOWN_DESCRIPTOR),
                 isOwnerMethod(insn, "DOWN", UP_DOWN_DESCRIPTOR),
-                isOwnerMethod(insn, "skipInPredicates", SKIP_IN_PREDICATES_DESCRIPTOR),
                 isCallOnContextAware(insn));
         methodInfo.instructionGraphNodes[index] = node;
         return node;

@@ -16,20 +16,19 @@
 
 package org.parboiled.examples.calculator;
 
-import org.parboiled.ActionResult;
 import org.parboiled.BaseActions;
 
 import java.util.List;
 
 public class CalculatorActions extends BaseActions<Integer> {
 
-    public ActionResult compute(Integer firstValue, List<Character> operators, List<Integer> values) {
+    public boolean compute(Integer firstValue, List<Character> operators, List<Integer> values) {
         int value = firstValue != null ? firstValue : 0;
         for (int i = 0; i < operators.size(); i++) {
             value = performOperation(value, operators.get(i), values.get(i));
         }
         getContext().setNodeValue(value);
-        return ActionResult.CONTINUE;
+        return true;
     }
 
     private int performOperation(int value1, Character operator, Integer value2) {

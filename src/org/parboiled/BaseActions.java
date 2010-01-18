@@ -16,7 +16,6 @@
 
 package org.parboiled;
 
-import org.parboiled.common.Utils;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
 
@@ -46,16 +45,6 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      */
     public void setContext(Context<V> context) {
         this.context = context;
-    }
-
-    /**
-     * Converts the given boolean value to an ActionResult, where <b>true</b> corresponds to ActionResult.CONTINUE.
-     *
-     * @param value the value to convert
-     * @return ActionResult.CONTINUE for true, ActionResult.CANCEL_MATCH for false
-     */
-    public ActionResult toActionResult(boolean value) {
-        return value ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
     }
 
     /**
@@ -308,7 +297,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @return a new rule
      */
-    public ActionResult SET() {
+    public boolean SET() {
         return SET(LAST_VALUE());
     }
 
@@ -319,65 +308,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param value the value to set
      * @return a new rule
      */
-    public ActionResult SET(V value) {
+    public boolean SET(V value) {
         context.setNodeValue(value);
-        return ActionResult.CONTINUE;
-    }
-
-    /**
-     * Creates a special predicate that evaluates to true if the two arguments evaluate to objects that are equal,
-     * or more correctly if the following expression evaluates to true:
-     * <code>a == b || (a != null && a.equals(b))</code>.
-     *
-     * @param a the first parameter
-     * @param b the second parameter
-     * @return a new rule
-     */
-    public ActionResult EQUALS(Object a, Object b) {
-        return toActionResult(Utils.equals(a, b));
-    }
-
-    /**
-     * Creates a wrapper for an action call that negates the result of the inner action,
-     * i.e. flips {@link ActionResult#CONTINUE} to {@link ActionResult#CANCEL_MATCH} and vice versa.
-     *
-     * @param inner the inner action result to negate
-     * @return a new rule
-     */
-    public ActionResult NOT(ActionResult inner) {
-        return inner == ActionResult.CANCEL_MATCH ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
-    }
-
-    /**
-     * Creates a wrapper for a number action calls that only returns {@link ActionResult#CONTINUE} if all sub actions
-     * do not return {@link ActionResult#CANCEL_MATCH}.
-     *
-     * @param firstSubAction the first sub action
-     * @param other          the other sub actions
-     * @return a new rule
-     */
-    public ActionResult AND(ActionResult firstSubAction, ActionResult... other) {
-        if (firstSubAction == ActionResult.CANCEL_MATCH) return ActionResult.CANCEL_MATCH;
-        for (ActionResult result : other) {
-            if (result == ActionResult.CANCEL_MATCH) return ActionResult.CANCEL_MATCH;
-        }
-        return ActionResult.CONTINUE;
-    }
-
-    /**
-     * Creates a wrapper for a number action calls that return {@link ActionResult#CONTINUE} as soon as the first
-     * sub action return anything but {@link ActionResult#CANCEL_MATCH}.
-     *
-     * @param firstSubAction the first sub action
-     * @param other          the other sub actions
-     * @return a new rule
-     */
-    public ActionResult OR(ActionResult firstSubAction, ActionResult... other) {
-        if (firstSubAction == ActionResult.CONTINUE) return ActionResult.CONTINUE;
-        for (ActionResult result : other) {
-            if (result == ActionResult.CONTINUE) return ActionResult.CONTINUE;
-        }
-        return ActionResult.CANCEL_MATCH;
+        return true;
     }
 
     /**

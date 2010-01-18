@@ -76,7 +76,7 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
     }
 
     private void generateRunMethod(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", ACTION_RESULT_TYPE.getInternalName(), null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", Type.BOOLEAN_TYPE.getInternalName(), null, null);
         mv.visitCode();
 
         Label l0 = new Label();
@@ -106,7 +106,6 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
 
             if (changeThisToInnerClassParent(newInstructions, insn)) continue;
             if (insertMagicUpDownCode(newInstructions, node)) continue;
-            if (insertMagicSkipInPredicatesCode(newInstructions, node)) continue;
             insertSetContextCallBeforeCallsOnContextAware(newInstructions, node);
         }
 
@@ -126,12 +125,6 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
 
     private boolean insertMagicUpDownCode(InsnList newInstructions, InstructionGraphNode node) {
         if (!node.isMagicUp || !node.isMagicDown) return false;
-
-        return true;
-    }
-
-    private boolean insertMagicSkipInPredicatesCode(InsnList newInstructions, InstructionGraphNode node) {
-        if (node.isMagicSkipInPredicates) return false;
 
         return true;
     }

@@ -28,11 +28,11 @@ public class IndentDedentTest extends AbstractTest {
         public int indents;
         public int dedents;
 
-        public ActionResult countIndentOrDedent(String lineStartWhiteSpace) {
+        public boolean countIndentOrDedent(String lineStartWhiteSpace) {
             if (lineStartWhiteSpace.length() > currentIndent) indents++;
             if (lineStartWhiteSpace.length() < currentIndent) dedents++;
             currentIndent = lineStartWhiteSpace.length();
-            return ActionResult.CONTINUE;
+            return true;
         }
     }
 

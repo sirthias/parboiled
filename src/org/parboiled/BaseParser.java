@@ -265,24 +265,13 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     ///************************* "MAGIC" METHODS ***************************///
 
     /**
-	 * Skips the enclosed action if executed within a parser predicate.
-	 *
-	 * @param action
-	 *            the action to skip
-	 * @return the result of the action if not skipped else {@link ActionResult#CONTINUE}
-	 */
-	public final ActionResult skipInPredicates(ActionResult action) {
-		return action;
-	}
-
-    /**
      * Changes the context scope of all arguments to the current parent scope.
      *
      * @param argument the arguments to change to context for
      * @return the result of the argument
      */
     public final <T> T UP(T argument) {
-        return argument;
+        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
     }
 
     /**
@@ -294,7 +283,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the argument
      */
     public final <T> T DOWN(T argument) {
-        return argument;
+        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
     }
 
     ///************************* HELPER METHODS ***************************///

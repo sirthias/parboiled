@@ -38,9 +38,9 @@ public class UtilsTest {
         assertEquals(getTypeArguments(ArrayList.class, new ArrayList<String>() {
         }.getClass()), ImmutableList.of(String.class));
 
-        assertEquals(getTypeArguments(Converter.class, new Converter<Integer>() {
-            public Integer parse(String string) {
-                return null;
+        assertEquals(getTypeArguments(Predicate.class, new Predicate<Integer>() {
+            public boolean apply(Integer i) {
+                return true;
             }
         }.getClass()), ImmutableList.of(Integer.class));
 

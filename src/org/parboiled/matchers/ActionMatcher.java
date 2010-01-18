@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
-import org.parboiled.ActionResult;
 import org.parboiled.ContextAware;
 import org.parboiled.MatcherContext;
 import org.parboiled.exceptions.ActionException;
@@ -47,7 +46,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
             contextAwareAction.setContext(context);
         }
         try {
-            return action.run() != ActionResult.CANCEL_MATCH;
+            return action.run();
         } catch (ActionException e) {
             context.addError(e.getMessage());
             return false;

@@ -23,7 +23,6 @@ interface Types {
 
     final Type OBJECT_TYPE = Type.getType(Object.class);
     final Type RULE_TYPE = Type.getType(Rule.class);
-    final Type ACTION_RESULT_TYPE = Type.getType(ActionResult.class);
     final Type CONTEXT_AWARE_TYPE = Type.getType(ContextAware.class);
     final Type CONTEXT_TYPE = Type.getType(Context.class);
     final Type ACTION_WRAPPER_BASE_TYPE = Type.getType(ActionWrapperBase.class);

@@ -26,6 +26,6 @@ public interface Action {
      *
      * @return the ActionResult
      */
-    ActionResult run();
+    boolean run();
 
 }

@@ -26,7 +26,7 @@ public class NextCharTest extends AbstractTest {
     public static class NextCharTestParser extends BaseParser<Object> {
 
         public Rule clause() {
-            return sequence(EQUALS(NEXT_CHAR(), 'a'), any(), eoi());
+            return sequence(NEXT_CHAR() == 'a', any(), eoi());
         }
 
     }

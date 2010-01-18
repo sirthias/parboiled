@@ -17,7 +17,6 @@
 package org.parboiled.asm;
 
 import org.parboiled.AbstractAction;
-import org.parboiled.ActionResult;
 import org.parboiled.BaseParser;
 import org.objectweb.asm.util.ASMifierClassVisitor;
 
@@ -27,7 +26,7 @@ public class ASMifierHelper extends BaseParser<String> {
 
     public class ActionWrapper extends AbstractAction<String> {
 
-        public ActionResult run() {
+        public boolean run() {
             return SET(action.toString());
         }
 
