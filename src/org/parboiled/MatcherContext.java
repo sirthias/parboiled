@@ -21,11 +21,10 @@ import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
-import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 import static org.parboiled.support.ParseTreeUtils.findNode;
+import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -120,7 +119,7 @@ public class MatcherContext<V> implements Context<V> {
 
     @NotNull
     public List<ParseError> getParseErrors() {
-        return Collections.unmodifiableList(invariables.parseErrors);
+        return invariables.parseErrors;
     }
 
     @NotNull
