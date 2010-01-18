@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.exceptions;
 
-public class ParsingException extends Exception {
+/**
+ * Exception thrown by parboiled if a problem with the integrity of the grammar rules has been detected.
+ */
+public class GrammarException extends RuntimeException {
 
-    public ParsingException() {
+    public GrammarException() {
     }
 
-    public ParsingException(String message) {
+    public GrammarException(String message) {
         super(message);
     }
 
-    public ParsingException(String message, Throwable cause) {
+    public GrammarException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ParsingException(Throwable cause) {
+    public GrammarException(Throwable cause, String message, Object... messageArgs) {
+        super(String.format(message, messageArgs), cause);
+    }
+
+    public GrammarException(Throwable cause) {
         super(cause);
     }
 

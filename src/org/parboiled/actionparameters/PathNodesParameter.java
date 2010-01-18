@@ -36,7 +36,7 @@ public class PathNodesParameter implements ActionParameter{
     }
 
     @SuppressWarnings({"unchecked"})
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         List<? extends Node<?>> subNodes = context.getSubNodes();
         String path = ActionParameterUtils.resolve(this.path, context, String.class);
         return ParseTreeUtils.collectNodesByPath((List<Node<Object>>) subNodes, path, new ArrayList());

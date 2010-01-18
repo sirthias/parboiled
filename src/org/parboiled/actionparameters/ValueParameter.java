@@ -31,7 +31,7 @@ public class ValueParameter implements ActionParameter{
         this.node = node;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         Node node = ActionParameterUtils.resolve(this.node, context, Node.class);
         return node == null ? null : node.getValue();
     }

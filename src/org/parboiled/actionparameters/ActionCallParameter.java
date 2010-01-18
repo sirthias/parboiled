@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.Actions;
 import org.parboiled.MatcherContext;
 import org.parboiled.ActionResult;
+import org.parboiled.exceptions.ActionException;
 import org.parboiled.common.StringUtils;
-import org.parboiled.support.ParsingException;
 import org.parboiled.support.SkipInPredicates;
 
 import java.lang.reflect.Method;
@@ -49,17 +49,15 @@ public class ActionCallParameter implements ActionParameter {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         try {
             if (skipInPredicates && context.inPredicate()) return ActionResult.CONTINUE;
             actionsObject.setContext(context);
             Object[] resolvedArgs = ActionParameterUtils.resolve(args, context, parameterTypes);
             return proxy.invokeSuper(actionsObject, resolvedArgs);
-        } catch (ParsingException pex) {
-            context.addError(pex.getMessage());
+        } catch (ActionException e) {
+            context.addError(e.getMessage());
             return null;
-        } catch (Throwable e) {
-            throw new RuntimeException("Error during execution of " + context.getPath(), e);
         }
     }
 

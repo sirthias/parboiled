@@ -16,10 +16,8 @@
 
 package org.parboiled;
 
-import org.parboiled.support.ParsingException;
-
 public interface Action {
 
-    ActionResult run() throws ParsingException;
+    ActionResult run();
 
 }

@@ -21,7 +21,7 @@ import org.parboiled.Action;
 import org.parboiled.ActionResult;
 import org.parboiled.Actions;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.ParsingException;
+import org.parboiled.exceptions.ActionException;
 import org.parboiled.support.SkipInPredicates;
 
 /**
@@ -50,11 +50,9 @@ public class ActionObjectParameter implements ActionParameter {
             if (skipInPredicates && context.inPredicate()) return ActionResult.CONTINUE;
             if (actionsObject != null) actionsObject.setContext(context);
             return actionObject.run();
-        } catch (ParsingException pex) {
-            context.addError(pex.getMessage());
+        } catch (ActionException e) {
+            context.addError(e.getMessage());
             return null;
-        } catch (Throwable e) {
-            throw new RuntimeException("Error during execution of " + context.getPath(), e);
         }
     }
 

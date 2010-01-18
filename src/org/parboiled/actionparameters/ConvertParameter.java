@@ -35,7 +35,7 @@ public class ConvertParameter implements ActionParameter {
         this.converter = converter;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         Converter resolvedConverter = ActionParameterUtils.resolve(converter, context, Converter.class);
         Preconditions.checkNotNull(resolvedConverter);
         return resolvedConverter.parse(ActionParameterUtils.resolve(argument, context, String.class));

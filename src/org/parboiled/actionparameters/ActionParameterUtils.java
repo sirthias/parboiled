@@ -68,9 +68,10 @@ public class ActionParameterUtils {
      * @param context               the context in which to resolve all ActionParameters
      * @param expectedArgumentTypes the types the arguments are expected to be compatible to
      * @return a new Object array with all ActionParameters resolved
+     * @throws Throwable the throwable
      */
     public static Object[] resolve(@NotNull Object[] arguments, @NotNull MatcherContext<?> context,
-                                   @NotNull Class<?>[] expectedArgumentTypes) {
+                                   @NotNull Class<?>[] expectedArgumentTypes) throws Throwable {
         Object[] args = new Object[arguments.length];
         for (int i = 0; i < arguments.length; i++) {
             args[i] = resolve(arguments[i], context, expectedArgumentTypes[i]);
@@ -86,9 +87,11 @@ public class ActionParameterUtils {
      * @param context      the context in which to resolve a potential ActionParameter
      * @param expectedType the type the argument is expected to resolve to or null, if no check is required
      * @return the resolved Object
+     * @throws Throwable the throwable
      */
     @SuppressWarnings({"unchecked"})
-    public static <T> T resolve(Object argument, @NotNull MatcherContext<?> context, Class<T> expectedType) {
+    public static <T> T resolve(Object argument, @NotNull MatcherContext<?> context, Class<T> expectedType)
+            throws Throwable {
         Object arg = argument instanceof ActionParameter ? ((ActionParameter) argument).resolve(context) : argument;
         Preconditions
                 .checkArgument(arg == null || expectedType == null || expectedType.isAssignableFrom(arg.getClass()));

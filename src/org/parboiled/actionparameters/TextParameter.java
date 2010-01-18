@@ -30,7 +30,7 @@ public class TextParameter implements ActionParameter {
         this.node = node;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         return context.getNodeText(ActionParameterUtils.resolve(node, context, Node.class));
     }
 

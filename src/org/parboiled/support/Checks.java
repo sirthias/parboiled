@@ -16,6 +16,8 @@
 
 package org.parboiled.support;
 
+import org.parboiled.exceptions.GrammarException;
+
 public class Checks {
 
     private Checks() {}
@@ -33,11 +35,11 @@ public class Checks {
     }
 
     public static void fail(String errorMessage) {
-        throw new ParserConstructionException(errorMessage);
+        throw new GrammarException(errorMessage);
     }
 
     public static void fail(String errorMessageFormat, Object... errorMessageArgs) {
-        throw new ParserConstructionException(String.format(errorMessageFormat, errorMessageArgs));
+        throw new GrammarException(String.format(errorMessageFormat, errorMessageArgs));
     }
 
 }

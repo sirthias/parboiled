@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.exceptions;
 
-public class ParserConstructionException extends RuntimeException {
+/**
+ * Exception that can be thrown by parser actions to signal that an error has occurred that is to be collected
+ * in the ParseErrors for the parsing run. Throwing an ActionException does not stop the parsing process.
+ */
+public class ActionException extends RuntimeException {
 
-    public ParserConstructionException() {
+    public ActionException() {
     }
 
-    public ParserConstructionException(String message) {
+    public ActionException(String message) {
         super(message);
     }
 
-    public ParserConstructionException(String message, Throwable cause) {
+    public ActionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ParserConstructionException(Throwable cause) {
+    public ActionException(Throwable cause, String message, Object... messageArgs) {
+        super(String.format(message, messageArgs), cause);
+    }
+
+    public ActionException(Throwable cause) {
         super(cause);
     }
 

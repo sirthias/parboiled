@@ -35,7 +35,7 @@ public class ValuesParameter implements ActionParameter {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         List values = new ArrayList();
         for (Object node : ActionParameterUtils.resolve(nodes, context, List.class)) {
             Preconditions.checkArgument(node instanceof Node);

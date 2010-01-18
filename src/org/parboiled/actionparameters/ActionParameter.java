@@ -28,7 +28,8 @@ public interface ActionParameter {
      * Resolves this parameter in this given context.
      * @param context the context
      * @return the value of this parameter in the given context
+     * @throws Throwable the throwable
      */
-    Object resolve(@NotNull MatcherContext<?> context);
+    Object resolve(@NotNull MatcherContext<?> context) throws Throwable;
 
 }

@@ -21,7 +21,7 @@ import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.ParserConstructionException;
+import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -105,7 +105,8 @@ public class Parboiled {
             }
             return constructor;
         }
-        throw new ParserConstructionException("No constructor found for the given arguments");
+        throw new ParserRuntimeException("No constructor found for class %s and the given %s arguments", type,
+                args.length);
     }
 
 }

@@ -32,7 +32,7 @@ public class SetValueParameter implements ActionParameter {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         ((MatcherContext)context).setNodeValue(ActionParameterUtils.resolve(value, context, null));
         return ActionResult.CONTINUE;
     }

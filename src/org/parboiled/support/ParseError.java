@@ -94,5 +94,10 @@ public class ParseError {
         return sb.toString();
     }
 
+    public static ParseError create(Context context, Node<?> node, String errorMessage) {
+        return new ParseError(context, context.getStartLocation(), context.getCurrentLocation(),
+                context.getMatcher(), node, errorMessage);
+    }
+
 }
 

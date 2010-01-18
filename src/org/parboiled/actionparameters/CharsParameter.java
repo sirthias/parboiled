@@ -35,7 +35,7 @@ public class CharsParameter implements ActionParameter {
         this.nodes = nodes;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         List<Character> values = new ArrayList<Character>();
         for (Object node : ActionParameterUtils.resolve(nodes, context, List.class)) {
             Preconditions.checkArgument(node instanceof Node);

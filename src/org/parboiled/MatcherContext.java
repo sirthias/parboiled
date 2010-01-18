@@ -23,6 +23,7 @@ import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNode;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
+import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
  * <p>The parsing process works as following:</br>
  * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
  * created a root MatcherContext is instantiated for the root rule (Matcher).
- * A subsequent call to {@link #runMatcher(boolean)} starts the parsing process.</p>
+ * A subsequent call to {@link #runMatcher(Matcher, boolean)} starts the parsing process.</p>
  * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext, boolean)} passing itself to the Matcher
  * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
  * {@link #runMatcher(org.parboiled.matchers.Matcher, boolean)} on its Context, which creates a sub context of the
@@ -137,7 +138,7 @@ public class MatcherContext<V> implements Context<V> {
 
     @NotNull
     public String getPath() {
-        return parent == null ? "" : parent.getPath() + '/' + matcher.getLabel();
+        return (parent == null ? "" : parent.getPath()) + '/' + matcher.getLabel();
     }
 
     public V getNodeValue() {
@@ -226,33 +227,60 @@ public class MatcherContext<V> implements Context<V> {
         subNodes.add(node);
     }
 
-    public boolean runMatcher(@NotNull Matcher<V> matcher, boolean enforced) {
-        if (matcher instanceof ActionMatcher) {
+    /**
+     * Runs the given matcher in a sub context (if matcher != null) or the matcher of this context directly on this
+     * context (matcher == null).
+     *
+     * @param matcher  the matcher to run or null, if the matcher of this context is to be run
+     * @param enforced true if enforced
+     * @return true if matched
+     */
+    public boolean runMatcher(Matcher<V> matcher, boolean enforced) {
+        MatcherContext<V> oldSubContext = null, runContext;
+        if (matcher != null) {
             // special case: ActionMatchers need no sub context and no error recovery
-            return matcher.match(this, enforced);
+            if (matcher instanceof ActionMatcher) {
+                try {
+                    return matcher.match(this, enforced);
+                } catch (Throwable e) {
+                    throw new ParserRuntimeException(e,
+                            "Error during execution of parsing action '%s/%s' at input position%s", getPath(), matcher,
+                            ParseError.createMessageSuffix(invariables.inputBuffer, currentLocation, currentLocation));
+                }
+            }
+
+            // we execute the given matcher in a new sub context and store this sub context instance as a field
+            // in rare cases (error recovery) we might be recursing back into ourselves
+            // so we need to save and restore it
+            oldSubContext = subContext;
+            runContext = subContext = createCopy(this, matcher);
+        } else {
+            runContext = this;
         }
 
-        // we execute the given matcher in a new sub context and store this sub context instance as a field
-        // in rare cases (error recovery) we might be recursing back into ourselves
-        // so we need to save and restore it
-        MatcherContext<V> oldSubContext = subContext;
-        subContext = createCopy(this, matcher);
-        boolean matched = subContext.runMatcher(enforced);
-        if (matched) {
-            setCurrentLocation(subContext.getCurrentLocation());
+        boolean matched;
+        try {
+            matched = runContext.matcher.match(runContext, enforced);
+            if (!matched && enforced) {
+                runContext.recover();
+                matched = true;
+            }
+        } catch (ParserRuntimeException e) {
+            throw e; // don't wrap, just bubble up
+        } catch (Throwable e) {
+            throw new ParserRuntimeException(e, "Error during execution of parsing rule '%s' at input position%s",
+                    getPath(), ParseError.createMessageSuffix(invariables.inputBuffer, runContext.currentLocation,
+                            runContext.currentLocation));
         }
-        subContext = oldSubContext;
-        return matched;
-    }
+        if (runContext.errorMessage != null) {
+            runContext.addParserError(ParseError.create(runContext, runContext.node, runContext.errorMessage));
+        }
 
-    public boolean runMatcher(boolean enforced) {
-        boolean matched = matcher.match(this, enforced);
-        if (!matched && enforced) {
-            recover();
-            matched = true;
-        }
-        if (errorMessage != null) {
-            addParserError(new ParseError(this, startLocation, currentLocation, matcher, node, errorMessage));
+        if (matcher != null) {
+            if (matched) {
+                setCurrentLocation(subContext.getCurrentLocation());
+            }
+            subContext = oldSubContext;
         }
         return matched;
     }

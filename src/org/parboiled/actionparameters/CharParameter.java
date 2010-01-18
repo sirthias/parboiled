@@ -32,7 +32,7 @@ public class CharParameter implements ActionParameter {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         return context.getNodeChar(ActionParameterUtils.resolve(node, context, Node.class));
     }
 

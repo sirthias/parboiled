@@ -29,7 +29,7 @@ public class PathNodeParameter implements ActionParameter {
         this.path = path;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         return context.getNodeByPath(ActionParameterUtils.resolve(path, context, String.class));
     }
 

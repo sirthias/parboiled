@@ -30,7 +30,7 @@ public class NotParameter implements ActionParameter {
         this.argument = argument;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         return ActionParameterUtils.resolve(argument, context, ActionResult.class) == ActionResult.CANCEL_MATCH ?
                 ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;
     }

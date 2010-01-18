@@ -38,7 +38,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> implements ActionResult
         return "run " + action;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) throws Throwable {
         Object result = action.resolve(context);
         Preconditions.checkArgument(result instanceof ActionResult, "Action does not evaluate to ActionResult");
         return result != ActionResult.CANCEL_MATCH;

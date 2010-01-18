@@ -35,7 +35,7 @@ public class EqualsParameter implements ActionParameter {
         this.b = b;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         Object resolvedA = ActionParameterUtils.resolve(a, context, null);
         Object resolvedB = ActionParameterUtils.resolve(b, context, null);
         return Utils.equals(resolvedA, resolvedB) ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH;

@@ -33,7 +33,7 @@ public class OrParameter implements ActionParameter {
         this.arguments = arguments;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         for (Object argument : arguments) {
             if (ActionParameterUtils.resolve(argument, context, ActionResult.class) != ActionResult.CANCEL_MATCH) {
                 return ActionResult.CONTINUE;

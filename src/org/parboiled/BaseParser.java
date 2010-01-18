@@ -25,6 +25,7 @@ import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameter
 import org.parboiled.common.Converter;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
+import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
@@ -86,7 +87,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
                 return;
             }
         }
-        Checks.fail("Illegal Actions instance, please use Parboiled.createActions(...) " +
+        throw new ParserRuntimeException("Illegal Actions instance, please use Parboiled.createActions(...) " +
                 "for creating your parser actions object");
     }
 
@@ -101,8 +102,10 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        Checks.ensure(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor,
-                "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
+        if (!(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor)) {
+            throw new ParserRuntimeException("Illegal parser instance, " +
+                    "please use Parboiled.createParser(...) for creating this parser");
+        }
 
         // prepare
         InputBuffer inputBuffer = new InputBuffer(input);
@@ -121,7 +124,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         }
 
         // run the actual matcher tree
-        context.runMatcher(true);
+        context.runMatcher(null, true);
 
         return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer);
     }
@@ -846,7 +849,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         rule = fromUserObject(obj);
         if (rule != null) return cache(obj, rule);
 
-        throw new ParserConstructionException("\'" + obj + "\' is not a valid Rule or parser action");
+        throw new ParserRuntimeException("\'" + obj + "\' is not a valid Rule or parser action");
     }
 
     /**

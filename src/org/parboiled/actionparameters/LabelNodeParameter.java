@@ -29,7 +29,7 @@ public class LabelNodeParameter implements ActionParameter {
         this.labelPrefix = labelPrefix;
     }
 
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         return context.getNodeByLabel(ActionParameterUtils.resolve(labelPrefix, context, String.class));
     }
 

@@ -37,7 +37,7 @@ public class LabelNodesParameter implements ActionParameter {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Object resolve(@NotNull MatcherContext<?> context) {
+    public Object resolve(@NotNull MatcherContext<?> context) throws Throwable {
         List<? extends Node<?>> subNodes = context.getSubNodes();
         String labelPrefix = ActionParameterUtils.resolve(this.labelPrefix, context, String.class);
         return ParseTreeUtils.collectNodes((List<Node<Object>>) subNodes,

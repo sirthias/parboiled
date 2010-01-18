@@ -43,8 +43,9 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      * @param context  the MatcherContext
      * @param enforced whether this match is required to succeed
      * @return true if the match was successful
+     * @throws Throwable the throwable
      */
-    boolean match(@NotNull MatcherContext<V> context, boolean enforced);
+    boolean match(@NotNull MatcherContext<V> context, boolean enforced) throws Throwable;
 
     /**
      * @return all characters that this matcher can legally start a match with. Contains Chars.EMPTY if the
