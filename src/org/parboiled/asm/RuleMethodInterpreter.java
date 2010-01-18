@@ -25,10 +25,9 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
+import org.parboiled.ContextAware;
 import org.parboiled.common.Preconditions;
 import org.parboiled.support.Checks;
-import org.parboiled.ContextAware;
-import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,9 +89,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public Value merge(Value v, Value w) {
-        // merges are only performed in case of multiple execution paths
-        throw new ParserRuntimeException("Method '" + methodInfo.method.name +
-                "' contains conditional expressions, which are not valid in rule definitions");
+        return v;
     }
 
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
@@ -130,9 +127,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
                 index,
                 resultBasicValue,
                 Arrays.asList(prevNodes),
-                resultBasicValue != null && Type.BOOLEAN_TYPE.equals(resultBasicValue.getType()),
-                isOwnerMethod(insn, "UP", UP_DOWN_DESCRIPTOR),
-                isOwnerMethod(insn, "DOWN", UP_DOWN_DESCRIPTOR),
+                resultBasicValue != null && Types.BOOLEAN_TYPE.equals(resultBasicValue.getType()),
+                isContextSwitch(insn),
                 isCallOnContextAware(insn));
         methodInfo.instructionGraphNodes[index] = node;
         return node;
@@ -160,10 +156,11 @@ class RuleMethodInterpreter extends BasicInterpreter {
         return false;
     }
 
-    private boolean isOwnerMethod(AbstractInsnNode insn, String methodName, String methodDesc) {
+    private boolean isContextSwitch(AbstractInsnNode insn) {
         if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
             MethodInsnNode mi = (MethodInsnNode) insn;
-            return methodName.equals(mi.name) && methodDesc.equals(mi.desc) && isOwnerMethod(mi);
+            return ("UP".equals(mi.name) || "DOWN".equals(mi.name)) &&
+                    UP_DOWN_DESCRIPTOR.equals(mi.desc) && isOwnerMethod(mi);
         }
         return false;
     }

@@ -20,14 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
-import org.objectweb.asm.tree.analysis.Value;
-import org.parboiled.common.DisjointIndexSet;
-import org.parboiled.common.Preconditions;
 import org.parboiled.support.Checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class RuleMethodAnalyzer {
 
@@ -38,16 +34,11 @@ public class RuleMethodAnalyzer {
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<RuleMethodInfo> analyzeRuleMethods() throws AnalyzerException {
+    public List<RuleMethodInfo> constructRuleMethodInstructionGraphs() throws AnalyzerException {
         List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>(classNode.methods.size());
         for (MethodNode method : (List<MethodNode>) classNode.methods) {
             RuleMethodInfo methodInfo = analyzeRuleMethod(method);
             methodInfos.add(methodInfo);
-
-            if (hasActions(methodInfo)) {
-                List<InstructionSubSet> subSets = partitionInstructionGraph(methodInfo);
-                methodInfo.setInstructionSubSets(subSets);
-            }
         }
         return methodInfos;
     }
@@ -69,58 +60,6 @@ public class RuleMethodAnalyzer {
         interpreter.finish();
 
         return methodInfo;
-    }
-
-    private boolean hasActions(RuleMethodInfo methodInfo) {
-        for (InstructionGraphNode node : methodInfo.instructionGraphNodes) {
-            if (node.isAction) return true;
-        }
-        return false;
-    }
-
-    private List<InstructionSubSet> partitionInstructionGraph(@NotNull RuleMethodInfo methodInfo) {
-        InstructionGraphNode[] graphNodes = methodInfo.instructionGraphNodes;
-        DisjointIndexSet indexSet = new DisjointIndexSet(graphNodes.length);
-        boolean[] actionMarkers = new boolean[graphNodes.length];
-
-        for (int i = graphNodes.length - 1; i >= 0; i--) {
-            InstructionGraphNode node = graphNodes[i];
-            for (Value predecessor : node.predecessors) {
-                if (predecessor instanceof InstructionGraphNode) {
-                    InstructionGraphNode pred = (InstructionGraphNode) predecessor;
-                    boolean nodeInActionPartition = node.isAction || node.isMagicWrapper() ||
-                            actionMarkers[indexSet.getRepresentative(node.instructionIndex)];
-                    boolean predInActionPartition = pred.isAction || pred.isMagicWrapper() ||
-                            actionMarkers[indexSet.getRepresentative(pred.instructionIndex)];
-
-                    // do not join on edges pointing from non-action partitions to action predecessors
-                    if (!nodeInActionPartition && predInActionPartition) {
-                        continue;
-                    }
-
-                    int newRep = indexSet.merge(node.instructionIndex, pred.instructionIndex);
-                    actionMarkers[newRep] = nodeInActionPartition || predInActionPartition;
-                }
-            }
-        }
-
-        List<InstructionSubSet> instructionSubSets = new ArrayList<InstructionSubSet>();
-        for (Map.Entry<Integer, int[]> entry : indexSet.getSubSets().entrySet()) {
-            int[] instructions = entry.getValue();
-            InstructionSubSet subSet = new InstructionSubSet(
-                    actionMarkers[entry.getKey()],
-                    instructions[0],
-                    instructions[instructions.length - 1]
-            );
-
-            // all instructions in an action subset have to form a continuous block,
-            // i.e. there must not be any indices missing
-            Preconditions.checkState(!subSet.isActionSet ||
-                    subSet.lastIndex - subSet.firstIndex == instructions.length - 1);
-
-            instructionSubSets.add(subSet);
-        }
-        return instructionSubSets;
     }
 
 }

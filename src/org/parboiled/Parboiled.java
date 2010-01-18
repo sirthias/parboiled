@@ -59,7 +59,9 @@ public class Parboiled {
 
         new ClassNodeInitializer(classNode).initialize();
 
-        List<RuleMethodInfo> methodInfos = new RuleMethodAnalyzer(classNode).analyzeRuleMethods();
+        List<RuleMethodInfo> methodInfos = new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs();
+
+        new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
 
         new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);
 

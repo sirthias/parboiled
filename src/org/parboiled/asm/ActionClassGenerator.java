@@ -124,7 +124,7 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
     }
 
     private boolean insertMagicUpDownCode(InsnList newInstructions, InstructionGraphNode node) {
-        if (!node.isMagicUp || !node.isMagicDown) return false;
+        if (!node.isContextSwitch) return false;
 
         return true;
     }

@@ -21,8 +21,8 @@ import org.parboiled.examples.calculator3.CalculatorParser;
 
 @SuppressWarnings({"UnusedDeclaration"})
 class TestActions {
-    public boolean action1() {
-        return true;
+    public int action1() {
+        return 5;
     }
 
     public boolean action2(char c) {
@@ -47,6 +47,20 @@ class TestParser extends CalculatorParser {
                 NEXT_CHAR() == 'y' ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH
         );
     }*/
+
+    public Rule intComparison() {
+        return sequence(
+                atom(),
+                testActions.action1() == 26
+        );
+    }
+
+    public Rule skipInPredicate() {
+        return sequence(
+                atom(),
+                IN_PREDICATE() || testActions.action2(LAST_CHAR())
+        );
+    }
 
     public Rule twoActionsRule() {
         return sequence(

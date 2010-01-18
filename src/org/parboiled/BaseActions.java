@@ -323,6 +323,22 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
+     * Returns true if the current rule is running somewhere underneath a test/testNot rule.
+     * Useful for example for making sure actions are not run inside of a predicate evaluation:
+     * <code>
+     * return sequence(
+     *     ...,
+     *     inPredicate() || actions.doSomething()
+     * );
+     * </code>
+     *
+     * @return true if in a predicate
+     */
+    public boolean IN_PREDICATE() {
+        return context.inPredicate();
+    }
+
+    /**
      * Creates an action parameter that converts the given text parameter to an Integer.
      *
      * @param text the text (parameter) to convert

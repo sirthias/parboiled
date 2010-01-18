@@ -174,5 +174,12 @@ public interface Context<V> {
      * @return the parse tree subnodes already created in the current context scope
      */
     List<Node<V>> getSubNodes();
+
+    /**
+     * Returns true if the current rule is running somewhere underneath a test/testNot rule.
+     *
+     * @return true if the current context has a parent which corresponds to a test/testNot rule
+     */
+    boolean inPredicate();
 }
 

@@ -175,6 +175,10 @@ public class MatcherContext<V> implements Context<V> {
     public List<Node<V>> getSubNodes() {
         return subNodes != null ? ImmutableList.copyOf(subNodes) : ImmutableList.<Node<V>>of();
     }
+    
+    public boolean inPredicate() {
+        return ProxyMatcher.unwrap(matcher) instanceof TestMatcher || parent != null && parent.inPredicate();
+    }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
@@ -298,10 +302,6 @@ public class MatcherContext<V> implements Context<V> {
             parent = parent.parent;
         }
         return chars.remove(Chars.EMPTY).add(Chars.EOI);
-    }
-
-    public boolean inPredicate() {
-        return ProxyMatcher.unwrap(matcher) instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////
