@@ -5,14 +5,11 @@
 package org.parboiled.examples.rpn;
 
 import org.parboiled.BaseParser;
-import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 
-public class RpnParser extends BaseParser<Node, RpnActions> {
+public class RpnParser extends BaseParser<Node> {
 
-    public RpnParser() {
-        super(Parboiled.createActions(RpnActions.class));
-    }
+    private final RpnActions actions = new RpnActions();
 
     public Rule operation() {
         return sequence(

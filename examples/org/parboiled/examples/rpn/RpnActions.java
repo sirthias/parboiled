@@ -4,6 +4,7 @@
 
 package org.parboiled.examples.rpn;
 
+import org.parboiled.AbstractAction;
 import org.parboiled.BaseActions;
 import org.parboiled.common.StringUtils;
 

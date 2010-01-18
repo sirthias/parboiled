@@ -17,14 +17,11 @@
 package org.parboiled.examples.time;
 
 import org.parboiled.BaseParser;
-import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 
-public class TimeParser extends BaseParser<Object, TimeActions> {
+public class TimeParser extends BaseParser<Object> {
 
-    public TimeParser() {
-        super(Parboiled.createActions(TimeActions.class));
-    }
+    private final TimeActions actions = new TimeActions();
 
     public Rule time() {
         return sequence(

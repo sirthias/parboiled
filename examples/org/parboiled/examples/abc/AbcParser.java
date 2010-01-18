@@ -16,7 +16,6 @@
 
 package org.parboiled.examples.abc;
 
-import org.parboiled.Actions;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
@@ -27,7 +26,7 @@ import org.parboiled.Rule;
  * B ← b B? c
  */
 @SuppressWarnings({"InfiniteRecursion"})
-public class AbcParser extends BaseParser<Object, Actions<Object>> {
+public class AbcParser extends BaseParser<Object> {
 
     public Rule S() {
         return sequence(

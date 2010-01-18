@@ -16,7 +16,8 @@
 
 package org.parboiled;
 
-import static org.parboiled.TestUtils.assertEqualsMultiline;
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import org.parboiled.test.AbstractTest;
 import org.parboiled.common.ToStringFormatter;
 import org.parboiled.matchers.Matcher;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
@@ -26,7 +27,7 @@ import org.testng.annotations.Test;
 
 public class LabelTest extends AbstractTest {
 
-    public static class LabellingParser extends BaseParser<Object, Actions<Object>> {
+    public static class LabellingParser extends BaseParser<Object> {
 
         public Rule aOpB() {
             return sequence(

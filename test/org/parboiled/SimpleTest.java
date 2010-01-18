@@ -17,10 +17,11 @@
 package org.parboiled;
 
 import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 
 public class SimpleTest extends AbstractTest {
 
-    public static class SimpleTestParser extends BaseParser<Object, Actions<Object>> {
+    public static class Parser extends BaseParser<Object> {
 
         public Rule clause() {
             return sequence(digit(), operator(), digit(), eoi());
@@ -38,7 +39,7 @@ public class SimpleTest extends AbstractTest {
 
     @Test
     public void test() {
-        SimpleTestParser parser = Parboiled.createParser(SimpleTestParser.class);
+        Parser parser = Parboiled.createParser(Parser.class);
         test(parser, parser.clause(), "1+5", "" +
                 "[clause] '1+5'\n" +
                 "    [digit] '1'\n" +

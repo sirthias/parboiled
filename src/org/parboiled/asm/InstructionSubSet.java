@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.asm;
 
-/**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
- */
-public interface Action {
+public class InstructionSubSet {
+    public final boolean isActionSet;
+    public final int firstIndex;
+    public final int lastIndex;
 
-    /**
-     * Runs the parser action.
-     *
-     * @return the ActionResult
-     */
-    ActionResult run();
+    public InstructionSubSet(boolean actionSet, int firstIndex, int lastIndex) {
+        isActionSet = actionSet;
+        this.firstIndex = firstIndex;
+        this.lastIndex = lastIndex;
+    }
+
+    public boolean containsInstruction(int index) {
+        return firstIndex <= index && index <= lastIndex;
+    }
 
 }

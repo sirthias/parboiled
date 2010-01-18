@@ -179,7 +179,7 @@ public final class StringUtils {
         if (array == null) return null;
         if (separator == null) separator = "";
 
-        // endIndex - startIndex > 0:   Len = NofStrings *(len(firstString) + len(separator))
+        // lastIndex - firstIndex > 0:   Len = NofStrings *(len(firstString) + len(separator))
         //           (Assuming that all Strings are roughly equally long)
         int bufSize = (endIndex - startIndex);
         if (bufSize <= 0) return "";

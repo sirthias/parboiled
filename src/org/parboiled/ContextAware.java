@@ -17,15 +17,20 @@
 package org.parboiled;
 
 /**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
+ * Interface that can be implemented by classes containing action methods (i.e. ones returning an ActionResult).
+ * If the object containing action methods implements this interface parboiled will use it to inform the
+ * object of the current context, immediately before an action call.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
-public interface Action {
+public interface ContextAware<V> {
 
     /**
-     * Runs the parser action.
+     * Called immediately before any parser action method invocation. Informs the object containing the
+     * action about the context to be used for the coming action call.
      *
-     * @return the ActionResult
+     * @param context the context
      */
-    ActionResult run();
+    void setContext(Context<V> context);
 
 }

@@ -17,10 +17,11 @@
 package org.parboiled;
 
 import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 
 public class SplitParserTest extends AbstractTest {
 
-    public static class Parser extends BaseParser<Object, Actions<Object>> {
+    public static class Parser extends BaseParser<Object> {
 
         private final Primitives primitives = Parboiled.createParser(Primitives.class);
 
@@ -34,7 +35,7 @@ public class SplitParserTest extends AbstractTest {
         }
     }
 
-    public static class Primitives extends BaseParser<Object, Actions<Object>> {
+    public static class Primitives extends BaseParser<Object> {
 
         public Rule operator() {
             return firstOf('+', '-');

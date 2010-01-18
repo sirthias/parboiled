@@ -18,6 +18,7 @@ package org.parboiled;
 
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 
 public class IndentDedentTest extends AbstractTest {
 
@@ -35,10 +36,9 @@ public class IndentDedentTest extends AbstractTest {
         }
     }
 
-    public static class IndentDedentParser extends BaseParser<Object, IndentDedentActions> {
-        public IndentDedentParser() {
-            super(Parboiled.createActions(IndentDedentActions.class));
-        }
+    public static class IndentDedentParser extends BaseParser<Object> {
+
+        private final IndentDedentActions actions = new IndentDedentActions();
 
         public Rule file() {
             return zeroOrMore(line());

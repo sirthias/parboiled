@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.asm;
 
-/**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
- */
-public interface Action {
+import org.objectweb.asm.Type;
+import org.parboiled.*;
 
-    /**
-     * Runs the parser action.
-     *
-     * @return the ActionResult
-     */
-    ActionResult run();
+interface Types {
+
+    final Type OBJECT_TYPE = Type.getType(Object.class);
+    final Type RULE_TYPE = Type.getType(Rule.class);
+    final Type ACTION_RESULT_TYPE = Type.getType(ActionResult.class);
+    final Type CONTEXT_AWARE_TYPE = Type.getType(ContextAware.class);
+    final Type CONTEXT_TYPE = Type.getType(Context.class);
+    final Type ACTION_WRAPPER_BASE_TYPE = Type.getType(ActionWrapperBase.class);
 
 }

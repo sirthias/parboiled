@@ -16,80 +16,28 @@
 
 package org.parboiled;
 
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.Factory;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.actionparameters.*;
-import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameter;
-import static org.parboiled.actionparameters.ActionParameterUtils.mixInParameters;
-import org.parboiled.common.Converter;
-import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
-import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
+import org.parboiled.exceptions.ParserRuntimeException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
  *
  * @param <V> The type of the value field of the parse tree nodes created by this parser.
- * @param <A> The type of the parser Actions you would like to use in your rules. If you don't need any parser
- * actions (e.g. for very simple examples) you can just use the Actions<Object> interface directly.
  */
-public abstract class BaseParser<V, A extends Actions<V>> {
+public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Cache of frequently used, bottom level rules. Per default used for character and string matching rules.
      */
     private final Map<Object, Rule> ruleCache = new HashMap<Object, Rule>();
-
-    /**
-     * Stack for action parameters. Used for creation of actual arguments to action methods.
-     */
-    final Stack<ActionParameter> actionParameters = new Stack<ActionParameter>();
-
-    /**
-     * The immutable reference to your parser actions.
-     */
-    public final A actions;
-
-    /**
-     * Constructs a new parser instance without parser actions.
-     */
-    protected BaseParser() {
-        this(null);
-    }
-
-    /**
-     * Constructs a new parser instance using the given actions instance. Note that if the actions instance is not null
-     * it must have been created with {@link Parboiled#createActions(Class, Object[])} )}.
-     *
-     * @param actions the parser actions (can be null)
-     */
-    @SuppressWarnings({"unchecked"})
-    protected BaseParser(A actions) {
-        this.actions = actions;
-        if (actions != null) {
-            verifyActionsObject();
-        }
-    }
-
-    private void verifyActionsObject() {
-        if (actions instanceof Factory) {
-            Callback actionsCallback = ((Factory) actions).getCallback(1);
-            if (actionsCallback instanceof ActionInterceptor) {
-                ActionInterceptor actionInterceptor = (ActionInterceptor) actionsCallback;
-                // signal to the ActionInterceptor that we are in the rule construction phase
-                // by informing it about the parser object instance
-                actionInterceptor.setParser(this);
-                return;
-            }
-        }
-        throw new ParserRuntimeException("Illegal Actions instance, please use Parboiled.createActions(...) " +
-                "for creating your parser actions object");
-    }
 
     /**
      * Runs the given parser rule against the given input string. Note that the rule must have been created by
@@ -102,10 +50,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        if (!(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor)) {
-            throw new ParserRuntimeException("Illegal parser instance, " +
-                    "please use Parboiled.createParser(...) for creating this parser");
-        }
+        //Checks.ensure(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor,
+        //        "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
 
         // prepare
         InputBuffer inputBuffer = new InputBuffer(input);
@@ -113,15 +59,6 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors);
-
-        // the matcher tree has already been built, usually immediately before the invocation of this method,
-        // we need to signal to the ActionInterceptor that rule construction is over and all further action
-        // calls should not continue to create ActionCallParameters but actually be "routed through" to the
-        // actual action method implementations
-        if (actions != null) {
-            ActionInterceptor actionInterceptor = (ActionInterceptor) ((Factory) actions).getCallback(1);
-            actionInterceptor.setParser(null);
-        }
 
         // run the actual matcher tree
         context.runMatcher(null, true);
@@ -325,7 +262,18 @@ public abstract class BaseParser<V, A extends Actions<V>> {
         return ch(Chars.EMPTY);
     }
 
-    ////////////////////////////////// ACTION PARAMETERS ///////////////////////////////////
+    ///************************* "MAGIC" METHODS ***************************///
+
+    /**
+	 * Skips the enclosed action if executed within a parser predicate.
+	 *
+	 * @param action
+	 *            the action to skip
+	 * @return the result of the action if not skipped else {@link ActionResult#CONTINUE}
+	 */
+	public final ActionResult skipInPredicates(ActionResult action) {
+		return action;
+	}
 
     /**
      * Changes the context scope of all arguments to the current parent scope.
@@ -333,9 +281,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param argument the arguments to change to context for
      * @return the result of the argument
      */
-    public <T> T UP(T argument) {
-        actionParameters.add(new UpParameter(mixInParameter(actionParameters, argument)));
-        return null;
+    public final <T> T UP(T argument) {
+        return argument;
     }
 
     /**
@@ -346,420 +293,8 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @param argument the arguments to change to context for
      * @return the result of the argument
      */
-    public <T> T DOWN(T argument) {
-        actionParameters.add(new DownParameter(mixInParameter(actionParameters, argument)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the first parse tree node found under the given prefix path.
-     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
-     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public Node<V> NODE(String path) {
-        actionParameters.add(new PathNodeParameter(mixInParameter(actionParameters, path)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of all parse tree nodes found under the given prefix path.
-     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
-     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public List<Node<V>> NODES(String path) {
-        actionParameters.add(new PathNodesParameter(mixInParameter(actionParameters, path)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the first parse tree node found with the given label prefix.
-     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
-     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
-     *
-     * @param labelPrefix the label prefix
-     * @return the action parameter
-     */
-    public Node<V> NODE_BY_LABEL(String labelPrefix) {
-        actionParameters.add(new LabelNodeParameter(mixInParameter(actionParameters, labelPrefix)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of all parse tree nodes found under the given prefix path.
-     * See {@link ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
-     * The path is relative to the current context scope, which can be changed with {@link #UP(Object)} or {@link #DOWN(Object)}.
-     *
-     * @param labelPrefix the label prefix
-     * @return the action parameter
-     */
-    public List<Node<V>> NODES_BY_LABEL(String labelPrefix) {
-        actionParameters.add(new LabelNodesParameter(mixInParameter(actionParameters, labelPrefix)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the last node created during this parsing run. This last node
-     * is independent of the current context scope, i.e. {@link #UP(Object)} or {@link #DOWN(Object)} have no influence
-     * on it.
-     *
-     * @return the action parameter
-     */
-    public Node<V> LAST_NODE() {
-        actionParameters.add(new LastNodeParameter());
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the tree value of the current context scope level, i.e.,
-     * if there is an explicitly set value it is returned. Otherwise the last non-null child value, or, if there
-     * is no such value, null.
-     *
-     * @return the action parameter
-     */
-    public V VALUE() {
-        actionParameters.add(new TreeValueParameter());
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the value of the given node.
-     *
-     * @param node the node the get the value from
-     * @return the action parameter
-     */
-    public V VALUE(Node<V> node) {
-        actionParameters.add(new ValueParameter(mixInParameter(actionParameters, node)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the value of the node found under the given prefix path.
-     * Equivalent to <code>VALUE(NODE(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public V VALUE(String path) {
-        return VALUE(NODE(path));
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of the values of all given nodes.
-     *
-     * @param nodes the nodes to get the values from
-     * @return the action parameter
-     */
-    public List<V> VALUES(List<Node<V>> nodes) {
-        actionParameters.add(new ValuesParameter(mixInParameter(actionParameters, nodes)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of the values of all nodes found under the given prefix path.
-     * Equivalent to <code>VALUES(NODES(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public List<V> VALUES(String path) {
-        return VALUES(NODES(path));
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the value of the last node created during this parsing run.
-     * Equivalent to <code>VALUE(LAST_NODE())</code>.
-     *
-     * @return the action parameter
-     */
-    public V LAST_VALUE() {
-        return VALUE(LAST_NODE());
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the input text matched by the given parse tree node.
-     *
-     * @param node the parse tree node
-     * @return the action parameter
-     */
-    public String TEXT(Node<V> node) {
-        actionParameters.add(new TextParameter(mixInParameter(actionParameters, node)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the input text matched by the node found under the given prefix path.
-     * Equivalent to <code>TEXT(NODE(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public String TEXT(String path) {
-        return TEXT(NODE(path));
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of the input texts matched by all given nodes.
-     *
-     * @param nodes the nodes
-     * @return the action parameter
-     */
-    public List<String> TEXTS(List<Node<V>> nodes) {
-        actionParameters.add(new TextsParameter(mixInParameter(actionParameters, nodes)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of the input texts matched by of all nodes found
-     * under the given prefix path.
-     * Equivalent to <code>TEXTS(NODES(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public List<String> TEXTS(String path) {
-        return TEXTS(NODES(path));
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
-     * Equivalent to <code>TEXT(LAST_NODE())</code>.
-     *
-     * @return the action parameter
-     */
-    public String LAST_TEXT() {
-        return TEXT(LAST_NODE());
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the first character of the input text matched by the given parse tree node.
-     *
-     * @param node the parse tree node
-     * @return the action parameter
-     */
-    public Character CHAR(Node<V> node) {
-        actionParameters.add(new CharParameter(mixInParameter(actionParameters, node)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the first character of the input text matched by the node found under the given prefix path.
-     * Equivalent to <code>CHAR(NODE(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public Character CHAR(String path) {
-        return CHAR(NODE(path));
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of the first characters of the input texts matched by all given nodes.
-     *
-     * @param nodes the nodes
-     * @return the action parameter
-     */
-    public List<Character> CHARS(List<Node<V>> nodes) {
-        actionParameters.add(new CharsParameter(mixInParameter(actionParameters, nodes)));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to a list of the first characters of the input texts matched by of all nodes found
-     * under the given prefix path.
-     * Equivalent to <code>CHARS(NODES(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the action parameter
-     */
-    public List<Character> CHARS(String path) {
-        return CHARS(NODES(path));
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
-     * Equivalent to <code>CHAR(LAST_NODE())</code>.
-     *
-     * @return the action parameter
-     */
-    public Character LAST_CHAR() {
-        return CHAR(LAST_NODE());
-    }
-
-    /**
-     * Creates a special action rule that sets the value of the parse tree node to be created for the current context
-     * scope to the value of the last node created during the current parsing run.
-     * Equivalent to <code>SET(LAST_VALUE())</code>.
-     *
-     * @return a new rule
-     */
-    public ActionResult SET() {
-        return SET(LAST_VALUE());
-    }
-
-    /**
-     * Creates a special action rule that sets the value of the parse tree node to be created for the current context
-     * scope to the given value.
-     *
-     * @param value the value to set
-     * @return a new rule
-     */
-    public ActionResult SET(V value) {
-        actionParameters.add(new SetValueParameter(mixInParameter(actionParameters, value)));
-        return null;
-    }
-
-    /**
-     * Creates a special predicate that evaluates to true if the two arguments evaluate to objects that are equal,
-     * or more correctly if the following expression evaluates to true:
-     * <code>a == b || (a != null && a.equals(b))</code>.
-     *
-     * @param a the first parameter
-     * @param b the second parameter
-     * @return a new rule
-     */
-    public ActionResult EQUALS(Object a, Object b) {
-        actionParameters.add(
-                new EqualsParameter(mixInParameter(actionParameters, a), mixInParameter(actionParameters, b))
-        );
-        return null;
-    }
-
-    /**
-     * Creates a wrapper for an action call that negates the result of the inner action,
-     * i.e. flips {@link ActionResult#CONTINUE} to {@link ActionResult#CANCEL_MATCH} and vice versa.
-     *
-     * @param inner the inner action result to negate
-     * @return a new rule
-     */
-    public ActionResult NOT(ActionResult inner) {
-        actionParameters.add(new NotParameter(mixInParameter(actionParameters, inner)));
-        return null;
-    }
-
-    /**
-     * Creates a wrapper for a number action calls that only returns {@link ActionResult#CONTINUE} if all sub actions
-     * do not return {@link ActionResult#CANCEL_MATCH}.
-     *
-     * @param firstSubAction the first sub action
-     * @param other          the other sub actions
-     * @return a new rule
-     */
-    public ActionResult AND(ActionResult firstSubAction, ActionResult... other) {
-        actionParameters
-                .add(new AndParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[]) other))));
-        return null;
-    }
-
-    /**
-     * Creates a wrapper for a number action calls that return {@link ActionResult#CONTINUE} as soon as the first
-     * sub action return anything but {@link ActionResult#CANCEL_MATCH}.
-     *
-     * @param firstSubAction the first sub action
-     * @param other          the other sub actions
-     * @return a new rule
-     */
-    public ActionResult OR(ActionResult firstSubAction, ActionResult... other) {
-        actionParameters
-                .add(new OrParameter(mixInParameters(actionParameters, arrayOf(firstSubAction, (Object[]) other))));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to null. You cannot use <b>null</b> directly in an action call
-     * expression. Use this method instead.
-     *
-     * @return the action parameter
-     */
-    public Object NULL() {
-        actionParameters.add(new NullParameter());
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that evaluates to the next input character about to be matched.
-     *
-     * @return the action parameter
-     */
-    public Character NEXT_CHAR() {
-        actionParameters.add(new NextCharParameter());
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to an object using the given converter.
-     *
-     * @param text      the text (parameter) to convert
-     * @param converter the converter to use
-     * @return the action parameter
-     */
-    public <T> T CONVERT(String text, Converter<T> converter) {
-        Object converterArg = mixInParameter(actionParameters, converter);
-        Object textArg = mixInParameter(actionParameters, text);
-        Preconditions.checkNotNull(converterArg);
-        actionParameters.add(new ConvertParameter(textArg, converterArg));
-        return null;
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to an Integer.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Integer CONVERT_TO_INTEGER(String text) {
-        return CONVERT(text, new Converter<Integer>() {
-            public Integer parse(String string) {
-                return Integer.parseInt(string);
-            }
-        });
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to a Long.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Long CONVERT_TO_LONG(String text) {
-        return CONVERT(text, new Converter<Long>() {
-            public Long parse(String string) {
-                return Long.parseLong(string);
-            }
-        });
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to a Float.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Float CONVERT_TO_FLOAT(String text) {
-        return CONVERT(text, new Converter<Float>() {
-            public Float parse(String string) {
-                return Float.parseFloat(string);
-            }
-        });
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to a Double.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Double CONVERT_TO_DOUBLE(String text) {
-        return CONVERT(text, new Converter<Double>() {
-            public Double parse(String string) {
-                return Double.parseDouble(string);
-            }
-        });
+    public final <T> T DOWN(T argument) {
+        return argument;
     }
 
     ///************************* HELPER METHODS ***************************///
@@ -834,8 +369,6 @@ public abstract class BaseParser<V, A extends Actions<V>> {
      * @return the rule corresponding to the given object
      */
     protected Rule toRule(Object obj) {
-        obj = mixInParameter(actionParameters, obj);
-
         if (obj instanceof Rule) return (Rule) obj;
 
         Rule rule = cached(obj);
@@ -843,8 +376,7 @@ public abstract class BaseParser<V, A extends Actions<V>> {
 
         if (obj instanceof Character) return cache(obj, fromCharLiteral((Character) obj));
         if (obj instanceof String) return cache(obj, fromStringLiteral((String) obj));
-        if (obj instanceof Action) obj = new ActionObjectParameter((Action) obj);
-        if (obj instanceof ActionParameter) return new ActionMatcher((ActionParameter) obj);
+        if (obj instanceof Action) obj = new ActionMatcher((Action) obj);
 
         rule = fromUserObject(obj);
         if (rule != null) return cache(obj, rule);
@@ -887,4 +419,5 @@ public abstract class BaseParser<V, A extends Actions<V>> {
             return key.hashCode();
         }
     }
+
 }

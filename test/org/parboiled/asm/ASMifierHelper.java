@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.asm;
 
-/**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
- */
-public interface Action {
+import org.parboiled.AbstractAction;
+import org.parboiled.ActionResult;
+import org.parboiled.BaseParser;
+import org.objectweb.asm.util.ASMifierClassVisitor;
 
-    /**
-     * Runs the parser action.
-     *
-     * @return the ActionResult
-     */
-    ActionResult run();
+public class ASMifierHelper extends BaseParser<String> {
+
+    private final Integer action = 12345;
+
+    public class ActionWrapper extends AbstractAction<String> {
+
+        public ActionResult run() {
+            return SET(action.toString());
+        }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        ASMifierClassVisitor.main(new String[] { ActionWrapper.class.getName() });
+    }
 
 }

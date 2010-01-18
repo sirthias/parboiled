@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 
 public class ActionTest extends AbstractTest {
 
@@ -32,11 +33,9 @@ public class ActionTest extends AbstractTest {
         }
     }
 
-    public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {
+    public static class ActionTestParser extends BaseParser<Object> {
 
-        public ActionTestParser() {
-            super(Parboiled.createActions(ActionTestActions.class));
-        }
+        private final ActionTestActions actions = new ActionTestActions();
 
         public Rule number() {
             return sequence(

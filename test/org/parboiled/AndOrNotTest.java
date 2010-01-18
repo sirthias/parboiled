@@ -19,10 +19,11 @@ package org.parboiled;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 
 public class AndOrNotTest extends AbstractTest {
 
-    public static class NotEqualTestParser extends BaseParser<Object, Actions<Object>> {
+    public static class NotEqualTestParser extends BaseParser<Object> {
 
         public Rule clause() {
             return sequence(

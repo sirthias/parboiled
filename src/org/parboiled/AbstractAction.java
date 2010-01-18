@@ -17,15 +17,14 @@
 package org.parboiled;
 
 /**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
+ * Convenience base class for parser actions.
  */
-public interface Action {
+public abstract class AbstractAction<V> implements Action, ContextAware<V> {
 
-    /**
-     * Runs the parser action.
-     *
-     * @return the ActionResult
-     */
-    ActionResult run();
+    protected Context<V> context;
+
+    public void setContext(Context<V> context) {
+        this.context = context;
+    }
 
 }

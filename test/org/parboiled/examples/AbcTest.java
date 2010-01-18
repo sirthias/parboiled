@@ -18,7 +18,7 @@ package org.parboiled.examples;
 
 import org.testng.annotations.Test;
 import org.parboiled.examples.abc.AbcParser;
-import org.parboiled.AbstractTest;
+import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
 
 public class AbcTest extends AbstractTest {

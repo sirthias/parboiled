@@ -21,7 +21,6 @@
  */
 package org.parboiled.examples.sparql;
 
-import org.parboiled.Actions;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
@@ -31,7 +30,7 @@ import org.parboiled.Rule;
  * @author Ken Wenzel, adapted by Mathias Doenitz
  */
 @SuppressWarnings({"InfiniteRecursion"})
-public class SparqlParser extends BaseParser<Object, Actions<Object>> {
+public class SparqlParser extends BaseParser<Object> {
     // <Parser>
     public Rule query() {
         return enforcedSequence(WS(), prologue(), firstOf(selectQuery(),
@@ -793,6 +792,6 @@ public class SparqlParser extends BaseParser<Object, Actions<Object>> {
 
     public Rule stringIgnoreCaseWS(String string) {
         return sequence(stringIgnoreCase(string), WS());
-	}
+    }
 
 }

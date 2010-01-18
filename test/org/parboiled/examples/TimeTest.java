@@ -20,7 +20,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 import org.parboiled.examples.time.TimeParser;
-import org.parboiled.AbstractTest;
+import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
 
 public class TimeTest extends AbstractTest {

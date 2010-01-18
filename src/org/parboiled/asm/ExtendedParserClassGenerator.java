@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.asm;
 
-/**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
- */
-public interface Action {
+import org.objectweb.asm.tree.ClassNode;
 
-    /**
-     * Runs the parser action.
-     *
-     * @return the ActionResult
-     */
-    ActionResult run();
+public class ExtendedParserClassGenerator {
+    private final ClassNode classNode;
+
+    public ExtendedParserClassGenerator(ClassNode classNode) {
+        this.classNode = classNode;
+    }
+
+    public Class<?> generate() {
+        return null;
+    }
 
 }

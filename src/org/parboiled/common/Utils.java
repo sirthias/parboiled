@@ -47,6 +47,22 @@ public final class Utils {
     }
 
     /**
+     * Joins the given arguments into one array.
+     *
+     * @param firstElements the first elements
+     * @param lastElement the element to append
+     * @return a new array containing all arguments.
+     */
+    @SuppressWarnings({"unchecked"})
+    public static <T> T[] arrayOf(T[] firstElements, T lastElement) {
+        Class elementType = firstElements.getClass().getComponentType();
+        T[] array = (T[]) Array.newInstance(elementType, firstElements.length + 1);
+        System.arraycopy(firstElements, 0, array, 0, firstElements.length);
+        array[firstElements.length] = lastElement;
+        return array;
+    }
+
+    /**
      * Provides a null enabled equals().
      *
      * @param a the first object

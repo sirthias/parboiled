@@ -16,9 +16,10 @@
 
 package org.parboiled;
 
-import org.testng.annotations.Test;
-import static org.testng.Assert.assertEquals;
 import org.parboiled.support.SkipInPredicates;
+import org.parboiled.test.AbstractTest;
+import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Test;
 
 public class SkipInPredicatesTest extends AbstractTest {
 
@@ -37,11 +38,9 @@ public class SkipInPredicatesTest extends AbstractTest {
         }
     }
 
-    public static class ActionTestParser extends BaseParser<Object, ActionTestActions> {
+    public static class ActionTestParser extends BaseParser<Object> {
 
-        public ActionTestParser() {
-            super(Parboiled.createActions(ActionTestActions.class));
-        }
+        private final ActionTestActions actions = new ActionTestActions();
 
         public Rule number() {
             return oneOrMore(digit());

@@ -18,13 +18,10 @@ package org.parboiled.examples.calculator2;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.Parboiled;
 
-public class CalculatorParser extends BaseParser<CalcNode, CalculatorActions> {
+public class CalculatorParser extends BaseParser<CalcNode> {
 
-    public CalculatorParser() {
-        super(Parboiled.createActions(CalculatorActions.class));
-    }
+    private final CalculatorActions actions = new CalculatorActions();
 
     public Rule inputLine() {
         return enforcedSequence(

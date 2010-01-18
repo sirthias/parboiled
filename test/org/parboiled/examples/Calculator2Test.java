@@ -16,7 +16,7 @@
 
 package org.parboiled.examples;
 
-import org.parboiled.AbstractTest;
+import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
 import org.parboiled.examples.calculator2.CalcNode;
 import org.parboiled.examples.calculator2.CalculatorParser;

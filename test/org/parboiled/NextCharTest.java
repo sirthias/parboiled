@@ -19,10 +19,11 @@ package org.parboiled;
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import org.parboiled.test.AbstractTest;
 
 public class NextCharTest extends AbstractTest {
 
-    public static class NextCharTestParser extends BaseParser<Object, Actions<Object>> {
+    public static class NextCharTestParser extends BaseParser<Object> {
 
         public Rule clause() {
             return sequence(EQUALS(NEXT_CHAR(), 'a'), any(), eoi());

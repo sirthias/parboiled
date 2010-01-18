@@ -17,6 +17,7 @@
 package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Utils.arrayOf;
 
 import java.util.AbstractList;
 import java.util.List;
@@ -45,31 +46,47 @@ public class ImmutableList<T> extends AbstractList<T> {
         return array[index];
     }
 
-    public static <T> List<T> copyOf(@NotNull List<T> other) {
-        return other instanceof ImmutableList ? other : create((T[]) other.toArray());
+    public static <T> ImmutableList<T> copyOf(@NotNull List<T> other) {
+        return (ImmutableList<T>) (other instanceof ImmutableList ? other : create((T[]) other.toArray()));
     }
 
-    public static <T> List<T> of() {
-        return (List<T>) EMPTY_LIST;
+    public static <T> ImmutableList<T> of() {
+        return (ImmutableList<T>) EMPTY_LIST;
     }
 
-    public static <T> List<T> of(T a) {
+    public static <T> ImmutableList<T> of(T a) {
         return create(a);
     }
 
-    public static <T> List<T> of(T a, T b) {
+    public static <T> ImmutableList<T> of(T a, T b) {
         return create(a, b);
     }
 
-    public static <T> List<T> of(T a, T b, T c) {
+    public static <T> ImmutableList<T> of(T a, T b, T c) {
         return create(a, b, c);
     }
 
-    public static <T> List<T> of(T... elements) {
+    public static <T> ImmutableList<T> of(T... elements) {
         return create(elements.clone());
     }
 
-    private static <T> List<T> create(T... elements) {
+    public static <T> ImmutableList<T> of(T first, T[] more) {
+        return create(arrayOf(first, more.clone()));
+    }
+
+    public static <T> ImmutableList<T> of(@NotNull T[] first, T last) {
+        return create(arrayOf(first.clone(), last));
+    }
+
+    public static <T> ImmutableList<T> of(T first, @NotNull ImmutableList<T> more) {
+        return create(arrayOf(first, more.array));
+    }
+
+    public static <T> ImmutableList<T> of(@NotNull ImmutableList<T> first, T last) {
+        return create(arrayOf(first.array, last));
+    }
+
+    private static <T> ImmutableList<T> create(T... elements) {
         return new ImmutableList<T>(elements);
     }
 

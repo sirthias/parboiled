@@ -17,10 +17,11 @@
 package org.parboiled;
 
 import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 
 public class RecursionTest extends AbstractTest {
 
-    public static class RecursionParser extends BaseParser<Object, Actions<Object>> {
+    public static class RecursionParser extends BaseParser<Object> {
 
         @SuppressWarnings({"InfiniteRecursion"})
         public Rule lotsOfAs() {
