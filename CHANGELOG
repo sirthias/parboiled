@@ -1,7 +1,7 @@
 Version 0.8.5.0 (2010-01-18)
 ----------------------------
 - Fixed IllegalStateException on trying to label a rule from within a recursion
-- Fixed rare bug occuring in certain scenarios involving recursive test/testNot rules
+- Fixed rare bug occurring in certain scenarios involving recursive test/testNot rules
 - Improved reporting of parse errors, also renamed ParserConstructionException to GrammarException and
   ParsingException to ActionException, introduced ParserRuntimeException
 - Enabled writing access to ParseError list returned by Context.getParseErrors()
