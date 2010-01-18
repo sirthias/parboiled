@@ -16,8 +16,6 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Converter;
 import org.parboiled.common.Utils;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
@@ -392,28 +390,13 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Creates an action parameter that converts the given text parameter to an object using the given converter.
-     *
-     * @param text      the text (parameter) to convert
-     * @param converter the converter to use
-     * @return the action parameter
-     */
-    public <T> T CONVERT(String text, @NotNull Converter<T> converter) {
-        return converter.parse(text);
-    }
-
-    /**
      * Creates an action parameter that converts the given text parameter to an Integer.
      *
      * @param text the text (parameter) to convert
      * @return the action parameter
      */
     public Integer CONVERT_TO_INTEGER(String text) {
-        return CONVERT(text, new Converter<Integer>() {
-            public Integer parse(String string) {
-                return Integer.parseInt(string);
-            }
-        });
+        return Integer.parseInt(text);
     }
 
     /**
@@ -423,11 +406,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Long CONVERT_TO_LONG(String text) {
-        return CONVERT(text, new Converter<Long>() {
-            public Long parse(String string) {
-                return Long.parseLong(string);
-            }
-        });
+        return Long.parseLong(text);
     }
 
     /**
@@ -437,11 +416,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Float CONVERT_TO_FLOAT(String text) {
-        return CONVERT(text, new Converter<Float>() {
-            public Float parse(String string) {
-                return Float.parseFloat(string);
-            }
-        });
+        return Float.parseFloat(text);
     }
 
     /**
@@ -451,11 +426,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Double CONVERT_TO_DOUBLE(String text) {
-        return CONVERT(text, new Converter<Double>() {
-            public Double parse(String string) {
-                return Double.parseDouble(string);
-            }
-        });
+        return Double.parseDouble(text);
     }
 
 }
