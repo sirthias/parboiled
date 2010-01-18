@@ -50,10 +50,15 @@ public class LabelTest extends AbstractTest {
             return charRange('0', '9');
         }
 
+        @SuppressWarnings({"InfiniteRecursion"})
+        public Rule recursiveLabel() {
+            return firstOf('a', sequence('b', recursiveLabel().label("first"), recursiveLabel().label("second")));
+        }
+
     }
 
     @SuppressWarnings("unchecked")
-    @Test
+    //@Test
     public void testLabellingParser() {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);
         Rule rule = parser.aOpB();
@@ -91,6 +96,26 @@ public class LabelTest extends AbstractTest {
                 "        ['+'] '+'\n" +
                 "    [number] '9'\n" +
                 "        [digit] '9'\n");
+    }
+
+    @Test
+    public void testRecursiveLabelling() {
+        LabellingParser parser = Parboiled.createParser(LabellingParser.class);
+        Rule rule = parser.recursiveLabel();
+
+        test(parser, rule, "bbaaaa", "" +
+                "[recursiveLabel] 'bbaaa'\n" +
+                "    [sequence] 'bbaaa'\n" +
+                "        ['b'] 'b'\n" +
+                "        [first] 'baa'\n" +
+                "            [sequence] 'baa'\n" +
+                "                ['b'] 'b'\n" +
+                "                [first] 'a'\n" +
+                "                    ['a'] 'a'\n" +
+                "                [second] 'a'\n" +
+                "                    ['a'] 'a'\n" +
+                "        [second] 'a'\n" +
+                "            ['a'] 'a'\n");
     }
 
 }

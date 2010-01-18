@@ -39,4 +39,8 @@ public class Reference<T> {
         this.target = target;
     }
 
+    public boolean hasTarget() {
+        return target != null;
+    }
+
 }

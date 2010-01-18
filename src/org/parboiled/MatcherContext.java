@@ -216,7 +216,7 @@ public class MatcherContext<V> implements Context<V> {
 
     public void createNode() {
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
-        if (!(matcher instanceof TestMatcher)) { // special case: TestMatchers do not add nodes
+        if (!(ProxyMatcher.unwrap(matcher) instanceof TestMatcher)) { // special case: TestMatchers do not add nodes
             if (parent != null) parent.addChildNode(node);
             invariables.lastNodeRef.setTarget(node);
         }
@@ -239,7 +239,7 @@ public class MatcherContext<V> implements Context<V> {
         MatcherContext<V> oldSubContext = null, runContext;
         if (matcher != null) {
             // special case: ActionMatchers need no sub context and no error recovery
-            if (matcher instanceof ActionMatcher) {
+            if (ProxyMatcher.unwrap(matcher) instanceof ActionMatcher) {
                 try {
                     return matcher.match(this, enforced);
                 } catch (Throwable e) {
@@ -290,7 +290,7 @@ public class MatcherContext<V> implements Context<V> {
         Characters chars = Characters.NONE;
         MatcherContext<V> parent = this.parent;
         while (parent != null) {
-            if (parent.getMatcher() instanceof FollowMatcher) {
+            if (ProxyMatcher.unwrap(parent.getMatcher()) instanceof FollowMatcher) {
                 FollowMatcher<V> followMatcher = (FollowMatcher<V>) parent.getMatcher();
                 chars = chars.add(followMatcher.getFollowerChars(parent));
                 if (!chars.contains(Chars.EMPTY)) return chars;
@@ -301,7 +301,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public boolean inPredicate() {
-        return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
+        return ProxyMatcher.unwrap(matcher) instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////

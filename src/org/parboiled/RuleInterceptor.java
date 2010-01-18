@@ -16,12 +16,12 @@
 
 package org.parboiled;
 
-import net.sf.cglib.proxy.*;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.parboiled.common.Preconditions;
 import org.parboiled.common.Utils;
 import org.parboiled.matchers.AbstractMatcher;
-import org.parboiled.matchers.Matcher;
-import org.parboiled.support.Reference;
+import org.parboiled.matchers.ProxyMatcher;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -36,25 +36,9 @@ import java.util.Map;
  */
 class RuleInterceptor implements MethodInterceptor {
 
-    // the cglib callback we use on rule proxies
-    private static class Loader implements LazyLoader {
-        private final Reference reference;
-
-        private Loader(Reference reference) {
-            this.reference = reference;
-        }
-
-        @SuppressWarnings({"ConstantConditions"})
-        public Object loadObject() throws Exception {
-            Preconditions.checkState(reference != null && reference.getTarget() != null);
-            return reference.getTarget();
-        }
-    }
-
     private final Map<Method, Rule> rules = new HashMap<Method, Rule>();
-    private final Factory proxyFactory =
-            (Factory) Enhancer.create(Object.class, new Class[] {Rule.class, Matcher.class}, new Loader(null));
 
+    @SuppressWarnings({"unchecked"})
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Preconditions.checkState(obj instanceof BaseParser);
         Preconditions.checkState(args.length == 0);
@@ -62,11 +46,10 @@ class RuleInterceptor implements MethodInterceptor {
         Rule rule = rules.get(method);
         if (rule != null) return rule;
 
-        // first call to the Rule, createActions a proxy and put it into the rule cache so any potential
+        // first call to the Rule, create a proxy and put it into the rule cache so any potential
         // recursive calls don't recurse infinitely but rather immediately return the proxy
-        Reference<AbstractMatcher> realRule = new Reference<AbstractMatcher>();
-        Rule proxyRule = (Rule) proxyFactory.newInstance(new Loader(realRule));
-        rules.put(method, proxyRule);
+        ProxyMatcher proxyMatcher = new ProxyMatcher();
+        rules.put(method, proxyMatcher);
 
         // call the actual rule creation method (which might recurse into itself or any ancestor)
         AbstractMatcher matcher = (AbstractMatcher) proxy.invokeSuper(obj, Utils.EMPTY_OBJECT_ARRAY);
@@ -79,13 +62,13 @@ class RuleInterceptor implements MethodInterceptor {
 
         // arm the proxy with the actual rule, so all Rules that have so far received the proxy object
         // from now on "call through" to the actual Rule
-        realRule.setTarget(matcher);
+        proxyMatcher.arm(matcher);
 
         // finally we put the actual rule into the cache overwriting the previously put proxy
         // so the proxy is only used by rules that recursed into the current method during their execution
-        rules.put(method, realRule.getTarget());
+        rules.put(method, matcher);
 
-        return realRule.getTarget();
+        return matcher;
     }
 
 }
