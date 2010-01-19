@@ -34,7 +34,7 @@ class TestParser extends CalculatorParser {
     private final TestActions testActions = new TestActions();
 
     /*public Rule localVarRule() {
-        char next_char = NEXT_CHAR();
+        char next_char = nextChar();
         return sequence(
                 ch(next_char),
                 actions.action2(next_char)
@@ -44,21 +44,35 @@ class TestParser extends CalculatorParser {
     /*public Rule conditionActionRule() {
         return sequence(
                 rule(),
-                NEXT_CHAR() == 'y' ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH
+                nextChar() == 'y' ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH
         );
     }*/
 
     public Rule intComparison() {
         return sequence(
-                atom(),
+                atom(), "some Text",
                 testActions.action1() == 26
         );
     }
 
     public Rule skipInPredicate() {
         return sequence(
-                atom(),
+                atom(), "some Text",
                 IN_PREDICATE() || testActions.action2(LAST_CHAR())
+        );
+    }
+
+    public Rule simpleTernary() {
+        return sequence(
+                atom(), "some Text",
+                testActions.action1() == 5 ? IN_PREDICATE() : testActions.action2(LAST_CHAR())
+        );
+    }
+
+    public Rule upDownAction() {
+        return sequence(
+                atom(), "some Text",
+                UP(testActions.action2(DOWN(LAST_CHAR())))
         );
     }
 
@@ -66,7 +80,7 @@ class TestParser extends CalculatorParser {
         return sequence(
                 atom(), "some Text",
                 SET(actions.createAst(1.0)),
-                testActions.action1()
+                testActions.action2(NEXT_CHAR())
         );
     }
 

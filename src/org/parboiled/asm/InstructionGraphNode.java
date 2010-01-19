@@ -33,16 +33,18 @@ public class InstructionGraphNode implements Value {
     public final boolean isAction;
     public final boolean isContextSwitch;
     public final boolean isCallOnContextAware;
+    public final boolean isRuleCreation;
 
     public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex, BasicValue resultValue,
                                 List<Value> predecessors, boolean isAction, boolean contextSwitch,
-                                boolean callOnContextAware) {
+                                boolean callOnContextAware, boolean ruleCreation) {
         this.instruction = instruction;
         this.instructionIndex = instructionIndex;
         this.basicValue = resultValue;
         this.isAction = isAction;
         isContextSwitch = contextSwitch;
         isCallOnContextAware = callOnContextAware;
+        isRuleCreation = ruleCreation;
         this.predecessors.addAll(predecessors);
     }
 

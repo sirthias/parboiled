@@ -18,9 +18,9 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import static org.parboiled.common.Utils.arrayOf;
+import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
-import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -270,6 +270,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param argument the arguments to change to context for
      * @return the result of the argument
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public final <T> T UP(T argument) {
         throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
     }
@@ -282,6 +283,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param argument the arguments to change to context for
      * @return the result of the argument
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public final <T> T DOWN(T argument) {
         throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
     }

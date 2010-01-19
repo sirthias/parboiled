@@ -47,19 +47,28 @@ public class RuleMethodAnalysisTest {
 
     @Test
     public void test() throws Exception {
-        testMethodAnalysis("intComparison", 2915865972L, false);
-        renderToGraphViz(dotSource);
+        testMethodAnalysis("intComparison", 1493890997L, true);
+        //renderToGraphViz(dotSource);
 
-        testMethodAnalysis("atom", 2915865972L, false);
+        testMethodAnalysis("skipInPredicate", 2810623926L, true);
+        // renderToGraphViz(dotSource);
+        
+        testMethodAnalysis("simpleTernary", 3742309033L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("twoActionsRule", 1911856575L, true);
+        testMethodAnalysis("upDownAction", 462134176L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("term", 581082935L, true);
+        testMethodAnalysis("atom", 3415441184L, false);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("number", 954826186L, true);
+        testMethodAnalysis("twoActionsRule", 1588965106L, true);
+        // renderToGraphViz(dotSource);
+
+        testMethodAnalysis("term", 235170855L, true);
+        // renderToGraphViz(dotSource);
+
+        testMethodAnalysis("number", 897074253L, true);
         // renderToGraphViz(dotSource);
     }
 
@@ -70,13 +79,13 @@ public class RuleMethodAnalysisTest {
         for (InstructionGraphNode node : info.instructionGraphNodes) assertNotNull(node);
 
         // check action detection
-        // assertEquals(info.hasActions(), hasActions);
+        assertEquals(info.hasActions(), hasActions);
 
         dotSource = generateDotSource(info, info.getInstructionSubSets());
         long crc = computeCRC(dotSource);
         if (crc != dotSourceCRC) {
             System.out.println("Invalid dotSource CRC: " + crc + 'L');
-            //assertEqualsMultiline(dotSource, "");
+            assertEqualsMultiline(dotSource, "");
         }
     }
 
@@ -95,6 +104,7 @@ public class RuleMethodAnalysisTest {
             sb.append("    ").append(node.instructionIndex)
                     .append(node.isAction ? "[penwidth=2.0,color=red]" : "")
                     .append(node.isContextSwitch ? "[penwidth=2.0,color=orange]" : "")
+                    .append(node.isRuleCreation ? "[penwidth=2.0,color=brown]" : "")
                     .append(node == returnNode ? "[penwidth=2.0,color=blue]" : "")
                     .append(";\n");
             if (instructionSubSets != null) {

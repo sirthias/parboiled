@@ -19,7 +19,6 @@ package org.parboiled.asm;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
@@ -35,7 +34,7 @@ import java.util.List;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
-    private static final String UP_DOWN_DESCRIPTOR =
+    private static final String CONTEXT_SWITCH_DESCRIPTOR =
             Type.getMethodDescriptor(Types.OBJECT_TYPE, new Type[] {Types.OBJECT_TYPE});
 
     private final ParserClassNode classNode;
@@ -89,15 +88,22 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public Value merge(Value v, Value w) {
+        // we don't actually merge values but use the control flow detection to deal with conditionals
         return v;
     }
 
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
-        AbstractInsnNode instruction = methodInfo.method.instructions.get(instructionIndex);
-        int instructionType = instruction.getType();
-        if (instructionType == AbstractInsnNode.LABEL || instructionType == AbstractInsnNode.LINE ||
-                instructionType == AbstractInsnNode.FRAME || instruction instanceof JumpInsnNode) {
-            additionalEdges.add(new int[] {instructionIndex, successorIndex});
+        switch (methodInfo.method.instructions.get(instructionIndex).getType()) {
+            case AbstractInsnNode.LABEL:
+            case AbstractInsnNode.LINE:
+            case AbstractInsnNode.JUMP_INSN:
+                additionalEdges.add(new int[] {instructionIndex, successorIndex});
+                return;
+        }
+
+        switch (methodInfo.method.instructions.get(successorIndex).getType()) {
+            case AbstractInsnNode.JUMP_INSN:
+                additionalEdges.add(new int[] {instructionIndex, successorIndex});
         }
     }
 
@@ -108,7 +114,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
             if (node == null) node = createNode(methodInfo.method.instructions.get(edge[0]), null);
             InstructionGraphNode succ = methodInfo.instructionGraphNodes[edge[1]];
             if (succ == null) succ = createNode(methodInfo.method.instructions.get(edge[1]), null);
-            succ.predecessors.add(node);
+            if (!succ.predecessors.contains(node)) succ.predecessors.add(node);
         }
 
         // set the finishing label
@@ -127,9 +133,11 @@ class RuleMethodInterpreter extends BasicInterpreter {
                 index,
                 resultBasicValue,
                 Arrays.asList(prevNodes),
-                resultBasicValue != null && Types.BOOLEAN_TYPE.equals(resultBasicValue.getType()),
+                isAction(resultBasicValue),
                 isContextSwitch(insn),
-                isCallOnContextAware(insn));
+                isCallOnContextAware(insn),
+                isRuleCreation(insn)
+        );
         methodInfo.instructionGraphNodes[index] = node;
         return node;
     }
@@ -137,6 +145,19 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private BasicValue getBasicValue(Value resultValue) {
         return resultValue == null || resultValue instanceof BasicValue ?
                 (BasicValue) resultValue : ((InstructionGraphNode) resultValue).basicValue;
+    }
+
+    private boolean isAction(BasicValue resultBasicValue) {
+        return resultBasicValue != null && Types.BOOLEAN_TYPE.equals(resultBasicValue.getType());
+    }
+
+    private boolean isContextSwitch(AbstractInsnNode insn) {
+        if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
+            MethodInsnNode mi = (MethodInsnNode) insn;
+            return ("UP".equals(mi.name) || "DOWN".equals(mi.name)) &&
+                    CONTEXT_SWITCH_DESCRIPTOR.equals(mi.desc) && isOwnerMethod(mi);
+        }
+        return false;
     }
 
     private boolean isCallOnContextAware(AbstractInsnNode insn) {
@@ -156,11 +177,10 @@ class RuleMethodInterpreter extends BasicInterpreter {
         return false;
     }
 
-    private boolean isContextSwitch(AbstractInsnNode insn) {
-        if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
-            MethodInsnNode mi = (MethodInsnNode) insn;
-            return ("UP".equals(mi.name) || "DOWN".equals(mi.name)) &&
-                    UP_DOWN_DESCRIPTOR.equals(mi.desc) && isOwnerMethod(mi);
+    private boolean isRuleCreation(AbstractInsnNode insn) {
+        if (insn instanceof MethodInsnNode) {
+            MethodInsnNode methodInsn = (MethodInsnNode) insn;
+            return Type.getReturnType(methodInsn.desc).equals(Types.RULE_TYPE);
         }
         return false;
     }

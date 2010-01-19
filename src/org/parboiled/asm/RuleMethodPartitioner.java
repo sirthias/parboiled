@@ -19,7 +19,7 @@ package org.parboiled.asm;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.common.DisjointIndexSet;
-import org.parboiled.common.Preconditions;
+import org.parboiled.support.Checks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,8 +86,8 @@ public class RuleMethodPartitioner {
 
             // all instructions in an action subset have to form a continuous block,
             // i.e. there must not be any indices missing
-            //Preconditions.checkState(!subSet.isActionSet ||
-            //        subSet.lastIndex - subSet.firstIndex == instructions.length - 1);
+            Checks.ensure(!subSet.isActionSet || subSet.lastIndex - subSet.firstIndex == instructions.length - 1,
+                    "Illegal action construct in parser rule method '%s'", methodInfo.method.name);
 
             instructionSubSets.add(subSet);
         }

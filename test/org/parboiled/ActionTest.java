@@ -40,7 +40,7 @@ public class ActionTest extends AbstractTest {
         public Rule number() {
             return sequence(
                     oneOrMore(digit()),
-                    SET(actions.timesTwo(CONVERT_TO_INTEGER(LAST_TEXT()))),
+                    SET(actions.timesTwo(Integer.parseInt(LAST_TEXT()))),
                     actions.addOne(),
                     new Action() {
                         public boolean run() {

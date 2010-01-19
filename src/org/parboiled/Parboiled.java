@@ -43,7 +43,7 @@ public class Parboiled {
      * @return the ready to use parser instance
      */
     @SuppressWarnings({"unchecked"})
-    public static <V, P extends BaseParser<V>> P createParser(@NotNull Class<P> parserClass,
+    public static <P extends BaseParser<V>, V> P createParser(@NotNull Class<P> parserClass,
                                                               Object... constructorArgs) {
         try {
             Class<?> extendParserClass = createExtendedParserClass(parserClass);

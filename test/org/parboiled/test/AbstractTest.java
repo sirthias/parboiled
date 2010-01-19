@@ -16,12 +16,12 @@
 
 package org.parboiled.test;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import org.parboiled.support.ParsingResult;
-import org.parboiled.common.StringUtils;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.common.StringUtils;
+import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import org.parboiled.support.ParsingResult;
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.fail;
 
 public abstract class AbstractTest {
@@ -41,7 +41,7 @@ public abstract class AbstractTest {
     }
 
     public <V> void testFail(BaseParser<V> parser, Rule rule, String input, String expectedTree,
-                             String expectedErrors) {
+                                                         String expectedErrors) {
         ParsingResult<V> parsingResult = parser.parse(rule, input);
         String actualTree = printNodeTree(parsingResult);
         assertEqualsMultiline(actualTree, expectedTree);
