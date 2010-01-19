@@ -21,55 +21,55 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.common.Preconditions;
 import org.parboiled.support.Characters;
-import org.parboiled.support.Reference;
 
 import java.util.List;
 
 /**
  * A Matcher that delegates all Rule and Matcher interface methods to another Matcher.
  * It can also hold a label and lazily apply it to the underlying matcher once it is available.
+ *
  * @param <V>
  */
 public class ProxyMatcher<V> implements Rule, Matcher<V> {
 
-    private final Reference<Matcher<V>> ref = new Reference<Matcher<V>>();
+    private Matcher<V> target;
     private String label;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
         applyLabel();
-        return ref.getTarget().getChildren();
+        return target.getChildren();
     }
 
     public boolean match(@NotNull MatcherContext<V> context, boolean enforced) throws Throwable {
         applyLabel();
-        return ref.getTarget().match(context, enforced);
+        return target.match(context, enforced);
     }
 
     public String getExpectedString() {
         applyLabel();
-        return ref.getTarget().getExpectedString();
+        return target.getExpectedString();
     }
 
     public Characters getStarterChars() {
         applyLabel();
-        return ref.getTarget().getStarterChars();
+        return target.getStarterChars();
     }
 
     public String getLabel() {
         applyLabel();
-        return ref.getTarget().getLabel();
+        return target.getLabel();
     }
 
     @Override
     public String toString() {
-        if (!ref.hasTarget()) return super.toString();
+        if (target == null) return super.toString();
         applyLabel();
-        return ref.getTarget().toString();
+        return target.toString();
     }
 
     private void applyLabel() {
-        Preconditions.checkState(ref.hasTarget());
+        Preconditions.checkState(target != null);
         if (label != null) {
             label(label);
         }
@@ -77,7 +77,7 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
 
     @SuppressWarnings({"unchecked"})
     public Rule label(String label) {
-        if (!ref.hasTarget()) {
+        if (target == null) {
             // if we have no target yet we need to save the label and "apply" it later
             if (this.label == null) {
                 this.label = label;
@@ -91,21 +91,21 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         }
 
         // we already have a target to which we can directly apply the label
-        Rule innerMost = (Rule) unwrap(ref.getTarget());
-        Rule newTarget = innerMost.label(label);
-        ref.setTarget((Matcher<V>) newTarget); // since relabelling might change the instance we have to update it
+        Rule innerMost = (Rule) unwrap(target);
+        target = (Matcher<V>) innerMost
+                .label(label); // since relabelling might change the instance we have to update it
         this.label = null;
-        return newTarget;
+        return (Rule) target;
     }
 
     public ProxyMatcher<V> arm(Matcher<V> target) {
-        ref.setTarget(target);
+        this.target = target;
         return this;
     }
 
     @SuppressWarnings({"unchecked"})
     public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
-        return matcher instanceof ProxyMatcher ? unwrap(((ProxyMatcher<V>)matcher).ref.getTarget()) : matcher;
+        return matcher instanceof ProxyMatcher ? unwrap(((ProxyMatcher<V>) matcher).target) : matcher;
     }
 
 }
