@@ -22,7 +22,7 @@ import org.parboiled.common.Preconditions;
 
 import java.util.List;
 
-public class RuleMethodInfo {
+class RuleMethodInfo {
 
     public final MethodNode method;
     public final InstructionGraphNode[] instructionGraphNodes;

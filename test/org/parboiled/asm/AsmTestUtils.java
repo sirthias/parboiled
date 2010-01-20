@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.parboiled.test;
+package org.parboiled.asm;
 
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.TraceMethodVisitor;
-import org.parboiled.asm.RuleMethodInfo;
 import org.parboiled.common.StringUtils;
 
 import java.io.PrintWriter;

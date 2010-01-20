@@ -24,7 +24,7 @@ import org.objectweb.asm.util.AbstractVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InstructionGraphNode implements Value {
+class InstructionGraphNode implements Value {
 
     public final AbstractInsnNode instruction;
     public final int instructionIndex;

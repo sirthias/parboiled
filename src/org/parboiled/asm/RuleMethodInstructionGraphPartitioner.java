@@ -25,21 +25,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RuleMethodPartitioner {
+public class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
 
-    private final List<RuleMethodInfo> ruleMethodInfos;
+    private final ClassTransformer nextTransformer;
 
-    public RuleMethodPartitioner(@NotNull List<RuleMethodInfo> ruleMethodInfos) {
-        this.ruleMethodInfos = ruleMethodInfos;
+    public RuleMethodInstructionGraphPartitioner(ClassTransformer nextTransformer) {
+        this.nextTransformer = nextTransformer;
     }
 
-    public void partitionMethodGraphs() {
-        for (RuleMethodInfo methodInfo : ruleMethodInfos) {
+    public Class<?> transform(ParserClassNode classNode) throws Exception {
+        for (RuleMethodInfo methodInfo : classNode.methodInfos) {
             if (hasActions(methodInfo)) {
                 List<InstructionSubSet> subSets = partitionInstructionGraph(methodInfo);
                 methodInfo.setInstructionSubSets(subSets);
             }
         }
+
+        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
     }
 
     private boolean hasActions(RuleMethodInfo methodInfo) {

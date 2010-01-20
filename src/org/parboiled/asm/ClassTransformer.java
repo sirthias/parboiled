@@ -16,26 +16,8 @@
 
 package org.parboiled.asm;
 
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.ClassNode;
+public interface ClassTransformer {
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ParserClassNode extends ClassNode {
-
-    public final Class<?> parentClass;
-    public final Type parentType;
-    public final List<Type> superTypes = new ArrayList<Type>();
-    public final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
-
-    public ParserClassNode(Class<?> parentClass) {
-        this.parentClass = parentClass;
-        parentType = Type.getType(parentClass);
-    }
-
-    public Type getParentType() {
-        return parentType;
-    }
+    Class<?> transform(ParserClassNode classNode) throws Exception;
 
 }

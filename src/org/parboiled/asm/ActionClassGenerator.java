@@ -20,7 +20,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 import org.parboiled.support.Checks;
 
-public class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
+class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
 
     private final ParserClassNode classNode;
     private final RuleMethodInfo methodInfo;
@@ -37,17 +37,17 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
         this.subSet = subSet;
         this.actionSimpleName = methodInfo.method.name + "_Action" + actionNumber;
         this.actionType = Type.getObjectType(classNode.name + "$" + actionSimpleName);
-        this.classNodeTypeDesc = classNode.getType().getDescriptor();
+        this.classNodeTypeDesc = classNode.getParentType().getDescriptor();
     }
 
     public Type defineActionClass() {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        generateClassBasics(cw);
-        generateConstructor(cw);
-        generateRunMethod(cw);
-        cw.visitEnd();
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        generateClassBasics(classWriter);
+        generateConstructor(classWriter);
+        generateRunMethod(classWriter);
+        classWriter.visitEnd();
 
-        code = cw.toByteArray();
+        code = classWriter.toByteArray();
         defineClass(null, code, 0, code.length);
 
         return actionType;

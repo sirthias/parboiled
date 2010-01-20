@@ -18,7 +18,6 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.util.CheckMethodAdapter;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
@@ -26,24 +25,24 @@ import static org.parboiled.test.TestUtils.computeCRC;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-import java.util.ArrayList;
 
 public class RuleMethodTransformationTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
 
     @BeforeClass
-    private void setup() throws IOException, AnalyzerException {
-        List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
-        new ClassNodeInitializer(classNode).initialize();
-        new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
-        new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
-        new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);
-        new RuleCachingGenerator(classNode).creatingCachingConstructs();
+    private void setup() throws Exception {
+        new ClassNodeInitializer(
+                new RuleMethodAnalyzer(
+                        new RuleMethodInstructionGraphPartitioner(
+                                new RuleMethodTransformer(
+                                        new RuleCachingGenerator(null)
+                                )
+                        )
+                )
+        ).transform(classNode);
     }
 
     @Test

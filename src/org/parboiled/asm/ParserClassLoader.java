@@ -16,17 +16,15 @@
 
 package org.parboiled.asm;
 
-import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.ClassWriter;
 
-public class ExtendedParserClassGenerator {
-    private final ClassNode classNode;
+public class ParserClassLoader extends ClassLoader implements ClassTransformer {
 
-    public ExtendedParserClassGenerator(ClassNode classNode) {
-        this.classNode = classNode;
-    }
-
-    public Class<?> generate() {
-        return null;
+    public Class<?> transform(ParserClassNode classNode) throws Exception {
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(classWriter);
+        byte[] code = classWriter.toByteArray();
+        return defineClass(null, code, 0, code.length);
     }
 
 }

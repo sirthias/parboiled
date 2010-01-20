@@ -16,7 +16,6 @@
 
 package org.parboiled.asm;
 
-import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
@@ -24,23 +23,25 @@ import org.parboiled.support.Checks;
 
 import java.util.List;
 
-public class RuleMethodAnalyzer {
+public class RuleMethodAnalyzer implements ClassTransformer {
 
-    private final ParserClassNode classNode;
+    private final ClassTransformer nextTransformer;
 
-    public RuleMethodAnalyzer(@NotNull ParserClassNode classNode) {
-        this.classNode = classNode;
+    public RuleMethodAnalyzer(ClassTransformer classTransformer) {
+        this.nextTransformer = classTransformer;
     }
 
     @SuppressWarnings({"unchecked"})
-    public void constructRuleMethodInstructionGraphs(List<RuleMethodInfo> methodInfos) throws AnalyzerException {
+    public Class<?> transform(ParserClassNode classNode) throws Exception {
         for (MethodNode method : (List<MethodNode>) classNode.methods) {
-            RuleMethodInfo methodInfo = analyzeRuleMethod(method);
-            methodInfos.add(methodInfo);
+            RuleMethodInfo methodInfo = analyzeRuleMethod(classNode, method);
+            classNode.methodInfos.add(methodInfo);
         }
+
+        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
     }
 
-    private RuleMethodInfo analyzeRuleMethod(@NotNull MethodNode method) throws AnalyzerException {
+    private RuleMethodInfo analyzeRuleMethod(ParserClassNode classNode, MethodNode method) throws AnalyzerException {
         Checks.ensure(method.maxLocals == 1, "Parser rule method '%s()' contains local variables, " +
                 "which are not allowed in rule defining methods", method.name);
 

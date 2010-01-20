@@ -18,8 +18,7 @@ package org.parboiled.asm;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Value;
-import org.parboiled.test.AsmTestUtils;
-import static org.parboiled.test.AsmTestUtils.getMethodInstructionList;
+import static org.parboiled.asm.AsmTestUtils.getMethodInstructionList;
 import static org.parboiled.test.TestUtils.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -29,20 +28,21 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.ArrayList;
 
 @SuppressWarnings({"FieldCanBeLocal"})
 public class RuleMethodAnalysisTest {
 
-    private final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
+    private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
+    private final List<RuleMethodInfo> methodInfos = classNode.methodInfos;
     private String dotSource;
 
     @BeforeClass
     public void setup() throws Exception {
-        ParserClassNode classNode = new ParserClassNode(TestParser.class);
-        new ClassNodeInitializer(classNode).initialize();
-        new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
-        new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
+        new ClassNodeInitializer(
+                new RuleMethodAnalyzer(
+                        new RuleMethodInstructionGraphPartitioner(null)
+                )
+        ).transform(classNode);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class RuleMethodAnalysisTest {
 
         testMethodAnalysis("simpleActionRule", 969826483L, true);
         // renderToGraphViz(dotSource);
-        
+
         testMethodAnalysis("upSetActionRule", 2765227992L, true);
         // renderToGraphViz(dotSource);
 

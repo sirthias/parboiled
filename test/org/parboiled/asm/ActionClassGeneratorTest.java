@@ -16,33 +16,31 @@
 
 package org.parboiled.asm;
 
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.tree.analysis.AnalyzerException;
-import org.objectweb.asm.util.TraceClassVisitor;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.CheckClassAdapter;
-import org.parboiled.test.AsmTestUtils;
+import org.objectweb.asm.util.TraceClassVisitor;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.test.TestUtils.computeCRC;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.ArrayList;
 
 public class ActionClassGeneratorTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
-    private final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
+    private final List<RuleMethodInfo> methodInfos = classNode.methodInfos;
 
     @BeforeClass
-    private void setup() throws IOException, AnalyzerException {
-        new ClassNodeInitializer(classNode).initialize();
-        new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
-        new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
+    private void setup() throws Exception {
+        new ClassNodeInitializer(
+                new RuleMethodAnalyzer(
+                        new RuleMethodInstructionGraphPartitioner(null)
+                )
+        ).transform(classNode);
     }
 
     @Test

@@ -16,7 +16,7 @@
 
 package org.parboiled.asm;
 
-public class InstructionSubSet {
+class InstructionSubSet {
     public final boolean isActionSet;
     public final int firstIndex;
     public final int lastIndex;

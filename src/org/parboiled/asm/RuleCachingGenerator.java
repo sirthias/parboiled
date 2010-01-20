@@ -20,21 +20,24 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-public class RuleCachingGenerator implements Opcodes {
-    private final ParserClassNode classNode;
+public class RuleCachingGenerator implements ClassTransformer, Opcodes {
 
-    public RuleCachingGenerator(ParserClassNode classNode) {
-        this.classNode = classNode;
+    private final ClassTransformer nextTransformer;
+
+    public RuleCachingGenerator(ClassTransformer nextTransformer) {
+        this.nextTransformer = nextTransformer;
     }
 
-    public void creatingCachingConstructs() {
+    public Class<?> transform(ParserClassNode classNode) throws Exception {
         for (Object methodObj : classNode.methods) {
-            createCachingConstructs((MethodNode) methodObj);
+            createCachingConstructs(classNode, (MethodNode) methodObj);
         }
+
+        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void createCachingConstructs(MethodNode method) {
+    private void createCachingConstructs(ParserClassNode classNode, MethodNode method) {
         String cacheFieldName = "cache$" + method.name;
         String ruleTypeDesc = Types.RULE_TYPE.getDescriptor();
         String proxyMatcherType = Types.PROXY_MATCHER_TYPE.getInternalName();
