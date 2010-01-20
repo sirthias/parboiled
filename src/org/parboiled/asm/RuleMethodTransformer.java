@@ -17,6 +17,8 @@
 package org.parboiled.asm;
 
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.*;
 
 import java.util.List;
 
@@ -30,17 +32,48 @@ public class RuleMethodTransformer implements Opcodes {
 
     public void transformRuleMethods(List<RuleMethodInfo> methodInfos) {
         for (RuleMethodInfo methodInfo : methodInfos) {
-            transformMethod(methodInfo);
+            if (methodInfo.hasActions()) {
+                transformRuleMethodContainingActions(methodInfo);
+            } else {
+                transformRuleMethodWithoutActions(methodInfo);
+            }
         }
     }
 
-    private void transformMethod(RuleMethodInfo methodInfo) {
-        if (methodInfo.hasActions()) {
-            int actionNr = 1;
-            for (InstructionSubSet subSet : methodInfo.getInstructionSubSets()) {
-                ActionClassGenerator generator = new ActionClassGenerator(classNode, methodInfo, subSet, actionNr++);
+    private void transformRuleMethodContainingActions(RuleMethodInfo methodInfo) {
+        int actionNr = 1;
+        for (InstructionSubSet subSet : methodInfo.getInstructionSubSets()) {
+            if (subSet.isActionSet) {
+                Type actionType =
+                        new ActionClassGenerator(classNode, methodInfo, subSet, actionNr++).defineActionClass();
+                insertActionClassCreation(methodInfo, subSet, actionType);
             }
         }
+    }
+
+    private void insertActionClassCreation(RuleMethodInfo methodInfo, InstructionSubSet subSet, Type actionType) {
+        InsnList methodInstructions = methodInfo.method.instructions;
+        AbstractInsnNode firstAfterAction = methodInfo.instructionGraphNodes[subSet.lastIndex + 1].instruction;
+
+        // we do not have to remove the action instructions from the rule method as this has already happened
+        // during action class creation, all we have to do is insert the action class creation instructions
+        methodInstructions.insertBefore(firstAfterAction, new TypeInsnNode(NEW, actionType.getInternalName()));
+        methodInstructions.insertBefore(firstAfterAction, new InsnNode(DUP));
+        methodInstructions.insertBefore(firstAfterAction, new VarInsnNode(ALOAD, 0));
+        methodInstructions.insertBefore(firstAfterAction,
+                new MethodInsnNode(INVOKESPECIAL, actionType.getInternalName(), "<init>",
+                        "(" + classNode.getType().getDescriptor() + ")V"));
+    }
+
+    private void transformRuleMethodWithoutActions(RuleMethodInfo methodInfo) {
+        // replace all method code with a simple call to the super method
+        // we do not just delete the method because its code is later going to wrapped with the caching code
+        InsnList methodInstructions = methodInfo.method.instructions;
+        methodInstructions.clear();
+        methodInstructions.add(new VarInsnNode(ALOAD, 0));
+        methodInstructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.ownerTypes.get(1).getInternalName(),
+                methodInfo.method.name, "()" + Types.RULE_TYPE.getDescriptor()));
+        methodInstructions.add(new InsnNode(ARETURN));
     }
 
 }

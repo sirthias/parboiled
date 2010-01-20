@@ -65,6 +65,8 @@ public class Parboiled {
 
         new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);
 
+
+
         return new ExtendedParserClassGenerator(classNode).generate();
     }
 

@@ -18,25 +18,20 @@ package org.parboiled.asm;
 
 import org.parboiled.AbstractAction;
 import org.parboiled.Context;
-import org.parboiled.MatcherContext;
 import org.parboiled.support.Checks;
 
 public abstract class ActionWrapperBase<V> extends AbstractAction<V> {
 
     protected final void UP() {
-		Context<V> parentContext = context.getParent();
-		Checks.ensure(parentContext != null, "Illegal UP() call, already at root level");
-		this.context = parentContext;
-	}
+        Context<V> parentContext = context.getParent();
+        Checks.ensure(parentContext != null, "Illegal UP() call, already at root level");
+        this.context = parentContext;
+    }
 
-	protected final void DOWN() {
-		Context<V> subContext = context.getSubContext();
-		Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
-		this.context = subContext;
-	}
-
-    protected final boolean inPredicate() {
-		return ((MatcherContext<?>) context).inPredicate();
-	}
+    protected final void DOWN() {
+        Context<V> subContext = context.getSubContext();
+        Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
+        this.context = subContext;
+    }
 
 }

@@ -16,24 +16,30 @@
 
 package org.parboiled.asm;
 
-import org.parboiled.AbstractAction;
-import org.parboiled.BaseParser;
 import org.objectweb.asm.util.ASMifierClassVisitor;
+import org.parboiled.AbstractAction;
+import org.parboiled.Rule;
+import org.parboiled.examples.calculator.CalculatorParser;
 
-public class ASMifierHelper extends BaseParser<String> {
+public class ASMifierHelper extends CalculatorParser {
 
     private final Integer action = 12345;
 
     public class ActionWrapper extends AbstractAction<String> {
 
         public boolean run() {
-            return SET(action.toString());
+            return SET(action);
         }
 
     }
 
+    @Override
+    public Rule empty() {
+        return super.empty();
+    }
+
     public static void main(String[] args) throws Exception {
-        ASMifierClassVisitor.main(new String[] { ActionWrapper.class.getName() });
+        ASMifierClassVisitor.main(new String[] {ASMifierHelper.class.getName()});
     }
 
 }

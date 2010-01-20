@@ -21,7 +21,6 @@ import org.parboiled.*;
 
 interface Types {
 
-    final Type OBJECT_TYPE = Type.getType(Object.class);
     final Type BOOLEAN_TYPE = Type.getType(Boolean.class);
     final Type RULE_TYPE = Type.getType(Rule.class);
     final Type CONTEXT_AWARE_TYPE = Type.getType(ContextAware.class);

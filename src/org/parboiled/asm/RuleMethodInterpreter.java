@@ -34,8 +34,7 @@ import java.util.List;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
-    private static final String CONTEXT_SWITCH_DESCRIPTOR =
-            Type.getMethodDescriptor(Types.OBJECT_TYPE, new Type[] {Types.OBJECT_TYPE});
+    private static final String CONTEXT_SWITCH_DESCRIPTOR = "(Ljava/lang/Object;)Ljava/lang/Object;";
 
     private final ParserClassNode classNode;
     private final RuleMethodInfo methodInfo;
@@ -64,10 +63,14 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public Value unaryOperation(AbstractInsnNode insn, Value value) throws AnalyzerException {
+        Checks.ensure(insn.getOpcode() != PUTSTATIC, "Illegal parser rule definition '" + methodInfo.method.name +
+                "': Writing to a static field is not allowed from within a parser rule method");
         return createNode(insn, super.unaryOperation(insn, null), value);
     }
 
     public Value binaryOperation(AbstractInsnNode insn, Value value1, Value value2) throws AnalyzerException {
+        Checks.ensure(insn.getOpcode() != PUTFIELD, "Illegal parser rule definition '" + methodInfo.method.name +
+                "': Writing to a field is not allowed from within a parser rule method");
         return createNode(insn, super.binaryOperation(insn, null, null), value1, value2);
     }
 
@@ -148,7 +151,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     private boolean isAction(BasicValue resultBasicValue) {
-        return resultBasicValue != null && Types.BOOLEAN_TYPE.equals(resultBasicValue.getType());
+        return resultBasicValue != null && resultBasicValue.getType().equals(Types.BOOLEAN_TYPE);
     }
 
     private boolean isContextSwitch(AbstractInsnNode insn) {

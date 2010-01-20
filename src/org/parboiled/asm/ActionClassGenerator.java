@@ -18,6 +18,7 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
+import org.parboiled.support.Checks;
 
 public class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
 
@@ -27,6 +28,7 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
     private final String actionSimpleName;
     private final Type actionType;
     private final String classNodeTypeDesc;
+    private byte[] code;
 
     public ActionClassGenerator(ParserClassNode classNode, RuleMethodInfo methodInfo, InstructionSubSet subSet,
                                 int actionNumber) {
@@ -45,10 +47,14 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
         generateRunMethod(cw);
         cw.visitEnd();
 
-        byte[] code = cw.toByteArray();
-        Class<?> actionClass = defineClass(null, code, 0, code.length);
+        code = cw.toByteArray();
+        defineClass(null, code, 0, code.length);
 
         return actionType;
+    }
+
+    public byte[] getCode() {
+        return code;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -76,7 +82,7 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
     }
 
     private void generateRunMethod(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", Type.BOOLEAN_TYPE.getInternalName(), null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", "()Z", null, null);
         mv.visitCode();
 
         Label l0 = new Label();
@@ -87,16 +93,20 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
         Label l1 = new Label();
         mv.visitLabel(l1);
         mv.visitLocalVariable("this", actionType.getDescriptor(), null, l0, l1, 0);
-        mv.visitMaxs(0, 0);
+        mv.visitMaxs(0, 0); // trigger automatic computing
         mv.visitEnd();
     }
 
+    @SuppressWarnings({"UnnecessaryContinue"})
     private void generateRunMethodBody(MethodVisitor mv) {
-        InsnList newInstructions = new InsnList();
+        InsnList runMethodInstructions = new InsnList();
 
-        // initialize with the old instruction list
+        // move action instructions from method instruction list into the list of runMethodInstructions
+        InsnList ruleMethodInstructions = methodInfo.method.instructions;
         for (int i = subSet.firstIndex; i <= subSet.lastIndex; i++) {
-            newInstructions.add(methodInfo.instructionGraphNodes[i].instruction);
+            AbstractInsnNode insn = methodInfo.instructionGraphNodes[i].instruction;
+            ruleMethodInstructions.remove(insn);
+            runMethodInstructions.add(insn);
         }
 
         // work backwards through the old instructions list and apply adaptations to the new list
@@ -104,27 +114,55 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
             InstructionGraphNode node = methodInfo.instructionGraphNodes[i];
             AbstractInsnNode insn = node.instruction;
 
-            if (changeThisToInnerClassParent(newInstructions, insn)) continue;
-            if (insertMagicUpDownCode(newInstructions, node)) continue;
-            insertSetContextCallBeforeCallsOnContextAware(newInstructions, node);
+            if (insertContextSwitchCode(runMethodInstructions, node)) continue;
+            if (insertSetContextCallBeforeCallsOnContextAware(runMethodInstructions, node)) continue;
+            if (changeThisToInnerClassParent(runMethodInstructions, insn)) continue;
+        }
+
+        // make sure the method result is a "boolean" and not a "Boolean"
+        if (isBooleanValueOf(runMethodInstructions.getLast())) {
+            // if we are just converting a "boolean" into a "Boolean" at the end remove the conversion
+            runMethodInstructions.remove(runMethodInstructions.getLast());
+        } else {
+            // convert the "Boolean" into the primitive
+            runMethodInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z"));
         }
 
         // write new instructions
-        newInstructions.accept(mv);
+        runMethodInstructions.accept(mv);
 
-        mv.visitInsn(ARETURN);
+        mv.visitInsn(IRETURN);
     }
 
-    private boolean changeThisToInnerClassParent(InsnList newInstructions, AbstractInsnNode insn) {
-        if (insn.getOpcode() != ALOAD || ((VarInsnNode) insn).var != 0) return false;
-        newInstructions.insertBefore(insn.getNext(),
-                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "this$0", classNodeTypeDesc)
-        );
-        return true;
+    private boolean isBooleanValueOf(AbstractInsnNode insn) {
+        if (insn.getOpcode() != INVOKESTATIC) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return "java/lang/Boolean".equals(mi.owner) && "valueOf".equals(mi.name) &&
+                "(Z)Ljava/lang/Boolean;".equals(mi.desc);
     }
 
-    private boolean insertMagicUpDownCode(InsnList newInstructions, InstructionGraphNode node) {
+    private boolean insertContextSwitchCode(InsnList newInstructions, InstructionGraphNode node) {
         if (!node.isContextSwitch) return false;
+
+        String contextSwitchType = ((MethodInsnNode) node.instruction).name;
+
+        // insert context-switching call (UP/DOWN) before first instruction contributing to the argument
+        AbstractInsnNode targetSettingInsn = node.getEarlierstPredecessor().instruction;
+        Checks.ensure(targetSettingInsn.getOpcode() == ALOAD && ((VarInsnNode) targetSettingInsn).var == 0,
+                "Illegal context switching construct in parser rule method '" + methodInfo.method.name + "': " +
+                        "UP(...) or DOWN(...) can only be called on the parser instance itself");
+
+        newInstructions.insert(targetSettingInsn,
+                new MethodInsnNode(INVOKEVIRTUAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(), contextSwitchType, "()V")
+        );
+
+        // replace original context-switching call with the opposite one, reversing the context switch done before
+        newInstructions.insertBefore(node.instruction, new VarInsnNode(ALOAD, 0));
+        newInstructions.insertBefore(node.instruction,
+                new MethodInsnNode(INVOKEVIRTUAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(),
+                        "UP".equals(contextSwitchType) ? "DOWN" : "UP", "()V")
+        );
+        newInstructions.remove(node.instruction);
 
         return true;
     }
@@ -132,15 +170,29 @@ public class ActionClassGenerator extends ClassLoader implements Opcodes, Types 
     private boolean insertSetContextCallBeforeCallsOnContextAware(InsnList newInstructions, InstructionGraphNode node) {
         if (!node.isCallOnContextAware) return false;
 
-        AbstractInsnNode earliestPredecessor = node.getEarlierstPredecessor().instruction;
-        InsnList inserts = new InsnList();
-        inserts.add(new InsnNode(DUP));
-        inserts.add(new VarInsnNode(ALOAD, 0));
-        inserts.add(new FieldInsnNode(GETFIELD, actionType.getInternalName(), "context",
-                CONTEXT_TYPE.getDescriptor()));
-        inserts.add(new MethodInsnNode(INVOKEINTERFACE, CONTEXT_AWARE_TYPE.getInternalName(),
-                "setContext", "(" + CONTEXT_TYPE.getDescriptor() + ")V"));
-        newInstructions.insert(earliestPredecessor, inserts);
+        AbstractInsnNode firstAfterTargetSettingInsn = node.getEarlierstPredecessor().instruction.getNext();
+        newInstructions.insertBefore(firstAfterTargetSettingInsn, new InsnNode(DUP));
+        newInstructions.insertBefore(firstAfterTargetSettingInsn, new VarInsnNode(ALOAD, 0));
+        newInstructions.insertBefore(firstAfterTargetSettingInsn,
+                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "context", CONTEXT_TYPE.getDescriptor()));
+        newInstructions.insertBefore(firstAfterTargetSettingInsn,
+                new MethodInsnNode(INVOKEINTERFACE, CONTEXT_AWARE_TYPE.getInternalName(),
+                        "setContext", "(" + CONTEXT_TYPE.getDescriptor() + ")V"));
+
+        return true;
+    }
+
+    private boolean changeThisToInnerClassParent(InsnList newInstructions, AbstractInsnNode insn) {
+        if (insn.getOpcode() != ALOAD || ((VarInsnNode) insn).var != 0) return false;
+        if (insn.getNext() instanceof MethodInsnNode &&
+                ((MethodInsnNode) insn.getNext()).owner.equals(ACTION_WRAPPER_BASE_TYPE.getInternalName())) {
+            // do not change the "ALOAD 0" we left in place for a following context switch call
+            return false;
+        }
+
+        newInstructions.insert(insn,
+                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "this$0", classNodeTypeDesc)
+        );
         return true;
     }
 
