@@ -18,6 +18,8 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.Type;
 import org.parboiled.*;
+import org.parboiled.matchers.ProxyMatcher;
+import org.parboiled.matchers.Matcher;
 
 interface Types {
 
@@ -27,5 +29,7 @@ interface Types {
     final Type CONTEXT_TYPE = Type.getType(Context.class);
     final Type BASE_PARSER_TYPE = Type.getType(BaseParser.class);
     final Type ACTION_WRAPPER_BASE_TYPE = Type.getType(ActionWrapperBase.class);
+    final Type PROXY_MATCHER_TYPE = Type.getType(ProxyMatcher.class);
+    final Type MATCHER_TYPE = Type.getType(Matcher.class);
 
 }

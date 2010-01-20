@@ -47,20 +47,20 @@ public class RuleMethodAnalysisTest {
 
     @Test
     public void testMethodAnalysis() throws Exception {
-        testMethodAnalysis("noActionRule", 1519282185L, false);
+        testMethodAnalysis("noActionRule", 3116076158L, false);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("simpleActionRule", 450882377L, true);
+        testMethodAnalysis("simpleActionRule", 969826483L, true);
         // renderToGraphViz(dotSource);
         
-        testMethodAnalysis("upSetActionRule", 1603626511L, true);
+        testMethodAnalysis("upSetActionRule", 2765227992L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("booleanExpressionActionRule", 727215768L, true);
+        testMethodAnalysis("booleanExpressionActionRule", 208356363L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("complexActionsRule", 2219831153L, true);
-        renderToGraphViz(dotSource);
+        testMethodAnalysis("complexActionsRule", 3379671642L, true);
+        // renderToGraphViz(dotSource);
     }
 
     private void testMethodAnalysis(String methodName, long dotSourceCRC, boolean hasActions) throws Exception {

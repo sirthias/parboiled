@@ -32,7 +32,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.ArrayList;
 
-public class RuleMethodTransformerTest {
+public class RuleMethodTransformationTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
 
@@ -43,16 +43,17 @@ public class RuleMethodTransformerTest {
         new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
         new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
         new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);
+        new RuleCachingGenerator(classNode).creatingCachingConstructs();
     }
 
     @Test
     public void testTransformRuleMethods() throws Exception {
-        testRuleMethodTransformation("any", 1972846964L);
-        testRuleMethodTransformation("noActionRule", 4075739981L);
-        testRuleMethodTransformation("simpleActionRule", 1897158298L);
-        testRuleMethodTransformation("upSetActionRule", 751371863L);
-        testRuleMethodTransformation("booleanExpressionActionRule", 3918322409L);
-        testRuleMethodTransformation("complexActionsRule", 1772845360L);
+        testRuleMethodTransformation("any", 1199296662L);
+        testRuleMethodTransformation("noActionRule", 2855897108L);
+        testRuleMethodTransformation("simpleActionRule", 185852305L);
+        testRuleMethodTransformation("upSetActionRule", 2586997939L);
+        testRuleMethodTransformation("booleanExpressionActionRule", 436033411L);
+        testRuleMethodTransformation("complexActionsRule", 1496808455L);
     }
 
     private void testRuleMethodTransformation(String methodName, long expectedTraceCRC) throws Exception {

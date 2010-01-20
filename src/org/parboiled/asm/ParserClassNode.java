@@ -26,7 +26,7 @@ import java.util.List;
 
 public class ParserClassNode extends ClassNode {
 
-    public final List<Type> ownerTypes;
+    public final List<Type> superTypes;
 
     public ParserClassNode(@NotNull Class<?> parserClass) {
         List<Type> ownerTypes = new ArrayList<Type>();
@@ -34,11 +34,11 @@ public class ParserClassNode extends ClassNode {
             ownerTypes.add(Type.getType(parserClass));
             parserClass = parserClass.getSuperclass();
         } while (!Object.class.equals(parserClass));
-        this.ownerTypes = ImmutableList.copyOf(ownerTypes);
+        this.superTypes = ImmutableList.copyOf(ownerTypes);
     }
 
     public Type getType() {
-        return ownerTypes.get(0);
+        return superTypes.get(0);
     }
 
 }

@@ -21,32 +21,42 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.EmptyVisitor;
+import org.objectweb.asm.commons.RemappingClassAdapter;
+import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ClassNodeInitializer extends EmptyVisitor implements Opcodes {
 
     private final ParserClassNode classNode;
+    private final Map<String, String> nameMap = new HashMap<String, String>();
     private boolean collectFromSuperClasses;
 
     public ClassNodeInitializer(ParserClassNode classNode) {
         this.classNode = classNode;
+
+        String newParserType = classNode.getType().getInternalName() + "$$parboiled";
+        for (Type superType : classNode.superTypes) {
+            nameMap.put(superType.getInternalName(), newParserType);
+        }
     }
 
     public void initialize() throws IOException {
-        for (int i = 0; i < classNode.ownerTypes.size(); i++) {
+        for (int i = 0; i < classNode.superTypes.size(); i++) {
             collectFromSuperClasses = i > 0;
-            Type type = classNode.ownerTypes.get(i);
+            Type type = classNode.superTypes.get(i);
             ClassReader classReader = new ClassReader(type.getClassName());
-            classReader.accept(this, ClassReader.SKIP_FRAMES);
+            classReader.accept(new RemappingClassAdapter(this, new SimpleRemapper(nameMap)), ClassReader.SKIP_FRAMES);
         }
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if (!collectFromSuperClasses) {
-            classNode.visit(version, access, name, signature, superName, interfaces);
+            classNode.visit(version, access, name, null, classNode.getType().getInternalName(), null);
         }
     }
 

@@ -19,11 +19,14 @@ package org.parboiled.asm;
 import org.objectweb.asm.util.ASMifierClassVisitor;
 import org.parboiled.AbstractAction;
 import org.parboiled.Rule;
+import org.parboiled.matchers.ProxyMatcher;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.examples.calculator.CalculatorParser;
 
 public class ASMifierHelper extends CalculatorParser {
 
     private final Integer action = 12345;
+    private Rule cacheSomeRule;
 
     public class ActionWrapper extends AbstractAction<String> {
 
@@ -36,6 +39,22 @@ public class ASMifierHelper extends CalculatorParser {
     @Override
     public Rule empty() {
         return super.empty();
+    }
+
+    public Rule someRule() {
+        return any();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule someRuleCached() {
+        if (cacheSomeRule == null) {
+            cacheSomeRule = new ProxyMatcher();
+
+            Rule rule = any();
+            ((ProxyMatcher)cacheSomeRule).arm((Matcher) rule);
+            cacheSomeRule = rule; 
+        }
+        return cacheSomeRule;
     }
 
     public static void main(String[] args) throws Exception {

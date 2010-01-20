@@ -189,7 +189,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     private boolean isOwnerMethod(MethodInsnNode methodInsn) {
-        for (Type ownerType : classNode.ownerTypes) {
+        if (classNode.name.equals(methodInsn.owner)) return true;
+        for (Type ownerType : classNode.superTypes) {
             if (ownerType.getInternalName().equals(methodInsn.owner)) return true;
         }
         return false;

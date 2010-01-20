@@ -47,12 +47,12 @@ public class ActionClassGeneratorTest {
 
     @Test
     public void testDefineActionClass() throws Exception {
-        testActionClassGeneration("simpleActionRule", 0, 1404500268L);
-        testActionClassGeneration("upSetActionRule", 0, 3524146926L);
-        testActionClassGeneration("booleanExpressionActionRule", 0, 684100711L);
-        testActionClassGeneration("complexActionsRule", 0, 2220598068L);
-        testActionClassGeneration("complexActionsRule", 1, 175264187L);
-        testActionClassGeneration("complexActionsRule", 2, 1237660297L);
+        testActionClassGeneration("simpleActionRule", 0, 3638779475L);
+        testActionClassGeneration("upSetActionRule", 0, 3605260248L);
+        testActionClassGeneration("booleanExpressionActionRule", 0, 2949371306L);
+        testActionClassGeneration("complexActionsRule", 0, 4181118395L);
+        testActionClassGeneration("complexActionsRule", 1, 1895878592L);
+        testActionClassGeneration("complexActionsRule", 2, 744541422L);
     }
 
     private void testActionClassGeneration(String methodName, int actionNr, long expectedTraceCRC) throws Exception {

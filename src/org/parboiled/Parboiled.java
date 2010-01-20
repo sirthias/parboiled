@@ -62,7 +62,8 @@ public class Parboiled {
         new ClassNodeInitializer(classNode).initialize();
         new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
         new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
-        new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);                
+        new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);
+        new RuleCachingGenerator(classNode).creatingCachingConstructs();
 
         return new ExtendedParserClassGenerator(classNode).generate();
     }
