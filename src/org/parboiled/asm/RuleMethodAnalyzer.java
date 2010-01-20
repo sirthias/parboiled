@@ -22,7 +22,6 @@ import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.parboiled.support.Checks;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RuleMethodAnalyzer {
@@ -34,13 +33,11 @@ public class RuleMethodAnalyzer {
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<RuleMethodInfo> constructRuleMethodInstructionGraphs() throws AnalyzerException {
-        List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>(classNode.methods.size());
+    public void constructRuleMethodInstructionGraphs(List<RuleMethodInfo> methodInfos) throws AnalyzerException {
         for (MethodNode method : (List<MethodNode>) classNode.methods) {
             RuleMethodInfo methodInfo = analyzeRuleMethod(method);
             methodInfos.add(methodInfo);
         }
-        return methodInfos;
     }
 
     private RuleMethodInfo analyzeRuleMethod(@NotNull MethodNode method) throws AnalyzerException {

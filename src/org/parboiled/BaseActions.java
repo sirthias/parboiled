@@ -281,7 +281,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Creates an action parameter that evaluates to the input text matched by the last node created during this parsing run.
+     * Creates an action parameter that evaluates to the first character of the input text matched by the last node created during this parsing run.
      * Equivalent to <code>CHAR(LAST_NODE())</code>.
      *
      * @return the action parameter
@@ -336,46 +336,6 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      */
     public boolean IN_PREDICATE() {
         return context.inPredicate();
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to an Integer.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Integer CONVERT_TO_INTEGER(String text) {
-        return Integer.parseInt(text);
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to a Long.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Long CONVERT_TO_LONG(String text) {
-        return Long.parseLong(text);
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to a Float.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Float CONVERT_TO_FLOAT(String text) {
-        return Float.parseFloat(text);
-    }
-
-    /**
-     * Creates an action parameter that converts the given text parameter to a Double.
-     *
-     * @param text the text (parameter) to convert
-     * @return the action parameter
-     */
-    public Double CONVERT_TO_DOUBLE(String text) {
-        return Double.parseDouble(text);
     }
 
 }

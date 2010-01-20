@@ -16,71 +16,95 @@
 
 package org.parboiled.asm;
 
+import org.parboiled.BaseActions;
+import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.examples.calculator3.CalculatorParser;
 
-@SuppressWarnings({"UnusedDeclaration"})
-class TestActions {
+class SimpleActions {
+    public char lastTest;
+
+    public int return5() {
+        return 5;
+    }
+
+    public boolean testX(char c) {
+        lastTest = c;
+        return c == 'X';
+    }
+}
+
+class ContextActions extends BaseActions<Integer> {
+
     public int action1() {
         return 5;
     }
 
-    public boolean action2(char c) {
-        return true;
+    public boolean action2(int row) {
+        return row == 26 && getContext().getMatcher().getLabel().equals("specialSeq");
     }
 }
 
-class TestParser extends CalculatorParser {
-    private final TestActions testActions = new TestActions();
+class TestParser extends BaseParser<Integer> {
+    private final SimpleActions actions = new SimpleActions();
+    private final ContextActions contextActions = new ContextActions();
 
-    /*public Rule localVarRule() {
-        char next_char = nextChar();
+    public Rule noActionRule() {
         return sequence(
-                ch(next_char),
-                actions.action2(next_char)
-        );
-    }*/
-
-    /*public Rule conditionActionRule() {
-        return sequence(
-                rule(),
-                nextChar() == 'y' ? ActionResult.CONTINUE : ActionResult.CANCEL_MATCH
-        );
-    }*/
-
-    public Rule intComparison() {
-        return sequence(
-                atom(), "some Text",
-                testActions.action1() == 26
+                'a',
+                oneOrMore(
+                        sequence(
+                                'b',
+                                optional('c')
+                        )
+                )
         );
     }
 
-    public Rule skipInPredicate() {
+    public Rule simpleActionRule() {
         return sequence(
-                atom(), "some Text",
-                IN_PREDICATE() || testActions.action2(LAST_CHAR())
+                'a',
+                actions.testX(LAST_CHAR())
         );
     }
 
-    public Rule simpleTernary() {
+    public Rule upSetActionRule() {
         return sequence(
-                atom(), "some Text",
-                testActions.action1() == 5 ? IN_PREDICATE() : testActions.action2(LAST_CHAR())
+                'a',
+                oneOrMore(
+                        sequence(
+                                'b',
+                                UP(UP(SET(actions.return5()))),
+                                optional('c')
+                        )
+                )
         );
     }
 
-    public Rule upDownAction() {
+    public Rule booleanExpressionActionRule() {
         return sequence(
-                atom(), "some Text",
-                UP(testActions.action2(DOWN(LAST_CHAR())))
+                'a',
+                oneOrMore(
+                        sequence(
+                                'b',
+                                optional('c')
+                        )
+                ),
+                !IN_PREDICATE() && LAST_CHAR() == 'b'
         );
     }
 
-    public Rule twoActionsRule() {
+    public Rule complexActionsRule() {
         return sequence(
-                atom(), "some Text",
-                SET(actions.createAst(1.0)),
-                testActions.action2(NEXT_CHAR())
+                'a',
+                oneOrMore(
+                        sequence(
+                                ch('b').label("b"),
+                                optional('c'),
+                                UP(DOWN(contextActions.action2(NODE("b").getEndLocation().row + 26))),
+                                UP(SET(actions.return5()))
+                        ).label("specialSeq")
+                ),
+                SET()
         );
     }
 

@@ -25,14 +25,14 @@ import java.io.IOException;
 public class ClassNodeInitializerTest {
 
     @Test
-    public void test() throws IOException {
+    public void testClassNodeInitialization() throws IOException {
         ParserClassNode classNode = new ParserClassNode(TestParser.class);
         new ClassNodeInitializer(classNode).initialize();
 
         StringBuilder sb = new StringBuilder();
         for (Object method : classNode.methods) sb.append(((MethodNode) method).name).append(',');
-        assertEqualsMultiline(sb.toString(), "twoActionsRule,inputLine,expression,term,factor,atom,squareRoot," +
-                "parens,number,digit,whiteSpace,newline,eoi,any,empty,");
+        assertEqualsMultiline(sb.toString(), "noActionRule,simpleActionRule,upSetActionRule," +
+                "booleanExpressionActionRule,complexActionsRule,eoi,any,empty,");
     }
 
 }

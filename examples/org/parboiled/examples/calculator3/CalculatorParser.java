@@ -99,7 +99,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
                         oneOrMore(digit()),
                         optional(sequence(ch('.'), oneOrMore(digit())))
                 ),
-                SET(actions.createAst(CONVERT_TO_DOUBLE(LAST_TEXT()))),
+                SET(actions.createAst(Double.parseDouble(LAST_TEXT()))),
                 whiteSpace()
         );
     }

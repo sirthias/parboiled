@@ -22,6 +22,7 @@ import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Main class providing the high-level entrypoints into the parboiled library.
@@ -56,16 +57,12 @@ public class Parboiled {
 
     private static Class<?> createExtendedParserClass(Class<?> parserClass) throws Exception {
         ParserClassNode classNode = new ParserClassNode(parserClass);
+        List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
 
         new ClassNodeInitializer(classNode).initialize();
-
-        List<RuleMethodInfo> methodInfos = new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs();
-
+        new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
         new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
-
-        new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);
-
-
+        new RuleMethodTransformer(classNode).transformRuleMethods(methodInfos);                
 
         return new ExtendedParserClassGenerator(classNode).generate();
     }

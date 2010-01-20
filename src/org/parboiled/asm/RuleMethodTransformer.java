@@ -69,11 +69,25 @@ public class RuleMethodTransformer implements Opcodes {
         // replace all method code with a simple call to the super method
         // we do not just delete the method because its code is later going to wrapped with the caching code
         InsnList methodInstructions = methodInfo.method.instructions;
-        methodInstructions.clear();
-        methodInstructions.add(new VarInsnNode(ALOAD, 0));
-        methodInstructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.ownerTypes.get(1).getInternalName(),
-                methodInfo.method.name, "()" + Types.RULE_TYPE.getDescriptor()));
-        methodInstructions.add(new InsnNode(ARETURN));
+        AbstractInsnNode returnInsn = methodInfo.getReturnNode().instruction;
+
+        // do not delete starting label and linenumber instructions
+        AbstractInsnNode current = methodInstructions.getFirst();
+        while (current.getType() == AbstractInsnNode.LABEL || current.getType() == AbstractInsnNode.LINE) {
+            current = current.getNext();
+        }
+
+        // delete all instructions before the return statement
+        while (current != returnInsn) {
+            AbstractInsnNode next = current.getNext();
+            methodInstructions.remove(current);
+            current = next;
+        }
+
+        // insert the call to the super method
+        methodInstructions.insertBefore(returnInsn, new VarInsnNode(ALOAD, 0));
+        methodInstructions.insertBefore(returnInsn, new MethodInsnNode(INVOKESPECIAL, classNode.getType()
+                .getInternalName(), methodInfo.method.name, "()" + Types.RULE_TYPE.getDescriptor()));
     }
 
 }

@@ -71,11 +71,11 @@ public class TimeParser extends BaseParser<Object> {
     }
 
     public Rule oneDigit() {
-        return sequence(digit(), SET(CONVERT_TO_INTEGER(LAST_TEXT())));
+        return sequence(digit(), SET(Integer.parseInt(LAST_TEXT())));
     }
 
     public Rule twoDigits() {
-        return sequence(sequence(digit(), digit()), SET(CONVERT_TO_INTEGER(LAST_TEXT())));
+        return sequence(sequence(digit(), digit()), SET(Integer.parseInt(LAST_TEXT())));
     }
 
     public Rule digit() {

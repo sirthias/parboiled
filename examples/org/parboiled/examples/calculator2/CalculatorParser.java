@@ -73,7 +73,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     public Rule number() {
         return sequence(
                 oneOrMore(digit()),
-                SET(actions.createAst(CONVERT_TO_INTEGER(LAST_TEXT())))
+                SET(actions.createAst(Integer.parseInt(LAST_TEXT())))
         );
     }
 

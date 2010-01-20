@@ -31,34 +31,36 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ActionClassGeneratorTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
-    private List<RuleMethodInfo> methodInfos;
+    private final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
 
     @BeforeClass
     private void setup() throws IOException, AnalyzerException {
         new ClassNodeInitializer(classNode).initialize();
-        RuleMethodAnalyzer analyzer = new RuleMethodAnalyzer(classNode);
-        methodInfos = analyzer.constructRuleMethodInstructionGraphs();
+        new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
         new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
     }
 
     @Test
     public void testDefineActionClass() throws Exception {
-        testActionClassGeneration("intComparison", 126014664L);
-        testActionClassGeneration("skipInPredicate", 3543159925L);
-        testActionClassGeneration("simpleTernary", 2533914645L);
-        testActionClassGeneration("upDownAction", 1200884063L);
-        testActionClassGeneration("twoActionsRule", 771298881L);
+        testActionClassGeneration("simpleActionRule", 0, 1404500268L);
+        testActionClassGeneration("upSetActionRule", 0, 3524146926L);
+        testActionClassGeneration("booleanExpressionActionRule", 0, 684100711L);
+        testActionClassGeneration("complexActionsRule", 0, 2220598068L);
+        testActionClassGeneration("complexActionsRule", 1, 175264187L);
+        testActionClassGeneration("complexActionsRule", 2, 1237660297L);
     }
 
-    private void testActionClassGeneration(String methodName, long traceDumpCRC) throws Exception {
+    private void testActionClassGeneration(String methodName, int actionNr, long expectedTraceCRC) throws Exception {
         RuleMethodInfo info = AsmTestUtils.getByName(methodInfos, methodName);
 
+        int actionNumber = 0;
         for (InstructionSubSet subSet : info.getInstructionSubSets()) {
-            if (subSet.isActionSet) {
+            if (subSet.isActionSet && actionNumber++ == actionNr) {
                 ActionClassGenerator actionClassGenerator = new ActionClassGenerator(classNode, info, subSet, 1);
                 actionClassGenerator.defineActionClass();
 
@@ -73,8 +75,9 @@ public class ActionClassGeneratorTest {
 
                 String classListing = stringWriter.toString();
                 long crc = computeCRC(classListing);
-                if (crc != traceDumpCRC) {
-                    System.out.println("Invalid class listing CRC: " + crc + 'L');
+                if (crc != expectedTraceCRC) {
+                    System.err.printf("Invalid class listing CRC for action %s of method '%s': %sL\n",
+                            actionNr, methodName, crc);
                     assertEqualsMultiline(classListing, "");
                 }
 

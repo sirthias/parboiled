@@ -29,47 +29,38 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.ArrayList;
 
 @SuppressWarnings({"FieldCanBeLocal"})
 public class RuleMethodAnalysisTest {
 
-    private List<RuleMethodInfo> methodInfos;
+    private final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
     private String dotSource;
 
     @BeforeClass
     public void setup() throws Exception {
         ParserClassNode classNode = new ParserClassNode(TestParser.class);
         new ClassNodeInitializer(classNode).initialize();
-        RuleMethodAnalyzer analyzer = new RuleMethodAnalyzer(classNode);
-        methodInfos = analyzer.constructRuleMethodInstructionGraphs();
+        new RuleMethodAnalyzer(classNode).constructRuleMethodInstructionGraphs(methodInfos);
         new RuleMethodPartitioner(methodInfos).partitionMethodGraphs();
     }
 
     @Test
-    public void test() throws Exception {
-        testMethodAnalysis("intComparison", 1493890997L, true);
-        //renderToGraphViz(dotSource);
+    public void testMethodAnalysis() throws Exception {
+        testMethodAnalysis("noActionRule", 1519282185L, false);
+        // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("skipInPredicate", 2810623926L, true);
+        testMethodAnalysis("simpleActionRule", 450882377L, true);
         // renderToGraphViz(dotSource);
         
-        testMethodAnalysis("simpleTernary", 3742309033L, true);
+        testMethodAnalysis("upSetActionRule", 1603626511L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("upDownAction", 462134176L, true);
+        testMethodAnalysis("booleanExpressionActionRule", 727215768L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("atom", 3415441184L, false);
-        // renderToGraphViz(dotSource);
-
-        testMethodAnalysis("twoActionsRule", 1588965106L, true);
-        // renderToGraphViz(dotSource);
-
-        testMethodAnalysis("term", 235170855L, true);
-        // renderToGraphViz(dotSource);
-
-        testMethodAnalysis("number", 897074253L, true);
-        // renderToGraphViz(dotSource);
+        testMethodAnalysis("complexActionsRule", 2219831153L, true);
+        renderToGraphViz(dotSource);
     }
 
     private void testMethodAnalysis(String methodName, long dotSourceCRC, boolean hasActions) throws Exception {
@@ -84,7 +75,7 @@ public class RuleMethodAnalysisTest {
         dotSource = generateDotSource(info, info.getInstructionSubSets());
         long crc = computeCRC(dotSource);
         if (crc != dotSourceCRC) {
-            System.out.println("Invalid dotSource CRC: " + crc + 'L');
+            System.err.println("Invalid dotSource CRC for method '" + methodName + "': " + crc + 'L');
             assertEqualsMultiline(dotSource, "");
         }
     }
