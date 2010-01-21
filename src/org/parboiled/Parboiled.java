@@ -27,7 +27,7 @@ import java.lang.reflect.Constructor;
  */
 public class Parboiled {
 
-    private Parboiled() {}
+    protected Parboiled() {}
 
     /**
      * Creates a parser object whose rule creation methods can then be used with the
@@ -45,31 +45,31 @@ public class Parboiled {
     public static <P extends BaseParser<V>, V> P createParser(@NotNull Class<P> parserClass,
                                                               Object... constructorArgs) {
         try {
-            Class<?> extendParserClass = createExtendedParserClass(parserClass);
-            Constructor constructor = findConstructor(extendParserClass, constructorArgs);
+            ParserClassNode classNode = transformParser(parserClass);
+            Constructor constructor = findConstructor(classNode.extendedClass, constructorArgs);
             return (P) constructor.newInstance(constructorArgs);
         } catch (Exception e) {
             throw new RuntimeException("Error creating extended parser class", e);
         }
     }
 
-    private static Class<?> createExtendedParserClass(Class<?> parserClass) throws Exception {
-        ClassTransformer transformer =
-                new ClassNodeInitializer(
+    protected static ParserClassNode transformParser(Class<?> parserClass) throws Exception {
+        return new ClassNodeInitializer(
+                new DontExtendMethodRemover(
                         new RuleMethodAnalyzer(
                                 new RuleMethodInstructionGraphPartitioner(
                                         new RuleMethodTransformer(
-                                                new RuleCachingGenerator(
-                                                        new ParserClassLoader()
+                                                new ParserClassFinalizer(
+                                                        new ParserClassDefiner()
                                                 )
                                         )
                                 )
                         )
-                );
-        return transformer.transform(new ParserClassNode(parserClass));
+                )
+        ).transform(new ParserClassNode(parserClass));
     }
 
-    private static Constructor findConstructor(Class<?> type, Object[] args) {
+    protected static Constructor findConstructor(Class<?> type, Object[] args) {
         outer:
         for (Constructor constructor : type.getConstructors()) {
             Class<?>[] paramTypes = constructor.getParameterTypes();

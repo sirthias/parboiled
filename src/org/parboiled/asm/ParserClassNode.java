@@ -18,6 +18,7 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,10 @@ public class ParserClassNode extends ClassNode {
     public final Type parentType;
     public final List<Type> superTypes = new ArrayList<Type>();
     public final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
+    public final List<ActionClassGenerator> actionClassGenerators = new ArrayList<ActionClassGenerator>();
+    public MethodNode constructor;
+    public byte[] classCode;
+    public Class<?> extendedClass;
 
     public ParserClassNode(Class<?> parentClass) {
         this.parentClass = parentClass;
@@ -36,6 +41,10 @@ public class ParserClassNode extends ClassNode {
 
     public Type getParentType() {
         return parentType;
+    }
+
+    public String getDescriptor() {
+        return 'L' + name + ';';
     }
 
 }

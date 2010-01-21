@@ -50,8 +50,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        //Checks.ensure(this instanceof Factory && ((Factory) this).getCallback(1) instanceof RuleInterceptor,
-        //        "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
+        Checks.ensure(getClass().getSimpleName().endsWith("$$parboiled"),
+                "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
 
         // prepare
         InputBuffer inputBuffer = new InputBuffer(input);
@@ -240,8 +240,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @DontExtend
     public Rule eoi() {
-        return ch(Chars.EOI);
+        return toRule(Chars.EOI);
     }
 
     /**
@@ -249,8 +250,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @DontExtend
     public Rule any() {
-        return ch(Chars.ANY);
+        return toRule(Chars.ANY);
     }
 
     /**
@@ -258,8 +260,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @DontExtend
     public Rule empty() {
-        return ch(Chars.EMPTY);
+        return toRule(Chars.EMPTY);
     }
 
     ///************************* "MAGIC" METHODS ***************************///
@@ -367,7 +370,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
         if (obj instanceof Character) return cache(obj, fromCharLiteral((Character) obj));
         if (obj instanceof String) return cache(obj, fromStringLiteral((String) obj));
-        if (obj instanceof Action) obj = new ActionMatcher((Action) obj);
+        if (obj instanceof Action) return new ActionMatcher((Action) obj);
 
         rule = fromUserObject(obj);
         if (rule != null) return cache(obj, rule);

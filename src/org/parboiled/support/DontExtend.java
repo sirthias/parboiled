@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package org.parboiled.asm;
+package org.parboiled.support;
 
-public interface ClassTransformer {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    ParserClassNode transform(ParserClassNode classNode) throws Exception;
-
+/**
+ * You can use this annotation on parser rule methods that you want to be excluded from rule extension.
+ * Rule extension provides for automatic caching, labelling and action wrapping, all of which you will have
+ * to take care of yourself once the rule is marked with this annotation. 
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface DontExtend {
 }

@@ -57,9 +57,8 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return locked;
     }
 
-    public AbstractMatcher<V> lock() {
+    public void lock() {
         locked = true;
-        return this;
     }
 
     public String getLabel() {

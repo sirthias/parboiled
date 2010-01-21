@@ -56,7 +56,7 @@ class TestParser extends BaseParser<Integer> {
                                 'b',
                                 optional('c')
                         )
-                )
+                ).label("bsAndCs")
         );
     }
 

@@ -39,14 +39,14 @@ public class SimpleTest extends AbstractTest {
 
     @Test
     public void test() {
-        Parser parser = Parboiled.createParser(Parser.class);
+        Parser parser = Parboiled.createParser(Parser.class);        
         test(parser, parser.clause(), "1+5", "" +
                 "[clause] '1+5'\n" +
                 "    [digit] '1'\n" +
                 "    [operator] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
-                "    [eoi]\n");
+                "    [EOI]\n");
     }
 
 }

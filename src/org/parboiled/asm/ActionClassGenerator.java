@@ -18,17 +18,18 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
+import static org.parboiled.asm.AsmUtils.loadClass;
 import org.parboiled.support.Checks;
 
-class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
+class ActionClassGenerator implements Opcodes {
 
-    private final ParserClassNode classNode;
-    private final RuleMethodInfo methodInfo;
-    private final InstructionSubSet subSet;
-    private final String actionSimpleName;
-    private final Type actionType;
-    private final String classNodeTypeDesc;
-    private byte[] code;
+    public final ParserClassNode classNode;
+    public final RuleMethodInfo methodInfo;
+    public final InstructionSubSet subSet;
+    public final String actionSimpleName;
+    public final Type actionType;
+    public byte[] actionClassCode;
+    public Class<?> actionClass;
 
     public ActionClassGenerator(ParserClassNode classNode, RuleMethodInfo methodInfo, InstructionSubSet subSet,
                                 int actionNumber) {
@@ -37,45 +38,38 @@ class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
         this.subSet = subSet;
         this.actionSimpleName = methodInfo.method.name + "_Action" + actionNumber;
         this.actionType = Type.getObjectType(classNode.name + "$" + actionSimpleName);
-        this.classNodeTypeDesc = classNode.getParentType().getDescriptor();
     }
 
-    public Type defineActionClass() {
+    public void defineActionClass() {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         generateClassBasics(classWriter);
         generateConstructor(classWriter);
         generateRunMethod(classWriter);
         classWriter.visitEnd();
 
-        code = classWriter.toByteArray();
-        defineClass(null, code, 0, code.length);
-
-        return actionType;
-    }
-
-    public byte[] getCode() {
-        return code;
+        actionClassCode = classWriter.toByteArray();
+        actionClass = loadClass(actionType.getClassName(), actionClassCode);
     }
 
     @SuppressWarnings({"unchecked"})
     private void generateClassBasics(ClassWriter cw) {
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, actionType.getInternalName(), null,
-                ACTION_WRAPPER_BASE_TYPE.getInternalName(), null);
+                AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), null);
         cw.visitSource(classNode.sourceFile, null);
         cw.visitInnerClass(actionType.getInternalName(), classNode.name, actionSimpleName, ACC_PRIVATE);
         classNode.innerClasses.add(new InnerClassNode(actionType.getInternalName(), classNode.name,
                 actionSimpleName, ACC_PRIVATE));
-        cw.visitField(ACC_FINAL + ACC_SYNTHETIC, "this$0", classNodeTypeDesc, null, null).visitEnd();
+        cw.visitField(ACC_FINAL + ACC_SYNTHETIC, "this$0", classNode.getDescriptor(), null, null).visitEnd();
     }
 
     private void generateConstructor(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(" + classNodeTypeDesc + ")V", null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(" + classNode.getDescriptor() + ")V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitFieldInsn(PUTFIELD, actionType.getInternalName(), "this$0", classNodeTypeDesc);
+        mv.visitFieldInsn(PUTFIELD, actionType.getInternalName(), "this$0", classNode.getDescriptor());
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(), "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), "<init>", "()V");
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // trigger automatic computing
         mv.visitEnd();
@@ -152,14 +146,13 @@ class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
                 "Illegal context switching construct in parser rule method '" + methodInfo.method.name + "': " +
                         "UP(...) or DOWN(...) can only be called on the parser instance itself");
 
-        newInstructions.insert(targetSettingInsn,
-                new MethodInsnNode(INVOKEVIRTUAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(), contextSwitchType, "()V")
-        );
+        newInstructions.insert(targetSettingInsn, new MethodInsnNode(INVOKEVIRTUAL,
+                AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), contextSwitchType, "()V"));
 
         // replace original context-switching call with the opposite one, reversing the context switch done before
         newInstructions.insertBefore(node.instruction, new VarInsnNode(ALOAD, 0));
         newInstructions.insertBefore(node.instruction,
-                new MethodInsnNode(INVOKEVIRTUAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(),
+                new MethodInsnNode(INVOKEVIRTUAL, AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(),
                         "UP".equals(contextSwitchType) ? "DOWN" : "UP", "()V")
         );
         newInstructions.remove(node.instruction);
@@ -174,10 +167,11 @@ class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
         newInstructions.insertBefore(firstAfterTargetSettingInsn, new InsnNode(DUP));
         newInstructions.insertBefore(firstAfterTargetSettingInsn, new VarInsnNode(ALOAD, 0));
         newInstructions.insertBefore(firstAfterTargetSettingInsn,
-                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "context", CONTEXT_TYPE.getDescriptor()));
+                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "context",
+                        AsmUtils.CONTEXT_TYPE.getDescriptor()));
         newInstructions.insertBefore(firstAfterTargetSettingInsn,
-                new MethodInsnNode(INVOKEINTERFACE, CONTEXT_AWARE_TYPE.getInternalName(),
-                        "setContext", "(" + CONTEXT_TYPE.getDescriptor() + ")V"));
+                new MethodInsnNode(INVOKEINTERFACE, AsmUtils.CONTEXT_AWARE_TYPE.getInternalName(),
+                        "setContext", "(" + AsmUtils.CONTEXT_TYPE.getDescriptor() + ")V"));
 
         return true;
     }
@@ -185,13 +179,13 @@ class ActionClassGenerator extends ClassLoader implements Opcodes, Types {
     private boolean changeThisToInnerClassParent(InsnList newInstructions, AbstractInsnNode insn) {
         if (insn.getOpcode() != ALOAD || ((VarInsnNode) insn).var != 0) return false;
         if (insn.getNext() instanceof MethodInsnNode &&
-                ((MethodInsnNode) insn.getNext()).owner.equals(ACTION_WRAPPER_BASE_TYPE.getInternalName())) {
+                ((MethodInsnNode) insn.getNext()).owner.equals(AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName())) {
             // do not change the "ALOAD 0" we left in place for a following context switch call
             return false;
         }
 
         newInstructions.insert(insn,
-                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "this$0", classNodeTypeDesc)
+                new FieldInsnNode(GETFIELD, actionType.getInternalName(), "this$0", classNode.getDescriptor())
         );
         return true;
     }

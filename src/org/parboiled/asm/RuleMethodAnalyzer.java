@@ -32,13 +32,13 @@ public class RuleMethodAnalyzer implements ClassTransformer {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Class<?> transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
         for (MethodNode method : (List<MethodNode>) classNode.methods) {
             RuleMethodInfo methodInfo = analyzeRuleMethod(classNode, method);
             classNode.methodInfos.add(methodInfo);
         }
 
-        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
+        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     private RuleMethodInfo analyzeRuleMethod(ParserClassNode classNode, MethodNode method) throws AnalyzerException {

@@ -28,7 +28,7 @@ public class RuleMethodTransformer implements ClassTransformer, Opcodes {
         this.nextTransformer = nextTransformer;
     }
 
-    public Class<?> transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
         for (RuleMethodInfo methodInfo : classNode.methodInfos) {
             if (methodInfo.hasActions()) {
                 transformRuleMethodContainingActions(classNode, methodInfo);
@@ -37,16 +37,18 @@ public class RuleMethodTransformer implements ClassTransformer, Opcodes {
             }
         }
 
-        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
+        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     private void transformRuleMethodContainingActions(ParserClassNode classNode, RuleMethodInfo methodInfo) {
         int actionNr = 1;
         for (InstructionSubSet subSet : methodInfo.getInstructionSubSets()) {
             if (subSet.isActionSet) {
-                Type actionType =
-                        new ActionClassGenerator(classNode, methodInfo, subSet, actionNr++).defineActionClass();
-                insertActionClassCreation(classNode, methodInfo, subSet, actionType);
+                ActionClassGenerator generator = new ActionClassGenerator(classNode, methodInfo, subSet, actionNr++);
+                generator.defineActionClass();
+                insertActionClassCreation(classNode, methodInfo, subSet, generator.actionType);
+                
+                classNode.actionClassGenerators.add(generator);
             }
         }
     }
@@ -63,7 +65,7 @@ public class RuleMethodTransformer implements ClassTransformer, Opcodes {
         methodInstructions.insertBefore(firstAfterAction, new VarInsnNode(ALOAD, 0));
         methodInstructions.insertBefore(firstAfterAction,
                 new MethodInsnNode(INVOKESPECIAL, actionType.getInternalName(), "<init>",
-                        "(" + classNode.getParentType().getDescriptor() + ")V"));
+                        "(" + classNode.getDescriptor() + ")V"));
     }
 
     private void transformRuleMethodWithoutActions(ParserClassNode classNode, RuleMethodInfo methodInfo) {
@@ -88,7 +90,7 @@ public class RuleMethodTransformer implements ClassTransformer, Opcodes {
         // insert the call to the super method
         methodInstructions.insertBefore(returnInsn, new VarInsnNode(ALOAD, 0));
         methodInstructions.insertBefore(returnInsn, new MethodInsnNode(INVOKESPECIAL, classNode.getParentType()
-                .getInternalName(), methodInfo.method.name, "()" + Types.RULE_TYPE.getDescriptor()));
+                .getInternalName(), methodInfo.method.name, "()" + AsmUtils.RULE_TYPE.getDescriptor()));
     }
 
 }

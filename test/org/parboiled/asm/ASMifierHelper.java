@@ -19,9 +19,10 @@ package org.parboiled.asm;
 import org.objectweb.asm.util.ASMifierClassVisitor;
 import org.parboiled.AbstractAction;
 import org.parboiled.Rule;
-import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.matchers.Matcher;
 import org.parboiled.examples.calculator.CalculatorParser;
+import org.parboiled.matchers.AbstractMatcher;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.ProxyMatcher;
 
 public class ASMifierHelper extends CalculatorParser {
 
@@ -51,8 +52,11 @@ public class ASMifierHelper extends CalculatorParser {
             cacheSomeRule = new ProxyMatcher();
 
             Rule rule = any();
-            ((ProxyMatcher)cacheSomeRule).arm((Matcher) rule);
-            cacheSomeRule = rule; 
+            if (rule instanceof AbstractMatcher && ((AbstractMatcher) rule).getLabel() == null) {
+                rule.label("someRuleCached");
+            }
+            ((ProxyMatcher) cacheSomeRule).arm((Matcher) rule);
+            cacheSomeRule = rule;
         }
         return cacheSomeRule;
     }

@@ -39,15 +39,17 @@ public class RuleMethodAnalysisTest {
     @BeforeClass
     public void setup() throws Exception {
         new ClassNodeInitializer(
-                new RuleMethodAnalyzer(
-                        new RuleMethodInstructionGraphPartitioner(null)
+                new DontExtendMethodRemover(
+                        new RuleMethodAnalyzer(
+                                new RuleMethodInstructionGraphPartitioner(null)
+                        )
                 )
         ).transform(classNode);
     }
 
     @Test
     public void testMethodAnalysis() throws Exception {
-        testMethodAnalysis("noActionRule", 3116076158L, false);
+        testMethodAnalysis("noActionRule", 557535332L, false);
         // renderToGraphViz(dotSource);
 
         testMethodAnalysis("simpleActionRule", 969826483L, true);

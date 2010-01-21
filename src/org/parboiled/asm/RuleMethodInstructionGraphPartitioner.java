@@ -33,7 +33,7 @@ public class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
         this.nextTransformer = nextTransformer;
     }
 
-    public Class<?> transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
         for (RuleMethodInfo methodInfo : classNode.methodInfos) {
             if (hasActions(methodInfo)) {
                 List<InstructionSubSet> subSets = partitionInstructionGraph(methodInfo);
@@ -41,7 +41,7 @@ public class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
             }
         }
 
-        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
+        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     private boolean hasActions(RuleMethodInfo methodInfo) {

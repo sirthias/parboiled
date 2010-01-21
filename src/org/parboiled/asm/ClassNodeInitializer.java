@@ -34,7 +34,7 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
         this.nextTransformer = nextTransformer;
     }
 
-    public Class<?> transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
         this.classNode = classNode;
 
         // walk up the parser parent class chain
@@ -56,13 +56,13 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
             parentClass = parentClass.getSuperclass();
         }
 
-        return nextTransformer != null ? nextTransformer.transform(classNode) : null;
+        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if (classNode.name == null) {
-            classNode.visit(V1_5, access, name, null, classNode.getParentType().getInternalName(), null);
+            classNode.visit(V1_5, ACC_PUBLIC, name, null, classNode.getParentType().getInternalName(), null);
         }
     }
 
@@ -75,16 +75,20 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (isRuleCreatingMethod(desc)) {
+            // TODO: throw on private methods
             // create method overriding original rule creating method copying the implementation from the super class
             MethodNode method = new MethodNode(access, name, desc, signature, exceptions);
             classNode.methods.add(method);
             return method; // return the newly created method in order to have it "filled" with the supers code
+        } else if (classNode.constructor == null && "<init>".equals(name)) {
+            // TODO: throw on private constructor
+            classNode.constructor = new MethodNode(ACC_PUBLIC, name, desc, signature, exceptions);
         }
         return null;
     }
 
     private boolean isRuleCreatingMethod(String methodDesc) {
-        return Types.RULE_TYPE.equals(Type.getReturnType(methodDesc)) && Type.getArgumentTypes(methodDesc).length == 0;
+        return AsmUtils.RULE_TYPE.equals(Type.getReturnType(methodDesc)) && Type.getArgumentTypes(methodDesc).length == 0;
     }
 
     @Override

@@ -16,7 +16,15 @@
 
 package org.parboiled.asm;
 
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.analysis.Analyzer;
+import org.objectweb.asm.tree.analysis.AnalyzerException;
+import org.objectweb.asm.tree.analysis.SimpleVerifier;
+import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.TraceClassVisitor;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import org.parboiled.common.StringUtils;
 
@@ -25,6 +33,19 @@ import java.io.StringWriter;
 import java.util.List;
 
 public class AsmTestUtils {
+
+    public static String getClassDump(byte[] code) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        TraceClassVisitor traceClassVisitor = new TraceClassVisitor(printWriter);
+        //ClassAdapter checkClassAdapter = new ClassAdapter(traceClassVisitor);
+        ClassAdapter checkClassAdapter = new CheckClassAdapter(traceClassVisitor);
+        ClassReader classReader;
+        classReader = new ClassReader(code);
+        classReader.accept(checkClassAdapter, 0);
+        printWriter.flush();
+        return stringWriter.toString();
+    }
 
     public static String getMethodInstructionList(MethodNode methodNode) {
         TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor();
@@ -49,6 +70,22 @@ public class AsmTestUtils {
             if (methodName.equals(methodInfo.method.name)) return methodInfo;
         }
         throw new IllegalArgumentException("Method '" + methodName + "' not found");
+    }
+
+    public static void verifyIntegrity(String classInternalName, byte[] classCode) {
+        ClassNode generatedClassNode = new ClassNode();
+        ClassReader classReader = new ClassReader(classCode);
+        classReader.accept(generatedClassNode, 0);
+
+        for (Object methodObj : generatedClassNode.methods) {
+            MethodNode method = (MethodNode) methodObj;
+            try {
+                new Analyzer(new SimpleVerifier()).analyze(classInternalName, method);
+            } catch (AnalyzerException e) {
+                throw new RuntimeException(
+                        "Integrity error in method '" + method.name + "' of type '" + classInternalName + "': ", e);
+            }
+        }
     }
 
 }
