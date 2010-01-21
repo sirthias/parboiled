@@ -94,7 +94,7 @@ public class RuleMethodTransformationTest {
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$noActionRule : Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled; L0 L3 0\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L3 0\n" +
                 "    MAXSTACK = 7\n" +
                 "    MAXLOCALS = 1\n");
 
@@ -120,7 +120,7 @@ public class RuleMethodTransformationTest {
                 "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$simpleActionRule_Action1.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
                 "    ICONST_0\n" +
                 "    ANEWARRAY java/lang/Object\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
                 "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
                 "    IFEQ L2\n" +
@@ -144,7 +144,7 @@ public class RuleMethodTransformationTest {
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$simpleActionRule : Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled; L0 L3 0\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L3 0\n" +
                 "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 1\n");
 
@@ -179,13 +179,13 @@ public class RuleMethodTransformationTest {
                 "    ALOAD 0\n" +
                 "    BIPUSH 99\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.optional (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.optional (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.oneOrMore (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.oneOrMore (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ICONST_0\n" +
                 "    ANEWARRAY java/lang/Object\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
                 "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
                 "    IFEQ L2\n" +
@@ -209,7 +209,7 @@ public class RuleMethodTransformationTest {
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$upSetActionRule : Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled; L0 L3 0\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L3 0\n" +
                 "    MAXSTACK = 11\n" +
                 "    MAXLOCALS = 1\n");
 
@@ -236,11 +236,11 @@ public class RuleMethodTransformationTest {
                 "    ALOAD 0\n" +
                 "    BIPUSH 99\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.optional (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.optional (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ICONST_0\n" +
                 "    ANEWARRAY java/lang/Object\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.oneOrMore (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.oneOrMore (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ICONST_1\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +
@@ -250,7 +250,7 @@ public class RuleMethodTransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$booleanExpressionActionRule_Action1.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
                 "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
                 "    IFEQ L2\n" +
@@ -274,7 +274,7 @@ public class RuleMethodTransformationTest {
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$booleanExpressionActionRule : Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled; L0 L3 0\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L3 0\n" +
                 "    MAXSTACK = 8\n" +
                 "    MAXLOCALS = 1\n");
 
@@ -298,13 +298,13 @@ public class RuleMethodTransformationTest {
                 "    ALOAD 0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 98\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.ch (C)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.ch (C)Lorg/parboiled/Rule;\n" +
                 "    LDC \"b\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 99\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.optional (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.optional (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ICONST_2\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +
@@ -321,10 +321,10 @@ public class RuleMethodTransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    LDC \"specialSeq\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.oneOrMore (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.oneOrMore (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ICONST_1\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +
@@ -334,7 +334,7 @@ public class RuleMethodTransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action3.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
                 "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
                 "    IFEQ L2\n" +
@@ -358,7 +358,7 @@ public class RuleMethodTransformationTest {
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$complexActionsRule : Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled; L0 L3 0\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L3 0\n" +
                 "    MAXSTACK = 14\n" +
                 "    MAXLOCALS = 1\n");
 

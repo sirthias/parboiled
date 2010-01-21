@@ -17,12 +17,16 @@
 package org.parboiled.asm;
 
 import org.objectweb.asm.Type;
-import org.parboiled.*;
-import org.parboiled.support.DontExtend;
-import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.matchers.Matcher;
+import org.parboiled.BaseParser;
+import org.parboiled.Context;
+import org.parboiled.ContextAware;
+import org.parboiled.Rule;
 import org.parboiled.matchers.AbstractMatcher;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.ProxyMatcher;
+import org.parboiled.support.DontExtend;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 class AsmUtils {
@@ -39,6 +43,45 @@ class AsmUtils {
     public static final Type RULE_TYPE = Type.getType(Rule.class);
 
     /**
+     * Get the class corresponding to the given internal name.
+     *
+     * @param internalName the internal name of the class to get
+     * @return the class
+     */
+    public static Class<?> getClassForInternalName(String internalName) {
+        String className = internalName.replace('/', '.');
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
+        }
+    }
+
+    public static Field getOwnerField(String ownerInternalName, String fieldName) {
+        Class<?> clazz = getClassForInternalName(ownerInternalName);
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Could not get field '" + fieldName + "' of class '" + clazz + '\'', e);
+        }
+    }
+
+    public static Method getOwnerMethod(String ownerInternalName, String methodName, String methodDesc) {
+        Class<?> clazz = getClassForInternalName(ownerInternalName);
+        try {
+            Type[] types = Type.getArgumentTypes(methodDesc);
+            Class<?>[] argTypes = new Class<?>[types.length];
+            for (int i = 0; i < types.length; i++) {
+                argTypes[i] = getClassForInternalName(types[i].getInternalName());
+            }
+            return clazz.getDeclaredMethod(methodName, argTypes);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Could not get method '" + methodName + "' with descriptor '" +
+                    methodDesc + "' of class '" + clazz + '\'', e);
+        }
+    }
+
+    /**
      * Loads the class defined with the given name and bytecode using the system class loader, provided it hasn't
      * already been loaded before.
      * Since package and class idendity includes the ClassLoader instance used to load a class we use reflection
@@ -47,7 +90,7 @@ class AsmUtils {
      * however, they would not have access to package-private classes and members of their super classes.
      *
      * @param className the full name of the class to be loaded
-     * @param code the bytecode of the class to load
+     * @param code      the bytecode of the class to load
      * @return the class instance
      */
     public static Class<?> loadClass(String className, byte[] code) {

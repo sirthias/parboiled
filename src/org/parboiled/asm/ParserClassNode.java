@@ -30,7 +30,7 @@ public class ParserClassNode extends ClassNode {
     public final List<Type> superTypes = new ArrayList<Type>();
     public final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
     public final List<ActionClassGenerator> actionClassGenerators = new ArrayList<ActionClassGenerator>();
-    public MethodNode constructor;
+    public final List<MethodNode> constructors = new ArrayList<MethodNode>();
     public byte[] classCode;
     public Class<?> extendedClass;
 

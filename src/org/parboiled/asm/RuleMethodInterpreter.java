@@ -19,18 +19,20 @@ package org.parboiled.asm;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.ContextAware;
+import static org.parboiled.asm.AsmUtils.*;
 import org.parboiled.common.Preconditions;
+import org.parboiled.exceptions.GrammarException;
 import org.parboiled.support.Checks;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
@@ -39,6 +41,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private final ParserClassNode classNode;
     private final RuleMethodInfo methodInfo;
     private final List<int[]> additionalEdges = new ArrayList<int[]>();
+    private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
 
     public RuleMethodInterpreter(ParserClassNode classNode, RuleMethodInfo methodInfo) {
         this.classNode = classNode;
@@ -63,14 +66,12 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public Value unaryOperation(AbstractInsnNode insn, Value value) throws AnalyzerException {
-        Checks.ensure(insn.getOpcode() != PUTSTATIC, "Illegal parser rule definition '" + methodInfo.method.name +
-                "': Writing to a static field is not allowed from within a parser rule method");
+        verifyInstruction(insn);
         return createNode(insn, super.unaryOperation(insn, null), value);
     }
 
     public Value binaryOperation(AbstractInsnNode insn, Value value1, Value value2) throws AnalyzerException {
-        Checks.ensure(insn.getOpcode() != PUTFIELD, "Illegal parser rule definition '" + methodInfo.method.name +
-                "': Writing to a field is not allowed from within a parser rule method");
+        verifyInstruction(insn);
         return createNode(insn, super.binaryOperation(insn, null, null), value1, value2);
     }
 
@@ -87,7 +88,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
     public void returnOperation(AbstractInsnNode insn, Value value, Value expected) throws AnalyzerException {
         Preconditions.checkState(insn.getOpcode() == Opcodes.ARETURN); // we return a Rule which is a reference type
         Checks.ensure(insn.getNext().getType() == AbstractInsnNode.LABEL && insn.getNext().getNext() == null,
-                "Rule definitions must contain exactly one return statement");
+                "Illegal parser rule definition '" + methodInfo.method.name + "':\n" +
+                        "Rule definition methods must contain exactly one return statement");
     }
 
     public Value merge(Value v, Value w) {
@@ -167,14 +169,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
         if (insn instanceof MethodInsnNode) {
             MethodInsnNode methodInsn = (MethodInsnNode) insn;
             if (methodInsn.getOpcode() == INVOKEVIRTUAL || methodInsn.getOpcode() == INVOKEINTERFACE) {
-                if (isOwnerMethod(methodInsn)) return true;
-                String targetClassName = methodInsn.owner.replace('/', '.');
-                try {
-                    Class<?> targetClass = Class.forName(targetClassName);
-                    return ContextAware.class.isAssignableFrom(targetClass);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("Error loading class for rule method analysis", e);
-                }
+                return isOwnerMethod(methodInsn) ||
+                        ContextAware.class.isAssignableFrom(getClassForInternalName(methodInsn.owner));
             }
         }
         return false;
@@ -194,6 +190,57 @@ class RuleMethodInterpreter extends BasicInterpreter {
             if (ownerType.getInternalName().equals(methodInsn.owner)) return true;
         }
         return false;
+    }
+
+    private void verifyInstruction(AbstractInsnNode insn) {
+        try {
+            switch (insn.getOpcode()) {
+                case PUTFIELD:
+                case PUTSTATIC:
+                    throw new GrammarException("Writing to a field is not allowed from within a parser rule method");
+
+                case GETFIELD:
+                case GETSTATIC:
+                    FieldInsnNode field = (FieldInsnNode) insn;
+                    Checks.ensure(isNoPrivateField(field.owner, field.name),
+                            "Accessing a private field from within a parser rule method is not allowed.\n" +
+                                    "Mark the field protected or package-private if you want to prevent public access!");
+                    break;
+
+                case INVOKEVIRTUAL:
+                case INVOKESTATIC:
+                case INVOKESPECIAL:
+                case INVOKEINTERFACE:
+                    MethodInsnNode method = (MethodInsnNode) insn;
+                    Checks.ensure(isNoPrivateMethod(method.owner, method.name, method.desc),
+                            "Calling a private method from within a parser rule method is not allowed.\n" +
+                                    "Mark the method protected or package-private if you want to prevent public access!");
+                    break;
+            }
+        } catch (GrammarException e) {
+            throw new GrammarException(
+                    "Illegal parser rule definition '" + methodInfo.method.name + "':\n" + e.getMessage());
+        }
+    }
+
+    private boolean isNoPrivateField(String owner, String name) {
+        String key = owner + '§' + name;
+        Integer modifiers = memberModifiers.get(key);
+        if (modifiers == null) {
+            modifiers = getOwnerField(owner, name).getModifiers();
+            memberModifiers.put(key, modifiers);
+        }
+        return !Modifier.isPrivate(modifiers);
+    }
+
+    private boolean isNoPrivateMethod(String owner, String name, String desc) {
+        String key = owner + '§' + name + '§' + desc;
+        Integer modifiers = memberModifiers.get(key);
+        if (modifiers == null) {
+            modifiers = getOwnerMethod(owner, name, desc).getModifiers();
+            memberModifiers.put(key, modifiers);
+        }
+        return !Modifier.isPrivate(modifiers);
     }
 
 }

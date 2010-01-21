@@ -21,14 +21,14 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.EmptyVisitor;
-import org.objectweb.asm.commons.RemappingClassAdapter;
-import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.MethodNode;
+import org.parboiled.support.Checks;
 
 public class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opcodes {
 
     private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
+    private boolean inParentClass;
 
     public ClassNodeInitializer(ClassTransformer nextTransformer) {
         this.nextTransformer = nextTransformer;
@@ -39,7 +39,6 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
 
         // walk up the parser parent class chain
         Class<?> parentClass = classNode.parentClass;
-        String newParserType = classNode.getParentType().getInternalName() + "$$parboiled";
         while (!Object.class.equals(parentClass)) {
             Type superType = Type.getType(parentClass);
 
@@ -48,10 +47,7 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
 
             // extract methods from super type
             ClassReader classReader = new ClassReader(superType.getClassName());
-            classReader.accept(
-                    new RemappingClassAdapter(this, new SimpleRemapper(superType.getInternalName(), newParserType)),
-                    ClassReader.SKIP_FRAMES
-            );
+            classReader.accept(this, ClassReader.SKIP_FRAMES);
 
             parentClass = parentClass.getSuperclass();
         }
@@ -61,8 +57,10 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        if (classNode.name == null) {
-            classNode.visit(V1_5, ACC_PUBLIC, name, null, classNode.getParentType().getInternalName(), null);
+        inParentClass = classNode.name == null;
+        if (inParentClass) {
+            classNode.visit(V1_5, ACC_PUBLIC, name + "$$parboiled", null, classNode.getParentType().getInternalName(),
+                    null);
         }
     }
 
@@ -75,20 +73,26 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (isRuleCreatingMethod(desc)) {
-            // TODO: throw on private methods
+            Checks.ensure((access & (ACC_FINAL | ACC_PRIVATE)) == 0,
+                    "Illegal parser rule definition '" + name + "':\n" +
+                            "Rule definition methods must not be private.\n" +
+                            "Mark the method protected or package-private if you want to prevent public access!");
+
             // create method overriding original rule creating method copying the implementation from the super class
             MethodNode method = new MethodNode(access, name, desc, signature, exceptions);
             classNode.methods.add(method);
             return method; // return the newly created method in order to have it "filled" with the supers code
-        } else if (classNode.constructor == null && "<init>".equals(name)) {
-            // TODO: throw on private constructor
-            classNode.constructor = new MethodNode(ACC_PUBLIC, name, desc, signature, exceptions);
+        }
+
+        if (inParentClass && "<init>".equals(name) && (access & ACC_PRIVATE) == 0) {
+            classNode.constructors.add(new MethodNode(ACC_PUBLIC, name, desc, signature, exceptions));
         }
         return null;
     }
 
     private boolean isRuleCreatingMethod(String methodDesc) {
-        return AsmUtils.RULE_TYPE.equals(Type.getReturnType(methodDesc)) && Type.getArgumentTypes(methodDesc).length == 0;
+        return AsmUtils.RULE_TYPE.equals(Type.getReturnType(methodDesc)) && Type
+                .getArgumentTypes(methodDesc).length == 0;
     }
 
     @Override

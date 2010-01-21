@@ -38,7 +38,7 @@ public class IndentDedentTest extends AbstractTest {
 
     public static class IndentDedentParser extends BaseParser<Object> {
 
-        private final IndentDedentActions actions = new IndentDedentActions();
+        protected final IndentDedentActions actions = new IndentDedentActions();
 
         public Rule file() {
             return zeroOrMore(line());

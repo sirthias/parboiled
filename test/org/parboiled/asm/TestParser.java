@@ -45,8 +45,8 @@ class ContextActions extends BaseActions<Integer> {
 }
 
 class TestParser extends BaseParser<Integer> {
-    private final SimpleActions actions = new SimpleActions();
-    private final ContextActions contextActions = new ContextActions();
+    protected final SimpleActions actions = new SimpleActions();
+    protected final ContextActions contextActions = new ContextActions();
 
     public Rule noActionRule() {
         return sequence(

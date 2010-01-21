@@ -19,6 +19,7 @@ package org.parboiled.asm;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import org.parboiled.support.Checks;
 
 public class ParserClassFinalizer implements ClassTransformer, Opcodes {
 
@@ -33,23 +34,28 @@ public class ParserClassFinalizer implements ClassTransformer, Opcodes {
             createCachingConstructs(classNode, (MethodNode) methodObj);
         }
 
-        createConstuctor(classNode);
+        Checks.ensure(!classNode.constructors.isEmpty(),
+                "Could not extend parser class. No constructor visible to derived classes found!");
+
+        for (MethodNode constructor : classNode.constructors) {
+            createConstuctor(classNode, constructor);
+        }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void createConstuctor(ParserClassNode classNode) {
-        InsnList instructions = classNode.constructor.instructions;
-        Type[] argTypes = Type.getArgumentTypes(classNode.constructor.desc);
+    private void createConstuctor(ParserClassNode classNode, MethodNode constructor) {
+        InsnList instructions = constructor.instructions;
+        Type[] argTypes = Type.getArgumentTypes(constructor.desc);
         for (int i = 0; i <= argTypes.length; i++) {
             instructions.add(new VarInsnNode(ALOAD, i));
         }
         instructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.getParentType().getInternalName(),
-                "<init>", classNode.constructor.desc));
+                "<init>", constructor.desc));
         instructions.add(new InsnNode(RETURN));
 
-        classNode.methods.add(classNode.constructor);
+        classNode.methods.add(constructor);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -113,12 +119,14 @@ public class ParserClassFinalizer implements ClassTransformer, Opcodes {
         // stack: <this> :: <proxyMatcher> :: <rule>
         instructions.insertBefore(current, new InsnNode(DUP));
         // stack: <this> :: <proxyMatcher> :: <rule> :: <rule>
-        instructions.insertBefore(current, new TypeInsnNode(INSTANCEOF, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName()));
+        instructions
+                .insertBefore(current, new TypeInsnNode(INSTANCEOF, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName()));
         // stack: <this> :: <proxyMatcher> :: <rule> :: <0 or 1>
         LabelNode elseLabel = new LabelNode();
         instructions.insertBefore(current, new JumpInsnNode(IFEQ, elseLabel));
         // stack: <this> :: <proxyMatcher> :: <rule>
-        instructions.insertBefore(current, new TypeInsnNode(CHECKCAST, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName()));
+        instructions
+                .insertBefore(current, new TypeInsnNode(CHECKCAST, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName()));
         // stack: <this> :: <proxyMatcher> :: <abstractMatcher>
         instructions.insertBefore(current, new InsnNode(DUP));
         // stack: <this> :: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher>

@@ -49,19 +49,19 @@ public class RuleMethodAnalysisTest {
 
     @Test
     public void testMethodAnalysis() throws Exception {
-        testMethodAnalysis("noActionRule", 557535332L, false);
+        testMethodAnalysis("noActionRule", 1998088504L, false);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("simpleActionRule", 969826483L, true);
+        testMethodAnalysis("simpleActionRule", 450882377L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("upSetActionRule", 2765227992L, true);
+        testMethodAnalysis("upSetActionRule", 1603626511L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("booleanExpressionActionRule", 208356363L, true);
+        testMethodAnalysis("booleanExpressionActionRule", 727215768L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("complexActionsRule", 3379671642L, true);
+        testMethodAnalysis("complexActionsRule", 2219831153L, true);
         // renderToGraphViz(dotSource);
     }
 
