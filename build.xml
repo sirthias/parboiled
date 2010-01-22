@@ -5,7 +5,7 @@
     <property name="version" value="snapshot"/>
 
     <path id="compile.classpath">
-        <pathelement location="lib/cglib/cglib-nodep-2.2.jar"/>
+        <pathelement location="lib/asm/asm-all-3.2.jar"/>
         <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
         <pathelement location="lib/annotations.jar"/>
     </path>
@@ -51,7 +51,7 @@
             <classfileset dir="build/test-classes" includes="**/*Test.class"/>
             <classpath refid="compile.classpath"/>
             <classpath location="build/classes"/>
-            <classpath location="build/test-classes"/>            
+            <classpath location="build/test-classes"/>
         </testng>
     </target>
 
@@ -123,7 +123,50 @@
 
     <target name="dist" depends="clean, test, jar, jar.source, jar.javadoc"
             description="Compiles, tests and jars everything">
-        <copy file="lib/cglib/cglib-nodep-2.2.jar" todir="build"/>
+        <copy file="lib/asm/asm-all-3.2.jar" todir="build"/>
     </target>
+
+    <target name="run-example-abc" depends="compile" description="Run the Abc example">
+        <java classname="org.parboiled.examples.abc.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
+    <target name="run-example-calc" depends="compile" description="Run the Calculator example">
+        <java classname="org.parboiled.examples.calculator.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
+    <target name="run-example-calc2" depends="compile" description="Run the Calculator2 example">
+        <java classname="org.parboiled.examples.calculator2.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
+    <target name="run-example-calc3" depends="compile" description="Run the Calculator3 example">
+        <java classname="org.parboiled.examples.calculator3.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
+    <target name="run-example-rpn" depends="compile" description="Run the RPN example">
+        <java classname="org.parboiled.examples.rpn.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
+    <target name="run-example-time" depends="compile" description="Run the Time example">
+        <java classname="org.parboiled.examples.time.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
 
 </project>

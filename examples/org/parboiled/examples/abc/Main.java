@@ -29,7 +29,7 @@ public class Main {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
         
         while (true) {
-            System.out.print("\nEnter an expression (single RETURN to exit): ");
+            System.out.print("Enter an a^n b^n c^n expression (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 

@@ -32,7 +32,7 @@ public class Main {
         RpnParser parser = Parboiled.createParser(RpnParser.class);
         
         while (true) {
-            System.out.print("\nEnter an RPN expression, separate operands by a blank (single RETURN to exit): ");
+            System.out.print("Enter an RPN expression, separate operands by a blank (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 

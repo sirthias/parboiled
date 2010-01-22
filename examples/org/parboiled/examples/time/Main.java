@@ -29,7 +29,7 @@ public class Main {
         TimeParser parser = Parboiled.createParser(TimeParser.class);
         
         while (true) {
-            System.out.print("\nEnter a time (hh:mm(:ss)?, hh(mm(ss)?)? or h(mm)?, single RETURN to exit): ");
+            System.out.print("Enter a time expression (hh:mm(:ss)?, hh(mm(ss)?)? or h(mm)?, single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 

@@ -29,7 +29,7 @@ public class Main {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         
         while (true) {
-            System.out.print("\nEnter an expression (single RETURN to exit): ");
+            System.out.print("Enter a calculator expression (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
