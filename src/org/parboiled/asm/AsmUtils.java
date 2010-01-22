@@ -123,7 +123,7 @@ class AsmUtils {
      * @param classLoader the class loader to use
      * @return the class instance
      */
-    public static Class<?> loadClass(@NotNull String className, @NotNull byte[] code,
+    public static synchronized Class<?> loadClass(@NotNull String className, @NotNull byte[] code,
                                      @NotNull ClassLoader classLoader) {
         try {
             Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
