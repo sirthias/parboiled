@@ -19,7 +19,6 @@ package org.parboiled.asm;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
-import org.objectweb.asm.util.AbstractVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,19 +49,6 @@ class InstructionGraphNode implements Value {
 
     public int getSize() {
         return basicValue.getSize();
-    }
-
-    @Override
-    public String toString() {
-        String label = instruction == null ? "null" :
-                instruction.getOpcode() >= 0 ? AbstractVisitor.OPCODES[instruction.getOpcode()] :
-                        instruction.getClass().getSimpleName();
-        return new StringBuilder()
-                .append("Insn ").append(instructionIndex).append(": ")
-                .append(label)
-                .append(" -> ")
-                .append(basicValue != null ? basicValue.getType() : "null")
-                .toString();
     }
 
     public InstructionGraphNode getEarlierstPredecessor() {

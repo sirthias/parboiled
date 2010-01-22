@@ -5,17 +5,27 @@
     <property name="version" value="snapshot"/>
 
     <path id="compile.classpath">
-        <pathelement location="lib/asm/asm-all-3.2.jar"/>
+        <pathelement location="lib/asm/asm-3.2.jar"/>
+        <pathelement location="lib/asm/asm-analysis-3.2.jar"/>
+        <pathelement location="lib/asm/asm-tree-3.2.jar"/>
         <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
         <pathelement location="lib/annotations.jar"/>
     </path>
 
+    <path id="test.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="build/classes"/>
+        <pathelement location="lib/asm/asm-util-3.2.jar"/>
+    </path>
+
     <taskdef name="javacn" classname="org.parboiled.ant.Javacn">
         <classpath>
-            <pathelement location="lib/javacn/asm-3.2.jar"/>
-            <pathelement location="lib/javacn/javacn.jar"/>
+            <pathelement location="lib/asm/asm-3.2.jar"/>
+            <pathelement location="lib/javacn.jar"/>
         </classpath>
     </taskdef>
+
+    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.0.jar;"/>
 
     <target name="clean" description="Remove all generated files">
         <delete dir="build"/>
@@ -35,8 +45,7 @@
         <mkdir dir="build/test-classes"/>
         <javacn debug="on" destdir="build/test-classes" source="1.5" target="1.5" encoding="utf8">
             <src location="test"/>
-            <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath refid="test.classpath"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
         <copy toDir="build/test-classes">
@@ -49,8 +58,7 @@
 
         <testng parallel="true" suitename="All Tests" outputdir="test-output" haltonfailure="true">
             <classfileset dir="build/test-classes" includes="**/*Test.class"/>
-            <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath refid="test.classpath"/>
             <classpath location="build/test-classes"/>
         </testng>
     </target>
@@ -93,10 +101,16 @@
     </target>
 
     <target name="jar" depends="compile, manifest" description="Build main library JAR">
-        <jar destfile="build/parboiled-${version}.jar" manifest="build/META-INF/MANIFEST.MF">
+        <jarjar destfile="build/parboiled-${version}.jar" manifest="build/META-INF/MANIFEST.MF">
             <fileset dir="build/classes" excludes="org/parboiled/examples/**"/>
             <fileset dir="build" includes="META-INF/*"/>
-        </jar>
+            <zipfileset dir="lib/asm">
+                <include name="asm-3.2.jar"/>
+                <include name="asm-analysis-3.2.jar"/>
+                <include name="asm-tree-3.2.jar"/>
+            </zipfileset>
+            <rule pattern="org.objectweb.**" result="org.parboiled.internal.@1"/>
+        </jarjar>
     </target>
 
     <target name="jar.source" depends="manifest" description="Create a JAR with main sources">
@@ -123,7 +137,6 @@
 
     <target name="dist" depends="clean, test, jar, jar.source, jar.javadoc"
             description="Compiles, tests and jars everything">
-        <copy file="lib/asm/asm-all-3.2.jar" todir="build"/>
     </target>
 
     <target name="run-example-abc" depends="compile" description="Run the Abc example">
