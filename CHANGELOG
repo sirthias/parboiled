@@ -1,3 +1,11 @@
+Version 0.9.0.0 (2010-01-22)
+----------------------------
+Major rewrite of action and parser extension infrastructure:
+- Removed ActionResult interface, actions can now be arbitrary boolean expressions
+- Removed now obsolete EQUALS, AND, OR, NOT as well as all CONVERT_XXX helpers
+- Removed dependency on cglib, parboiled JAR now has no non-SDK dependencies
+- Simplified running parboiled examples (now run via ANT) 
+
 Version 0.8.5.0 (2010-01-18)
 ----------------------------
 - Fixed IllegalStateException on trying to label a rule from within a recursion

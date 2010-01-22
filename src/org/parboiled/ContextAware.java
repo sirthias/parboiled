@@ -17,7 +17,7 @@
 package org.parboiled;
 
 /**
- * Interface that can be implemented by classes containing action methods (i.e. ones returning an ActionResult).
+ * Interface that can be implemented by classes containing action methods.
  * If the object containing action methods implements this interface parboiled will use it to inform the
  * object of the current context, immediately before an action call.
  *

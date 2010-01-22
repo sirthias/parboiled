@@ -24,7 +24,7 @@ public interface Action {
     /**
      * Runs the parser action.
      *
-     * @return the ActionResult
+     * @return true if the parsing process is to proceed, false if the current rule is to fail
      */
     boolean run();
 

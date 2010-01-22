@@ -40,9 +40,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     private final Map<Object, Rule> ruleCache = new HashMap<Object, Rule>();
 
     /**
-     * Runs the given parser rule against the given input string. Note that the rule must have been created by
-     * a rule creation method of this parser object, which must have been created with
-     * {@link Parboiled#createParser(Class, Object[])}.
+     * Runs the given parser rule against the given input string.
      *
      * @param rule  the rule
      * @param input the input string
@@ -50,9 +48,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        Checks.ensure(getClass().getSimpleName().endsWith("$$parboiled"),
-                "Illegal parser instance, please use Parboiled.createParser(...) for creating this parser");
-
         // prepare
         InputBuffer inputBuffer = new InputBuffer(input);
         InputLocation startLocation = new InputLocation(inputBuffer);
