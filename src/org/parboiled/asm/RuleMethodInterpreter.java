@@ -225,7 +225,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     private boolean isNoPrivateField(String owner, String name) {
-        String key = owner + '§' + name;
+        String key = owner + '#' + name;
         Integer modifiers = memberModifiers.get(key);
         if (modifiers == null) {
             modifiers = getOwnerField(owner, name).getModifiers();
@@ -235,7 +235,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     private boolean isNoPrivateMethod(String owner, String name, String desc) {
-        String key = owner + '§' + name + '§' + desc;
+        String key = owner + '#' + name + '#' + desc;
         Integer modifiers = memberModifiers.get(key);
         if (modifiers == null) {
             modifiers = getOwnerMethod(owner, name, desc).getModifiers();
