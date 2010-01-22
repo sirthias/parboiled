@@ -48,7 +48,7 @@ class ActionClassGenerator implements Opcodes {
         classWriter.visitEnd();
 
         actionClassCode = classWriter.toByteArray();
-        actionClass = loadClass(actionType.getClassName(), actionClassCode);
+        actionClass = loadClass(actionType.getClassName(), actionClassCode, classNode.parentClass.getClassLoader());
     }
 
     @SuppressWarnings({"unchecked"})

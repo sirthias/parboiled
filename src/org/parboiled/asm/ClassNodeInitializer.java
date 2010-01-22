@@ -23,6 +23,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.MethodNode;
 import org.parboiled.support.Checks;
+import org.jetbrains.annotations.NotNull;
 
 public class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opcodes {
 
@@ -34,7 +35,7 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
         this.nextTransformer = nextTransformer;
     }
 
-    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         this.classNode = classNode;
 
         // walk up the parser parent class chain
@@ -59,6 +60,7 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         inParentClass = classNode.name == null;
         if (inParentClass) {
+            Checks.ensure((access & ACC_FINAL) == 0, "Your parser class '" + name + "' must not be final.");
             classNode.visit(V1_5, ACC_PUBLIC, name + "$$parboiled", null, classNode.getParentType().getInternalName(),
                     null);
         }
@@ -73,10 +75,11 @@ public class ClassNodeInitializer extends EmptyVisitor implements ClassTransform
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (isRuleCreatingMethod(desc)) {
-            Checks.ensure((access & (ACC_FINAL | ACC_PRIVATE)) == 0,
-                    "Illegal parser rule definition '" + name + "':\n" +
-                            "Rule definition methods must not be private.\n" +
+            Checks.ensure((access & ACC_PRIVATE) == 0,
+                    "Illegal parser rule definition '" + name + "':\nRule definition methods must not be private.\n" +
                             "Mark the method protected or package-private if you want to prevent public access!");
+            Checks.ensure((access & ACC_FINAL) == 0,
+                    "Illegal parser rule definition '" + name + "':\nRule definition methods must not be final.");
 
             // create method overriding original rule creating method copying the implementation from the super class
             MethodNode method = new MethodNode(access, name, desc, signature, exceptions);

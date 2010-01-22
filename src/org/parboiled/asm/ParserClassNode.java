@@ -19,6 +19,7 @@ package org.parboiled.asm;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ParserClassNode extends ClassNode {
     public byte[] classCode;
     public Class<?> extendedClass;
 
-    public ParserClassNode(Class<?> parentClass) {
+    public ParserClassNode(@NotNull Class<?> parentClass) {
         this.parentClass = parentClass;
         parentType = Type.getType(parentClass);
     }

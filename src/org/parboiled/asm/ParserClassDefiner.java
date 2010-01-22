@@ -18,14 +18,19 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.ClassWriter;
 import static org.parboiled.asm.AsmUtils.loadClass;
+import org.jetbrains.annotations.NotNull;
 
 public class ParserClassDefiner implements ClassTransformer {
 
-    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(classWriter);
         classNode.classCode = classWriter.toByteArray();
-        classNode.extendedClass = loadClass(classNode.name.replace('/', '.'), classNode.classCode);
+        classNode.extendedClass = loadClass(
+                classNode.name.replace('/', '.'),
+                classNode.classCode,
+                classNode.parentClass.getClassLoader()
+        );
         return classNode;
     }
 

@@ -20,6 +20,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.parboiled.support.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class RuleMethodAnalyzer implements ClassTransformer {
     }
 
     @SuppressWarnings({"unchecked"})
-    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         for (MethodNode method : (List<MethodNode>) classNode.methods) {
             RuleMethodInfo methodInfo = analyzeRuleMethod(classNode, method);
             classNode.methodInfos.add(methodInfo);

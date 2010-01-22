@@ -21,7 +21,7 @@ import org.parboiled.Rule;
 
 public class CalculatorParser extends BaseParser<CalcNode> {
 
-    private final CalculatorActions actions = new CalculatorActions();
+    final CalculatorActions actions = new CalculatorActions();
 
     public Rule inputLine() {
         return enforcedSequence(

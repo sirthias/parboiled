@@ -20,7 +20,7 @@ import org.parboiled.test.AbstractTest;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
-public class SkipInPredicatesTest extends AbstractTest {
+public class InPredicateTest extends AbstractTest {
 
     public static class ActionTestActions extends BaseActions<Object> {
         public int count = 0;
@@ -38,7 +38,7 @@ public class SkipInPredicatesTest extends AbstractTest {
 
     public static class ActionTestParser extends BaseParser<Object> {
 
-        private final ActionTestActions actions = new ActionTestActions();
+        protected final ActionTestActions actions = new ActionTestActions();
 
         public Rule number() {
             return oneOrMore(digit());
@@ -49,7 +49,7 @@ public class SkipInPredicatesTest extends AbstractTest {
         }
 
         public Rule five() {
-            return sequence('5', actions.count1());
+            return sequence('5', IN_PREDICATE() || actions.count1());
         }
 
         public Rule six() {

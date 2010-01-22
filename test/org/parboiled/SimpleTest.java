@@ -21,7 +21,7 @@ import org.parboiled.test.AbstractTest;
 
 public class SimpleTest extends AbstractTest {
 
-    public static class Parser extends BaseParser<Object> {
+    static class Parser extends BaseParser<Object> {
 
         public Rule clause() {
             return sequence(digit(), operator(), digit(), eoi());

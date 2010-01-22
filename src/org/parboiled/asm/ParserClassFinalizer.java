@@ -20,6 +20,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.parboiled.support.Checks;
+import org.jetbrains.annotations.NotNull;
 
 public class ParserClassFinalizer implements ClassTransformer, Opcodes {
 
@@ -29,13 +30,14 @@ public class ParserClassFinalizer implements ClassTransformer, Opcodes {
         this.nextTransformer = nextTransformer;
     }
 
-    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         for (Object methodObj : classNode.methods) {
             createCachingConstructs(classNode, (MethodNode) methodObj);
         }
 
         Checks.ensure(!classNode.constructors.isEmpty(),
-                "Could not extend parser class. No constructor visible to derived classes found!");
+                "Could not extend parser class '" + classNode.getParentType().getClassName() +
+                        "'. No constructor visible to derived classes found!");
 
         for (MethodNode constructor : classNode.constructors) {
             createConstuctor(classNode, constructor);

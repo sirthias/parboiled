@@ -23,7 +23,7 @@ public class SplitParserTest extends AbstractTest {
 
     public static class Parser extends BaseParser<Object> {
 
-        private final Primitives primitives = Parboiled.createParser(Primitives.class);
+        final Primitives primitives = Parboiled.createParser(Primitives.class);
 
         public Rule clause() {
             return sequence(
@@ -56,7 +56,7 @@ public class SplitParserTest extends AbstractTest {
                 "    [operator] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
-                "    [eoi]\n");
+                "    [EOI]\n");
     }
 
 }

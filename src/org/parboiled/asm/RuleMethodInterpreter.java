@@ -71,7 +71,6 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public Value binaryOperation(AbstractInsnNode insn, Value value1, Value value2) throws AnalyzerException {
-        verifyInstruction(insn);
         return createNode(insn, super.binaryOperation(insn, null, null), value1, value2);
     }
 
@@ -81,6 +80,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
 
     @SuppressWarnings({"unchecked"})
     public Value naryOperation(AbstractInsnNode insn, List values) throws AnalyzerException {
+        verifyInstruction(insn);
         return createNode(insn, super.naryOperation(insn, null), (Value[]) values.toArray(new Value[values.size()]));
     }
 
@@ -212,7 +212,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
                 case INVOKESPECIAL:
                 case INVOKEINTERFACE:
                     MethodInsnNode method = (MethodInsnNode) insn;
-                    Checks.ensure(isNoPrivateMethod(method.owner, method.name, method.desc),
+                    Checks.ensure("<init>".equals(method.name) ||
+                            isNoPrivateMethod(method.owner, method.name, method.desc),
                             "Calling a private method from within a parser rule method is not allowed.\n" +
                                     "Mark the method protected or package-private if you want to prevent public access!");
                     break;

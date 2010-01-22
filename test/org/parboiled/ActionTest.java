@@ -35,7 +35,7 @@ public class ActionTest extends AbstractTest {
 
     public static class ActionTestParser extends BaseParser<Object> {
 
-        private final ActionTestActions actions = new ActionTestActions();
+        protected final ActionTestActions actions = new ActionTestActions();
 
         public Rule number() {
             return sequence(

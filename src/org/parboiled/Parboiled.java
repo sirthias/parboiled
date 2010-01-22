@@ -49,7 +49,7 @@ public class Parboiled {
             Constructor constructor = findConstructor(classNode.extendedClass, constructorArgs);
             return (P) constructor.newInstance(constructorArgs);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating extended parser class", e);
+            throw new RuntimeException("Error creating extended parser class: " +  e.getMessage(), e);
         }
     }
 

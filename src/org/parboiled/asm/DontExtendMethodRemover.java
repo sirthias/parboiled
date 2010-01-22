@@ -18,6 +18,7 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.jetbrains.annotations.NotNull;
 
 public class DontExtendMethodRemover implements ClassTransformer {
     private final ClassTransformer nextTransformer;
@@ -26,7 +27,7 @@ public class DontExtendMethodRemover implements ClassTransformer {
         this.nextTransformer = nextTransformer;
     }
 
-    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         for (int i = 0; i < classNode.methods.size(); i++) {
             MethodNode method = (MethodNode) classNode.methods.get(i);
             if (carriesDontExtendAnnotation(method)) {

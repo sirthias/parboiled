@@ -19,6 +19,7 @@ package org.parboiled.asm;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import org.jetbrains.annotations.NotNull;
 
 public class RuleMethodTransformer implements ClassTransformer, Opcodes {
 
@@ -28,7 +29,7 @@ public class RuleMethodTransformer implements ClassTransformer, Opcodes {
         this.nextTransformer = nextTransformer;
     }
 
-    public ParserClassNode transform(ParserClassNode classNode) throws Exception {
+    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         for (RuleMethodInfo methodInfo : classNode.methodInfos) {
             if (methodInfo.hasActions()) {
                 transformRuleMethodContainingActions(classNode, methodInfo);

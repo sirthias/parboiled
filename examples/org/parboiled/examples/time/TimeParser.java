@@ -21,12 +21,10 @@ import org.parboiled.Rule;
 
 public class TimeParser extends BaseParser<Object> {
 
-    private final TimeActions actions = new TimeActions();
-
     public Rule time() {
         return sequence(
                 firstOf(time_hh_mm_ss(), time_hhmmss(), time_hmm()),
-                SET(actions.convertToTime(
+                SET(convertToTime(
                         (Integer) VALUE(NODE_BY_LABEL("hours")),
                         (Integer) VALUE(NODE_BY_LABEL("minutes")),
                         (Integer) VALUE(NODE_BY_LABEL("seconds"))))
@@ -80,6 +78,15 @@ public class TimeParser extends BaseParser<Object> {
 
     public Rule digit() {
         return charRange('0', '9');
+    }
+
+    // ************************* ACTIONS *****************************
+
+    protected String convertToTime(Integer hours, Integer minutes, Integer seconds) {
+        return String.format("%s h, %s min, %s s",
+                hours != null ? hours : 0,
+                minutes != null ? minutes : 0,
+                seconds != null ? seconds : 0);
     }
 
 }
