@@ -309,17 +309,17 @@ public class RuleMethodTransformationTest {
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +
                 "    ICONST_0\n" +
-                "    NEW org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2\n" +
-                "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
-                "    AASTORE\n" +
-                "    DUP\n" +
-                "    ICONST_1\n" +
                 "    NEW org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
+                "    AASTORE\n" +
+                "    DUP\n" +
+                "    ICONST_1\n" +
+                "    NEW org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2\n" +
+                "    DUP\n" +
+                "    ALOAD 0\n" +
+                "    INVOKESPECIAL org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2.<init> (Lorg/parboiled/asm/TestParser$$parboiled;)V\n" +
                 "    AASTORE\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    LDC \"specialSeq\"\n" +

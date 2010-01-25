@@ -224,25 +224,37 @@ public class ActionClassGeneratorTest {
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.DOWN ()V\n" +
+                "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/asm/TestParser.contextActions : Lorg/parboiled/asm/ContextActions;\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1.context : Lorg/parboiled/Context;\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
-                "    GETFIELD org/parboiled/asm/TestParser.actions : Lorg/parboiled/asm/SimpleActions;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/SimpleActions.return5 ()I\n" +
-                "    INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.SET (Ljava/lang/Object;)Z\n" +
+                "    DUP\n" +
+                "    ALOAD 0\n" +
+                "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1.context : Lorg/parboiled/Context;\n" +
+                "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
+                "    LDC \"b\"\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.NODE (Ljava/lang/String;)Lorg/parboiled/Node;\n" +
+                "    INVOKEINTERFACE org/parboiled/Node.getEndLocation ()Lorg/parboiled/support/InputLocation;\n" +
+                "    GETFIELD org/parboiled/support/InputLocation.row : I\n" +
+                "    BIPUSH 26\n" +
+                "    IADD\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/ContextActions.action2 (I)Z\n" +
                 "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.DOWN ()V\n" +
                 "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
                 "    IRETURN\n" +
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1; L0 L1 0\n" +
-                "    MAXSTACK = 3\n" +
+                "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 1\n" +
                 "}\n");
 
@@ -275,37 +287,25 @@ public class ActionClassGeneratorTest {
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.DOWN ()V\n" +
-                "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
-                "    GETFIELD org/parboiled/asm/TestParser.contextActions : Lorg/parboiled/asm/ContextActions;\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2.context : Lorg/parboiled/Context;\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
-                "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2.context : Lorg/parboiled/Context;\n" +
-                "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
-                "    LDC \"b\"\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.NODE (Ljava/lang/String;)Lorg/parboiled/Node;\n" +
-                "    INVOKEINTERFACE org/parboiled/Node.getEndLocation ()Lorg/parboiled/support/InputLocation;\n" +
-                "    GETFIELD org/parboiled/support/InputLocation.row : I\n" +
-                "    BIPUSH 26\n" +
-                "    IADD\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/ContextActions.action2 (I)Z\n" +
+                "    GETFIELD org/parboiled/asm/TestParser.actions : Lorg/parboiled/asm/SimpleActions;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/SimpleActions.return5 ()I\n" +
+                "    INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser.SET (Ljava/lang/Object;)Z\n" +
                 "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
-                "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.DOWN ()V\n" +
                 "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
                 "    IRETURN\n" +
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2; L0 L1 0\n" +
-                "    MAXSTACK = 4\n" +
+                "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 1\n" +
                 "}\n");
 

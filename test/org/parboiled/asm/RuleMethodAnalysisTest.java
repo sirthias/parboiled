@@ -55,13 +55,13 @@ public class RuleMethodAnalysisTest {
         testMethodAnalysis("simpleActionRule", 450882377L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("upSetActionRule", 1603626511L, true);
+        testMethodAnalysis("upSetActionRule", 2759802575L, true);
         // renderToGraphViz(dotSource);
 
         testMethodAnalysis("booleanExpressionActionRule", 727215768L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("complexActionsRule", 2219831153L, true);
+        testMethodAnalysis("complexActionsRule", 2150516099L, true);
         // renderToGraphViz(dotSource);
     }
 

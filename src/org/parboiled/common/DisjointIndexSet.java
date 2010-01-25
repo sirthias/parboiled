@@ -17,7 +17,7 @@
 package org.parboiled.common;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -74,7 +74,7 @@ public class DisjointIndexSet {
     }
 
     public Map<Integer, int[]> getSubSets() {
-        Map<Integer, int[]> sets = new HashMap<Integer, int[]>();
+        Map<Integer, int[]> sets = new LinkedHashMap<Integer, int[]>();
         int[] array, cursors = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             int rep, lookup = data[i];
