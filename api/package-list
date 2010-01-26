@@ -1,5 +1,4 @@
 org.parboiled
-org.parboiled.asm
 org.parboiled.common
 org.parboiled.exceptions
 org.parboiled.support
