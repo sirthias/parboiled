@@ -18,6 +18,7 @@ package org.parboiled;
 
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @param context the context
      */
-    public void setContext(Context<V> context) {
+    public void setContext(@NotNull Context<V> context) {
         this.context = context;
     }
 

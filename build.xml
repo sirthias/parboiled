@@ -68,7 +68,7 @@
         <javadoc destdir="build/javadoc" windowtitle="parboiled ${version} API">
             <packageset dir="src" defaultexcludes="yes">
                 <include name="org/parboiled/**"/>
-                <exclude name="org/parboiled/actionparameters/**"/>
+                <exclude name="org/parboiled/asm/**"/>
                 <exclude name="org/parboiled/matchers/**"/>
                 <exclude name="org/parboiled/MatcherContext*"/>
             </packageset>

@@ -17,7 +17,9 @@
 package org.parboiled;
 
 /**
- * Objects of classes implementing this interface can be used directly in a rule definition to define a parser action.
+ * Instances of classes implementing this interface can be used directly in a rule definition to define a parser action.
+ * If the class also implements the {@link ContextAware} interface this will be used to inform the object of the
+ * current parsing {@link Context} immediately before the invocation of the {@link #run} method.
  */
 public interface Action {
 

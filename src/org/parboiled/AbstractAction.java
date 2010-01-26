@@ -16,6 +16,8 @@
 
 package org.parboiled;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Convenience base class for parser actions.
  */
@@ -23,7 +25,7 @@ public abstract class AbstractAction<V> implements Action, ContextAware<V> {
 
     protected Context<V> context;
 
-    public void setContext(Context<V> context) {
+    public void setContext(@NotNull Context<V> context) {
         this.context = context;
     }
 
