@@ -45,7 +45,7 @@ public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
         return "ILLEGAL";
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         context.addUnexpectedInputError(context.getCurrentLocation().currentChar, expected);
         do {
             context.advanceInputLocation();

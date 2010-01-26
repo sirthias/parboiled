@@ -39,7 +39,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
         super(subRules);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         List<Matcher<V>> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {

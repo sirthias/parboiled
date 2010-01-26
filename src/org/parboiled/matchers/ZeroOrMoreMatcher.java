@@ -34,7 +34,7 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
         super(subRule);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         Matcher<V> matcher = getChildren().get(0);
 
         InputLocation lastLocation = context.getCurrentLocation();

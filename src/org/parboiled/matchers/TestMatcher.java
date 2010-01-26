@@ -44,9 +44,9 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         return hasLabel() ? super.getLabel() : (inverted ? "!(" : "&(") + getChildren().get(0) + ")";
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
-        boolean matched = context.runMatcher(getChildren().get(0), enforced && !inverted);
+        boolean matched = context.runMatcher(getChildren().get(0), context.isEnforced() && !inverted);
         if (matched && context.getCurrentLocation() == lastLocation && lastLocation.currentChar != Chars.EOI) {
             Checks.fail("The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
         }

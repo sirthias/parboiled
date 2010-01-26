@@ -16,9 +16,9 @@
 
 package org.parboiled;
 
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -328,8 +328,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * Useful for example for making sure actions are not run inside of a predicate evaluation:
      * <code>
      * return sequence(
-     *     ...,
-     *     inPredicate() || actions.doSomething()
+     * ...,
+     * inPredicate() || actions.doSomething()
      * );
      * </code>
      *
@@ -337,6 +337,16 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      */
     public boolean IN_PREDICATE() {
         return context.inPredicate();
+    }
+
+    /**
+     * Returns true if the current rule (i.e. the rule containing the action expression) is enforced in the current
+     * parsing Context.
+     *
+     * @return true if enforced
+     */
+    public boolean ENFORCED() {
+        return context.isEnforced();
     }
 
 }

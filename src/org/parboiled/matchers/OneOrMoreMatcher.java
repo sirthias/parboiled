@@ -35,10 +35,10 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
         super(subRule);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         Matcher<V> matcher = getChildren().get(0);
 
-        boolean matched = context.runMatcher(matcher, enforced);
+        boolean matched = context.runMatcher(matcher, context.isEnforced());
         if (!matched) return false;
 
         // collect all further matches as well

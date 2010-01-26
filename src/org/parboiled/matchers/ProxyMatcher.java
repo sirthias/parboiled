@@ -41,9 +41,9 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         return target.getChildren();
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) throws Throwable {
+    public boolean match(@NotNull MatcherContext<V> context) throws Throwable {
         applyLabel();
-        return target.match(context, enforced);
+        return target.match(context);
     }
 
     public String getExpectedString() {

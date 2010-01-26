@@ -181,5 +181,12 @@ public interface Context<V> {
      * @return true if the current context has a parent which corresponds to a test/testNot rule
      */
     boolean inPredicate();
+
+    /**
+     * Returns true if the current rule is enforced, i.e. must match in order to not trigger the creation of a ParseError.
+     *
+     * @return true if enforced
+     */
+    boolean isEnforced();
 }
 

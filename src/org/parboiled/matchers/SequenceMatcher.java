@@ -37,7 +37,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
         this.enforced = enforced;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         List<Matcher<V>> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {
@@ -46,7 +46,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
             // remember the current index in the context, so we can access it for building the current follower set
             context.setTag(i);
 
-            boolean matched = context.runMatcher(matcher, enforced || (this.enforced && i > 0));
+            boolean matched = context.runMatcher(matcher, context.isEnforced() || (enforced && i > 0));
             if (!matched) return false;
         }
         context.createNode();

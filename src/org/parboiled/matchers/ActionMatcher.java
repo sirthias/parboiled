@@ -41,7 +41,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         return "run " + action.toString();
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         if (contextAwareAction != null) {
             contextAwareAction.setContext(context);
         }

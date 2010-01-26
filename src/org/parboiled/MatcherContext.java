@@ -19,11 +19,11 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
+import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.findNode;
 import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
-import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
  * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
  * created a root MatcherContext is instantiated for the root rule (Matcher).
  * A subsequent call to {@link #runMatcher(Matcher, boolean)} starts the parsing process.</p>
- * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext, boolean)} passing itself to the Matcher
+ * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext)} passing itself to the Matcher
  * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
  * {@link #runMatcher(org.parboiled.matchers.Matcher, boolean)} on its Context, which creates a sub context of the
  * current MatcherContext and runs the given sub matcher in it.</p>
@@ -66,6 +66,7 @@ public class MatcherContext<V> implements Context<V> {
     private final MatcherContext<V> parent;
     private final InputLocation startLocation;
     private final Matcher<V> matcher;
+    private final boolean enforced;
 
     private MatcherContext<V> subContext;
     private InputLocation currentLocation;
@@ -77,16 +78,19 @@ public class MatcherContext<V> implements Context<V> {
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
                           @NotNull Matcher<V> matcher, @NotNull List<ParseError> parseErrors) {
-        this(null, new Invariables<V>(inputBuffer, parseErrors, new Reference<Node<V>>()), startLocation, matcher);
+        this(null,
+                new Invariables<V>(inputBuffer, parseErrors, new Reference<Node<V>>()),
+                startLocation, matcher, true);
     }
 
     private MatcherContext(MatcherContext<V> parent, @NotNull Invariables<V> invariables,
-                           @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher) {
+                           @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher, boolean enforced) {
 
         this.parent = parent;
         this.startLocation = currentLocation = startLocation;
         this.matcher = matcher;
         this.invariables = invariables;
+        this.enforced = enforced;
     }
 
     @Override
@@ -175,16 +179,16 @@ public class MatcherContext<V> implements Context<V> {
     public List<Node<V>> getSubNodes() {
         return subNodes != null ? ImmutableList.copyOf(subNodes) : ImmutableList.<Node<V>>of();
     }
-    
+
     public boolean inPredicate() {
         return ProxyMatcher.unwrap(matcher) instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
-    //////////////////////////////// PUBLIC ////////////////////////////////////
-
-    public MatcherContext<V> createCopy(MatcherContext<V> parent, Matcher<V> matcher) {
-        return new MatcherContext<V>(parent, invariables, currentLocation, matcher);
+    public boolean isEnforced() {
+        return enforced;
     }
+
+    //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setCurrentLocation(InputLocation currentLocation) {
         this.currentLocation = currentLocation;
@@ -245,7 +249,7 @@ public class MatcherContext<V> implements Context<V> {
             // special case: ActionMatchers need no sub context and no error recovery
             if (ProxyMatcher.unwrap(matcher) instanceof ActionMatcher) {
                 try {
-                    return matcher.match(this, enforced);
+                    return matcher.match(this);
                 } catch (Throwable e) {
                     throw new ParserRuntimeException(e,
                             "Error during execution of parsing action '%s/%s' at input position%s", getPath(), matcher,
@@ -257,14 +261,15 @@ public class MatcherContext<V> implements Context<V> {
             // in rare cases (error recovery) we might be recursing back into ourselves
             // so we need to save and restore it
             oldSubContext = subContext;
-            runContext = subContext = createCopy(this, matcher);
+            runContext = subContext = createCopy(this, matcher, enforced);
         } else {
+            Preconditions.checkState(isEnforced() == enforced);
             runContext = this;
         }
 
         boolean matched;
         try {
-            matched = runContext.matcher.match(runContext, enforced);
+            matched = runContext.matcher.match(runContext);
             if (!matched && enforced) {
                 runContext.recover();
                 matched = true;
@@ -306,6 +311,10 @@ public class MatcherContext<V> implements Context<V> {
 
     //////////////////////////////// PRIVATE ////////////////////////////////////
 
+    private MatcherContext<V> createCopy(MatcherContext<V> parent, Matcher<V> matcher, boolean enforced) {
+        return new MatcherContext<V>(parent, invariables, currentLocation, matcher, enforced);
+    }
+
     private void recover() {
         if (trySingleSymbolDeletion()) return;
 
@@ -328,7 +337,7 @@ public class MatcherContext<V> implements Context<V> {
         MatcherContext<V> parentContext = parent != null ? parent : this;
 
         // success, we have to skip only one char in order to be able to start the match
-        // match the illegal char and createActions a node for it
+        // match the illegal char and create a node for it
         IllegalCharactersMatcher<V> illegalCharsMatcher =
                 new IllegalCharactersMatcher<V>(matcher.getExpectedString(), Characters.of(lookAheadOne));
         parentContext.runMatcher(illegalCharsMatcher, true);
@@ -357,13 +366,13 @@ public class MatcherContext<V> implements Context<V> {
 
     // consume all characters until we see a legal follower
     private void resynchronize(Characters followerChars) {
-        createNode(); // createActions an empty match node
+        createNode(); // create an empty match node
 
         // normally, we need to run the IllegalCharactersMatcher in our parent context so the created node
         // appears on the same tree level, however if we are at the root ourselves we run in this context
         MatcherContext<V> parentContext = parent != null ? parent : this;
 
-        // createActions a node for the illegal chars
+        // create a node for the illegal chars
         parentContext.runMatcher(new IllegalCharactersMatcher<V>(matcher.getExpectedString(), followerChars), true);
 
         // catch up with the advanced location

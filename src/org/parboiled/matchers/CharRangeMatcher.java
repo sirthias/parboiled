@@ -39,7 +39,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         return hasLabel() ? super.getLabel() : cLow + ".." + cHigh;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation currentLocation = context.getCurrentLocation();
         if (currentLocation.currentChar < cLow || currentLocation.currentChar > cHigh) return false;
 

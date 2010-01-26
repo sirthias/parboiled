@@ -32,7 +32,7 @@ public class OptionalMatcher<V> extends AbstractMatcher<V> {
         super(subRule);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context, boolean enforced) {
+    public boolean match(@NotNull MatcherContext<V> context) {
         Matcher<V> matcher = getChildren().get(0);
         context.runMatcher(matcher, false);
         context.createNode();
