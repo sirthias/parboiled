@@ -104,11 +104,9 @@
         <jarjar destfile="build/parboiled-${version}.jar" manifest="build/META-INF/MANIFEST.MF">
             <fileset dir="build/classes" excludes="org/parboiled/examples/**"/>
             <fileset dir="build" includes="META-INF/*"/>
-            <zipfileset dir="lib/asm">
-                <include name="asm-3.2.jar"/>
-                <include name="asm-analysis-3.2.jar"/>
-                <include name="asm-tree-3.2.jar"/>
-            </zipfileset>
+            <zipfileset src="lib/asm/asm-3.2.jar"/>
+            <zipfileset src="lib/asm/asm-analysis-3.2.jar"/>
+            <zipfileset src="lib/asm/asm-tree-3.2.jar"/>
             <rule pattern="org.objectweb.**" result="org.parboiled.internal.@1"/>
         </jarjar>
     </target>
