@@ -17,8 +17,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.asm.*;
-import org.parboiled.exceptions.ParserRuntimeException;
+import org.parboiled.asm.ParserTransformer;
+import static org.parboiled.common.Utils.findConstructor;
 
 import java.lang.reflect.Constructor;
 
@@ -45,44 +45,12 @@ public class Parboiled {
     public static <P extends BaseParser<V>, V> P createParser(@NotNull Class<P> parserClass,
                                                               Object... constructorArgs) {
         try {
-            ParserClassNode classNode = transformParser(parserClass);
-            Constructor constructor = findConstructor(classNode.extendedClass, constructorArgs);
+            Class<?> extendedClass = ParserTransformer.transformParser(parserClass);
+            Constructor constructor = findConstructor(extendedClass, constructorArgs);
             return (P) constructor.newInstance(constructorArgs);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating extended parser class: " +  e.getMessage(), e);
+            throw new RuntimeException("Error creating extended parser class: " + e.getMessage(), e);
         }
-    }
-
-    protected static ParserClassNode transformParser(Class<?> parserClass) throws Exception {
-        return new ClassNodeInitializer(
-                new DontExtendMethodRemover(
-                        new RuleMethodAnalyzer(
-                                new RuleMethodInstructionGraphPartitioner(
-                                        new RuleMethodTransformer(
-                                                new ParserClassFinalizer(
-                                                        new ParserClassDefiner()
-                                                )
-                                        )
-                                )
-                        )
-                )
-        ).transform(new ParserClassNode(parserClass));
-    }
-
-    protected static Constructor findConstructor(Class<?> type, Object[] args) {
-        outer:
-        for (Constructor constructor : type.getConstructors()) {
-            Class<?>[] paramTypes = constructor.getParameterTypes();
-            if (paramTypes.length != args.length) continue;
-            for (int i = 0; i < args.length; i++) {
-                Object arg = args[i];
-                if (arg != null && !paramTypes[i].isAssignableFrom(arg.getClass())) continue outer;
-                if (arg == null && paramTypes[i].isPrimitive()) continue outer;
-            }
-            return constructor;
-        }
-        throw new ParserRuntimeException("No constructor found for class %s and the given %s arguments", type,
-                args.length);
     }
 
 }

@@ -22,7 +22,7 @@
 
 package org.parboiled.asm;
 
-public interface ClassTransformer {
+interface ClassTransformer {
 
     ParserClassNode transform(ParserClassNode classNode) throws Exception;
 

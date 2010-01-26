@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class RuleMethodAnalyzer implements ClassTransformer {
+class RuleMethodAnalyzer implements ClassTransformer {
 
     private final ClassTransformer nextTransformer;
 

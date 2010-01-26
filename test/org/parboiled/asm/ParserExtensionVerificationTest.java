@@ -16,34 +16,18 @@
 
 package org.parboiled.asm;
 
-import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import static org.parboiled.asm.AsmTestUtils.verifyIntegrity;
 import org.parboiled.common.Utils;
+import static org.parboiled.common.Utils.findConstructor;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 public class ParserExtensionVerificationTest extends AbstractTest {
 
-    private static class Verifier extends Parboiled {
-        public TestParser createAndVerifyTestParser() throws Exception {
-            ParserClassNode classNode = transformParser(TestParser.class);
-
-            verifyIntegrity(classNode.name, classNode.classCode);
-
-            for (ActionClassGenerator generator : classNode.actionClassGenerators) {
-                verifyIntegrity(generator.actionType.getInternalName(), generator.actionClassCode);
-            }
-
-            return (TestParser) findConstructor(classNode.extendedClass, Utils.EMPTY_OBJECT_ARRAY).newInstance();
-        }
-    }
-
-    private final Verifier verifier = new Verifier();
-
     @Test
     public void verifyParserExtension() throws Exception {
-        TestParser parser = verifier.createAndVerifyTestParser();
+        TestParser parser = createAndVerifyTestParser();
         Rule rule = parser.noActionRule();
         test(parser, rule, "abcb", "" +
                 "[noActionRule] 'abcb'\n" +
@@ -56,6 +40,19 @@ public class ParserExtensionVerificationTest extends AbstractTest {
                 "        [sequence] 'b'\n" +
                 "            ['b'] 'b'\n" +
                 "            [optional]\n");
+    }
+
+    public TestParser createAndVerifyTestParser() throws Exception {
+        ClassTransformer transformer = ParserTransformer.createTransformer();
+        ParserClassNode classNode = transformer.transform(new ParserClassNode(TestParser.class));
+
+        verifyIntegrity(classNode.name, classNode.classCode);
+
+        for (ActionClassGenerator generator : classNode.actionClassGenerators) {
+            verifyIntegrity(generator.actionType.getInternalName(), generator.actionClassCode);
+        }
+
+        return (TestParser) findConstructor(classNode.extendedClass, Utils.EMPTY_OBJECT_ARRAY).newInstance();
     }
 
 }

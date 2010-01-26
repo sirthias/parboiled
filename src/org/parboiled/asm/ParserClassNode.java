@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParserClassNode extends ClassNode {
+class ParserClassNode extends ClassNode {
 
     public final Class<?> parentClass;
     public final Type parentType;

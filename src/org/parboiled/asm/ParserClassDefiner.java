@@ -26,7 +26,7 @@ import org.objectweb.asm.ClassWriter;
 import static org.parboiled.asm.AsmUtils.loadClass;
 import org.jetbrains.annotations.NotNull;
 
-public class ParserClassDefiner implements ClassTransformer {
+class ParserClassDefiner implements ClassTransformer {
 
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);

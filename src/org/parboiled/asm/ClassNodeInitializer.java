@@ -27,7 +27,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.tree.MethodNode;
 import org.parboiled.support.Checks;
 
-public class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
+class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
 
     private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;

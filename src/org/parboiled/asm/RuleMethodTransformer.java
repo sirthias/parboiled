@@ -27,7 +27,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.jetbrains.annotations.NotNull;
 
-public class RuleMethodTransformer implements ClassTransformer, Opcodes {
+class RuleMethodTransformer implements ClassTransformer, Opcodes {
 
     private final ClassTransformer nextTransformer;
 

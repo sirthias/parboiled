@@ -28,7 +28,7 @@ import org.objectweb.asm.tree.*;
 import org.parboiled.support.Checks;
 import org.jetbrains.annotations.NotNull;
 
-public class ParserClassFinalizer implements ClassTransformer, Opcodes {
+class ParserClassFinalizer implements ClassTransformer, Opcodes {
 
     private final ClassTransformer nextTransformer;
 

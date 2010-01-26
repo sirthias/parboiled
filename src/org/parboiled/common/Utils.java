@@ -17,6 +17,7 @@
 package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -50,7 +51,7 @@ public final class Utils {
      * Joins the given arguments into one array.
      *
      * @param firstElements the first elements
-     * @param lastElement the element to append
+     * @param lastElement   the element to append
      * @return a new array containing all arguments.
      */
     @SuppressWarnings({"unchecked"})
@@ -256,6 +257,29 @@ public final class Utils {
             }
         }
         return null;
+    }
+
+    /**
+     * Finds the constructor of the given class that is compatible with the given arguments.
+     *
+     * @param type the class to find the constructor of
+     * @param args the arguments
+     * @return the constructor
+     */
+    public static Constructor findConstructor(Class<?> type, Object[] args) {
+        outer:
+        for (Constructor constructor : type.getConstructors()) {
+            Class<?>[] paramTypes = constructor.getParameterTypes();
+            if (paramTypes.length != args.length) continue;
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                if (arg != null && !paramTypes[i].isAssignableFrom(arg.getClass())) continue outer;
+                if (arg == null && paramTypes[i].isPrimitive()) continue outer;
+            }
+            return constructor;
+        }
+        throw new ParserRuntimeException("No constructor found for class %s and the given %s arguments", type,
+                args.length);
     }
 
 }

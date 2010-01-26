@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * You can use this annotation on parser rule methods that you want to be excluded from rule extension.
+ * Annotation to be used on parser rule methods that should be excluded from rule extension.
  * Rule extension provides for automatic caching, labelling and action wrapping, all of which you will have
  * to take care of yourself once the rule is marked with this annotation. 
  */

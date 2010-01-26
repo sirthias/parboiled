@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
+class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
 
     private final ClassTransformer nextTransformer;
 

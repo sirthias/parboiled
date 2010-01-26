@@ -26,7 +26,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.jetbrains.annotations.NotNull;
 
-public class DontExtendMethodRemover implements ClassTransformer {
+class DontExtendMethodRemover implements ClassTransformer {
     private final ClassTransformer nextTransformer;
 
     public DontExtendMethodRemover(ClassTransformer nextTransformer) {
