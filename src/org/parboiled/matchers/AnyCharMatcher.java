@@ -22,33 +22,26 @@ import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
 /**
- * A Matcher matching a single character.
+ * A Matcher matching any character except for EOI.
  *
  * @param <V>
  */
-public class CharMatcher<V> extends AbstractMatcher<V> {
-
-    public final char character;
-
-    public CharMatcher(char character) {
-        this.character = character;
-    }
+public class AnyCharMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public String getLabel() {
-        if (hasLabel()) return super.getLabel();
-        return character == Chars.EOI ? "EOI" : "\'" + character + '\'';
+        return hasLabel() ? super.getLabel() : "ANY";
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (context.getCurrentLocation().currentChar != character) return false;
+        if (context.getCurrentLocation().currentChar == Chars.EOI) return false;
         context.advanceInputLocation();
         context.createNode();
         return true;
     }
 
     public Characters getStarterChars() {
-        return Characters.of(character);
+        return Characters.of(Chars.ANY);
     }
 
 }

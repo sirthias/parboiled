@@ -16,36 +16,44 @@
 
 package org.parboiled.matchers;
 
+import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
+import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
-public class CharIgnoreCaseMatcher<V> extends CharMatcher<V> {
+/**
+ * A Matcher matching a single character case independently.
+ *
+ * @param <V>
+ */
+public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
 
-    public final char characterUp;
+    public final char charLow;
+    public final char charUp;
 
     public CharIgnoreCaseMatcher(char character) {
-        super(Character.toLowerCase(character));
-        this.characterUp = Character.toUpperCase(character);
+        this.charLow = Character.toLowerCase(character);
+        this.charUp = Character.toUpperCase(character);
     }
 
     @Override
     public String getLabel() {
         if (hasLabel()) return super.getLabel();
-
-        switch (character) {
-            case Chars.EOI:
-                return "EOI";
-            case Chars.ANY:
-                return "ANY";
-            case Chars.EMPTY:
-                return "EMPTY";
-            default:
-                return "\'" + character + '/' + characterUp + '\'';
-        }
+        if (charLow == Chars.EOI) return "EOI";
+        if (charLow == charUp) return "\'" + charLow + '\'';
+        return "\'" + charLow + '/' + charUp + '\'';
     }
 
-    @Override
-    public boolean matches(char current) {
-        return super.matches(current) || current == characterUp;
+    public boolean match(@NotNull MatcherContext<V> context) {
+        char c = context.getCurrentLocation().currentChar;
+        if (c != charLow && c != charUp) return false;
+        context.advanceInputLocation();
+        context.createNode();
+        return true;
+    }
+
+    public Characters getStarterChars() {
+        return Characters.of(charLow, charUp);
     }
 
 }

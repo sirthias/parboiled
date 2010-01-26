@@ -56,7 +56,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors);
 
         // run the actual matcher tree
-        context.runMatcher(null, true);
+        context.runMatcher();
 
         return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer);
     }
@@ -72,7 +72,16 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule ch(char c) {
-        return new CharMatcher(c);
+        switch (c) {
+            case Chars.EMPTY:
+                return empty();
+            case Chars.ANY:
+                return any();
+            case Chars.EOI:
+                return eoi();
+            default:
+                return new CharMatcher(c);
+        }
     }
 
     /**
@@ -82,7 +91,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule charIgnoreCase(char c) {
-        return Character.isLetter(c) ? new CharIgnoreCaseMatcher(c) : ch(c);
+        return Character.isLowerCase(c) != Character.isUpperCase(c) ? new CharIgnoreCaseMatcher(c) : ch(c);
     }
 
     /**
@@ -237,7 +246,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @DontExtend
     public Rule eoi() {
-        return toRule(Chars.EOI);
+        return new CharMatcher<V>(Chars.EOI);
     }
 
     /**
@@ -247,7 +256,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @DontExtend
     public Rule any() {
-        return toRule(Chars.ANY);
+        return new AnyCharMatcher<V>();
     }
 
     /**
@@ -257,7 +266,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @DontExtend
     public Rule empty() {
-        return toRule(Chars.EMPTY);
+        return new EmptyMatcher<V>();
     }
 
     ///************************* "MAGIC" METHODS ***************************///

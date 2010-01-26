@@ -17,11 +17,10 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
+import org.parboiled.common.Preconditions;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
-import org.parboiled.support.InputLocation;
-import org.parboiled.common.Preconditions;
-import org.parboiled.MatcherContext;
 
 public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
@@ -40,8 +39,8 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        InputLocation currentLocation = context.getCurrentLocation();
-        if (currentLocation.currentChar < cLow || currentLocation.currentChar > cHigh) return false;
+        char c = context.getCurrentLocation().currentChar;
+        if (c < cLow || c > cHigh) return false;
 
         context.advanceInputLocation();
         context.createNode();
