@@ -84,8 +84,13 @@ class ParserClassFinalizer implements ClassTransformer, Opcodes {
 
         // insert:
         // if (cacheField == null) {
+        //     _enterRuleDef();
         //     cacheField = new ProxyMatcher();
 
+        // stack:
+        instructions.insertBefore(current, new VarInsnNode(ALOAD, 0));
+        // stack: <this>
+        instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, "_enterRuleDef", "()V"));
         // stack:
         instructions.insertBefore(current, new VarInsnNode(ALOAD, 0));
         // stack: <this>
@@ -167,6 +172,10 @@ class ParserClassFinalizer implements ClassTransformer, Opcodes {
         instructions.insertBefore(current, new InsnNode(POP));
         // stack: <this> :: <rule>
         instructions.insertBefore(current, new FieldInsnNode(PUTFIELD, classNode.name, cacheFieldName, ruleTypeDesc));
+        // stack:
+        instructions.insertBefore(current, new VarInsnNode(ALOAD, 0));
+        // stack: <this>
+        instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, "_exitRuleDef", "()V"));
         // stack:
         instructions.insertBefore(current, cacheHitLabel);
         // stack:

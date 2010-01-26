@@ -60,6 +60,8 @@ public class RuleMethodTransformationTest {
                 "   L0\n" +
                 "    LINENUMBER 52 L0\n" +
                 "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._enterRuleDef ()V\n" +
+                "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$noActionRule : Lorg/parboiled/Rule;\n" +
                 "    IFNONNULL L1\n" +
                 "    ALOAD 0\n" +
@@ -89,6 +91,8 @@ public class RuleMethodTransformationTest {
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
                 "    POP\n" +
                 "    PUTFIELD org/parboiled/asm/TestParser$$parboiled.cache$noActionRule : Lorg/parboiled/Rule;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._exitRuleDef ()V\n" +
                 "   L1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$noActionRule : Lorg/parboiled/Rule;\n" +
@@ -101,6 +105,8 @@ public class RuleMethodTransformationTest {
         testRuleMethodTransformation("simpleActionRule", "" +
                 "   L0\n" +
                 "    LINENUMBER 64 L0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._enterRuleDef ()V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$simpleActionRule : Lorg/parboiled/Rule;\n" +
                 "    IFNONNULL L1\n" +
@@ -139,6 +145,8 @@ public class RuleMethodTransformationTest {
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
                 "    POP\n" +
                 "    PUTFIELD org/parboiled/asm/TestParser$$parboiled.cache$simpleActionRule : Lorg/parboiled/Rule;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._exitRuleDef ()V\n" +
                 "   L1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$simpleActionRule : Lorg/parboiled/Rule;\n" +
@@ -151,6 +159,8 @@ public class RuleMethodTransformationTest {
         testRuleMethodTransformation("upSetActionRule", "" +
                 "   L0\n" +
                 "    LINENUMBER 71 L0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._enterRuleDef ()V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$upSetActionRule : Lorg/parboiled/Rule;\n" +
                 "    IFNONNULL L1\n" +
@@ -204,6 +214,8 @@ public class RuleMethodTransformationTest {
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
                 "    POP\n" +
                 "    PUTFIELD org/parboiled/asm/TestParser$$parboiled.cache$upSetActionRule : Lorg/parboiled/Rule;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._exitRuleDef ()V\n" +
                 "   L1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$upSetActionRule : Lorg/parboiled/Rule;\n" +
@@ -216,6 +228,8 @@ public class RuleMethodTransformationTest {
         testRuleMethodTransformation("booleanExpressionActionRule", "" +
                 "   L0\n" +
                 "    LINENUMBER 84 L0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._enterRuleDef ()V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$booleanExpressionActionRule : Lorg/parboiled/Rule;\n" +
                 "    IFNONNULL L1\n" +
@@ -269,6 +283,8 @@ public class RuleMethodTransformationTest {
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
                 "    POP\n" +
                 "    PUTFIELD org/parboiled/asm/TestParser$$parboiled.cache$booleanExpressionActionRule : Lorg/parboiled/Rule;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._exitRuleDef ()V\n" +
                 "   L1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$booleanExpressionActionRule : Lorg/parboiled/Rule;\n" +
@@ -281,6 +297,8 @@ public class RuleMethodTransformationTest {
         testRuleMethodTransformation("complexActionsRule", "" +
                 "   L0\n" +
                 "    LINENUMBER 97 L0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._enterRuleDef ()V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$complexActionsRule : Lorg/parboiled/Rule;\n" +
                 "    IFNONNULL L1\n" +
@@ -353,6 +371,8 @@ public class RuleMethodTransformationTest {
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
                 "    POP\n" +
                 "    PUTFIELD org/parboiled/asm/TestParser$$parboiled.cache$complexActionsRule : Lorg/parboiled/Rule;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/asm/TestParser$$parboiled._exitRuleDef ()V\n" +
                 "   L1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$complexActionsRule : Lorg/parboiled/Rule;\n" +

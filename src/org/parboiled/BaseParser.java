@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
@@ -33,6 +34,11 @@ import java.util.Map;
  * @param <V> The type of the value field of the parse tree nodes created by this parser.
  */
 public abstract class BaseParser<V> extends BaseActions<V> {
+
+    /**
+     * Level counter used for determining the start of a new rule tree construction.
+     */
+    private final ThreadLocal<Integer> ruleDefLevel = new ThreadLocal<Integer>();
 
     /**
      * Cache of frequently used, bottom level rules. Per default used for character and string matching rules.
@@ -53,6 +59,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         InputLocation startLocation = new InputLocation(inputBuffer);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
+
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors);
 
         // run the actual matcher tree
@@ -395,6 +402,30 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @SuppressWarnings({"UnusedDeclaration"})
     protected Rule fromUserObject(Object obj) {
         return null;
+    }
+
+    /**
+     * Automatically called before the execution of custom rule definition code.
+     */
+    protected void _enterRuleDef() {
+        Integer level = ruleDefLevel.get();
+        if (level == null) {
+            // we are just about to start construction of a new rule tree,
+            // so initialize the index counter
+            AbstractMatcher.indexCounter.set(0);
+            level = -1;
+        }
+        ruleDefLevel.set(level + 1);
+    }
+
+    /**
+     * Automatically called after the execution of custom rule definition code.
+     */
+    @SuppressWarnings({"ConstantConditions"})
+    protected void _exitRuleDef() {
+        Integer level = ruleDefLevel.get();
+        Preconditions.checkState(level != null);
+        ruleDefLevel.set(level == 0 ? null : level - 1);
     }
 
     /**

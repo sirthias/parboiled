@@ -39,8 +39,9 @@ public class SimpleTest extends AbstractTest {
 
     @Test
     public void test() {
-        Parser parser = Parboiled.createParser(Parser.class);        
-        test(parser, parser.clause(), "1+5", "" +
+        Parser parser = Parboiled.createParser(Parser.class);
+        Rule rule = parser.clause();
+        test(parser, rule, "1+5", "" +
                 "[clause] '1+5'\n" +
                 "    [digit] '1'\n" +
                 "    [operator] '+'\n" +

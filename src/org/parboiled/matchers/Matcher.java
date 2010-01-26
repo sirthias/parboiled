@@ -17,9 +17,9 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 import org.parboiled.trees.GraphNode;
-import org.parboiled.MatcherContext;
 
 /**
  * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual
@@ -40,7 +40,7 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
     /**
      * Tries a match on the given MatcherContext.
      *
-     * @param context  the MatcherContext
+     * @param context the MatcherContext
      * @return true if the match was successful
      * @throws Throwable the throwable
      */
@@ -51,5 +51,12 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      *         matcher can legally match nothing.
      */
     Characters getStarterChars();
+
+    /**
+     * Returns the index of this matcher in its rule tree.
+     *
+     * @return the index
+     */
+    int getIndex();
 
 }

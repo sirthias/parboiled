@@ -56,6 +56,11 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         return target.getStarterChars();
     }
 
+    public int getIndex() {
+        applyLabel();
+        return target.getIndex();
+    }
+
     public String getLabel() {
         applyLabel();
         return target.getLabel();

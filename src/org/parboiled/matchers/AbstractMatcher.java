@@ -17,9 +17,8 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.ImmutableList;
-import org.parboiled.common.Preconditions;
 import org.parboiled.Rule;
+import org.parboiled.common.ImmutableList;
 import org.parboiled.trees.ImmutableGraphNode;
 
 /**
@@ -27,25 +26,29 @@ import org.parboiled.trees.ImmutableGraphNode;
  */
 public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
 
+    public static final ThreadLocal<Integer> indexCounter = new ThreadLocal<Integer>();
+
+    private final int index;
     private boolean locked;
     private String label;
 
     protected AbstractMatcher() {
-        super(ImmutableList.<Matcher<V>>of());
+        this(new Rule[0]);
     }
 
     @SuppressWarnings({"unchecked"})
     protected AbstractMatcher(@NotNull Rule subRule) {
-        super(ImmutableList.of((Matcher<V>)subRule));
+        this(new Rule[] {subRule});
     }
 
     @SuppressWarnings({"unchecked"})
     protected AbstractMatcher(@NotNull Rule[] subRules) {
         super(ImmutableList.<Matcher<V>>of(toMatchers(subRules)));
+        index = indexCounter.get();
+        indexCounter.set(index + 1);
     }
 
     private static Matcher[] toMatchers(@NotNull Rule[] subRules) {
-        Preconditions.checkArgument(subRules.length > 0);
         Matcher[] matchers = new Matcher[subRules.length];
         for (int i = 0; i < subRules.length; i++) {
             matchers[i] = (Matcher) subRules[i];
@@ -63,6 +66,10 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
 
     public String getLabel() {
         return label;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     @SuppressWarnings({"unchecked"})
