@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.BitField;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.exceptions.ParserRuntimeException;
@@ -38,7 +39,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Level counter used for determining the start of a new rule tree construction.
      */
-    private final ThreadLocal<Integer> ruleDefLevel = new ThreadLocal<Integer>();
+    private static final ThreadLocal<Integer> ruleDefLevel = new ThreadLocal<Integer>();
 
     /**
      * Cache of frequently used, bottom level rules. Per default used for character and string matching rules.
@@ -54,11 +55,29 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        // prepare
-        InputBuffer inputBuffer = new InputBuffer(input);
-        InputLocation startLocation = new InputLocation(inputBuffer);
-        List<ParseError> parseErrors = new ArrayList<ParseError>();
+        return parse(rule, input, Parboiled.NoOptimization);
+    }
+
+    /**
+     * Runs the given parser rule against the given input string using the given optimization flags.
+     * See {@link Parboiled} class for defined optimization flags.
+     *
+     * @param rule  the rule
+     * @param input the input string
+     * @param flags flags indicating requested optimizations, see {@link Parboiled} for defined optimization flags
+     * @return the ParsingResult for the run
+     */
+    @SuppressWarnings({"unchecked"})
+    public ParsingResult<V> parse(@NotNull Rule rule, @NotNull String input, int flags) {
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
+        InputBuffer inputBuffer = new InputBuffer(input);
+        List<ParseError> parseErrors = new ArrayList<ParseError>();
+
+        // if mismatch memoizaton is requested each InputLocation receives a BitField containing a bit for every rule
+        // index, indicating whether the rule with the respective index has already failed at this location
+        BitField failedRules = (flags & Parboiled.MemoizeMismatches) == 0 ? null :
+                new BitField(matcher.getIndex() + 1);
+        InputLocation startLocation = new InputLocation(inputBuffer, failedRules);
 
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors);
 
@@ -412,7 +431,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (level == null) {
             // we are just about to start construction of a new rule tree,
             // so initialize the index counter
-            AbstractMatcher.indexCounter.set(0);
+            AbstractMatcher.nextIndex.set(0);
             level = -1;
         }
         ruleDefLevel.set(level + 1);

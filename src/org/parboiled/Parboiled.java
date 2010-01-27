@@ -27,6 +27,17 @@ import java.lang.reflect.Constructor;
  */
 public class Parboiled {
 
+    /**
+     * Default flag value indicating that no optimization is required.
+     */
+    public static final int NoOptimization = 0x00;
+
+    /**
+     * Instructs the parboiled parser to memoize rule mismatches, i.e. to never try a rule match at an input location
+     * where the same rule has already failed before.
+     */
+    public static final int MemoizeMismatches = 0x01;
+
     protected Parboiled() {}
 
     /**

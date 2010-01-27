@@ -17,6 +17,7 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.BitField;
 
 /**
  * Immutable value container identifying a certain position in an InputBuffer.
@@ -26,27 +27,32 @@ public class InputLocation {
     public final int row;
     public final int column;
     public final char currentChar;
+    public final BitField failedRules;
 
-    public InputLocation(@NotNull InputBuffer inputBuffer) {
-        this(inputBuffer, 0, 0, 0);
+    public InputLocation(@NotNull InputBuffer inputBuffer, BitField failedRules) {
+        this(inputBuffer, 0, 0, 0, failedRules);
     }
 
-    private InputLocation(@NotNull InputBuffer inputBuffer, int index, int row, int column) {
+    private InputLocation(@NotNull InputBuffer inputBuffer, int index, int row, int column, BitField failedRules) {
         this.index = index;
         this.row = row;
         this.column = column;
+        this.failedRules = failedRules;
         this.currentChar = inputBuffer.charAt(index);
     }
 
     public InputLocation advance(@NotNull InputBuffer inputBuffer) {
-        switch (currentChar) {
-            case Chars.EOI:
-                return this;
-            case '\n':
-                return new InputLocation(inputBuffer, index + 1, row + 1, 0);
-            default:
-                return new InputLocation(inputBuffer, index + 1, row, column + 1);
+        if (currentChar == Chars.EOI) return this;
+        int newRow, newColumn;
+        if (currentChar == '\n') {
+            newRow = row + 1;
+            newColumn = 0;
+        } else {
+            newRow = row;
+            newColumn = column + 1;
         }
+        return new InputLocation(inputBuffer, index + 1, newRow, newColumn,
+                failedRules != null ? new BitField(failedRules.getLength()) : null);
     }
 
     public char lookAhead(@NotNull InputBuffer inputBuffer, int delta) {

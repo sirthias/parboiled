@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.BitField;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
 import org.parboiled.exceptions.ParserRuntimeException;
@@ -195,7 +196,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void advanceInputLocation() {
-        setCurrentLocation(getCurrentLocation().advance(invariables.inputBuffer));
+        setCurrentLocation(currentLocation.advance(invariables.inputBuffer));
     }
 
     public Node<V> getNode() {
@@ -268,7 +269,7 @@ public class MatcherContext<V> implements Context<V> {
      * @return true if matched
      */
     public boolean runMatcher(@NotNull Matcher<V> matcher, boolean enforced) {
-        // special case: ActionMatchers need no sub context and no error recovery
+        // special case: ActionMatchers need no sub context, error recovery and are always executed
         if (ProxyMatcher.unwrap(matcher) instanceof ActionMatcher) {
             try {
                 return matcher.match(this);
@@ -279,11 +280,16 @@ public class MatcherContext<V> implements Context<V> {
             }
         }
 
+        // skip the rematch if this matcher has already failed at least once at the current input location
+        // special case: IllegalCharactersMatchers are always run
+        BitField currentFailedRules = matcher instanceof IllegalCharactersMatcher ? null : currentLocation.failedRules;
+        if (currentFailedRules != null && currentFailedRules.get(matcher.getIndex())) return false;
+
         // we execute the given matcher in a new sub context and store this sub context instance as a field
         // in rare cases (error recovery) we might be recursing back into ourselves
         // so we need to save and restore it
         MatcherContext<V> oldSubContext = subContext;
-        subContext = createCopy(this, matcher, enforced);
+        subContext = new MatcherContext<V>(this, invariables, currentLocation, matcher, enforced);
 
         try {
             boolean matched = subContext.matcher.match(subContext);
@@ -296,6 +302,9 @@ public class MatcherContext<V> implements Context<V> {
             }
             if (matched) {
                 setCurrentLocation(subContext.getCurrentLocation());
+            } else {
+                // memoize the mismatch
+                if (currentFailedRules != null) currentFailedRules.set(matcher.getIndex());
             }
             subContext = oldSubContext;
             return matched;
@@ -324,10 +333,6 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////
-
-    private MatcherContext<V> createCopy(MatcherContext<V> parent, Matcher<V> matcher, boolean enforced) {
-        return new MatcherContext<V>(parent, invariables, currentLocation, matcher, enforced);
-    }
 
     private void recover() {
         if (trySingleSymbolDeletion()) return;
