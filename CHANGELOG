@@ -1,3 +1,14 @@
+Version 0.9.1.0 (2010-01-28)
+----------------------------
+- Added Failed-Rule-Memoization option
+- Added @Cached annotation logic for automatic caching of rule creating methods with parameters
+- Added parser extension caching for not recreating extension class upon repeated Parboiled.createParser(...)
+- Added ENFORCED() action expression helper
+- Improved character matchers for increased parsing speed
+- Renamed @DontExtend to @KeepAsIs
+- Removed BaseParser.fromUserObject(...), overwrite toRule(...) for the same effect
+- Smaller bug fixes and architectural improvements
+
 Version 0.9.0.2 (2010-01-26)
 ----------------------------
 Major rewrite of action and parser extension infrastructure, now based on bytecode analysis,
