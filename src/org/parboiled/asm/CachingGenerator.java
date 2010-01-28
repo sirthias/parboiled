@@ -27,30 +27,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 class CachingGenerator implements ClassTransformer, Opcodes {
-
-    public static class Arguments {
-        private final Object[] params;
-
-        public Arguments(Object[] params) {
-            this.params = params;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Arguments)) return false;
-            Arguments that = (Arguments) o;
-            return Arrays.equals(params, that.params);
-        }
-
-        @Override
-        public int hashCode() {
-            return params != null ? Arrays.hashCode(params) : 0;
-        }
-    }
 
     private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
@@ -371,7 +352,8 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         // stack: <rule> :: <hashMap> :: <mapKey> :: <rule> :: <hashMap>
         insert(new InsnNode(POP));
         // stack: <rule> :: <hashMap> :: <mapKey> :: <rule>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "put",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
         // stack: <rule> :: <null>
         insert(new InsnNode(POP));
         // stack: <rule>
@@ -385,9 +367,42 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         insert(new MethodInsnNode(INVOKEVIRTUAL, classNode.name, "_exitRuleDef", "()V"));
         // stack: <rule>
     }
-    
+
     private void insert(AbstractInsnNode instruction) {
         instructions.insertBefore(current, instruction);
     }
 
+    public static class Arguments {
+        private final Object[] params;
+
+        public Arguments(Object[] params) {
+            // we need to "unroll" all inner Object arrays
+            List<Object> list = new ArrayList<Object>();
+            unroll(params, list);
+            this.params = list.toArray();
+        }
+
+        private void unroll(Object[] params, List<Object> list) {
+            for (Object param : params) {
+                if (param instanceof Object[]) {
+                    unroll((Object[]) param, list);
+                } else {
+                    list.add(param);
+                }
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Arguments)) return false;
+            Arguments that = (Arguments) o;
+            return Arrays.equals(params, that.params);
+        }
+
+        @Override
+        public int hashCode() {
+            return params != null ? Arrays.hashCode(params) : 0;
+        }
+    }
 }
