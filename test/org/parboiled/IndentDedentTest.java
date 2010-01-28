@@ -22,23 +22,11 @@ import org.parboiled.test.AbstractTest;
 
 public class IndentDedentTest extends AbstractTest {
 
-    public static class IndentDedentActions extends BaseActions<Object> {
+    public static class IndentDedentParser extends BaseParser<Object> {
 
         public int currentIndent;
         public int indents;
         public int dedents;
-
-        public boolean countIndentOrDedent(String lineStartWhiteSpace) {
-            if (lineStartWhiteSpace.length() > currentIndent) indents++;
-            if (lineStartWhiteSpace.length() < currentIndent) dedents++;
-            currentIndent = lineStartWhiteSpace.length();
-            return true;
-        }
-    }
-
-    public static class IndentDedentParser extends BaseParser<Object> {
-
-        protected final IndentDedentActions actions = new IndentDedentActions();
 
         public Rule file() {
             return zeroOrMore(line());
@@ -47,7 +35,7 @@ public class IndentDedentTest extends AbstractTest {
         public Rule line() {
             return sequence(
                     zeroOrMore(' '),
-                    actions.countIndentOrDedent(TEXT(LAST_NODE())),
+                    countIndentOrDedent(TEXT(LAST_NODE())),
                     zeroOrMore(lineChar()),
                     newline()
             );
@@ -61,12 +49,20 @@ public class IndentDedentTest extends AbstractTest {
             return firstOf("\r\n", '\r', '\n');
         }
 
+        public boolean countIndentOrDedent(String lineStartWhiteSpace) {
+            if (lineStartWhiteSpace.length() > currentIndent) indents++;
+            if (lineStartWhiteSpace.length() < currentIndent) dedents++;
+            currentIndent = lineStartWhiteSpace.length();
+            return true;
+        }
+
     }
 
     @Test
     public void test() {
         IndentDedentParser parser = Parboiled.createParser(IndentDedentParser.class);
-        parser.parse(parser.file(), "" +
+        Rule rule = parser.file();
+        parser.parse(rule, "" +
                 "a file containing\n" +
                 "  some\n" +
                 "     indents\n" +
@@ -77,9 +73,9 @@ public class IndentDedentTest extends AbstractTest {
                 "          go back big time\n" +
                 " and return"
         );
-        assertEquals(parser.actions.indents, 3);
-        assertEquals(parser.actions.dedents, 2);
-        assertEquals(parser.actions.currentIndent, 1);
+        assertEquals(parser.indents, 3);
+        assertEquals(parser.dedents, 2);
+        assertEquals(parser.currentIndent, 1);
     }
 
 }

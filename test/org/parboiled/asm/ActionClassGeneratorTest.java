@@ -26,19 +26,21 @@ import java.util.List;
 public class ActionClassGeneratorTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
-    private final List<RuleMethodInfo> methodInfos = classNode.methodInfos;
+    private final List<ParserMethod> ruleMethods = classNode.ruleMethods;
 
     @BeforeClass
     private void setup() throws Exception {
         new ClassNodeInitializer(
-                new RuleMethodAnalyzer(
-                        new RuleMethodInstructionGraphPartitioner(null)
+                new MethodCategorizer(
+                        new RuleMethodAnalyzer(
+                                new RuleMethodInstructionGraphPartitioner(null)
+                        )
                 )
         ).transform(classNode);
     }
 
     @Test
-    public void testActionClassTraceDump() throws Exception {
+    public void testActionClassGeneration() throws Exception {
         testActionClassGeneration("simpleActionRule", 0, "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 33\n" +
@@ -351,7 +353,7 @@ public class ActionClassGeneratorTest {
     }
 
     private void testActionClassGeneration(String methodName, int actionNr, String expectedTrace) throws Exception {
-        RuleMethodInfo info = AsmTestUtils.getByName(methodInfos, methodName);
+        ParserMethod info = AsmTestUtils.getByName(ruleMethods, methodName);
 
         int actionNumber = 0;
         for (InstructionSubSet subSet : info.getInstructionSubSets()) {

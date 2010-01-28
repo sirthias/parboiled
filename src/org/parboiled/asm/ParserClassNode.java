@@ -22,10 +22,9 @@
 
 package org.parboiled.asm;
 
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +34,13 @@ class ParserClassNode extends ClassNode {
     public final Class<?> parentClass;
     public final Type parentType;
     public final List<Type> superTypes = new ArrayList<Type>();
-    public final List<RuleMethodInfo> methodInfos = new ArrayList<RuleMethodInfo>();
+
+    public final List<ParserMethod> allMethods = new ArrayList<ParserMethod>();
+    public final List<ParserMethod> constructors = new ArrayList<ParserMethod>();
+    public final List<ParserMethod> ruleMethods = new ArrayList<ParserMethod>(); // no-arg, Rule returning methods
+    public final List<ParserMethod> cachedMethods = new ArrayList<ParserMethod>(); // @Cached, Rule returning methods
+
     public final List<ActionClassGenerator> actionClassGenerators = new ArrayList<ActionClassGenerator>();
-    public final List<MethodNode> constructors = new ArrayList<MethodNode>();
     public byte[] classCode;
     public Class<?> extendedClass;
 

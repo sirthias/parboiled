@@ -30,23 +30,25 @@ import org.parboiled.support.Checks;
 class ActionClassGenerator implements Opcodes {
 
     public final ParserClassNode classNode;
-    public final RuleMethodInfo methodInfo;
+    public final ParserMethod method;
     public final InstructionSubSet subSet;
     public final String actionSimpleName;
     public final Type actionType;
     public byte[] actionClassCode;
     public Class<?> actionClass;
 
-    public ActionClassGenerator(ParserClassNode classNode, RuleMethodInfo methodInfo, InstructionSubSet subSet,
+    public ActionClassGenerator(ParserClassNode classNode, ParserMethod method, InstructionSubSet subSet,
                                 int actionNumber) {
         this.classNode = classNode;
-        this.methodInfo = methodInfo;
+        this.method = method;
         this.subSet = subSet;
-        this.actionSimpleName = methodInfo.method.name + "_Action" + actionNumber;
+        this.actionSimpleName = method.name + "_Action" + actionNumber;
         this.actionType = Type.getObjectType(classNode.name + "$" + actionSimpleName);
     }
 
     public void defineActionClass() {
+        // TODO: dont retransform if extended class already loaded
+        
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         generateClassBasics(classWriter);
         generateConstructor(classWriter);
@@ -102,16 +104,16 @@ class ActionClassGenerator implements Opcodes {
         InsnList runMethodInstructions = new InsnList();
 
         // move action instructions from method instruction list into the list of runMethodInstructions
-        InsnList ruleMethodInstructions = methodInfo.method.instructions;
+        InsnList ruleMethodInstructions = method.instructions;
         for (int i = subSet.firstIndex; i <= subSet.lastIndex; i++) {
-            AbstractInsnNode insn = methodInfo.instructionGraphNodes[i].instruction;
+            AbstractInsnNode insn = method.getInstructionGraphNodes()[i].instruction;
             ruleMethodInstructions.remove(insn);
             runMethodInstructions.add(insn);
         }
 
         // work backwards through the old instructions list and apply adaptations to the new list
         for (int i = subSet.lastIndex; i >= subSet.firstIndex; i--) {
-            InstructionGraphNode node = methodInfo.instructionGraphNodes[i];
+            InstructionGraphNode node = method.getInstructionGraphNodes()[i];
             AbstractInsnNode insn = node.instruction;
 
             if (insertContextSwitchCode(runMethodInstructions, node)) continue;
@@ -149,7 +151,7 @@ class ActionClassGenerator implements Opcodes {
         // insert context-switching call (UP/DOWN) before first instruction contributing to the argument
         AbstractInsnNode targetSettingInsn = node.getEarlierstPredecessor().instruction;
         Checks.ensure(targetSettingInsn.getOpcode() == ALOAD && ((VarInsnNode) targetSettingInsn).var == 0,
-                "Illegal context switching construct in parser rule method '" + methodInfo.method.name + "': " +
+                "Illegal context switching construct in parser rule method '" + method.name + "': " +
                         "UP(...) or DOWN(...) can only be called on the parser instance itself");
 
         newInstructions.insert(targetSettingInsn, new MethodInsnNode(INVOKEVIRTUAL,

@@ -16,25 +16,38 @@
 
 package org.parboiled.asm;
 
-import org.objectweb.asm.tree.MethodNode;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
-public class ClassNodeInitializerTest {
+import java.util.List;
+
+public class ClassNodeInializerAndMethodCategorizerTest {
 
     @Test
-    public void testClassNodeInitialization() throws Exception {
+    public void testClassNodeSetup() throws Exception {
         ParserClassNode classNode = new ParserClassNode(TestParser.class);
-        new ClassNodeInitializer(null).transform(classNode);
+        new ClassNodeInitializer(
+                new MethodCategorizer(null)
+        ).transform(classNode);
 
         assertEquals(classNode.name, "org/parboiled/asm/TestParser$$parboiled");
         assertEquals(classNode.superName, "org/parboiled/asm/TestParser");
 
+        assertEqualsMultiline(join(classNode.constructors), "<init>");
+        assertEqualsMultiline(join(classNode.ruleMethods),
+                "noActionRule,simpleActionRule,upSetActionRule,booleanExpressionActionRule,complexActionsRule,eoi,any,empty");
+        assertEqualsMultiline(join(classNode.cachedMethods),
+                "ch,charIgnoreCase,charRange,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,enforcedSequence,test,testNot,zeroOrMore");
+    }
+
+    private String join(List<ParserMethod> methods) {
         StringBuilder sb = new StringBuilder();
-        for (Object method : classNode.methods) sb.append(((MethodNode) method).name).append(',');
-        assertEqualsMultiline(sb.toString(), "noActionRule,simpleActionRule,upSetActionRule," +
-                "booleanExpressionActionRule,complexActionsRule,eoi,any,empty,");
+        for (ParserMethod method : methods) {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(method.name);
+        }
+        return sb.toString();
     }
 
 }

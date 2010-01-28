@@ -25,9 +25,7 @@ import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
@@ -40,11 +38,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Level counter used for determining the start of a new rule tree construction.
      */
     private static final ThreadLocal<Integer> ruleDefLevel = new ThreadLocal<Integer>();
-
-    /**
-     * Cache of frequently used, bottom level rules. Per default used for character and string matching rules.
-     */
-    private final Map<Object, Rule> ruleCache = new HashMap<Object, Rule>();
 
     /**
      * Runs the given parser rule against the given input string.
@@ -97,6 +90,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param c the char to match
      * @return a new rule
      */
+    @Cached
     public Rule ch(char c) {
         switch (c) {
             case Chars.EMPTY:
@@ -116,6 +110,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param c the char to match independently of its case
      * @return a new rule
      */
+    @Cached
     public Rule charIgnoreCase(char c) {
         return Character.isLowerCase(c) != Character.isUpperCase(c) ? new CharIgnoreCaseMatcher(c) : ch(c);
     }
@@ -127,6 +122,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param cHigh the end char of the range (inclusively)
      * @return a new rule
      */
+    @Cached
     public Rule charRange(char cLow, char cHigh) {
         return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(cLow, cHigh);
     }
@@ -139,13 +135,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string to match
      * @return a new rule
      */
+    @Cached
     public Rule string(@NotNull String string) {
         if (string.length() == 1) return ch(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
-            char c = string.charAt(i);
-            Rule rule = cached(c);
-            matchers[i] = rule != null ? rule : cache(c, ch(c));
+            matchers[i] = ch(string.charAt(i));
         }
         return new SequenceMatcher(matchers, false).label('"' + string + '"');
     }
@@ -156,15 +151,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string to match
      * @return a new rule
      */
+    @Cached
     public Rule stringIgnoreCase(String string) {
         if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
-            char c = string.charAt(i);
-            boolean letter = Character.isLetter(c);
-            Object key = letter ? new IgnoreCaseWrapper(c) : c;
-            Rule rule = cached(key);
-            matchers[i] = rule != null ? rule : cache(key, letter ? charIgnoreCase(c) : ch(c));
+            matchers[i] = charIgnoreCase(string.charAt(i));
         }
         return new SequenceMatcher(matchers, false).label('"' + string + '"');
     }
@@ -178,6 +170,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
+    @Cached
     public Rule firstOf(Object rule, Object rule2, Object... moreRules) {
         return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
     }
@@ -189,6 +182,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param rule the subrule
      * @return a new rule
      */
+    @Cached
     public Rule oneOrMore(Object rule) {
         return new OneOrMoreMatcher(toRule(rule)).label("oneOrMore");
     }
@@ -200,6 +194,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param rule the subrule
      * @return a new rule
      */
+    @Cached
     public Rule optional(Object rule) {
         return new OptionalMatcher(toRule(rule)).label("optional");
     }
@@ -212,6 +207,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
+    @Cached
     public Rule sequence(Object rule, Object rule2, Object... moreRules) {
         return new SequenceMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules))), false).label("sequence");
     }
@@ -226,6 +222,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
+    @Cached
     public Rule enforcedSequence(Object rule, Object rule2, Object... moreRules) {
         return new SequenceMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules))), true).label("enforcedSequence");
     }
@@ -238,6 +235,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param rule the subrule
      * @return a new rule
      */
+    @Cached
     public Rule test(Object rule) {
         return new TestMatcher(toRule(rule), false);
     }
@@ -250,6 +248,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param rule the subrule
      * @return a new rule
      */
+    @Cached
     public Rule testNot(Object rule) {
         return new TestMatcher(toRule(rule), true);
     }
@@ -261,6 +260,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param rule the subrule
      * @return a new rule
      */
+    @Cached
     public Rule zeroOrMore(Object rule) {
         return new ZeroOrMoreMatcher(toRule(rule)).label("zeroOrMore");
     }
@@ -270,7 +270,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
-    @DontExtend
     public Rule eoi() {
         return new CharMatcher<V>(Chars.EOI);
     }
@@ -280,7 +279,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
-    @DontExtend
     public Rule any() {
         return new AnyCharMatcher<V>();
     }
@@ -290,7 +288,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
-    @DontExtend
     public Rule empty() {
         return new EmptyMatcher<V>();
     }
@@ -348,34 +345,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Returns the rule cache content for the given key.
-     *
-     * @param key the cache key
-     * @return the cached rule or null
-     */
-    protected Rule cached(Object key) {
-        return ruleCache.get(key);
-    }
-
-    /**
-     * Caches the given rule in the rule cache under the given key and return the rule.
-     *
-     * @param key  the key to store the rule under in the cache
-     * @param rule the rule to cache
-     * @return the rule
-     */
-    protected Rule cache(Object key, Rule rule) {
-        ruleCache.put(key, rule);
-        return rule;
-    }
-
-    /**
      * Converts the given object array to an array of rules.
      *
      * @param objects the objects to convert
      * @return the rules corresponding to the given objects
      */
-    protected Rule[] toRules(@NotNull Object[] objects) {
+    protected Rule[] toRules(@NotNull Object... objects) {
         Rule[] rules = new Rule[objects.length];
 
         // we need to process the sub rule objects in reverse order so as to correctly mix in parameters
@@ -388,39 +363,18 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Converts the given object to a rule.
+     * Override in order to be able to use custom objects directly in your rule specification.
      *
      * @param obj the object to convert
      * @return the rule corresponding to the given object
      */
     protected Rule toRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
-
-        Rule rule = cached(obj);
-        if (rule != null) return rule;
-
-        if (obj instanceof Character) return cache(obj, fromCharLiteral((Character) obj));
-        if (obj instanceof String) return cache(obj, fromStringLiteral((String) obj));
+        if (obj instanceof Character) return fromCharLiteral((Character) obj);
+        if (obj instanceof String) return fromStringLiteral((String) obj);
         if (obj instanceof Action) return new ActionMatcher((Action) obj);
 
-        rule = fromUserObject(obj);
-        if (rule != null) return cache(obj, rule);
-
-        throw new ParserRuntimeException("\'" + obj + "\' is not a valid Rule or parser action");
-    }
-
-    /**
-     * Attempts to convert the given object into a rule.
-     * Override this method in order to be able to use custom objects directly in your rule specification.
-     * The method should return null if the given object cannot be converted into a rule (which is all the
-     * default implementation does).
-     * Note that the results are automatically cached, so the method is never called twice for equal objects.
-     *
-     * @param obj the object to convert
-     * @return the rule for the object or null
-     */
-    @SuppressWarnings({"UnusedDeclaration"})
-    protected Rule fromUserObject(Object obj) {
-        return null;
+        throw new ParserRuntimeException("\'" + obj + "\' cannot be automatically converted to a parser Rule");
     }
 
     /**
@@ -445,27 +399,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         Integer level = ruleDefLevel.get();
         Preconditions.checkState(level != null);
         ruleDefLevel.set(level == 0 ? null : level - 1);
-    }
-
-    /**
-     * Wrapper for rule cache keys that are used for explicit "ignore-case matchers"
-     */
-    protected static class IgnoreCaseWrapper {
-        private final Object key;
-
-        public IgnoreCaseWrapper(Object key) {
-            this.key = key;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return this == o || o instanceof IgnoreCaseWrapper && key.equals(((IgnoreCaseWrapper) o).key);
-        }
-
-        @Override
-        public int hashCode() {
-            return key.hashCode();
-        }
     }
 
 }

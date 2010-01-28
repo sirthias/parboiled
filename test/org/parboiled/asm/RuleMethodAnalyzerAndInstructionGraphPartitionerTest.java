@@ -30,16 +30,16 @@ import java.io.FileOutputStream;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal"})
-public class RuleMethodAnalysisTest {
+public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
-    private final List<RuleMethodInfo> methodInfos = classNode.methodInfos;
+    private final List<ParserMethod> ruleMethods = classNode.ruleMethods;
     private String dotSource;
 
     @BeforeClass
     public void setup() throws Exception {
         new ClassNodeInitializer(
-                new DontExtendMethodRemover(
+                new MethodCategorizer(
                         new RuleMethodAnalyzer(
                                 new RuleMethodInstructionGraphPartitioner(null)
                         )
@@ -66,15 +66,15 @@ public class RuleMethodAnalysisTest {
     }
 
     private void testMethodAnalysis(String methodName, long dotSourceCRC, boolean hasActions) throws Exception {
-        RuleMethodInfo info = AsmTestUtils.getByName(methodInfos, methodName);
+        ParserMethod method = AsmTestUtils.getByName(ruleMethods, methodName);
 
         // make sure all instructions are covered
-        for (InstructionGraphNode node : info.instructionGraphNodes) assertNotNull(node);
+        for (InstructionGraphNode node : method.getInstructionGraphNodes()) assertNotNull(node);
 
         // check action detection
-        assertEquals(info.hasActions(), hasActions);
+        assertEquals(method.hasActions(), hasActions);
 
-        dotSource = generateDotSource(info, info.getInstructionSubSets());
+        dotSource = generateDotSource(method, method.getInstructionSubSets());
         long crc = computeCRC(dotSource);
         if (crc != dotSourceCRC) {
             System.err.println("Invalid dotSource CRC for method '" + methodName + "': " + crc + 'L');
@@ -82,17 +82,17 @@ public class RuleMethodAnalysisTest {
         }
     }
 
-    public String generateDotSource(@NotNull RuleMethodInfo info, List<InstructionSubSet> instructionSubSets) {
+    public String generateDotSource(@NotNull ParserMethod method, List<InstructionSubSet> instructionSubSets) {
         // generate graph attributes
         StringBuilder sb = new StringBuilder()
                 .append("digraph G {\n")
                 .append("fontsize=10;\n")
                 .append("label=\"")
-                .append(getMethodInstructionList(info.method).replace("\n", "\\l").replace("\"", "\'"))
+                .append(getMethodInstructionList(method).replace("\n", "\\l").replace("\"", "\'"))
                 .append("\";\n");
 
-        InstructionGraphNode returnNode = info.getReturnNode();
-        for (InstructionGraphNode node : info.instructionGraphNodes) {
+        InstructionGraphNode returnNode = method.getReturnNode();
+        for (InstructionGraphNode node : method.getInstructionGraphNodes()) {
             // generate node
             sb.append("    ").append(node.instructionIndex)
                     .append(node.isAction ? "[penwidth=2.0,color=red]" : "")

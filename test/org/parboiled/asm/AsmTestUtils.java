@@ -18,15 +18,18 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.CheckMethodAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import org.parboiled.common.StringUtils;
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -65,11 +68,24 @@ public class AsmTestUtils {
                 .toString();
     }
 
-    public static RuleMethodInfo getByName(List<RuleMethodInfo> methodInfos, String methodName) {
-        for (RuleMethodInfo methodInfo : methodInfos) {
-            if (methodName.equals(methodInfo.method.name)) return methodInfo;
+    public static <T extends MethodNode> T getByName(List<T> methods, String methodName) {
+        for (T method : methods) {
+            if (methodName.equals(method.name)) return method;
         }
         throw new IllegalArgumentException("Method '" + methodName + "' not found");
+    }
+
+    public static void assertTraceDumpEquality(MethodNode method, String traceDump) throws Exception {
+        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor();
+        // MethodAdapter checkMethodAdapter = new MethodAdapter(traceMethodVisitor);
+        MethodAdapter checkMethodAdapter = new CheckMethodAdapter(traceMethodVisitor);
+        method.accept(checkMethodAdapter);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        traceMethodVisitor.print(printWriter);
+        printWriter.flush();
+
+        assertEqualsMultiline(stringWriter.toString(), traceDump);
     }
 
     public static void verifyIntegrity(String classInternalName, byte[] classCode) {

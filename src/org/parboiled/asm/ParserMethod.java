@@ -28,23 +28,33 @@ import org.parboiled.common.Preconditions;
 
 import java.util.List;
 
-class RuleMethodInfo {
+class ParserMethod extends MethodNode {
 
-    public final MethodNode method;
-    public final InstructionGraphNode[] instructionGraphNodes;
-
+    public final Class<?> ownerClass;
+    private InstructionGraphNode[] instructionGraphNodes;
     private List<InstructionSubSet> instructionSubSets;
 
-    public RuleMethodInfo(MethodNode method) {
-        int n = method.instructions.size();
-        this.method = method;
-        this.instructionGraphNodes = new InstructionGraphNode[n];
+    public ParserMethod(Class<?> ownerClass, int access, String name, String desc, String signature,
+                        String[] exceptions) {
+        super(access, name, desc, signature, exceptions);
+        this.ownerClass = ownerClass;
+    }
+
+    public InstructionGraphNode[] getInstructionGraphNodes() {
+        if (instructionGraphNodes == null) {
+            instructionGraphNodes = new InstructionGraphNode[instructions.size()];
+        }
+        return instructionGraphNodes;
     }
 
     public InstructionGraphNode getReturnNode() {
         InstructionGraphNode node = instructionGraphNodes[instructionGraphNodes.length - 2];
         Preconditions.checkState(node == null || node.instruction.getOpcode() == Opcodes.ARETURN);
         return node;
+    }
+
+    public boolean hasAccess(int access) {
+        return (this.access & access) > 0;
     }
 
     public boolean hasActions() {

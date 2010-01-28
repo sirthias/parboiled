@@ -22,11 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parser rule methods that should be excluded from rule extension.
- * Rule extension provides for automatic caching, labelling and action wrapping, all of which you will have
- * to take care of yourself once the rule is marked with this annotation. 
+ * Annotation to be used on parser rule methods (i.e. methods returning a Rule and taking no parameters)
+ * that should be excluded from rule extension. Rule extension provides for automatic caching, labelling
+ * and action wrapping, all of which you will have to take care of yourself once the rule method is marked
+ * with this annotation. 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface DontExtend {
+public @interface KeepAsIs {
 }

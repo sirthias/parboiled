@@ -22,11 +22,15 @@
 
 package org.parboiled.asm;
 
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import org.jetbrains.annotations.NotNull;
 
+/**
+ * Transforms the ParserClassNode.ruleMethods by replacing all action expressions with calls to respective
+ * action classes (which are generated using the ActionClassGenerator).
+ */
 class RuleMethodTransformer implements ClassTransformer, Opcodes {
 
     private final ClassTransformer nextTransformer;
@@ -36,34 +40,34 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
     }
 
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (RuleMethodInfo methodInfo : classNode.methodInfos) {
-            if (methodInfo.hasActions()) {
-                transformRuleMethodContainingActions(classNode, methodInfo);
+        for (ParserMethod method : classNode.ruleMethods) {
+            if (method.hasActions()) {
+                transformRuleMethodContainingActions(classNode, method);
             } else {
-                transformRuleMethodWithoutActions(classNode, methodInfo);
+                transformRuleMethodWithoutActions(classNode, method);
             }
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
-    private void transformRuleMethodContainingActions(ParserClassNode classNode, RuleMethodInfo methodInfo) {
+    private void transformRuleMethodContainingActions(ParserClassNode classNode, ParserMethod method) {
         int actionNr = 1;
-        for (InstructionSubSet subSet : methodInfo.getInstructionSubSets()) {
+        for (InstructionSubSet subSet : method.getInstructionSubSets()) {
             if (subSet.isActionSet) {
-                ActionClassGenerator generator = new ActionClassGenerator(classNode, methodInfo, subSet, actionNr++);
+                ActionClassGenerator generator = new ActionClassGenerator(classNode, method, subSet, actionNr++);
                 generator.defineActionClass();
-                insertActionClassCreation(classNode, methodInfo, subSet, generator.actionType);
-                
+                insertActionClassCreation(classNode, method, subSet, generator.actionType);
+
                 classNode.actionClassGenerators.add(generator);
             }
         }
     }
 
-    private void insertActionClassCreation(ParserClassNode classNode, RuleMethodInfo methodInfo,
+    private void insertActionClassCreation(ParserClassNode classNode, ParserMethod method,
                                            InstructionSubSet subSet, Type actionType) {
-        InsnList methodInstructions = methodInfo.method.instructions;
-        AbstractInsnNode firstAfterAction = methodInfo.instructionGraphNodes[subSet.lastIndex + 1].instruction;
+        InsnList methodInstructions = method.instructions;
+        AbstractInsnNode firstAfterAction = method.getInstructionGraphNodes()[subSet.lastIndex + 1].instruction;
 
         // we do not have to remove the action instructions from the rule method as this has already happened
         // during action class creation, all we have to do is insert the action class creation instructions
@@ -75,11 +79,11 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
                         "(" + classNode.getDescriptor() + ")V"));
     }
 
-    private void transformRuleMethodWithoutActions(ParserClassNode classNode, RuleMethodInfo methodInfo) {
+    private void transformRuleMethodWithoutActions(ParserClassNode classNode, ParserMethod method) {
         // replace all method code with a simple call to the super method
         // we do not just delete the method because its code is later going to wrapped with the caching code
-        InsnList methodInstructions = methodInfo.method.instructions;
-        AbstractInsnNode returnInsn = methodInfo.getReturnNode().instruction;
+        InsnList methodInstructions = method.instructions;
+        AbstractInsnNode returnInsn = method.getReturnNode().instruction;
 
         // do not delete starting label and linenumber instructions
         AbstractInsnNode current = methodInstructions.getFirst();
@@ -97,7 +101,7 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
         // insert the call to the super method
         methodInstructions.insertBefore(returnInsn, new VarInsnNode(ALOAD, 0));
         methodInstructions.insertBefore(returnInsn, new MethodInsnNode(INVOKESPECIAL, classNode.getParentType()
-                .getInternalName(), methodInfo.method.name, "()" + AsmUtils.RULE_TYPE.getDescriptor()));
+                .getInternalName(), method.name, "()" + AsmUtils.RULE_TYPE.getDescriptor()));
     }
 
 }

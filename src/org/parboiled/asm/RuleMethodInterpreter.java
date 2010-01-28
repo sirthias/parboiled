@@ -45,13 +45,13 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private static final String CONTEXT_SWITCH_DESCRIPTOR = "(Ljava/lang/Object;)Ljava/lang/Object;";
 
     private final ParserClassNode classNode;
-    private final RuleMethodInfo methodInfo;
+    private final ParserMethod method;
     private final List<int[]> additionalEdges = new ArrayList<int[]>();
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
 
-    public RuleMethodInterpreter(ParserClassNode classNode, RuleMethodInfo methodInfo) {
+    public RuleMethodInterpreter(ParserClassNode classNode, ParserMethod method) {
         this.classNode = classNode;
-        this.methodInfo = methodInfo;
+        this.method = method;
     }
 
     public Value newValue(Type type) {
@@ -94,7 +94,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     public void returnOperation(AbstractInsnNode insn, Value value, Value expected) throws AnalyzerException {
         Preconditions.checkState(insn.getOpcode() == Opcodes.ARETURN); // we return a Rule which is a reference type
         Checks.ensure(insn.getNext().getType() == AbstractInsnNode.LABEL && insn.getNext().getNext() == null,
-                "Illegal parser rule definition '" + methodInfo.method.name + "':\n" +
+                "Illegal parser rule definition '" + method.name + "':\n" +
                         "Rule definition methods must contain exactly one return statement");
     }
 
@@ -104,7 +104,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
-        switch (methodInfo.method.instructions.get(instructionIndex).getType()) {
+        switch (method.instructions.get(instructionIndex).getType()) {
             case AbstractInsnNode.LABEL:
             case AbstractInsnNode.LINE:
             case AbstractInsnNode.JUMP_INSN:
@@ -112,7 +112,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
                 return;
         }
 
-        switch (methodInfo.method.instructions.get(successorIndex).getType()) {
+        switch (method.instructions.get(successorIndex).getType()) {
             case AbstractInsnNode.JUMP_INSN:
                 additionalEdges.add(new int[] {instructionIndex, successorIndex});
         }
@@ -120,24 +120,25 @@ class RuleMethodInterpreter extends BasicInterpreter {
 
     public void finish() {
         // finally add all edges so far not included
+        InstructionGraphNode[] instructionGraphNodes = method.getInstructionGraphNodes();
         for (int[] edge : additionalEdges) {
-            InstructionGraphNode node = methodInfo.instructionGraphNodes[edge[0]];
-            if (node == null) node = createNode(methodInfo.method.instructions.get(edge[0]), null);
-            InstructionGraphNode succ = methodInfo.instructionGraphNodes[edge[1]];
-            if (succ == null) succ = createNode(methodInfo.method.instructions.get(edge[1]), null);
+            InstructionGraphNode node = instructionGraphNodes[edge[0]];
+            if (node == null) node = createNode(method.instructions.get(edge[0]), null);
+            InstructionGraphNode succ = instructionGraphNodes[edge[1]];
+            if (succ == null) succ = createNode(method.instructions.get(edge[1]), null);
             if (!succ.predecessors.contains(node)) succ.predecessors.add(node);
         }
 
         // set the finishing label
-        int lastIndex = methodInfo.instructionGraphNodes.length - 1;
-        AbstractInsnNode lastInstruction = methodInfo.method.instructions.get(lastIndex);
-        Preconditions.checkState(methodInfo.instructionGraphNodes[lastIndex] == null);
+        int lastIndex = instructionGraphNodes.length - 1;
+        AbstractInsnNode lastInstruction = method.instructions.get(lastIndex);
+        Preconditions.checkState(instructionGraphNodes[lastIndex] == null);
         Preconditions.checkState(lastInstruction.getType() == AbstractInsnNode.LABEL);
         createNode(lastInstruction, null);
     }
 
     private InstructionGraphNode createNode(AbstractInsnNode insn, Value resultValue, Value... prevNodes) {
-        int index = methodInfo.method.instructions.indexOf(insn);
+        int index = method.instructions.indexOf(insn);
         BasicValue resultBasicValue = getBasicValue(resultValue);
         InstructionGraphNode node = new InstructionGraphNode(
                 insn,
@@ -149,7 +150,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
                 isCallOnContextAware(insn),
                 isRuleCreation(insn)
         );
-        methodInfo.instructionGraphNodes[index] = node;
+        method.getInstructionGraphNodes()[index] = node;
         return node;
     }
 
@@ -226,7 +227,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
             }
         } catch (GrammarException e) {
             throw new GrammarException(
-                    "Illegal parser rule definition '" + methodInfo.method.name + "':\n" + e.getMessage());
+                    "Illegal parser rule definition '" + method.name + "':\n" + e.getMessage());
         }
     }
 

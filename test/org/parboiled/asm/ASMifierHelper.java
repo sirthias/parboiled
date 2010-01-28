@@ -20,45 +20,24 @@ import org.objectweb.asm.util.ASMifierClassVisitor;
 import org.parboiled.AbstractAction;
 import org.parboiled.Rule;
 import org.parboiled.examples.calculator.CalculatorParser;
-import org.parboiled.matchers.AbstractMatcher;
-import org.parboiled.matchers.Matcher;
-import org.parboiled.matchers.ProxyMatcher;
+
+import java.util.HashMap;
 
 public class ASMifierHelper extends CalculatorParser {
 
-    private final Integer action = 12345;
-    private Rule cacheSomeRule;
+    private HashMap<CachingGenerator.Arguments, Rule> cache;
 
     public class ActionWrapper extends AbstractAction<String> {
 
         public boolean run() {
-            return SET(action);
+            return true;
         }
 
     }
 
-    @Override
-    public Rule empty() {
-        return super.empty();
-    }
-
-    public Rule someRule() {
-        return any();
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public Rule someRuleCached() {
-        if (cacheSomeRule == null) {
-            cacheSomeRule = new ProxyMatcher();
-
-            Rule rule = any();
-            if (rule instanceof AbstractMatcher && ((AbstractMatcher) rule).getLabel() == null) {
-                rule.label("someRuleCached");
-            }
-            ((ProxyMatcher) cacheSomeRule).arm((Matcher) rule);
-            cacheSomeRule = rule;
-        }
-        return cacheSomeRule;
+    public Rule someRuleCached(String str, double d, boolean a, int b, int c, byte x) {
+        if (cache == null) cache = new HashMap<CachingGenerator.Arguments, Rule>();
+        return cache.get(new CachingGenerator.Arguments(new Object[] {str, d, a, b, c, x}));
     }
 
     public static void main(String[] args) throws Exception {

@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Partitions the instructions graphs of the ParserClassNode.ruleMethods into their InstructionSubSets
+ */
 class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
 
     private final ClassTransformer nextTransformer;
@@ -40,25 +43,25 @@ class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
     }
 
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (RuleMethodInfo methodInfo : classNode.methodInfos) {
-            if (hasActions(methodInfo)) {
-                List<InstructionSubSet> subSets = partitionInstructionGraph(methodInfo);
-                methodInfo.setInstructionSubSets(subSets);
+        for (ParserMethod method : classNode.ruleMethods) {
+            if (hasActions(method)) {
+                List<InstructionSubSet> subSets = partitionInstructionGraph(method);
+                method.setInstructionSubSets(subSets);
             }
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
-    private boolean hasActions(RuleMethodInfo methodInfo) {
-        for (InstructionGraphNode node : methodInfo.instructionGraphNodes) {
+    private boolean hasActions(ParserMethod method) {
+        for (InstructionGraphNode node : method.getInstructionGraphNodes()) {
             if (node.isAction) return true;
         }
         return false;
     }
 
-    private List<InstructionSubSet> partitionInstructionGraph(@NotNull RuleMethodInfo methodInfo) {
-        InstructionGraphNode[] graphNodes = methodInfo.instructionGraphNodes;
+    private List<InstructionSubSet> partitionInstructionGraph(@NotNull ParserMethod method) {
+        InstructionGraphNode[] graphNodes = method.getInstructionGraphNodes();
         DisjointIndexSet indexSet = new DisjointIndexSet(graphNodes.length);
         boolean[] actionMarkers = new boolean[graphNodes.length];
 
@@ -95,7 +98,7 @@ class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
             // all instructions in an action subset have to form a continuous block,
             // i.e. there must not be any indices missing
             Checks.ensure(!subSet.isActionSet || subSet.lastIndex - subSet.firstIndex == instructions.length - 1,
-                    "Illegal action construct in parser rule method '%s'", methodInfo.method.name);
+                    "Illegal action construct in parser rule method '%s'", method.name);
 
             instructionSubSets.add(subSet);
         }

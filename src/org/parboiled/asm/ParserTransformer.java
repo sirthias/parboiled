@@ -21,6 +21,7 @@ public class ParserTransformer {
     private ParserTransformer() {}
 
     public static Class<?> transformParser(Class<?> parserClass) throws Exception {
+        // TODO: dont retransform if extended class already loaded
         ClassTransformer transformer = createTransformer();
         ParserClassNode classNode = transformer.transform(new ParserClassNode(parserClass));
         return classNode.extendedClass;
@@ -28,12 +29,16 @@ public class ParserTransformer {
 
     static ClassNodeInitializer createTransformer() {
         return new ClassNodeInitializer(
-                new DontExtendMethodRemover(
+                new MethodCategorizer(
                         new RuleMethodAnalyzer(
                                 new RuleMethodInstructionGraphPartitioner(
                                         new RuleMethodTransformer(
-                                                new ParserClassFinalizer(
-                                                        new ParserClassDefiner()
+                                                new ConstructorGenerator(
+                                                        new ReturnInstructionUnifier(
+                                                                new CachingGenerator(
+                                                                        new ParserClassDefiner()
+                                                                )
+                                                        )
                                                 )
                                         )
                                 )
