@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents an arbitrarily sized bitfield
- * that provides for efficient operations on large arrays of booleans.
+ * This class represents an arbitrarily sized bitfield that provides for efficient operations on large arrays of booleans.
  */
 public class BitField {
 

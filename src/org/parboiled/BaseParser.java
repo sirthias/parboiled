@@ -84,8 +84,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
-     * directly in you rule description. However, if you want to not go through {@link #fromCharLiteral(char)},
+     * directly in you rule description. However, if you don't want to go through {@link #fromCharLiteral(char)},
      * e.g. because you redefined it, you can also use this wrapper.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param c the char to match
      * @return a new rule
@@ -106,6 +108,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given character ignoring the case.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param c the char to match independently of its case
      * @return a new rule
@@ -117,6 +121,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Creates a rule matching a range of characters from cLow to cHigh (both inclusively).
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
      *
      * @param cLow  the start char of the range (inclusively)
      * @param cHigh the end char of the range (inclusively)
@@ -131,6 +137,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
      * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param string the string to match
      * @return a new rule
@@ -147,6 +155,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given string in a case-independent fashion.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param string the string to match
      * @return a new rule
@@ -164,6 +174,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Creates a new rule that successively tries all of the given subrules and succeeds when the first one of
      * its subrules matches. If all subrules fail this rule fails as well.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
      *
      * @param rule      the first subrule
      * @param rule2     the second subrule
@@ -178,6 +190,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Creates a new rule that tries repeated matches of its subrule and succeeds if the subrule matches at least once.
      * If the subrule does not match at least once this rule fails.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param rule the subrule
      * @return a new rule
@@ -190,6 +204,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Creates a new rule that tries a match on its subrule and always succeeds, independently of the matching
      * success of its subrule.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param rule the subrule
      * @return a new rule
@@ -201,6 +217,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Creates a new rule that only succeeds if all of its subrule succeed, one after the other.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
      *
      * @param rule      the first subrule
      * @param rule2     the second subrule
@@ -216,6 +234,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Creates a new rule that only succeeds if all of its subrules succeed, one after the other.
      * However, after the first subrule has matched all further subrule matches are enforced, i.e. if one of them
      * fails a ParseError will be created (and error recovery will be tried).
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
      *
      * @param rule      the first subrule
      * @param rule2     the second subrule
@@ -231,6 +251,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Creates a new rule that acts as a syntactic predicate, i.e. tests the given subrule against the current
      * input position without actually matching any characters. Succeeds if the subrule succeeds and fails if the
      * subrule rails. Since this rule does not actually consume any input it will never create a parse tree node.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param rule the subrule
      * @return a new rule
@@ -244,6 +266,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Creates a new rule that acts as an inverse syntactic predicate, i.e. tests the given subrule against the current
      * input position without actually matching any characters. Succeeds if the subrule fails and fails if the
      * subrule succeeds. Since this rule does not actually consume any input it will never create a parse tree node.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param rule the subrule
      * @return a new rule
@@ -256,6 +280,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Creates a new rule that tries repeated matches of its subrule.
      * Succeeds always, even if the subrule doesn't match even once.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
      *
      * @param rule the subrule
      * @return a new rule
@@ -363,7 +389,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Converts the given object to a rule.
-     * Override in order to be able to use custom objects directly in your rule specification.
+     * This method can be overriden to enable the use of custom objects directly in rule specifications.
      *
      * @param obj the object to convert
      * @return the rule corresponding to the given object
@@ -378,7 +404,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Automatically called before the execution of custom rule definition code.
+     * Internal method. Automatically called before the execution of custom rule definition code.
      */
     protected void _enterRuleDef() {
         Integer level = ruleDefLevel.get();
@@ -392,7 +418,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Automatically called after the execution of custom rule definition code.
+     * Internal method. Automatically called after the execution of custom rule definition code.
      */
     @SuppressWarnings({"ConstantConditions"})
     protected void _exitRuleDef() {

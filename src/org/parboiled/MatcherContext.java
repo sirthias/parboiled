@@ -34,7 +34,7 @@ import java.util.List;
  * <p>The parsing process works as following:</br>
  * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
  * created a root MatcherContext is instantiated for the root rule (Matcher).
- * A subsequent call to {@link #runMatcher(Matcher, boolean)} starts the parsing process.</p>
+ * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
  * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext)} passing itself to the Matcher
  * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
  * {@link #runMatcher(org.parboiled.matchers.Matcher, boolean)} on its Context, which creates a sub context of the
@@ -42,8 +42,8 @@ import java.util.List;
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as a kind of companion objects to the matchers, providing them with support for building the
  * parse tree nodes, keeping track of input locations and error recovery.</p>
- * <p>At each point during the parsing process the matchers and action methods have access to the current MatcherContext
- * and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p>
+ * <p>At each point during the parsing process the matchers and action expressions have access to the current
+ * MatcherContext and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p>
  *
  * @param <V> the node value type
  */
