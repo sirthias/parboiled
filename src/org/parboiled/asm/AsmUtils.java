@@ -130,7 +130,7 @@ class AsmUtils {
      * @param classLoader the class loader to use
      * @return the class instance or null
      */
-    public static synchronized Class<?> findLoadedClass(@NotNull String className, @NotNull ClassLoader classLoader) {
+    public static Class<?> findLoadedClass(@NotNull String className, @NotNull ClassLoader classLoader) {
         try {
             Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
             Method findLoadedClassMethod = classLoaderBaseClass.getDeclaredMethod("findLoadedClass", String.class);
@@ -160,7 +160,7 @@ class AsmUtils {
      * @param classLoader the class loader to use
      * @return the class instance
      */
-    public static synchronized Class<?> loadClass(@NotNull String className, @NotNull byte[] code,
+    public static Class<?> loadClass(@NotNull String className, @NotNull byte[] code,
                                                   @NotNull ClassLoader classLoader) {
         try {
             Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");

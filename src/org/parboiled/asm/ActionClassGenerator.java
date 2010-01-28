@@ -48,7 +48,7 @@ class ActionClassGenerator implements Opcodes {
         this.actionType = Type.getObjectType(classNode.name + "$" + actionSimpleName);
     }
 
-    public Class<?> defineActionClass() {
+    public synchronized Class<?> defineActionClass() {
         String actionClassName = actionType.getClassName();
         ClassLoader classLoader = classNode.parentClass.getClassLoader();
 

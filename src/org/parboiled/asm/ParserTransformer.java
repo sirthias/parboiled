@@ -24,7 +24,7 @@ public class ParserTransformer {
 
     private ParserTransformer() {}
 
-    public static Class<?> transformParser(@NotNull Class<?> parserClass) throws Exception {
+    public static synchronized Class<?> transformParser(@NotNull Class<?> parserClass) throws Exception {
         // first check whether we did not already create and load the extension of the given parser class
         Class<?> extendedClass = findLoadedClass(
                 getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
