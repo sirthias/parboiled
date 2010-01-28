@@ -36,7 +36,7 @@ public class CachingGeneratorTest {
 
         assertTraceDumpEquality(getByName(classNode.ruleMethods, "empty"), "" +
                 "   L0\n" +
-                "    LINENUMBER 292 L0\n" +
+                "    LINENUMBER 318 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$empty : Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
@@ -90,7 +90,7 @@ public class CachingGeneratorTest {
         assertTraceDumpEquality(getByName(classNode.cachedMethods, "optional"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 199 L0\n" +
+                "    LINENUMBER 215 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$optional : Ljava/util/HashMap;\n" +
                 "    DUP\n" +
@@ -162,7 +162,7 @@ public class CachingGeneratorTest {
         assertTraceDumpEquality(getByName(classNode.cachedMethods, "sequence"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 212 L0\n" +
+                "    LINENUMBER 230 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$sequence : Ljava/util/HashMap;\n" +
                 "    DUP\n" +

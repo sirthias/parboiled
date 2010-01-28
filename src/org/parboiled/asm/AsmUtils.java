@@ -31,8 +31,8 @@ import org.parboiled.Rule;
 import org.parboiled.matchers.AbstractMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.support.KeepAsIs;
 import org.parboiled.support.Cached;
+import org.parboiled.support.KeepAsIs;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -50,6 +50,10 @@ class AsmUtils {
     public static final Type MATCHER_TYPE = Type.getType(Matcher.class);
     public static final Type PROXY_MATCHER_TYPE = Type.getType(ProxyMatcher.class);
     public static final Type RULE_TYPE = Type.getType(Rule.class);
+
+    public static String getExtendedParserClassName(String parserClassName) {
+        return parserClassName + "$$parboiled";
+    }
 
     public static Class<?> getClassForInternalName(@NotNull String internalName) {
         String className = internalName.replace('/', '.');
@@ -119,8 +123,33 @@ class AsmUtils {
     }
 
     /**
-     * Loads the class defined with the given name and bytecode using the given class loader,
-     * if a class with the given name has not yet been loaded before.
+     * Returns the class with the given name if it has already been loaded by the given class loader.
+     * Otherwise the method returns null.
+     *
+     * @param className   the full name of the class to be loaded
+     * @param classLoader the class loader to use
+     * @return the class instance or null
+     */
+    public static synchronized Class<?> findLoadedClass(@NotNull String className, @NotNull ClassLoader classLoader) {
+        try {
+            Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
+            Method findLoadedClassMethod = classLoaderBaseClass.getDeclaredMethod("findLoadedClass", String.class);
+
+            // protected method invocation
+            findLoadedClassMethod.setAccessible(true);
+            try {
+                return (Class<?>) findLoadedClassMethod.invoke(classLoader, className);
+            } finally {
+                findLoadedClassMethod.setAccessible(false);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not determine whether class '" + className +
+                    "' has already been loaded", e);
+        }
+    }
+
+    /**
+     * Loads the class defined with the given name and bytecode using the given class loader.
      * Since package and class idendity includes the ClassLoader instance used to load a class we use reflection
      * on the given class loader to define generated classes. If we used our own class loader (in order to be able
      * to access the protected "defineClass" method) we would likely still be able to load generated classes,
@@ -132,20 +161,9 @@ class AsmUtils {
      * @return the class instance
      */
     public static synchronized Class<?> loadClass(@NotNull String className, @NotNull byte[] code,
-                                     @NotNull ClassLoader classLoader) {
+                                                  @NotNull ClassLoader classLoader) {
         try {
             Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
-            Method findLoadedClassMethod = classLoaderBaseClass.getDeclaredMethod("findLoadedClass", String.class);
-
-            // protected method invocation
-            findLoadedClassMethod.setAccessible(true);
-            try {
-                Class<?> clazz = (Class<?>) findLoadedClassMethod.invoke(classLoader, className);
-                if (clazz != null) return clazz;
-            } finally {
-                findLoadedClassMethod.setAccessible(false);
-            }
-
             Method defineClassMethod = classLoaderBaseClass.getDeclaredMethod("defineClass",
                     String.class, byte[].class, int.class, int.class);
 

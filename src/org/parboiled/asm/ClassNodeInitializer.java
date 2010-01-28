@@ -25,6 +25,7 @@ package org.parboiled.asm;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.*;
 import org.parboiled.support.Checks;
+import static org.parboiled.asm.AsmUtils.getExtendedParserClassName;
 
 /**
  * Initializes the basic ParserClassNode fields and collects all methods into the ParserClassNode.allMethods list.
@@ -63,8 +64,14 @@ class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if (ownerClass == classNode.parentClass) {
             Checks.ensure((access & ACC_FINAL) == 0, "Your parser class '" + name + "' must not be final.");
-            classNode.visit(V1_5, ACC_PUBLIC, name + "$$parboiled", null, classNode.getParentType().getInternalName(),
-                    null);
+            classNode.visit(
+                    V1_5,
+                    ACC_PUBLIC,
+                    getExtendedParserClassName(name),
+                    null,
+                    classNode.getParentType().getInternalName(),
+                    null
+            );
         }
     }
 

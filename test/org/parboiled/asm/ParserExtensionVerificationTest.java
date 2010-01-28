@@ -49,7 +49,7 @@ public class ParserExtensionVerificationTest extends AbstractTest {
         verifyIntegrity(classNode.name, classNode.classCode);
 
         for (ActionClassGenerator generator : classNode.actionClassGenerators) {
-            verifyIntegrity(generator.actionType.getInternalName(), generator.actionClassCode);
+            verifyIntegrity(generator.actionType.getInternalName(), generator.generateActionClassCode());
         }
 
         return (TestParser) findConstructor(classNode.extendedClass, Utils.EMPTY_OBJECT_ARRAY).newInstance();

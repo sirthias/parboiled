@@ -360,7 +360,7 @@ public class ActionClassGeneratorTest {
             if (subSet.isActionSet && actionNumber++ == actionNr) {
                 ActionClassGenerator generator = new ActionClassGenerator(classNode, info, subSet, actionNumber);
                 generator.defineActionClass();
-                assertEqualsMultiline(getClassDump(generator.actionClassCode), expectedTrace);
+                assertEqualsMultiline(getClassDump(generator.generateActionClassCode()), expectedTrace);
                 return;
             }
         }

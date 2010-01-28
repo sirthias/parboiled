@@ -24,6 +24,7 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
+import static org.parboiled.asm.AsmUtils.findLoadedClass;
 import static org.parboiled.asm.AsmUtils.loadClass;
 import org.parboiled.support.Checks;
 
@@ -34,8 +35,9 @@ class ActionClassGenerator implements Opcodes {
     public final InstructionSubSet subSet;
     public final String actionSimpleName;
     public final Type actionType;
-    public byte[] actionClassCode;
-    public Class<?> actionClass;
+    public final InsnList runMethodInstructions = new InsnList();
+
+    private byte[] actionClassCode;
 
     public ActionClassGenerator(ParserClassNode classNode, ParserMethod method, InstructionSubSet subSet,
                                 int actionNumber) {
@@ -46,17 +48,39 @@ class ActionClassGenerator implements Opcodes {
         this.actionType = Type.getObjectType(classNode.name + "$" + actionSimpleName);
     }
 
-    public void defineActionClass() {
-        // TODO: dont retransform if extended class already loaded
-        
+    public Class<?> defineActionClass() {
+        String actionClassName = actionType.getClassName();
+        ClassLoader classLoader = classNode.parentClass.getClassLoader();
+
+        moveActionExpressionsInstructions();
+
+        Class<?> actionClass = findLoadedClass(actionClassName, classLoader);
+        if (actionClass == null) {
+            generateActionClassCode();
+            actionClass = loadClass(actionType.getClassName(), actionClassCode, classNode.parentClass.getClassLoader());
+        }
+        return actionClass;
+    }
+
+    public byte[] generateActionClassCode() {
+        if (actionClassCode != null) return actionClassCode;
+
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         generateClassBasics(classWriter);
         generateConstructor(classWriter);
         generateRunMethod(classWriter);
         classWriter.visitEnd();
-
         actionClassCode = classWriter.toByteArray();
-        actionClass = loadClass(actionType.getClassName(), actionClassCode, classNode.parentClass.getClassLoader());
+        return actionClassCode;
+    }
+
+    private void moveActionExpressionsInstructions() {
+        InsnList ruleMethodInstructions = method.instructions;
+        for (int i = subSet.firstIndex; i <= subSet.lastIndex; i++) {
+            AbstractInsnNode insn = method.getInstructionGraphNodes()[i].instruction;
+            ruleMethodInstructions.remove(insn);
+            runMethodInstructions.add(insn);
+        }
     }
 
     @SuppressWarnings({"unchecked"})
@@ -101,16 +125,6 @@ class ActionClassGenerator implements Opcodes {
 
     @SuppressWarnings({"UnnecessaryContinue"})
     private void generateRunMethodBody(MethodVisitor mv) {
-        InsnList runMethodInstructions = new InsnList();
-
-        // move action instructions from method instruction list into the list of runMethodInstructions
-        InsnList ruleMethodInstructions = method.instructions;
-        for (int i = subSet.firstIndex; i <= subSet.lastIndex; i++) {
-            AbstractInsnNode insn = method.getInstructionGraphNodes()[i].instruction;
-            ruleMethodInstructions.remove(insn);
-            runMethodInstructions.add(insn);
-        }
-
         // work backwards through the old instructions list and apply adaptations to the new list
         for (int i = subSet.lastIndex; i >= subSet.firstIndex; i--) {
             InstructionGraphNode node = method.getInstructionGraphNodes()[i];
