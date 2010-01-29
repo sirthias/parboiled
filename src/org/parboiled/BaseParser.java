@@ -198,7 +198,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    @Cached
     public Rule firstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
         return firstOf(arrayOf(rule, arrayOf(rule2, moreRules)));
     }
@@ -255,7 +254,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    @Cached
     public Rule sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
         return sequence(arrayOf(rule, arrayOf(rule2, moreRules)));
     }
@@ -285,7 +283,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    @Cached
     public Rule enforcedSequence(Object rule, Object rule2, @NotNull Object... moreRules) {
         return enforcedSequence(arrayOf(rule, arrayOf(rule2, moreRules)));
     }
