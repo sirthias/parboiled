@@ -1,3 +1,8 @@
+Version 0.9.1.1 (2010-01-29)
+----------------------------
+- Fixed @Cached problem with overloaded rule creation methods
+- Added BaseParser.charSet(...) and a few other standard rule definition overloads
+
 Version 0.9.1.0 (2010-01-28)
 ----------------------------
 - Added Failed-Rule-Memoization option
