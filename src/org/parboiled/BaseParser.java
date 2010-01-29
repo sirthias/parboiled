@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.BitField;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
+import static org.parboiled.common.Utils.toObjectArray;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
@@ -61,7 +62,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the ParsingResult for the run
      */
     @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(@NotNull Rule rule, @NotNull String input, int flags) {
+    public ParsingResult<V> parse(Rule rule, @NotNull String input, int flags) {
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
@@ -134,6 +135,21 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
+     * Creates a new rule that matches the first of the given characters.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters
+     * @return a new rule
+     */
+    @Cached
+    public Rule charSet(@NotNull String characters) {
+        Preconditions.checkArgument(characters.length() > 0);
+        if (characters.length() == 1) return ch(characters.charAt(0)); // shortcut
+        return firstOf(toObjectArray(characters.toCharArray()));
+    }
+
+    /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
      * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
@@ -162,7 +178,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule stringIgnoreCase(String string) {
+    public Rule stringIgnoreCase(@NotNull String string) {
         if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
@@ -183,8 +199,22 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule firstOf(Object rule, Object rule2, Object... moreRules) {
-        return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
+    public Rule firstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return firstOf(arrayOf(rule, arrayOf(rule2, moreRules)));
+    }
+
+    /**
+     * Creates a new rule that successively tries all of the given subrules and succeeds when the first one of
+     * its subrules matches. If all subrules fail this rule fails as well.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param rules the subrules
+     * @return a new rule
+     */
+    @Cached
+    public Rule firstOf(@NotNull Object[] rules) {
+        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules)).label("firstOf");
     }
 
     /**
@@ -226,8 +256,21 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule sequence(Object rule, Object rule2, Object... moreRules) {
-        return new SequenceMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules))), false).label("sequence");
+    public Rule sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return sequence(arrayOf(rule, arrayOf(rule2, moreRules)));
+    }
+
+    /**
+     * Creates a new rule that only succeeds if all of its subrule succeed, one after the other.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rules the sub rules
+     * @return a new rule
+     */
+    @Cached
+    public Rule sequence(@NotNull Object[] rules) {
+        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules), false).label("sequence");
     }
 
     /**
@@ -243,8 +286,25 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule enforcedSequence(Object rule, Object rule2, Object... moreRules) {
-        return new SequenceMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules))), true).label("enforcedSequence");
+    public Rule enforcedSequence(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return enforcedSequence(arrayOf(rule, arrayOf(rule2, moreRules)));
+    }
+
+    /**
+     * Creates a new rule that only succeeds if all of its subrules succeed, one after the other.
+     * However, after the first subrule has matched all further subrule matches are enforced, i.e. if one of them
+     * fails a ParseError will be created (and error recovery will be tried).
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rules the sub rules
+     * @return a new rule
+     */
+    @Cached
+    public Rule enforcedSequence(@NotNull Object[] rules) {
+        return rules.length == 1 ?
+                toRule(rules[0]) :
+                new SequenceMatcher(toRules(rules), true).label("enforcedSequence");
     }
 
     /**
@@ -366,7 +426,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string
      * @return the rule
      */
-    protected Rule fromStringLiteral(String string) {
+    protected Rule fromStringLiteral(@NotNull String string) {
         return string(string);
     }
 
@@ -400,7 +460,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof String) return fromStringLiteral((String) obj);
         if (obj instanceof Action) return new ActionMatcher((Action) obj);
 
-        throw new ParserRuntimeException("\'" + obj + "\' cannot be automatically converted to a parser Rule");
+        throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
     }
 
     /**
