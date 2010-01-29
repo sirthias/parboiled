@@ -19,6 +19,7 @@ package org.parboiled.asm;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Value;
 import static org.parboiled.asm.AsmTestUtils.getMethodInstructionList;
+import static org.parboiled.asm.AsmUtils.getMethodByName;
 import static org.parboiled.test.TestUtils.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -66,7 +67,7 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
     }
 
     private void testMethodAnalysis(String methodName, long dotSourceCRC, boolean hasActions) throws Exception {
-        ParserMethod method = AsmTestUtils.getByName(ruleMethods, methodName);
+        ParserMethod method = getMethodByName(ruleMethods, methodName);
 
         // make sure all instructions are covered
         for (InstructionGraphNode node : method.getInstructionGraphNodes()) assertNotNull(node);

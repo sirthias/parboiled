@@ -17,7 +17,7 @@
 package org.parboiled.asm;
 
 import static org.parboiled.asm.AsmTestUtils.assertTraceDumpEquality;
-import static org.parboiled.asm.AsmTestUtils.getByName;
+import static org.parboiled.asm.AsmUtils.getMethodByName;
 import org.testng.annotations.Test;
 
 public class ReturnInstructionUnifierTest {
@@ -32,10 +32,10 @@ public class ReturnInstructionUnifierTest {
                 )
         ).transform(classNode);
 
-        assertTraceDumpEquality(getByName(classNode.cachedMethods, "ch"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "ch"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 97 L0\n" +
+                "    LINENUMBER 98 L0\n" +
                 "    ILOAD 1\n" +
                 "    LOOKUPSWITCH\n" +
                 "      65007: L1\n" +
@@ -43,22 +43,22 @@ public class ReturnInstructionUnifierTest {
                 "      65535: L3\n" +
                 "      default: L4\n" +
                 "   L2\n" +
-                "    LINENUMBER 99 L2\n" +
+                "    LINENUMBER 100 L2\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.empty ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L1\n" +
-                "    LINENUMBER 101 L1\n" +
+                "    LINENUMBER 102 L1\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.any ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L3\n" +
-                "    LINENUMBER 103 L3\n" +
+                "    LINENUMBER 104 L3\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.eoi ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L4\n" +
-                "    LINENUMBER 105 L4\n" +
+                "    LINENUMBER 106 L4\n" +
                 "    NEW org/parboiled/matchers/CharMatcher\n" +
                 "    DUP\n" +
                 "    ILOAD 1\n" +
@@ -73,10 +73,10 @@ public class ReturnInstructionUnifierTest {
                 "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 2\n");
 
-        assertTraceDumpEquality(getByName(classNode.cachedMethods, "charRange"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "charRange"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 133 L0\n" +
+                "    LINENUMBER 134 L0\n" +
                 "    ILOAD 1\n" +
                 "    ILOAD 2\n" +
                 "    IF_ICMPNE L1\n" +

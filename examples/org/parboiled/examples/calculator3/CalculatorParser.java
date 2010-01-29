@@ -18,6 +18,7 @@ package org.parboiled.examples.calculator3;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.jetbrains.annotations.NotNull;
 
 public class CalculatorParser extends BaseParser<CalcNode> {
 
@@ -126,7 +127,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     }
 
     @Override
-    protected Rule fromStringLiteral(String string) {
+    protected Rule fromStringLiteral(@NotNull String string) {
         // same thing for string literals
         return sequence(string(string), whiteSpace());
     }

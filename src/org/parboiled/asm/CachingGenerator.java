@@ -26,6 +26,8 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import static org.parboiled.asm.AsmUtils.getFieldByName;
+import static org.parboiled.common.Utils.toObjectArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +40,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
     private ParserMethod method;
     private InsnList instructions;
     private AbstractInsnNode current;
+    private String cacheFieldName;
 
     public CachingGenerator(ClassTransformer nextTransformer) {
         this.nextTransformer = nextTransformer;
@@ -102,7 +105,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
     @SuppressWarnings({"unchecked"})
     private void generateGetFromCache() {
         Type[] paramTypes = Type.getArgumentTypes(method.desc);
-        String cacheFieldName = "cache$" + method.name;
+        cacheFieldName = findUnusedCacheFieldName();
 
         // if we have no parameters we use a simple Rule field as cache, otherwise a HashMap
         String cacheFieldDesc = paramTypes.length == 0 ? AsmUtils.RULE_TYPE.getDescriptor() : "Ljava/util/HashMap;";
@@ -141,7 +144,9 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         insert(alreadyInitialized);
         // stack: <hashMap>
 
-        if (paramTypes.length > 1) {
+        // if we have more than one parameter or the parameter is an array we have to wrap with our Arguments class
+        // since we need to unroll all inner arrays and apply custom hashcode(...) and equals(...) implementations
+        if (paramTypes.length > 1 || paramTypes[0].getSort() == Type.ARRAY) {
             // generate: push new Arguments(new Object[] {<params>})
 
             String arguments = Type.getInternalName(Arguments.class);
@@ -171,6 +176,16 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         // stack: <object>
         insert(new TypeInsnNode(CHECKCAST, AsmUtils.RULE_TYPE.getInternalName()));
         // stack: <rule>
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private String findUnusedCacheFieldName() {
+        String name = "cache$" + method.name;
+        int i = 2;
+        while (getFieldByName((List<FieldNode>) classNode.fields, name) != null) {
+            name = "cache$" + method.name + i++;
+        }
+        return name;
     }
 
     private void generatePushNewParameterObjectArray(Type[] paramTypes) {
@@ -322,7 +337,6 @@ class CachingGenerator implements ClassTransformer, Opcodes {
 
     private void generateStoreInCache() {
         Type[] paramTypes = Type.getArgumentTypes(method.desc);
-        String cacheFieldName = "cache$" + method.name;
 
         // stack: <rule>
         insert(new InsnNode(DUP));
@@ -384,11 +398,41 @@ class CachingGenerator implements ClassTransformer, Opcodes {
 
         private void unroll(Object[] params, List<Object> list) {
             for (Object param : params) {
-                if (param instanceof Object[]) {
-                    unroll((Object[]) param, list);
-                } else {
-                    list.add(param);
+                if (param != null && param.getClass().isArray()) {
+                    switch (Type.getType(param.getClass()).getSort()) {
+                        case Type.BOOLEAN:
+                            unroll(toObjectArray((boolean[]) param), list);
+                            continue;
+                        case Type.BYTE:
+                            unroll(toObjectArray((byte[]) param), list);
+                            continue;
+                        case Type.CHAR:
+                            unroll(toObjectArray((char[]) param), list);
+                            continue;
+                        case Type.DOUBLE:
+                            unroll(toObjectArray((double[]) param), list);
+                            continue;
+                        case Type.FLOAT:
+                            unroll(toObjectArray((float[]) param), list);
+                            continue;
+                        case Type.INT:
+                            unroll(toObjectArray((int[]) param), list);
+                            continue;
+                        case Type.LONG:
+                            unroll(toObjectArray((long[]) param), list);
+                            continue;
+                        case Type.SHORT:
+                            unroll(toObjectArray((short[]) param), list);
+                            continue;
+                        case Type.OBJECT:
+                        case Type.ARRAY:
+                            unroll((Object[]) param, list);
+                            continue;
+                        default:
+                            throw new IllegalStateException();
+                    }
                 }
+                list.add(param);
             }
         }
 

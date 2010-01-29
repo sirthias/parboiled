@@ -16,6 +16,7 @@
 
 package org.parboiled.asm;
 
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.MethodAdapter;
@@ -33,7 +34,6 @@ import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 
 public class AsmTestUtils {
 
@@ -68,14 +68,7 @@ public class AsmTestUtils {
                 .toString();
     }
 
-    public static <T extends MethodNode> T getByName(List<T> methods, String methodName) {
-        for (T method : methods) {
-            if (methodName.equals(method.name)) return method;
-        }
-        throw new IllegalArgumentException("Method '" + methodName + "' not found");
-    }
-
-    public static void assertTraceDumpEquality(MethodNode method, String traceDump) throws Exception {
+    public static void assertTraceDumpEquality(@NotNull MethodNode method, String traceDump) throws Exception {
         TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor();
         // MethodAdapter checkMethodAdapter = new MethodAdapter(traceMethodVisitor);
         MethodAdapter checkMethodAdapter = new CheckMethodAdapter(traceMethodVisitor);

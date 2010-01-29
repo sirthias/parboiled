@@ -17,7 +17,9 @@
 package org.parboiled.asm;
 
 import static org.parboiled.asm.AsmTestUtils.getClassDump;
+import static org.parboiled.asm.AsmUtils.getMethodByName;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import org.parboiled.common.Preconditions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -352,8 +354,10 @@ public class ActionClassGeneratorTest {
                 "}\n");
     }
 
+    @SuppressWarnings({"ConstantConditions"})
     private void testActionClassGeneration(String methodName, int actionNr, String expectedTrace) throws Exception {
-        ParserMethod info = AsmTestUtils.getByName(ruleMethods, methodName);
+        ParserMethod info = getMethodByName(ruleMethods, methodName);
+        Preconditions.checkState(info != null, "Method '" + methodName + "' not found");
 
         int actionNumber = 0;
         for (InstructionSubSet subSet : info.getInstructionSubSets()) {

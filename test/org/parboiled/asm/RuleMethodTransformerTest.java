@@ -17,7 +17,7 @@
 package org.parboiled.asm;
 
 import static org.parboiled.asm.AsmTestUtils.assertTraceDumpEquality;
-import static org.parboiled.asm.AsmTestUtils.getByName;
+import static org.parboiled.asm.AsmUtils.getMethodByName;
 import org.testng.annotations.Test;
 
 public class RuleMethodTransformerTest {
@@ -35,7 +35,7 @@ public class RuleMethodTransformerTest {
                 )
         ).transform(classNode);
 
-        assertTraceDumpEquality(getByName(classNode.ruleMethods, "noActionRule"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "noActionRule"), "" +
                 "   L0\n" +
                 "    LINENUMBER 52 L0\n" +
                 "    ALOAD 0\n" +
@@ -46,7 +46,7 @@ public class RuleMethodTransformerTest {
                 "    MAXSTACK = 7\n" +
                 "    MAXLOCALS = 1\n");
 
-        assertTraceDumpEquality(getByName(classNode.ruleMethods, "simpleActionRule"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "simpleActionRule"), "" +
                 "   L0\n" +
                 "    LINENUMBER 64 L0\n" +
                 "    ALOAD 0\n" +
@@ -65,7 +65,7 @@ public class RuleMethodTransformerTest {
                 "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 1\n");
 
-        assertTraceDumpEquality(getByName(classNode.ruleMethods, "upSetActionRule"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "upSetActionRule"), "" +
                 "   L0\n" +
                 "    LINENUMBER 71 L0\n" +
                 "    ALOAD 0\n" +
@@ -99,7 +99,7 @@ public class RuleMethodTransformerTest {
                 "    MAXSTACK = 11\n" +
                 "    MAXLOCALS = 1\n");
 
-        assertTraceDumpEquality(getByName(classNode.ruleMethods, "booleanExpressionActionRule"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "booleanExpressionActionRule"), "" +
                 "   L0\n" +
                 "    LINENUMBER 84 L0\n" +
                 "    ALOAD 0\n" +
@@ -133,7 +133,7 @@ public class RuleMethodTransformerTest {
                 "    MAXSTACK = 8\n" +
                 "    MAXLOCALS = 1\n");
 
-        assertTraceDumpEquality(getByName(classNode.ruleMethods, "complexActionsRule"), "" +
+        assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "complexActionsRule"), "" +
                 "   L0\n" +
                 "    LINENUMBER 97 L0\n" +
                 "    ALOAD 0\n" +

@@ -24,6 +24,8 @@ package org.parboiled.asm;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.parboiled.BaseParser;
 import org.parboiled.Context;
 import org.parboiled.ContextAware;
@@ -36,6 +38,7 @@ import org.parboiled.support.KeepAsIs;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 class AsmUtils {
 
@@ -177,5 +180,19 @@ class AsmUtils {
         } catch (Exception e) {
             throw new RuntimeException("Could not load class '" + className + '\'', e);
         }
+    }
+
+    public static <T extends MethodNode> T getMethodByName(@NotNull List<T> methods, @NotNull String methodName) {
+        for (T method : methods) {
+            if (methodName.equals(method.name)) return method;
+        }
+        return null;
+    }
+
+    public static <T extends FieldNode> T getFieldByName(@NotNull List<T> fields, @NotNull String fieldName) {
+        for (T field : fields) {
+            if (fieldName.equals(field.name)) return field;
+        }
+        return null;
     }
 }

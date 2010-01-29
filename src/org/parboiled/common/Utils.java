@@ -28,8 +28,88 @@ import java.util.*;
 public final class Utils {
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    public static final char[] EMPTY_CHAR_ARRAY = new char[0];
+    public static final Character[] EMPTY_CHARACTER_OBJECT_ARRAY = new Character[0];
+    public static final int[] EMPTY_INT_ARRAY = new int[0];
+    public static final Integer[] EMPTY_INTEGER_OBJECT_ARRAY = new Integer[0];
+    public static final long[] EMPTY_LONG_ARRAY = new long[0];
+    public static final Long[] EMPTY_LONG_OBJECT_ARRAY = new Long[0];
+    public static final short[] EMPTY_SHORT_ARRAY = new short[0];
+    public static final Short[] EMPTY_SHORT_OBJECT_ARRAY = new Short[0];
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    public static final Byte[] EMPTY_BYTE_OBJECT_ARRAY = new Byte[0];
+    public static final float[] EMPTY_FLOAT_ARRAY = new float[0];
+    public static final Float[] EMPTY_FLOAT_OBJECT_ARRAY = new Float[0];
+    public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
+    public static final Double[] EMPTY_DOUBLE_OBJECT_ARRAY = new Double[0];
+    public static final boolean[] EMPTY_BOOLEAN_ARRAY = new boolean[0];
+    public static final Boolean[] EMPTY_BOOLEAN_OBJECT_ARRAY = new Boolean[0];
 
     private Utils() {}
+
+    public static Character[] toObjectArray(char[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_CHARACTER_OBJECT_ARRAY;
+        Character[] result = new Character[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Integer[] toObjectArray(int[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_INTEGER_OBJECT_ARRAY;
+        Integer[] result = new Integer[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Long[] toObjectArray(long[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_LONG_OBJECT_ARRAY;
+        Long[] result = new Long[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Short[] toObjectArray(short[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_SHORT_OBJECT_ARRAY;
+        Short[] result = new Short[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Byte[] toObjectArray(byte[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_BYTE_OBJECT_ARRAY;
+        Byte[] result = new Byte[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Float[] toObjectArray(float[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_FLOAT_OBJECT_ARRAY;
+        Float[] result = new Float[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Double[] toObjectArray(double[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_DOUBLE_OBJECT_ARRAY;
+        Double[] result = new Double[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
+
+    public static Boolean[] toObjectArray(boolean[] array) {
+        if (array == null) return null;
+        if (array.length == 0) return EMPTY_BOOLEAN_OBJECT_ARRAY;
+        Boolean[] result = new Boolean[array.length];
+        for (int i = 0; i < array.length; i++) result[i] = array[i];
+        return result;
+    }
 
     /**
      * Joins the given arguments into one array.
@@ -39,7 +119,7 @@ public final class Utils {
      * @return a new array containing all arguments.
      */
     @SuppressWarnings({"unchecked"})
-    public static <T> T[] arrayOf(T firstElement, T... moreElements) {
+    public static <T> T[] arrayOf(T firstElement, @NotNull T... moreElements) {
         Class elementType = moreElements.getClass().getComponentType();
         T[] array = (T[]) Array.newInstance(elementType, moreElements.length + 1);
         array[0] = firstElement;
@@ -55,7 +135,7 @@ public final class Utils {
      * @return a new array containing all arguments.
      */
     @SuppressWarnings({"unchecked"})
-    public static <T> T[] arrayOf(T[] firstElements, T lastElement) {
+    public static <T> T[] arrayOf(@NotNull T[] firstElements, T lastElement) {
         Class elementType = firstElements.getClass().getComponentType();
         T[] array = (T[]) Array.newInstance(elementType, firstElements.length + 1);
         System.arraycopy(firstElements, 0, array, 0, firstElements.length);

@@ -18,7 +18,7 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.tree.MethodNode;
 import static org.parboiled.asm.AsmTestUtils.assertTraceDumpEquality;
-import static org.parboiled.asm.AsmTestUtils.getByName;
+import static org.parboiled.asm.AsmUtils.getMethodByName;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class ConstructorGeneratorTest {
                 )
         ).transform(classNode);
 
-        assertTraceDumpEquality(getByName((List<MethodNode>) classNode.methods, "<init>"), "" +
+        assertTraceDumpEquality(getMethodByName((List<MethodNode>) classNode.methods, "<init>"), "" +
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser.<init> ()V\n" +
                 "    RETURN\n" +
