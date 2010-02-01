@@ -21,6 +21,7 @@ import org.objectweb.asm.tree.analysis.Value;
 import static org.parboiled.asm.AsmTestUtils.getMethodInstructionList;
 import static org.parboiled.asm.AsmUtils.getMethodByName;
 import static org.parboiled.test.TestUtils.*;
+import org.parboiled.test.FileUtils;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.BeforeClass;
@@ -128,13 +129,13 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
         String output = "C:\\3\\graph.png";
 
         final Process process = Runtime.getRuntime().exec(command);
-        copyAll(new ByteArrayInputStream(dotSource.getBytes("UTF-8")), process.getOutputStream());
+        FileUtils.copyAll(new ByteArrayInputStream(dotSource.getBytes("UTF-8")), process.getOutputStream());
         new Thread(new Runnable() {
             public void run() {
-                copyAll(process.getErrorStream(), System.err);
+                FileUtils.copyAll(process.getErrorStream(), System.err);
             }
         }).start();
-        copyAll(process.getInputStream(), new FileOutputStream(output));
+        FileUtils.copyAll(process.getInputStream(), new FileOutputStream(output));
         process.waitFor();
     }
 

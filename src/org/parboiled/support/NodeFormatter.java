@@ -36,9 +36,9 @@ public class NodeFormatter<V> implements Formatter<Node<V>> {
     }
 
     public String format(Node node) {
-        String text = ParseTreeUtils.getNodeText(node, inputBuffer);
-        if (StringUtils.isEmpty(text)) return node.toString();
-        return node + " '" + StringUtils.escapeNLs(text) + '\'';
+        String nodeLabel = StringUtils.escapeNLs(node.toString());
+        String nodeText = StringUtils.escapeNLs(ParseTreeUtils.getNodeText(node, inputBuffer));
+        return StringUtils.isEmpty(nodeText) ? nodeLabel : nodeLabel + " '" + nodeText + '\'';
     }
 
 }

@@ -78,7 +78,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         // run the actual matcher tree
         context.runMatcher();
 
-        return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer);
+        return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer, context.getCurrentLocation().row + 1);
     }
 
     ////////////////////////////////// RULE CREATION ///////////////////////////////////

@@ -18,7 +18,6 @@ package org.parboiled.test;
 
 import org.testng.Assert;
 
-import java.io.*;
 import java.util.zip.CRC32;
 
 public class TestUtils {
@@ -37,30 +36,6 @@ public class TestUtils {
         byte[] buf = text.getBytes("UTF8");
         crc32.update(buf);
         return crc32.getValue();
-    }
-
-    public static void writeToFile(String string, File file) {
-        try {
-            FileWriter out = new FileWriter(file);
-            out.write(string);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void copyAll(InputStream in, OutputStream out) {
-        try {
-            byte[] data = new byte[1024]; // copy in chunks of 1K
-            int count;
-            while ((count = in.read(data)) >= 0) {
-                out.write(data, 0, count);
-            }
-            in.close();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

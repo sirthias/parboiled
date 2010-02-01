@@ -19,6 +19,7 @@ package org.parboiled;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import org.parboiled.test.AbstractTest;
+import org.parboiled.support.ParsingResult;
 
 public class IndentDedentTest extends AbstractTest {
 
@@ -62,7 +63,7 @@ public class IndentDedentTest extends AbstractTest {
     public void test() {
         IndentDedentParser parser = Parboiled.createParser(IndentDedentParser.class);
         Rule rule = parser.file();
-        parser.parse(rule, "" +
+        ParsingResult<?> result = parser.parse(rule, "" +
                 "a file containing\n" +
                 "  some\n" +
                 "     indents\n" +
@@ -76,6 +77,7 @@ public class IndentDedentTest extends AbstractTest {
         assertEquals(parser.indents, 3);
         assertEquals(parser.dedents, 2);
         assertEquals(parser.currentIndent, 1);
+        assertEquals(result.totalRows, 9);
     }
 
 }

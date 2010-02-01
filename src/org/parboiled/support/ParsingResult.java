@@ -41,11 +41,24 @@ public class ParsingResult<V> {
      */
     public final InputBuffer inputBuffer;
 
+    /**
+     * The total number of rows in the parsed input text;
+     */
+    public final int totalRows;
+
+    /**
+     * Creates a new ParsingResult.
+     * @param parseTreeRoot the parse tree root node
+     * @param parseErrors the list of parse errors
+     * @param inputBuffer the input buffer
+     * @param totalRows the number of total number of rows in the parsed input text
+     */
     public ParsingResult(@NotNull Node<V> parseTreeRoot, @NotNull List<ParseError> parseErrors,
-                         @NotNull InputBuffer inputBuffer) {
+                         @NotNull InputBuffer inputBuffer, int totalRows) {
         this.parseTreeRoot = parseTreeRoot;
         this.parseErrors = parseErrors;
         this.inputBuffer = inputBuffer;
+        this.totalRows = totalRows;
     }
 
     /**

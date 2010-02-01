@@ -322,8 +322,9 @@ public class MatcherContext<V> implements Context<V> {
         Characters chars = Characters.NONE;
         MatcherContext<V> parent = this.parent;
         while (parent != null) {
-            if (ProxyMatcher.unwrap(parent.getMatcher()) instanceof FollowMatcher) {
-                FollowMatcher<V> followMatcher = (FollowMatcher<V>) parent.getMatcher();
+            Matcher<V> unwrappedMatcher = ProxyMatcher.unwrap(parent.getMatcher());
+            if (unwrappedMatcher instanceof FollowMatcher) {
+                FollowMatcher<V> followMatcher = (FollowMatcher<V>) unwrappedMatcher;
                 chars = chars.add(followMatcher.getFollowerChars(parent));
                 if (!chars.contains(Chars.EMPTY)) return chars;
             }

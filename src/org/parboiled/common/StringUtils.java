@@ -19,7 +19,9 @@ package org.parboiled.common;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * General utility methods for string manipulation.
@@ -50,7 +52,12 @@ public final class StringUtils {
      * @return the string with newlines escaped.
      */
     public static String escapeNLs(String string) {
-        return string == null ? "" : string.replace("\r\n", "\\n").replace("\n", "\\n");
+        return string == null ? "" : string
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t")
+                .replace("\f", "\\f");
     }
 
     /**
@@ -268,7 +275,7 @@ public final class StringUtils {
 
     /**
      * Test whether a string starts with a given prefix, handling null values without exceptions.
-     *
+     * <p/>
      * StringUtils.startsWith(null, null)   = false
      * StringUtils.startsWith(null, "abc")  = false
      * StringUtils.startsWith("abc", null)  = true

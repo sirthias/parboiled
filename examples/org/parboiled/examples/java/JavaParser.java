@@ -27,17 +27,18 @@
 //               \f in Space replaced by Unicode for FormFeed.
 //    2009-07-10 Unused rule THREADSAFE removed.
 //    2009-07-10 Copying and distribution conditions relaxed by the author.
-//    2009-01-28 Transcribed to parboiled
+//    2010-01-28 Transcribed to parboiled
+//    2010-02-01 Fixed problem in rule "formalParameterDecls"
 //
 //===========================================================================
 
-package org.parboiled.examples.java5;
+package org.parboiled.examples.java;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
 @SuppressWarnings({"InfiniteRecursion"})
-public class Java5Parser extends BaseParser<Object> {
+public class JavaParser extends BaseParser<Object> {
 
     //-------------------------------------------------------------------------
     //  Compilation Unit
@@ -62,7 +63,7 @@ public class Java5Parser extends BaseParser<Object> {
                 IMPORT,
                 optional(STATIC),
                 qualifiedIdentifier(),
-                optional(sequence(DOT, STAR)),
+                optional(enforcedSequence(DOT, STAR)),
                 SEMI
         );
     }
@@ -112,8 +113,8 @@ public class Java5Parser extends BaseParser<Object> {
     public Rule memberDecl() {
         return firstOf(
                 enforcedSequence(typeParameters(), genericMethodOrConstructorRest()),
-                enforcedSequence(sequence(type(), identifier()), methodDeclaratorRest()),
-                enforcedSequence(type(), variableDeclarators()),
+                sequence(type(), identifier(), methodDeclaratorRest()),
+                sequence(type(), variableDeclarators()),
                 enforcedSequence(VOID, identifier(), voidMethodDeclaratorRest()),
                 enforcedSequence(identifier(), constructorDeclaratorRest()),
                 interfaceDeclaration(),
@@ -184,7 +185,7 @@ public class Java5Parser extends BaseParser<Object> {
         return firstOf(
                 interfaceMethodOrFieldDecl(),
                 interfaceGenericMethodDecl(),
-                enforcedSequence(VOID, identifier(), voidInterfaceMethodDeclaratorsRest()),
+                sequence(VOID, identifier(), voidInterfaceMethodDeclaratorsRest()),
                 interfaceDeclaration(),
                 annotationTypeDeclaration(),
                 classDeclaration(),
@@ -193,7 +194,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule interfaceMethodOrFieldDecl() {
-        return enforcedSequence(sequence(type(), identifier()), interfaceMethodOrFieldRest());
+        return sequence(sequence(type(), identifier()), interfaceMethodOrFieldRest());
     }
 
     public Rule interfaceMethodOrFieldRest() {
@@ -204,11 +205,16 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule interfaceMethodDeclaratorRest() {
-        return sequence(formalParameters(), zeroOrMore(dim()), optional(sequence(THROWS, classTypeList())), SEMI);
+        return sequence(
+                formalParameters(),
+                zeroOrMore(dim()),
+                optional(enforcedSequence(THROWS, classTypeList())),
+                SEMI
+        );
     }
 
     public Rule interfaceGenericMethodDecl() {
-        return enforcedSequence(typeParameters(), firstOf(type(), VOID), identifier(), interfaceMethodDeclaratorRest());
+        return sequence(typeParameters(), firstOf(type(), VOID), identifier(), interfaceMethodDeclaratorRest());
     }
 
     public Rule voidInterfaceMethodDeclaratorsRest() {
@@ -224,7 +230,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule constantDeclaratorRest() {
-        return enforcedSequence(sequence(zeroOrMore(dim()), EQU), variableInitializer());
+        return sequence(zeroOrMore(dim()), EQU, variableInitializer());
     }
 
     //-------------------------------------------------------------------------
@@ -232,7 +238,12 @@ public class Java5Parser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule enumDeclaration() {
-        return enforcedSequence(ENUM, identifier(), optional(enforcedSequence(IMPLEMENTS, classTypeList())), enumBody());
+        return enforcedSequence(
+                ENUM,
+                identifier(),
+                optional(enforcedSequence(IMPLEMENTS, classTypeList())),
+                enumBody()
+        );
     }
 
     public Rule enumBody() {
@@ -284,7 +295,7 @@ public class Java5Parser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule formalParameters() {
-        return enforcedSequence(LPAR, optional(formalParameterDecls()), RPAR);
+        return sequence(LPAR, optional(formalParameterDecls()), RPAR);
     }
 
     public Rule formalParameter() {
@@ -292,7 +303,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule formalParameterDecls() {
-        return sequence(optional(FINAL), zeroOrMore(annotation()), type(), formalParameterDeclsRest());
+        return sequence(zeroOrMore(firstOf(FINAL, annotation())), type(), formalParameterDeclsRest());
     }
 
     public Rule formalParameterDeclsRest() {
@@ -346,7 +357,7 @@ public class Java5Parser extends BaseParser<Object> {
                 enforcedSequence(CONTINUE, optional(identifier()), SEMI),
                 SEMI,
                 sequence(statementExpression(), SEMI),
-                sequence(identifier(), COLON, statement())
+                enforcedSequence(sequence(identifier(), COLON), statement())
         );
     }
 
@@ -395,6 +406,7 @@ public class Java5Parser extends BaseParser<Object> {
 
     // The following is more generous than the definition in section 14.8,
     // which allows only specific forms of Expression.
+
     public Rule statementExpression() {
         return expression();
     }
@@ -413,7 +425,7 @@ public class Java5Parser extends BaseParser<Object> {
     public Rule expression() {
         return sequence(
                 conditionalExpression(),
-                zeroOrMore(enforcedSequence(assignmentOperator(), conditionalExpression()))
+                zeroOrMore(sequence(assignmentOperator(), conditionalExpression()))
         );
     }
 
@@ -514,30 +526,30 @@ public class Java5Parser extends BaseParser<Object> {
     public Rule primary() {
         return firstOf(
                 parExpression(),
-                sequence(
+                enforcedSequence(
                         nonWildcardTypeArguments(),
                         firstOf(explicitGenericInvocationSuffix(), sequence(THIS, arguments()))
                 ),
                 sequence(THIS, optional(arguments())),
                 enforcedSequence(SUPER, superSuffix()),
                 literal(),
-                sequence(NEW, creator()),
-                sequence(qualifiedIdentifier(), identifierSuffix()),
-                sequence(basicType(), zeroOrMore(dim()), DOT, CLASS),
-                sequence(VOID, DOT, CLASS)
+                enforcedSequence(NEW, creator()),
+                sequence(qualifiedIdentifier(), optional(identifierSuffix())),
+                enforcedSequence(basicType(), zeroOrMore(dim()), DOT, CLASS),
+                enforcedSequence(VOID, DOT, CLASS)
         );
     }
 
     public Rule identifierSuffix() {
         return firstOf(
-                enforcedSequence(LBRK,
+                sequence(LBRK,
                         firstOf(
                                 sequence(RBRK, zeroOrMore(dim()), DOT, CLASS),
                                 sequence(expression(), RBRK)
                         )
                 ),
                 arguments(),
-                enforcedSequence(
+                sequence(
                         DOT,
                         firstOf(
                                 CLASS,
@@ -551,11 +563,11 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule explicitGenericInvocation() {
-        return sequence(nonWildcardTypeArguments(), explicitGenericInvocationSuffix());
+        return enforcedSequence(nonWildcardTypeArguments(), explicitGenericInvocationSuffix());
     }
 
     public Rule nonWildcardTypeArguments() {
-        return enforcedSequence(LPOINT, referenceType(), zeroOrMore(sequence(COMMA, referenceType())), RPOINT);
+        return sequence(LPOINT, referenceType(), zeroOrMore(enforcedSequence(COMMA, referenceType())), RPOINT);
     }
 
     public Rule explicitGenericInvocationSuffix() {
@@ -597,9 +609,9 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule arguments() {
-        return enforcedSequence(
+        return sequence(
                 LPAR,
-                optional(sequence(expression(), zeroOrMore(sequence(COMMA, expression())))),
+                optional(sequence(expression(), zeroOrMore(enforcedSequence(COMMA, expression())))),
                 RPAR
         );
     }
@@ -614,7 +626,7 @@ public class Java5Parser extends BaseParser<Object> {
     public Rule createdName() {
         return sequence(
                 identifier(), optional(nonWildcardTypeArguments()),
-                zeroOrMore(enforcedSequence(DOT, identifier(), optional(nonWildcardTypeArguments())))
+                zeroOrMore(sequence(DOT, identifier(), optional(nonWildcardTypeArguments())))
         );
     }
 
@@ -625,7 +637,7 @@ public class Java5Parser extends BaseParser<Object> {
     // The following is more generous than JLS 15.10. According to that definition,
     // BasicType must be followed by at least one DimExpr or by ArrayInitializer.
     public Rule arrayCreatorRest() {
-        return enforcedSequence(
+        return sequence(
                 LBRK,
                 firstOf(
                         sequence(RBRK, zeroOrMore(dim()), arrayInitializer()),
@@ -639,7 +651,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule arrayInitializer() {
-        return enforcedSequence(
+        return sequence(
                 LWING,
                 optional(
                         sequence(
@@ -661,7 +673,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule qualifiedIdentifier() {
-        return sequence(identifier(), zeroOrMore(enforcedSequence(DOT, identifier())));
+        return sequence(identifier(), zeroOrMore(sequence(DOT, identifier())));
     }
 
     public Rule dim() {
@@ -690,7 +702,7 @@ public class Java5Parser extends BaseParser<Object> {
     public Rule classType() {
         return sequence(
                 identifier(), optional(typeArguments()),
-                zeroOrMore(enforcedSequence(DOT, identifier(), optional(typeArguments())))
+                zeroOrMore(sequence(DOT, identifier(), optional(typeArguments())))
         );
     }
 
@@ -699,7 +711,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule typeArguments() {
-        return enforcedSequence(LPOINT, typeArgument(), zeroOrMore(enforcedSequence(COMMA, typeArgument())), RPOINT);
+        return sequence(LPOINT, typeArgument(), zeroOrMore(enforcedSequence(COMMA, typeArgument())), RPOINT);
     }
 
     public Rule typeArgument() {
@@ -710,7 +722,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule typeParameters() {
-        return enforcedSequence(LPOINT, typeParameter(), zeroOrMore(enforcedSequence(COMMA, typeParameter())), RPOINT);
+        return sequence(LPOINT, typeParameter(), zeroOrMore(enforcedSequence(COMMA, typeParameter())), RPOINT);
     }
 
     public Rule typeParameter() {
@@ -741,11 +753,11 @@ public class Java5Parser extends BaseParser<Object> {
     //-------------------------------------------------------------------------    
 
     public Rule annotationTypeDeclaration() {
-        return enforcedSequence(AT, INTERFACE, identifier(), annotationTypeBody());
+        return enforcedSequence(sequence(AT, INTERFACE), identifier(), annotationTypeBody());
     }
 
     public Rule annotationTypeBody() {
-        return enforcedSequence(LWING, zeroOrMore(annotationTypeElementDeclaration()), RWING);
+        return sequence(LWING, zeroOrMore(annotationTypeElementDeclaration()), RWING);
     }
 
     public Rule annotationTypeElementDeclaration() {
@@ -779,11 +791,11 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule annotation() {
-        return enforcedSequence(
+        return sequence(
                 AT,
                 qualifiedIdentifier(),
                 optional(
-                        enforcedSequence(
+                        sequence(
                                 LPAR,
                                 optional(sequence(identifier(), EQU)),
                                 elementValue(),
@@ -798,7 +810,7 @@ public class Java5Parser extends BaseParser<Object> {
     }
 
     public Rule elementValueArrayInitializer() {
-        return enforcedSequence(LWING, optional(elementValues()), optional(COMMA), RWING);
+        return sequence(LWING, optional(elementValues()), optional(COMMA), RWING);
     }
 
     public Rule elementValues() {

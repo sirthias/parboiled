@@ -179,5 +179,12 @@
         </java>
     </target>
 
+    <target name="run-example-java" depends="compile" description="Run the Java example">
+        <java classname="org.parboiled.examples.java.Main" fork="true">
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/classes"/>
+        </java>
+    </target>
+
 
 </project>
