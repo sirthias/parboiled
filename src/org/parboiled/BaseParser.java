@@ -17,7 +17,6 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.BitField;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
 import static org.parboiled.common.Utils.toObjectArray;
@@ -34,11 +33,6 @@ import java.util.List;
  * @param <V> The type of the value field of the parse tree nodes created by this parser.
  */
 public abstract class BaseParser<V> extends BaseActions<V> {
-
-    /**
-     * The index of the next matcher to be created.
-     */
-    protected int _nextIndex = 0;
 
     /**
      * Runs the given parser rule against the given input string.
@@ -67,11 +61,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
 
-        // if mismatch memoizaton is requested each InputLocation receives a BitField containing a bit for every rule
-        // index, indicating whether the rule with the respective index has already failed at this location
-        BitField failedRules = Parboiled.isFlagged(flags, Parboiled.MemoizeMismatches) ?
-                new BitField(matcher.getIndex() + 1) : null;
-        InputLocation startLocation = new InputLocation(inputBuffer, failedRules);
+        InputLocation startLocation = new InputLocation(inputBuffer);
 
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors,
                 Parboiled.isFlagged(flags, Parboiled.RecoverFromErrors));
@@ -104,7 +94,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
             case Chars.EOI:
                 return eoi();
             default:
-                return new CharMatcher(_nextIndex++, c);
+                return new CharMatcher(c);
         }
     }
 
@@ -119,7 +109,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule charIgnoreCase(char c) {
         return Character.isLowerCase(c) != Character.isUpperCase(c) ?
-                new CharIgnoreCaseMatcher(_nextIndex++, c) : ch(c);
+                new CharIgnoreCaseMatcher(c) : ch(c);
     }
 
     /**
@@ -133,7 +123,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule charRange(char cLow, char cHigh) {
-        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(_nextIndex++, cLow, cHigh);
+        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(cLow, cHigh);
     }
 
     /**
@@ -168,7 +158,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < string.length(); i++) {
             matchers[i] = ch(string.charAt(i));
         }
-        return new SequenceMatcher(_nextIndex++, matchers, false).label('"' + string + '"');
+        return new SequenceMatcher(matchers, false).label('"' + string + '"');
     }
 
     /**
@@ -186,7 +176,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < string.length(); i++) {
             matchers[i] = charIgnoreCase(string.charAt(i));
         }
-        return new SequenceMatcher(_nextIndex++, matchers, false).label('"' + string + '"');
+        return new SequenceMatcher(matchers, false).label('"' + string + '"');
     }
 
     /**
@@ -215,7 +205,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule firstOf(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(_nextIndex++, toRules(rules)).label("firstOf");
+        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules)).label("firstOf");
     }
 
     /**
@@ -229,7 +219,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule oneOrMore(Object rule) {
-        return new OneOrMoreMatcher(_nextIndex++, toRule(rule)).label("oneOrMore");
+        return new OneOrMoreMatcher(toRule(rule)).label("oneOrMore");
     }
 
     /**
@@ -243,7 +233,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule optional(Object rule) {
-        return new OptionalMatcher(_nextIndex++, toRule(rule)).label("optional");
+        return new OptionalMatcher(toRule(rule)).label("optional");
     }
 
     /**
@@ -271,7 +261,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule sequence(@NotNull Object[] rules) {
         return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(_nextIndex++, toRules(rules), false).label("sequence");
+                new SequenceMatcher(toRules(rules), false).label("sequence");
     }
 
     /**
@@ -304,7 +294,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule enforcedSequence(@NotNull Object[] rules) {
         return rules.length == 1 ?
                 toRule(rules[0]) :
-                new SequenceMatcher(_nextIndex++, toRules(rules), true).label("enforcedSequence");
+                new SequenceMatcher(toRules(rules), true).label("enforcedSequence");
     }
 
     /**
@@ -319,7 +309,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule test(Object rule) {
-        return new TestMatcher(_nextIndex++, toRule(rule), false);
+        return new TestMatcher(toRule(rule), false);
     }
 
     /**
@@ -334,7 +324,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule testNot(Object rule) {
-        return new TestMatcher(_nextIndex++, toRule(rule), true);
+        return new TestMatcher(toRule(rule), true);
     }
 
     /**
@@ -348,7 +338,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule zeroOrMore(Object rule) {
-        return new ZeroOrMoreMatcher(_nextIndex++, toRule(rule)).label("zeroOrMore");
+        return new ZeroOrMoreMatcher(toRule(rule)).label("zeroOrMore");
     }
 
     /**
@@ -357,7 +347,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule eoi() {
-        return new CharMatcher<V>(_nextIndex++, Chars.EOI);
+        return new CharMatcher<V>(Chars.EOI);
     }
 
     /**
@@ -366,7 +356,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule any() {
-        return new AnyCharMatcher<V>(_nextIndex++);
+        return new AnyCharMatcher<V>();
     }
 
     /**
@@ -375,7 +365,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule empty() {
-        return new EmptyMatcher<V>(_nextIndex++);
+        return new EmptyMatcher<V>();
     }
 
     ///************************* "MAGIC" METHODS ***************************///
@@ -458,7 +448,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof Rule) return (Rule) obj;
         if (obj instanceof Character) return fromCharLiteral((Character) obj);
         if (obj instanceof String) return fromStringLiteral((String) obj);
-        if (obj instanceof Action) return new ActionMatcher(_nextIndex++, (Action) obj);
+        if (obj instanceof Action) return new ActionMatcher((Action) obj);
 
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
     }

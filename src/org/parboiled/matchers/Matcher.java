@@ -52,11 +52,4 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      */
     Characters getStarterChars();
 
-    /**
-     * Returns the index of this matcher in its rule tree.
-     *
-     * @return the index
-     */
-    int getIndex();
-
 }

@@ -17,6 +17,7 @@
 package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.ParsingResult;
@@ -55,7 +56,7 @@ public class Main {
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
             ParsingResult<Object> result = parser
-                    .parse(parser.compilationUnit(), sourceText, Parboiled.Default);
+                    .parse(parser.compilationUnit(), sourceText);
             if (result.hasErrors()) {
                 System.out.printf("\nParse error(s) in file '%s':\nContext '%s'\n%s",
                         sourceFile,
@@ -74,6 +75,7 @@ public class Main {
         System.out.printf("    Files/sec: %.2f\n", sources.size() * 1000.0 / time);
         System.out.printf("    Lines/sec: %s\n", lines * 1000 / time);
         System.out.printf("    Chars/sec: %s\n", characters * 1000 / time);
+        System.out.printf("MatcherContext.count: %s\n", MatcherContext.count);
     }
 
     private static long time(long start) {

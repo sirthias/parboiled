@@ -51,7 +51,7 @@ public class CachingTest extends AbstractTest {
         }
 
         public Rule firstOf_uncached(Object rule, Object rule2, Object... moreRules) {
-            return new FirstOfMatcher(_nextIndex++, toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
+            return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
         }
 
     }

@@ -17,7 +17,6 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.BitField;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
 import org.parboiled.exceptions.ParserRuntimeException;
@@ -48,6 +47,8 @@ import java.util.List;
  * @param <V> the node value type
  */
 public class MatcherContext<V> implements Context<V> {
+
+    public static int count;
 
     // small helper class encapsulating all objects that do not change across Context levels
     private static class Invariables<V> {
@@ -89,7 +90,7 @@ public class MatcherContext<V> implements Context<V> {
 
     private MatcherContext(MatcherContext<V> parent, @NotNull Invariables<V> invariables,
                            @NotNull InputLocation startLocation, @NotNull Matcher<V> matcher, boolean enforced) {
-
+        count++;
         this.parent = parent;
         this.startLocation = currentLocation = startLocation;
         this.matcher = matcher;
@@ -286,16 +287,6 @@ public class MatcherContext<V> implements Context<V> {
             }
         }
 
-        // skip the rematch if this matcher has already failed at least once at the current input location
-        BitField currentFailedRules = currentLocation.failedRules;
-        if (currentFailedRules != null) {
-            if (matcher.getIndex() < currentFailedRules.getLength()) {
-                if (currentFailedRules.get(matcher.getIndex())) return false;
-            } else {
-                currentFailedRules = null;
-            }
-        }
-
         // we execute the given matcher in a new sub context and store this sub context instance as a field
         // in rare cases (error recovery) we might be recursing back into ourselves
         // so we need to save and restore it
@@ -316,9 +307,6 @@ public class MatcherContext<V> implements Context<V> {
             }
             if (matched) {
                 setCurrentLocation(subContext.getCurrentLocation());
-            } else {
-                // memoize the mismatch
-                if (currentFailedRules != null) currentFailedRules.set(matcher.getIndex());
             }
             subContext = oldSubContext;
             return matched;

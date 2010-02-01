@@ -29,8 +29,8 @@ import org.parboiled.support.Chars;
  */
 public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
-    public OptionalMatcher(int index, @NotNull Rule subRule) {
-        super(index, subRule);
+    public OptionalMatcher(@NotNull Rule subRule) {
+        super(subRule);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

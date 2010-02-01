@@ -19,15 +19,8 @@ package org.parboiled.examples;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.examples.java.JavaParser;
-import org.parboiled.matchers.Matcher;
-import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.test.AbstractTest;
-import static org.parboiled.trees.GraphUtils.collectAllNodes;
 import org.testng.annotations.Test;
-import static org.testng.Assert.assertFalse;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class JavaTest extends AbstractTest {
 
@@ -36,25 +29,6 @@ public class JavaTest extends AbstractTest {
         //String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTest.java");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.compilationUnit();
-
-        assertFalse(existlIndexCollisions((Matcher) compilationUnit));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static boolean existlIndexCollisions(Matcher root) {
-        boolean collisions = false;
-        Set<Matcher> all = collectAllNodes(root, new HashSet<Matcher>());
-        Matcher[] seen = new Matcher[all.size()];
-        for (Matcher matcher : all) {
-            Matcher existing = seen[matcher.getIndex()];
-            if (existing != null && ProxyMatcher.unwrap(existing) != ProxyMatcher.unwrap(matcher)) {
-                System.err.printf("'%s' and '%s' have the same index %s\n", existing, matcher, matcher.getIndex());
-                collisions = true;
-            } else {
-                seen[matcher.getIndex()] = matcher;
-            }
-        }
-        return collisions;
     }
 
 }

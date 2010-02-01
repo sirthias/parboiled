@@ -26,23 +26,21 @@ import org.parboiled.trees.ImmutableGraphNode;
  */
 public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
 
-    private final int index;
     private boolean locked;
     private String label;
 
-    protected AbstractMatcher(int index) {
-        this(index, new Rule[0]);
+    protected AbstractMatcher() {
+        this(new Rule[0]);
     }
 
     @SuppressWarnings({"unchecked"})
-    protected AbstractMatcher(int index, @NotNull Rule subRule) {
-        this(index, new Rule[] {subRule});
+    protected AbstractMatcher(@NotNull Rule subRule) {
+        this(new Rule[] {subRule});
     }
 
     @SuppressWarnings({"unchecked"})
-    protected AbstractMatcher(int index, @NotNull Rule[] subRules) {
+    protected AbstractMatcher(@NotNull Rule[] subRules) {
         super(ImmutableList.<Matcher<V>>of(toMatchers(subRules)));
-        this.index = index;
     }
 
     private static Matcher[] toMatchers(@NotNull Rule[] subRules) {
@@ -63,10 +61,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
 
     public String getLabel() {
         return label;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     @SuppressWarnings({"unchecked"})

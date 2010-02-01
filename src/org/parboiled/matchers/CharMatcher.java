@@ -30,8 +30,7 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
 
     public final char character;
 
-    public CharMatcher(int index, char character) {
-        super(index);
+    public CharMatcher(char character) {
         this.character = character;
     }
 

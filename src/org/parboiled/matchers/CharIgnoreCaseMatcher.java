@@ -31,8 +31,7 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
     public final char charLow;
     public final char charUp;
 
-    public CharIgnoreCaseMatcher(int index, char character) {
-        super(index);
+    public CharIgnoreCaseMatcher(char character) {
         this.charLow = Character.toLowerCase(character);
         this.charUp = Character.toUpperCase(character);
     }

@@ -35,8 +35,8 @@ import java.util.List;
  */
 public class FirstOfMatcher<V> extends AbstractMatcher<V> {
 
-    public FirstOfMatcher(int index, @NotNull Rule[] subRules) {
-        super(index, subRules);
+    public FirstOfMatcher(@NotNull Rule[] subRules) {
+        super(subRules);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

@@ -33,12 +33,6 @@ public class Parboiled {
     public static final int Default = 0x00;
 
     /**
-     * Instructs the parboiled parser to memoize rule mismatches, i.e. to never try a rule match at an input location
-     * where the same rule has already failed before.
-     */
-    public static final int MemoizeMismatches = 0x01;
-
-    /**
      * Instructs the parboiled parser to recover from parse errors by either symbol deletion, symbol insertion or
      * resynchronization.
      */

@@ -17,41 +17,39 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.BitField;
 
 /**
- * Immutable value container identifying a certain position in an InputBuffer.
+ * (Almost) immutable value container identifying a certain position in an InputBuffer.
  */
 public class InputLocation {
     public final int index;
     public final int row;
     public final int column;
     public final char currentChar;
-    public final BitField failedRules;
+    public InputLocation next;
 
-    public InputLocation(@NotNull InputBuffer inputBuffer, BitField failedRules) {
-        this(inputBuffer, 0, 0, 0, failedRules);
+    public InputLocation(@NotNull InputBuffer inputBuffer) {
+        this(inputBuffer, 0, 0, 0);
     }
 
-    private InputLocation(@NotNull InputBuffer inputBuffer, int index, int row, int column, BitField failedRules) {
+    private InputLocation(@NotNull InputBuffer inputBuffer, int index, int row, int column) {
         this.index = index;
         this.row = row;
         this.column = column;
-        this.failedRules = failedRules;
         this.currentChar = inputBuffer.charAt(index);
     }
 
     public InputLocation advance(@NotNull InputBuffer inputBuffer) {
+        if (next != null) {
+            return next;
+        }
         switch (currentChar) {
             case '\n':
-                return new InputLocation(inputBuffer, index + 1, row + 1, 0,
-                        failedRules != null ? new BitField(failedRules.getLength()) : null);
+                return next = new InputLocation(inputBuffer, index + 1, row + 1, 0);
             case Chars.EOI:
-                return failedRules == null ? this :
-                        new InputLocation(inputBuffer, index, row, column, new BitField(failedRules.getLength()));
+                return next = this;
             default:
-                return new InputLocation(inputBuffer, index + 1, row, column + 1,
-                        failedRules != null ? new BitField(failedRules.getLength()) : null);
+                return next = new InputLocation(inputBuffer, index + 1, row, column + 1);
         }
     }
 

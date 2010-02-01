@@ -39,7 +39,6 @@ public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
      */
     public IllegalCharactersMatcher(@NotNull String expected,
                                     @NotNull Characters stopMatchChars) {
-        super(Integer.MAX_VALUE);
         this.expected = expected;
         this.stopMatchChars = stopMatchChars.add(Chars.EOI); // we also stop at EOI
     }

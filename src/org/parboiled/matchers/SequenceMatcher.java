@@ -32,8 +32,8 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
 
     private final boolean enforced;
 
-    public SequenceMatcher(int index, @NotNull Rule[] subRules, boolean enforced) {
-        super(index, subRules);
+    public SequenceMatcher(@NotNull Rule[] subRules, boolean enforced) {
+        super(subRules);
         this.enforced = enforced;
     }
 
