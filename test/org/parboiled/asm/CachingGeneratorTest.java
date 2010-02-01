@@ -37,7 +37,7 @@ public class CachingGeneratorTest {
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "ch"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 99 L0\n" +
+                "    LINENUMBER 89 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$ch : Ljava/util/HashMap;\n" +
                 "    DUP\n" +
@@ -80,34 +80,34 @@ public class CachingGeneratorTest {
                 "      65535: L5\n" +
                 "      default: L6\n" +
                 "   L4\n" +
-                "    LINENUMBER 101 L4\n" +
+                "    LINENUMBER 91 L4\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.empty ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L7\n" +
                 "   L3\n" +
-                "    LINENUMBER 103 L3\n" +
+                "    LINENUMBER 93 L3\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.any ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L7\n" +
                 "   L5\n" +
-                "    LINENUMBER 105 L5\n" +
+                "    LINENUMBER 95 L5\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.eoi ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L7\n" +
                 "   L6\n" +
-                "    LINENUMBER 107 L6\n" +
+                "    LINENUMBER 97 L6\n" +
                 "    NEW org/parboiled/matchers/CharMatcher\n" +
                 "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    DUP\n" +
-                "    GETFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    DUP_X1\n" +
-                "    ICONST_1\n" +
-                "    IADD\n" +
-                "    PUTFIELD org/parboiled/BaseParser._nextIndex : I\n" +
                 "    ILOAD 1\n" +
-                "    INVOKESPECIAL org/parboiled/matchers/CharMatcher.<init> (IC)V\n" +
+                "    INVOKESPECIAL org/parboiled/matchers/CharMatcher.<init> (C)V\n" +
                 "   L7\n" +
+                "    DUP\n" +
+                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
+                "    IFEQ L8\n" +
+                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
+                "    DUP\n" +
+                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.lock ()V\n" +
+                "   L8\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
@@ -122,18 +122,18 @@ public class CachingGeneratorTest {
                 "    INVOKEVIRTUAL java/util/HashMap.put (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;\n" +
                 "    POP\n" +
                 "    ARETURN\n" +
-                "   L8\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/BaseParser; L0 L8 0\n" +
+                "   L9\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/BaseParser; L0 L9 0\n" +
                 "    // signature Lorg/parboiled/BaseParser<TV;>;\n" +
                 "    // declaration: org.parboiled.BaseParser<V>\n" +
-                "    LOCALVARIABLE c C L0 L8 1\n" +
-                "    MAXSTACK = 6\n" +
+                "    LOCALVARIABLE c C L0 L9 1\n" +
+                "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 2\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "optional"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 246 L0\n" +
+                "    LINENUMBER 239 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$optional : Ljava/util/HashMap;\n" +
                 "    DUP\n" +
@@ -171,18 +171,18 @@ public class CachingGeneratorTest {
                 "    NEW org/parboiled/matchers/OptionalMatcher\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
-                "    DUP\n" +
-                "    GETFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    DUP_X1\n" +
-                "    ICONST_1\n" +
-                "    IADD\n" +
-                "    PUTFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    ALOAD 0\n" +
                 "    ALOAD 1\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.toRule (Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "    INVOKESPECIAL org/parboiled/matchers/OptionalMatcher.<init> (ILorg/parboiled/Rule;)V\n" +
+                "    INVOKESPECIAL org/parboiled/matchers/OptionalMatcher.<init> (Lorg/parboiled/Rule;)V\n" +
                 "    LDC \"optional\"\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/OptionalMatcher.label (Ljava/lang/String;)Lorg/parboiled/matchers/AbstractMatcher;\n" +
+                "    DUP\n" +
+                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
+                "    IFEQ L3\n" +
+                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
+                "    DUP\n" +
+                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.lock ()V\n" +
+                "   L3\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
@@ -197,17 +197,17 @@ public class CachingGeneratorTest {
                 "    INVOKEVIRTUAL java/util/HashMap.put (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;\n" +
                 "    POP\n" +
                 "    ARETURN\n" +
-                "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/BaseParser; L0 L3 0\n" +
+                "   L4\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/BaseParser; L0 L4 0\n" +
                 "    // signature Lorg/parboiled/BaseParser<TV;>;\n" +
                 "    // declaration: org.parboiled.BaseParser<V>\n" +
-                "    LOCALVARIABLE rule Ljava/lang/Object; L0 L3 1\n" +
-                "    MAXSTACK = 6\n" +
+                "    LOCALVARIABLE rule Ljava/lang/Object; L0 L4 1\n" +
+                "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 2\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "empty"), "" +
                 "   L0\n" +
-                "    LINENUMBER 378 L0\n" +
+                "    LINENUMBER 371 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$empty : Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
@@ -224,25 +224,12 @@ public class CachingGeneratorTest {
                 "    PUTFIELD org/parboiled/asm/TestParser$$parboiled.cache$empty : Lorg/parboiled/Rule;\n" +
                 "    NEW org/parboiled/matchers/EmptyMatcher\n" +
                 "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    DUP\n" +
-                "    GETFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    DUP_X1\n" +
-                "    ICONST_1\n" +
-                "    IADD\n" +
-                "    PUTFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    INVOKESPECIAL org/parboiled/matchers/EmptyMatcher.<init> (I)V\n" +
+                "    INVOKESPECIAL org/parboiled/matchers/EmptyMatcher.<init> ()V\n" +
                 "    DUP\n" +
                 "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
                 "    IFEQ L2\n" +
                 "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
                 "    DUP\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.isLocked ()Z\n" +
-                "    IFNE L2\n" +
-                "    DUP\n" +
-                "    LDC \"empty\"\n" +
-                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
-                "    SWAP\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.lock ()V\n" +
                 "   L2\n" +
                 "    DUP_X1\n" +
@@ -258,7 +245,7 @@ public class CachingGeneratorTest {
                 "    LOCALVARIABLE this Lorg/parboiled/BaseParser; L0 L3 0\n" +
                 "    // signature Lorg/parboiled/BaseParser<TV;>;\n" +
                 "    // declaration: org.parboiled.BaseParser<V>\n" +
-                "    MAXSTACK = 6\n" +
+                "    MAXSTACK = 2\n" +
                 "    MAXLOCALS = 1\n");
     }
 

@@ -28,6 +28,7 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
 
     private boolean locked;
     private String label;
+    private boolean leaf;
 
     protected AbstractMatcher() {
         this(new Rule[0]);
@@ -63,9 +64,13 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return label;
     }
 
+    public boolean isLeaf() {
+        return leaf;
+    }
+
     @SuppressWarnings({"unchecked"})
-    public AbstractMatcher<V> label(String label) {
-        if (!isLocked()) {
+    public AbstractMatcher<V> label(@NotNull String label) {
+        if (!isLocked() || label.equals(this.label) ) {
             this.label = label;
             return this;
         }
@@ -75,6 +80,24 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         try {
             AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
             clone.label = label;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException();
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule makeLeaf() {
+        if (isLeaf() || !isLocked()) {
+            leaf = true;
+            return this;
+        }
+
+        // if we are locked we are not allowed to change the leaf marker field anymore
+        // therefore we need to create a shallow copy, apply the leaf marker to it and return the copy
+        try {
+            AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
+            clone.leaf = true;
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException();

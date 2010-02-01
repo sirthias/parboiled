@@ -45,8 +45,12 @@ public class ParserTransformer {
                                         new RuleMethodTransformer(
                                                 new ConstructorGenerator(
                                                         new ReturnInstructionUnifier(
-                                                                new CachingGenerator(
-                                                                        new ParserClassDefiner()
+                                                                new LabelApplicator(
+                                                                        new LeafApplicator(
+                                                                                new CachingGenerator(
+                                                                                        new ParserClassDefiner()
+                                                                                )
+                                                                        )
                                                                 )
                                                         )
                                                 )

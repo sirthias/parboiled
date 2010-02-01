@@ -33,6 +33,11 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
     String getLabel();
 
     /**
+     * @return true if this matcher has been marked as a leaf matcher
+     */
+    boolean isLeaf();
+
+    /**
      * @return a string describing what content is expected by this matcher
      */
     String getExpectedString();

@@ -21,6 +21,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import static org.parboiled.common.Utils.merge;
+
+import java.util.Set;
 
 /**
  * Transforms the ParserClassNode.cachedMethods:
@@ -35,8 +38,10 @@ class ReturnInstructionUnifier implements ClassTransformer, Opcodes {
         this.nextTransformer = nextTransformer;
     }
 
+    @SuppressWarnings("unchecked")
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (ParserMethod method : classNode.cachedMethods) {
+        Set<ParserMethod> methods = merge(classNode.cachedMethods, classNode.labelMethods, classNode.leafMethods);
+        for (ParserMethod method : methods) {
             unifyReturnInstructions(method);
         }
 

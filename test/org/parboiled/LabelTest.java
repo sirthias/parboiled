@@ -22,6 +22,7 @@ import org.parboiled.common.ToStringFormatter;
 import org.parboiled.matchers.Matcher;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.parboiled.trees.GraphUtils.printTree;
+import org.parboiled.support.Label;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
@@ -43,6 +44,7 @@ public class LabelTest extends AbstractTest {
             return firstOf('+', '-');
         }
 
+        @Label("NUmBER")
         public Rule number() {
             return oneOrMore(digit());
         }
@@ -76,7 +78,7 @@ public class LabelTest extends AbstractTest {
                 "    secondOp\n" +
                 "        '+'\n" +
                 "        '-'\n" +
-                "    number\n" +
+                "    NUmBER\n" +
                 "        digit\n");
 
         // verify that there is each only one digit matcher, '+' matcher and '-' matcher
@@ -95,7 +97,7 @@ public class LabelTest extends AbstractTest {
                 "        [digit] '4'\n" +
                 "    [secondOp] '+'\n" +
                 "        ['+'] '+'\n" +
-                "    [number] '9'\n" +
+                "    [NUmBER] '9'\n" +
                 "        [digit] '9'\n");
     }
 

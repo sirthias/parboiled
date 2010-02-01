@@ -29,4 +29,13 @@ public interface Rule {
      */
     Rule label(String label);
 
+    /**
+     * Marks this rule as a leaf rule. The parse tree nodes created by this rule will be leaf nodes in the parse tree,
+     * i.e. sub rules will not create parse tree nodes.
+     * Additionally this rule and all sub rules are not allowed to contain parser actions.
+     *
+     * @return this Rule
+     */
+    Rule makeLeaf();
+
 }

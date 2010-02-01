@@ -39,6 +39,8 @@ class ParserClassNode extends ClassNode {
     public final List<ParserMethod> constructors = new ArrayList<ParserMethod>();
     public final List<ParserMethod> ruleMethods = new ArrayList<ParserMethod>(); // no-arg, Rule returning methods
     public final List<ParserMethod> cachedMethods = new ArrayList<ParserMethod>(); // @Cached, Rule returning methods
+    public final List<ParserMethod> labelMethods = new ArrayList<ParserMethod>(); // @Label, Rule returning methods
+    public final List<ParserMethod> leafMethods = new ArrayList<ParserMethod>(); // @Leaf, Rule returning methods
 
     public final List<ActionClassGenerator> actionClassGenerators = new ArrayList<ActionClassGenerator>();
     public byte[] classCode;

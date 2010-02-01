@@ -213,6 +213,21 @@ public final class Utils {
     }
 
     /**
+     * Merges the given collections into one set.
+     *
+     * @param collections the collections to merge
+     * @param <T>         the type parameter
+     * @return the set containing all elements of the given collections exactly once
+     */
+    public static <T> Set<T> merge(Collection<T>... collections) {
+        Set<T> set = new HashSet<T>();
+        for (Collection<T> collection : collections) {
+            set.addAll(collection);
+        }
+        return set;
+    }
+
+    /**
      * Adapts a list to an iterable with reversed iteration order. It's especially useful in foreach-style loops:
      * <pre>
      * List<String> mylist = ...

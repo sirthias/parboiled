@@ -39,6 +39,10 @@ public class ClassNodeInializerAndMethodCategorizerTest {
                 "noActionRule,simpleActionRule,upSetActionRule,booleanExpressionActionRule,complexActionsRule,eoi,any,empty");
         assertEqualsMultiline(join(classNode.cachedMethods),
                 "ch,charIgnoreCase,charRange,charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,enforcedSequence,test,testNot,zeroOrMore");
+        assertEqualsMultiline(join(classNode.labelMethods),
+                "");
+        assertEqualsMultiline(join(classNode.leafMethods),
+                "charSet,string,stringIgnoreCase");
     }
 
     private String join(List<ParserMethod> methods) {

@@ -22,12 +22,13 @@
 
 package org.parboiled.asm;
 
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import static org.parboiled.asm.AsmUtils.loadClass;
-import org.jetbrains.annotations.NotNull;
 
 class ParserClassDefiner implements ClassTransformer {
 
+    @SuppressWarnings({"unchecked"})
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(classWriter);

@@ -35,7 +35,7 @@ public class ReturnInstructionUnifierTest {
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "ch"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 99 L0\n" +
+                "    LINENUMBER 89 L0\n" +
                 "    ILOAD 1\n" +
                 "    LOOKUPSWITCH\n" +
                 "      65007: L1\n" +
@@ -43,33 +43,26 @@ public class ReturnInstructionUnifierTest {
                 "      65535: L3\n" +
                 "      default: L4\n" +
                 "   L2\n" +
-                "    LINENUMBER 101 L2\n" +
+                "    LINENUMBER 91 L2\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.empty ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L1\n" +
-                "    LINENUMBER 103 L1\n" +
+                "    LINENUMBER 93 L1\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.any ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L3\n" +
-                "    LINENUMBER 105 L3\n" +
+                "    LINENUMBER 95 L3\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.eoi ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L4\n" +
-                "    LINENUMBER 107 L4\n" +
+                "    LINENUMBER 97 L4\n" +
                 "    NEW org/parboiled/matchers/CharMatcher\n" +
                 "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    DUP\n" +
-                "    GETFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    DUP_X1\n" +
-                "    ICONST_1\n" +
-                "    IADD\n" +
-                "    PUTFIELD org/parboiled/BaseParser._nextIndex : I\n" +
                 "    ILOAD 1\n" +
-                "    INVOKESPECIAL org/parboiled/matchers/CharMatcher.<init> (IC)V\n" +
+                "    INVOKESPECIAL org/parboiled/matchers/CharMatcher.<init> (C)V\n" +
                 "   L5\n" +
                 "    ARETURN\n" +
                 "   L6\n" +
@@ -77,13 +70,13 @@ public class ReturnInstructionUnifierTest {
                 "    // signature Lorg/parboiled/BaseParser<TV;>;\n" +
                 "    // declaration: org.parboiled.BaseParser<V>\n" +
                 "    LOCALVARIABLE c C L0 L6 1\n" +
-                "    MAXSTACK = 6\n" +
+                "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 2\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "charRange"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 136 L0\n" +
+                "    LINENUMBER 126 L0\n" +
                 "    ILOAD 1\n" +
                 "    ILOAD 2\n" +
                 "    IF_ICMPNE L1\n" +
@@ -94,16 +87,9 @@ public class ReturnInstructionUnifierTest {
                 "   L1\n" +
                 "    NEW org/parboiled/matchers/CharRangeMatcher\n" +
                 "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    DUP\n" +
-                "    GETFIELD org/parboiled/BaseParser._nextIndex : I\n" +
-                "    DUP_X1\n" +
-                "    ICONST_1\n" +
-                "    IADD\n" +
-                "    PUTFIELD org/parboiled/BaseParser._nextIndex : I\n" +
                 "    ILOAD 1\n" +
                 "    ILOAD 2\n" +
-                "    INVOKESPECIAL org/parboiled/matchers/CharRangeMatcher.<init> (ICC)V\n" +
+                "    INVOKESPECIAL org/parboiled/matchers/CharRangeMatcher.<init> (CC)V\n" +
                 "   L2\n" +
                 "    ARETURN\n" +
                 "   L3\n" +
@@ -112,7 +98,7 @@ public class ReturnInstructionUnifierTest {
                 "    // declaration: org.parboiled.BaseParser<V>\n" +
                 "    LOCALVARIABLE cLow C L0 L3 1\n" +
                 "    LOCALVARIABLE cHigh C L0 L3 2\n" +
-                "    MAXSTACK = 6\n" +
+                "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 3\n");
     }
 

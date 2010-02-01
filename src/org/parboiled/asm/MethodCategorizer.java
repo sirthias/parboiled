@@ -37,26 +37,42 @@ import org.parboiled.support.Checks;
  */
 class MethodCategorizer implements ClassTransformer, Opcodes {
     private final ClassTransformer nextTransformer;
+    private ParserMethod method;
 
     public MethodCategorizer(ClassTransformer nextTransformer) {
         this.nextTransformer = nextTransformer;
     }
 
+    @SuppressWarnings({"unchecked"})
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         for (ParserMethod method : classNode.allMethods) {
-            categorize(classNode, method);
+            this.method = method;
+            categorize(classNode);
+        }
+
+        classNode.methods.addAll(classNode.ruleMethods);
+        for (ParserMethod method : classNode.cachedMethods) {
+            if (!classNode.methods.contains(method)) classNode.methods.add(method);
+        }
+        for (ParserMethod method : classNode.labelMethods) {
+            if (!classNode.methods.contains(method)) classNode.methods.add(method);
+        }
+        for (ParserMethod method : classNode.leafMethods) {
+            if (!classNode.methods.contains(method)) classNode.methods.add(method);
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
-    private void categorize(ParserClassNode classNode, ParserMethod method) {
+    private void categorize(ParserClassNode classNode) {
         // collect all constructors for later creation of delegation constructors
         if ("<init>".equals(method.name) &&
                 method.ownerClass == classNode.parentClass &&
                 !method.hasAccess(ACC_PRIVATE)) {
             Checks.ensure(!carriesAnnotation(method, AsmUtils.CACHED_TYPE), "@Cached not allowed on construcors");
             Checks.ensure(!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE), "@KeepAsIs not allowed on construcors");
+            Checks.ensure(!carriesAnnotation(method, AsmUtils.LABEL_TYPE), "@Label not allowed on construcors");
+            Checks.ensure(!carriesAnnotation(method, AsmUtils.LEAF_TYPE), "@Leaf not allowed on construcors");
             classNode.constructors.add(method);
             return;
         }
@@ -64,30 +80,49 @@ class MethodCategorizer implements ClassTransformer, Opcodes {
         if (Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE) &&
                 Type.getArgumentTypes(method.desc).length == 0) {
             if (!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE)) {
-                Checks.ensure(!method.hasAccess(ACC_PRIVATE),
-                        "Illegal parser rule definition '" + method.name + "':\n" +
-                                "Rule definition methods must not be private.\n" +
-                                "Mark the method protected or package-private if you want to prevent public access!");
-                Checks.ensure(!method.hasAccess(ACC_FINAL),
-                        "Illegal parser rule definition '" + method.name + "':\n" +
-                                "Rule definition methods must not be final.");
-                Checks.ensure(!carriesAnnotation(method, AsmUtils.CACHED_TYPE),
-                        "Illegal parser rule definition '" + method.name + "':\n" +
-                                "@Cached annotation not allowed, rule is automatically cached");
+                ensure(!method.hasAccess(ACC_PRIVATE), "Rule methods must not be private.\n" +
+                        "Mark the method protected or package-private if you want to prevent public access!");
+                ensure(!method.hasAccess(ACC_FINAL),
+                        "Rule methods must not be final.");
                 classNode.ruleMethods.add(method);
             }
-            return;
+            ensure(!carriesAnnotation(method, AsmUtils.CACHED_TYPE),
+                    "@Cached annotation not allowed, rule is automatically cached");
+        } else {
+            Checks.ensure(!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE),
+                    "@KeepAsIs not allowed on method '" + method.name + "', only allowed on rule methods");
         }
 
         if (carriesAnnotation(method, AsmUtils.CACHED_TYPE)) {
-            Checks.ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
-                    "@Cached not allowed on method '" + method.name +
-                            "', only allowed on rule creating methods taking at least one parameter");
+            ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
+                    "@Cached only allowed on rule creating methods taking at least one parameter");
+            ensure(!method.hasAccess(ACC_PRIVATE), "@Cached methods must not be private.\n" +
+                    "Mark the method protected or package-private if you want to prevent public access!");
+            ensure(!method.hasAccess(ACC_FINAL), "@Cached methods must not be final");
             classNode.cachedMethods.add(method);
         }
 
-        Checks.ensure(!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE),
-                "@KeepAsIs not allowed on method '" + method.name + "', only allowed on rule definition methods");
+        if (carriesAnnotation(method, AsmUtils.LABEL_TYPE)) {
+            ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
+                    "@Label only allowed on rule creating methods");
+            ensure(!method.hasAccess(ACC_PRIVATE), "@Label methods must not be private.\n" +
+                    "Mark the method protected or package-private if you want to prevent public access!");
+            ensure(!method.hasAccess(ACC_FINAL), "@Label methods must not be final");
+            classNode.labelMethods.add(method);
+        }
+
+        if (carriesAnnotation(method, AsmUtils.LEAF_TYPE)) {
+            ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
+                    "@Leaf only allowed on rule creating methods");
+            ensure(!method.hasAccess(ACC_PRIVATE), "@Leaf methods must not be private.\n" +
+                    "Mark the method protected or package-private if you want to prevent public access!");
+            ensure(!method.hasAccess(ACC_FINAL), "@Leaf methods must not be final");
+            classNode.leafMethods.add(method);
+        }
+    }
+
+    private void ensure(boolean condition, String errorMessage) {
+        Checks.ensure(condition, "Illegal parser rule method '" + method.name + "':\n" + errorMessage);
     }
 
     private boolean carriesAnnotation(MethodNode method, Type annotationType) {

@@ -35,6 +35,8 @@ import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.support.Cached;
 import org.parboiled.support.KeepAsIs;
+import org.parboiled.support.Label;
+import org.parboiled.support.Leaf;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -50,6 +52,8 @@ class AsmUtils {
     public static final Type CONTEXT_AWARE_TYPE = Type.getType(ContextAware.class);
     public static final Type CONTEXT_TYPE = Type.getType(Context.class);
     public static final Type KEEP_AS_IS_TYPE = Type.getType(KeepAsIs.class);
+    public static final Type LABEL_TYPE = Type.getType(Label.class);
+    public static final Type LEAF_TYPE = Type.getType(Leaf.class);
     public static final Type MATCHER_TYPE = Type.getType(Matcher.class);
     public static final Type PROXY_MATCHER_TYPE = Type.getType(ProxyMatcher.class);
     public static final Type RULE_TYPE = Type.getType(Rule.class);
@@ -195,4 +199,5 @@ class AsmUtils {
         }
         return null;
     }
+
 }

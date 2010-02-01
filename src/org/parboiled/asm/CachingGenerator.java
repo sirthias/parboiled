@@ -28,6 +28,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import static org.parboiled.asm.AsmUtils.getFieldByName;
 import static org.parboiled.common.Utils.toObjectArray;
+import static org.parboiled.common.Utils.merge;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,21 +47,19 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         this.nextTransformer = nextTransformer;
     }
 
+    @SuppressWarnings("unchecked")
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         this.classNode = classNode;
 
-        for (ParserMethod ruleMethod : classNode.ruleMethods) {
-            createCachingConstructs(ruleMethod, true);
-        }
-        for (ParserMethod cachedMethod : classNode.cachedMethods) {
-            createCachingConstructs(cachedMethod, false);
+        for (ParserMethod method : merge(classNode.ruleMethods, classNode.cachedMethods)) {
+            createCachingCode(method);
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void createCachingConstructs(ParserMethod method, boolean autoLabel) {
+    private void createCachingCode(ParserMethod method) {
         this.method = method;
         this.instructions = method.instructions;
         this.current = instructions.getFirst();
@@ -69,11 +68,9 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         generateCacheHitReturn();
         generateStoreNewProxyMatcher();
         seekToReturnInstruction();
-        if (autoLabel) generateLabelAndLock();
+        generateLock();
         generateArmProxyMatcher();
         generateStoreInCache();
-
-        classNode.methods.add(method);
     }
 
     private void skipStartingLabelAndLineNumInstructions() {
@@ -272,11 +269,10 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         }
     }
 
-    // if (<rule> instanceof AbstractMatcher && !((AbstractMatcher)<rule>).isLocked()) {
-    //    <rule>.label("someRuleCached");
+    // if (<rule> instanceof AbstractMatcher) {
     //    <rule>.lock();
     // }
-    private void generateLabelAndLock() {
+    private void generateLock() {
         // stack: <proxyMatcher> :: <rule>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <rule> :: <rule>
@@ -289,21 +285,8 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         // stack: <proxyMatcher> :: <abstractMatcher>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName(), "isLocked", "()Z"));
-        // stack: <proxyMatcher> :: <abstractMatcher> :: <0 or 1>
-        insert(new JumpInsnNode(IFNE, elseLabel));
-        // stack: <proxyMatcher> :: <abstractMatcher>
-        insert(new InsnNode(DUP));
-        // stack: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher>
-        insert(new LdcInsnNode(method.name));
-        // stack: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher> :: <methodname>
-        insert(new MethodInsnNode(INVOKEINTERFACE, AsmUtils.RULE_TYPE.getInternalName(),
-                "label", Type.getMethodDescriptor(AsmUtils.RULE_TYPE, new Type[] {Type.getType(String.class)})));
-        // stack: <proxyMatcher> :: <abstractMatcher> :: <rule>
-        insert(new InsnNode(SWAP));
-        // stack: <proxyMatcher> :: <rule> :: <abstractMatcher>
         insert(new MethodInsnNode(INVOKEVIRTUAL, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName(), "lock", "()V"));
-        // stack: <proxyMatcher> :: <rule>
+        // stack: <proxyMatcher> :: <abstractMatcher>
         insert(elseLabel);
         // stack: <proxyMatcher> :: <rule>
     }

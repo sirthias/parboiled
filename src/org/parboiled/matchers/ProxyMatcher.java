@@ -34,44 +34,53 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
 
     private Matcher<V> target;
     private String label;
+    private Boolean leaf;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
-        applyLabel();
+        apply();
         return target.getChildren();
     }
 
     public boolean match(@NotNull MatcherContext<V> context) throws Throwable {
-        applyLabel();
+        apply();
         return target.match(context);
     }
 
     public String getExpectedString() {
-        applyLabel();
+        apply();
         return target.getExpectedString();
     }
 
     public Characters getStarterChars() {
-        applyLabel();
+        apply();
         return target.getStarterChars();
     }
 
     public String getLabel() {
-        applyLabel();
+        apply();
         return target.getLabel();
+    }
+
+    public boolean isLeaf() {
+        apply();
+        return target.isLeaf();
     }
 
     @Override
     public String toString() {
         if (target == null) return super.toString();
-        applyLabel();
+        apply();
         return target.toString();
     }
 
-    private void applyLabel() {
+    private void apply() {
         Preconditions.checkState(target != null);
         if (label != null) {
             label(label);
+        }
+        if (leaf != null) {
+            makeLeaf();
         }
     }
 
@@ -91,10 +100,24 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         }
 
         // we already have a target to which we can directly apply the label
-        Rule innerMost = (Rule) unwrap(target);
-        target = (Matcher<V>) innerMost
-                .label(label); // since relabelling might change the instance we have to update it
+        Rule inner = (Rule) unwrap(target);
+        target = (Matcher<V>) inner.label(label); // since relabelling might change the instance we have to update it
         this.label = null;
+        return (Rule) target;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule makeLeaf() {
+        if (target == null) {
+            // if we have no target yet we need to save the leaf marker and "apply" it later
+            leaf = true;
+            return this;
+        }
+
+        // we already have a target to which we can directly apply the leaf marker
+        Rule inner = (Rule) unwrap(target);
+        target = (Matcher<V>) inner.makeLeaf(); // since leaf marking might change the instance we have to update it
+        leaf = null;
         return (Rule) target;
     }
 
