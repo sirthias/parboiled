@@ -54,12 +54,14 @@ public class MatcherContext<V> implements Context<V> {
         private final InputBuffer inputBuffer;
         private final List<ParseError> parseErrors;
         private final Reference<Node<V>> lastNodeRef;
+        private final boolean recoverFromErrors;
 
         private Invariables(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                            @NotNull Reference<Node<V>> lastNodeRef) {
+                            @NotNull Reference<Node<V>> lastNodeRef, boolean recoverFromErrors) {
             this.inputBuffer = inputBuffer;
             this.parseErrors = parseErrors;
             this.lastNodeRef = lastNodeRef;
+            this.recoverFromErrors = recoverFromErrors;
         }
     }
 
@@ -78,9 +80,10 @@ public class MatcherContext<V> implements Context<V> {
     private Object tag;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
-                          @NotNull Matcher<V> matcher, @NotNull List<ParseError> parseErrors) {
+                          @NotNull Matcher<V> matcher, @NotNull List<ParseError> parseErrors,
+                          boolean recoverFromErrors) {
         this(null,
-                new Invariables<V>(inputBuffer, parseErrors, new Reference<Node<V>>()),
+                new Invariables<V>(inputBuffer, parseErrors, new Reference<Node<V>>(), recoverFromErrors),
                 startLocation, matcher, true);
     }
 
@@ -245,8 +248,11 @@ public class MatcherContext<V> implements Context<V> {
         try {
             boolean matched = matcher.match(this);
             if (!matched && enforced) {
-                recover();
-                matched = true;
+                if (matched = invariables.recoverFromErrors) {
+                    recover();
+                } else {
+                    addUnexpectedInputError(currentLocation.currentChar, matcher.getLabel());
+                }
             }
             if (errorMessage != null) {
                 addParserError(ParseError.create(this, node, errorMessage));
@@ -281,9 +287,14 @@ public class MatcherContext<V> implements Context<V> {
         }
 
         // skip the rematch if this matcher has already failed at least once at the current input location
-        // special case: IllegalCharactersMatchers are always run
-        BitField currentFailedRules = matcher instanceof IllegalCharactersMatcher ? null : currentLocation.failedRules;
-        if (currentFailedRules != null && currentFailedRules.get(matcher.getIndex())) return false;
+        BitField currentFailedRules = currentLocation.failedRules;
+        if (currentFailedRules != null) {
+            if (matcher.getIndex() < currentFailedRules.getLength()) {
+                if (currentFailedRules.get(matcher.getIndex())) return false;
+            } else {
+                currentFailedRules = null;
+            }
+        }
 
         // we execute the given matcher in a new sub context and store this sub context instance as a field
         // in rare cases (error recovery) we might be recursing back into ourselves
@@ -294,8 +305,11 @@ public class MatcherContext<V> implements Context<V> {
         try {
             boolean matched = subContext.matcher.match(subContext);
             if (!matched && enforced) {
-                subContext.recover();
-                matched = true;
+                if (matched = invariables.recoverFromErrors) {
+                    subContext.recover();
+                } else {
+                    addUnexpectedInputError(currentLocation.currentChar, matcher.getLabel());
+                }
             }
             if (subContext.errorMessage != null) {
                 subContext.addParserError(ParseError.create(subContext, subContext.node, subContext.errorMessage));

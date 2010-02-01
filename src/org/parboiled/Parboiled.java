@@ -28,15 +28,21 @@ import java.lang.reflect.Constructor;
 public class Parboiled {
 
     /**
-     * Default flag value indicating that no optimization is required.
+     * Default flag value indicating no memoization and no parse error recovery.
      */
-    public static final int NoOptimization = 0x00;
+    public static final int Default = 0x00;
 
     /**
      * Instructs the parboiled parser to memoize rule mismatches, i.e. to never try a rule match at an input location
      * where the same rule has already failed before.
      */
     public static final int MemoizeMismatches = 0x01;
+
+    /**
+     * Instructs the parboiled parser to recover from parse errors by either symbol deletion, symbol insertion or
+     * resynchronization.
+     */
+    public static final int RecoverFromErrors = 0x02;
 
     protected Parboiled() {}
 
@@ -62,6 +68,10 @@ public class Parboiled {
         } catch (Exception e) {
             throw new RuntimeException("Error creating extended parser class: " + e.getMessage(), e);
         }
+    }
+
+    protected static boolean isFlagged(int flags, int flag) {
+        return (flags & flag) > 0;
     }
 
 }

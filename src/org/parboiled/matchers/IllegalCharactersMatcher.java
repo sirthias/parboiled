@@ -23,10 +23,11 @@ import org.parboiled.support.Chars;
 
 /**
  * Special Matcher invoked during error recovery. Matches all input characters not in a given follower set.
+ *
  * @param <V>
  */
 public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
-    
+
     private final String expected;
     private final Characters stopMatchChars;
 
@@ -36,7 +37,9 @@ public class IllegalCharactersMatcher<V> extends AbstractMatcher<V> {
      * @param expected       a string describing the expected content
      * @param stopMatchChars the set of characters up to which illegal characters will be matched
      */
-    public IllegalCharactersMatcher(@NotNull String expected, @NotNull Characters stopMatchChars) {
+    public IllegalCharactersMatcher(@NotNull String expected,
+                                    @NotNull Characters stopMatchChars) {
+        super(Integer.MAX_VALUE);
         this.expected = expected;
         this.stopMatchChars = stopMatchChars.add(Chars.EOI); // we also stop at EOI
     }

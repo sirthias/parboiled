@@ -54,7 +54,8 @@ public class Main {
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<Object> result = parser.parse(parser.compilationUnit(), sourceText);
+            ParsingResult<Object> result = parser
+                    .parse(parser.compilationUnit(), sourceText, Parboiled.Default);
             if (result.hasErrors()) {
                 System.out.printf("\nParse error(s) in file '%s':\nContext '%s'\n%s",
                         sourceFile,
@@ -70,15 +71,15 @@ public class Main {
         long time = time(start);
 
         System.out.println("Parsing statistics:");
-        System.out.printf("    Files/sec: %.2f\n", sources.size()*1000.0/time);
-        System.out.printf("    Lines/sec: %s\n", lines*1000/time);
-        System.out.printf("    Chars/sec: %s\n", characters*1000/time);
+        System.out.printf("    Files/sec: %.2f\n", sources.size() * 1000.0 / time);
+        System.out.printf("    Lines/sec: %s\n", lines * 1000 / time);
+        System.out.printf("    Chars/sec: %s\n", characters * 1000 / time);
     }
 
     private static long time(long start) {
         long end = System.currentTimeMillis();
         System.out.printf("%s ms\n", end - start);
-        return end-start;
+        return end - start;
     }
 
     private static final FileFilter fileFilter = new FileFilter() {

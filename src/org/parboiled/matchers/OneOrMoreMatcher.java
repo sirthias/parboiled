@@ -31,8 +31,8 @@ import org.parboiled.support.InputLocation;
  */
 public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
-    public OneOrMoreMatcher(@NotNull Rule subRule) {
-        super(subRule);
+    public OneOrMoreMatcher(int index, @NotNull Rule subRule) {
+        super(index, subRule);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

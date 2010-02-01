@@ -53,7 +53,7 @@ public class ParsingResult<V> {
      * @param inputBuffer the input buffer
      * @param totalRows the number of total number of rows in the parsed input text
      */
-    public ParsingResult(@NotNull Node<V> parseTreeRoot, @NotNull List<ParseError> parseErrors,
+    public ParsingResult(Node<V> parseTreeRoot, @NotNull List<ParseError> parseErrors,
                          @NotNull InputBuffer inputBuffer, int totalRows) {
         this.parseTreeRoot = parseTreeRoot;
         this.parseErrors = parseErrors;

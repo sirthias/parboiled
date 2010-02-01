@@ -27,7 +27,8 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
     public final char cLow;
     public final char cHigh;
 
-    public CharRangeMatcher(char cLow, char cHigh) {
+    public CharRangeMatcher(int index, char cLow, char cHigh) {
+        super(index);
         Preconditions.checkArgument(cLow < cHigh && !Chars.isSpecial(cLow) && !Chars.isSpecial(cHigh));
         this.cLow = cLow;
         this.cHigh = cHigh;

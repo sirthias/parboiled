@@ -67,13 +67,11 @@ class CachingGenerator implements ClassTransformer, Opcodes {
 
         skipStartingLabelAndLineNumInstructions();
         generateCacheHitReturn();
-        generateCallToEnterRuleDef();
         generateStoreNewProxyMatcher();
         seekToReturnInstruction();
         if (autoLabel) generateLabelAndLock();
         generateArmProxyMatcher();
         generateStoreInCache();
-        generateCallToExitRuleDef();
 
         classNode.methods.add(method);
     }
@@ -253,15 +251,6 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         }
     }
 
-    // _enterRuleDef();
-    private void generateCallToEnterRuleDef() {
-        // stack:
-        insert(new VarInsnNode(ALOAD, 0));
-        // stack: <this>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, classNode.name, "_enterRuleDef", "()V"));
-        // stack:
-    }
-
     // <cache> = new ProxyMatcher();
     private void generateStoreNewProxyMatcher() {
         String proxyMatcherType = AsmUtils.PROXY_MATCHER_TYPE.getInternalName();
@@ -370,15 +359,6 @@ class CachingGenerator implements ClassTransformer, Opcodes {
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
         // stack: <rule> :: <null>
         insert(new InsnNode(POP));
-        // stack: <rule>
-    }
-
-    // _exitRuleDef(); // TODO: run _enterRuleDef() in finally block
-    private void generateCallToExitRuleDef() {
-        // stack: <rule>
-        insert(new VarInsnNode(ALOAD, 0));
-        // stack: <rule> :: <this>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, classNode.name, "_exitRuleDef", "()V"));
         // stack: <rule>
     }
 

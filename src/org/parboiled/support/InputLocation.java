@@ -42,17 +42,17 @@ public class InputLocation {
     }
 
     public InputLocation advance(@NotNull InputBuffer inputBuffer) {
-        if (currentChar == Chars.EOI) return this;
-        int newRow, newColumn;
-        if (currentChar == '\n') {
-            newRow = row + 1;
-            newColumn = 0;
-        } else {
-            newRow = row;
-            newColumn = column + 1;
+        switch (currentChar) {
+            case '\n':
+                return new InputLocation(inputBuffer, index + 1, row + 1, 0,
+                        failedRules != null ? new BitField(failedRules.getLength()) : null);
+            case Chars.EOI:
+                return failedRules == null ? this :
+                        new InputLocation(inputBuffer, index, row, column, new BitField(failedRules.getLength()));
+            default:
+                return new InputLocation(inputBuffer, index + 1, row, column + 1,
+                        failedRules != null ? new BitField(failedRules.getLength()) : null);
         }
-        return new InputLocation(inputBuffer, index + 1, newRow, newColumn,
-                failedRules != null ? new BitField(failedRules.getLength()) : null);
     }
 
     public char lookAhead(@NotNull InputBuffer inputBuffer, int delta) {

@@ -17,19 +17,20 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
-import org.parboiled.Rule;
-import org.parboiled.MatcherContext;
 
 /**
  * A Matcher that tries its sub matcher once against the input and always succeeds.
+ *
  * @param <V>
  */
 public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
-    public OptionalMatcher(@NotNull Rule subRule) {
-        super(subRule);
+    public OptionalMatcher(int index, @NotNull Rule subRule) {
+        super(index, subRule);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

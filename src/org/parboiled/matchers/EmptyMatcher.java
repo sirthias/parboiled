@@ -28,7 +28,9 @@ import org.parboiled.support.Chars;
  */
 public class EmptyMatcher<V> extends AbstractMatcher<V> {
 
-    public EmptyMatcher() {}
+    public EmptyMatcher(int index) {
+        super(index);
+    }
 
     @Override
     public String getLabel() {

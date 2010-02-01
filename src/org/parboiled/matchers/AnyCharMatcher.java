@@ -28,6 +28,10 @@ import org.parboiled.support.Chars;
  */
 public class AnyCharMatcher<V> extends AbstractMatcher<V> {
 
+    public AnyCharMatcher(int index) {
+        super(index);
+    }
+
     @Override
     public String getLabel() {
         return hasLabel() ? super.getLabel() : "ANY";

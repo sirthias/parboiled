@@ -32,7 +32,8 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     private final ContextAware<V> contextAwareAction;
 
     @SuppressWarnings({"unchecked"})
-    public ActionMatcher(@NotNull Action action) {
+    public ActionMatcher(int index, @NotNull Action action) {
+        super(index);
         this.action = action;
         this.contextAwareAction = action instanceof ContextAware ? (ContextAware<V>) action : null;
     }

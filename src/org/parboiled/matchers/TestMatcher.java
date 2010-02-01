@@ -34,8 +34,8 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     private final boolean inverted;
 
-    public TestMatcher(@NotNull Rule subRule, boolean inverted) {
-        super(subRule);
+    public TestMatcher(int index, @NotNull Rule subRule, boolean inverted) {
+        super(index, subRule);
         this.inverted = inverted;
     }
 
