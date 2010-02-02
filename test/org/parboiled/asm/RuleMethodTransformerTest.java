@@ -37,7 +37,7 @@ public class RuleMethodTransformerTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "noActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER 52 L0\n" +
+                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser.noActionRule ()Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
@@ -48,7 +48,7 @@ public class RuleMethodTransformerTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "simpleActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER 64 L0\n" +
+                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -67,7 +67,7 @@ public class RuleMethodTransformerTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "upSetActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER 71 L0\n" +
+                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -101,7 +101,7 @@ public class RuleMethodTransformerTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "booleanExpressionActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER 84 L0\n" +
+                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -135,7 +135,7 @@ public class RuleMethodTransformerTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "complexActionsRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER 97 L0\n" +
+                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
