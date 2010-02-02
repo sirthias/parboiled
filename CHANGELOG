@@ -1,3 +1,15 @@
+Version 0.9.2.0 (2010-02-02)
+----------------------------
+- Added @Leaf annotation for marking rules as "creating parse tree leaf nodes"
+- Added @Label annotation
+- Significantly improved parsing speed (with some @Leaf usage: speedup factor of ca. 3)
+- Changed Action.run() to Action.run(Context), removed AbstractAction
+- Changed ParseError.context to ParseError.matcherPath
+- Removed Parboiled.RecoverFromErrors flag logic
+- Removed Failed-Rule-Memoization option due to limited effectiveness
+- Improved Java parser example, added performance test
+- Smaller bug fixes and architectural improvements
+
 Version 0.9.1.1 (2010-01-29)
 ----------------------------
 - Fixed @Cached problem with overloaded rule creation methods
