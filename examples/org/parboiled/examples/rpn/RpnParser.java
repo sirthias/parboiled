@@ -6,10 +6,11 @@ package org.parboiled.examples.rpn;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.support.Leaf;
 
 public class RpnParser extends BaseParser<Node> {
 
-    private final RpnActions actions = new RpnActions();
+    public final RpnActions actions = new RpnActions();
 
     public Rule operation() {
         return sequence(
@@ -46,6 +47,7 @@ public class RpnParser extends BaseParser<Node> {
         );
     }
 
+    @Leaf
     public Rule exponent() {
         return enforcedSequence(
                 charIgnoreCase('E'),
@@ -58,14 +60,17 @@ public class RpnParser extends BaseParser<Node> {
         return ch('-');
     }
 
+    @Leaf
     public Rule dotNumber() {
         return enforcedSequence('.', digits());
     }
 
+    @Leaf
     public Rule separator() {
         return zeroOrMore(' ');
     }
 
+    @Leaf
     public Rule digits() {
         return oneOrMore(charRange('0', '9'));
     }

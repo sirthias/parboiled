@@ -53,8 +53,8 @@ public final class StringUtils {
      */
     public static String escapeNLs(String string) {
         return string == null ? "" : string
+                .replace("\r\n", "\\n")
                 .replace("\r", "\\r")
-                .replace("\n", "\\n")
                 .replace("\n", "\\n")
                 .replace("\t", "\\t")
                 .replace("\f", "\\f");

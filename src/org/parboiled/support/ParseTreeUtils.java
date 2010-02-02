@@ -285,8 +285,9 @@ public class ParseTreeUtils {
      * @param filter        optional node filter selecting the nodes to print and/or descend into for tree printing
      * @return a new String
      */
+    @SuppressWarnings({"unchecked"})
     public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult,
-                                           Function<Node<V>, Printability> filter) {
+                                           Function<Node, Printability> filter) {
         return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
     }
 

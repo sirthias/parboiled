@@ -123,7 +123,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule charSet(@NotNull String characters) {
         Preconditions.checkArgument(characters.length() > 0);
         if (characters.length() == 1) return ch(characters.charAt(0)); // shortcut
-        return firstOf(toObjectArray(characters.toCharArray()));
+        return firstOf(toObjectArray(characters.toCharArray())).label('{' + characters + '}');
     }
 
     /**

@@ -115,14 +115,14 @@ public class GraphUtils {
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter,
-                                                            Function<T, Printability> filter) {
+                                                            Function<? super T, Printability> filter) {
         return node == null ? "" : printTree(node, formatter, "", new StringBuilder(), filter).toString();
     }
 
     // private recursion helper
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
                                                                     String indent, StringBuilder sb,
-                                                                    Function<T, Printability> filter) {
+                                                                    Function<? super T, Printability> filter) {
         Printability printability = filter != null ? filter.apply(node) : Printability.PrintAndDescend;
         if (printability == Printability.PrintAndDescend || printability == Printability.Print) {
             String line = formatter.format(node);

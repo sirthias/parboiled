@@ -16,19 +16,41 @@
 
 package org.parboiled.examples;
 
+import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
+import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.support.Filters;
+import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.test.FileUtils;
+import static org.testng.Assert.fail;
 import org.testng.annotations.Test;
 
-public class JavaTest extends AbstractTest {
+public class JavaTest {
 
+    @SuppressWarnings({"UnusedDeclaration"})
     @Test
     public void test() {
-        //String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTest.java");
+        String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTestSource.java");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.compilationUnit();
+        String tree = test(parser, compilationUnit, testSource);
+        // System.out.println(tree);
+    }
+
+    public <V> String test(BaseParser<V> parser, Rule rule, String input) {
+        ParsingResult<V> parsingResult = parser.parse(rule, input);
+        if (parsingResult.hasErrors()) {
+            fail("\n--- ParseErrors ---\n" +
+                    StringUtils.join(parsingResult.parseErrors, "---\n") +
+                    "\n--- ParseTree ---\n" +
+                    printNodeTree(parsingResult, Filters.SkipEmptyOptionalsAndZeroOrMores)
+            );
+        }
+
+        return printNodeTree(parsingResult, Filters.SkipEmptyOptionalsAndZeroOrMores);
     }
 
 }

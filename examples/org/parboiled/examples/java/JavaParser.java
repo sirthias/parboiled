@@ -296,7 +296,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule formalParameters() {
-        return sequence(LPAR, optional(formalParameterDecls()), RPAR);
+        return enforcedSequence(LPAR, optional(formalParameterDecls()), RPAR);
     }
 
     public Rule formalParameter() {
@@ -356,9 +356,9 @@ public class JavaParser extends BaseParser<Object> {
                 enforcedSequence(THROW, expression(), SEMI),
                 enforcedSequence(BREAK, optional(identifier()), SEMI),
                 enforcedSequence(CONTINUE, optional(identifier()), SEMI),
-                SEMI,
-                sequence(statementExpression(), SEMI),
-                enforcedSequence(sequence(identifier(), COLON), statement())
+                enforcedSequence(sequence(identifier(), COLON), statement()),
+                enforcedSequence(statementExpression(), SEMI),
+                SEMI
         );
     }
 

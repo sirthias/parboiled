@@ -281,7 +281,7 @@ public class MatcherContext<V> implements Context<V> {
         subContext.subNodes = null;
         subContext.errorMessage = null;
         subContext.nodeValue = null;
-        subContext.belowLeafLevel = belowLeafLevel || matcher.isLeaf();
+        subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
         return subContext;
     }
 

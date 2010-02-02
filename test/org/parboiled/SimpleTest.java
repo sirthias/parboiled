@@ -24,7 +24,7 @@ public class SimpleTest extends AbstractTest {
     static class Parser extends BaseParser<Object> {
 
         public Rule clause() {
-            return sequence(digit(), operator(), digit(), eoi());
+            return sequence(digit(), operator(), digit(), charSet("abcd"), eoi());
         }
 
         public Rule operator() {
@@ -41,12 +41,13 @@ public class SimpleTest extends AbstractTest {
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.clause();
-        test(parser, rule, "1+5", "" +
-                "[clause] '1+5'\n" +
+        test(parser, rule, "1+5b", "" +
+                "[clause] '1+5b'\n" +
                 "    [digit] '1'\n" +
                 "    [operator] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
+                "    [{abcd}] 'b'\n" +
                 "    [eoi]\n");
     }
 
