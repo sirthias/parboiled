@@ -36,6 +36,7 @@ package org.parboiled.examples.java;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.support.Leaf;
 
 @SuppressWarnings({"InfiniteRecursion"})
 public class JavaParser extends BaseParser<Object> {
@@ -821,6 +822,7 @@ public class JavaParser extends BaseParser<Object> {
     //  JLS 3.6-7  Spacing
     //-------------------------------------------------------------------------
 
+    @Leaf
     public Rule spacing() {
         return zeroOrMore(firstOf(
 
@@ -839,6 +841,7 @@ public class JavaParser extends BaseParser<Object> {
     //  JLS 3.8  Identifiers
     //-------------------------------------------------------------------------
 
+    @Leaf
     public Rule identifier() {
         return sequence(testNot(keyword()), letter(), zeroOrMore(letterOrDigit()), optional(spacing()));
     }
@@ -903,6 +906,7 @@ public class JavaParser extends BaseParser<Object> {
     public final Rule VOID = keyword("void");
     public final Rule WHILE = keyword("while");
 
+    @Leaf
     public Rule keyword(String keyword) {
         return terminal(keyword, letterOrDigit());
     }
@@ -930,10 +934,12 @@ public class JavaParser extends BaseParser<Object> {
         return sequence(firstOf(hexNumeral(), octalNumeral(), decimalNumeral()), optional(charSet("lL")));
     }
 
+    @Leaf
     public Rule decimalNumeral() {
         return firstOf('0', sequence(charRange('1', '9'), zeroOrMore(digit())));
     }
 
+    @Leaf
     public Rule hexNumeral() {
         return sequence(firstOf("0x", "0X"), oneOrMore(hexDigit()));
     }
@@ -942,6 +948,7 @@ public class JavaParser extends BaseParser<Object> {
         return firstOf(charRange('a', 'f'), charRange('A', 'F'), charRange('0', '9'));
     }
 
+    @Leaf
     public Rule octalNumeral() {
         return sequence('0', oneOrMore(charRange('0', '7')));
     }
@@ -950,6 +957,7 @@ public class JavaParser extends BaseParser<Object> {
         return firstOf(hexFloat(), decimalFloat());
     }
 
+    @Leaf
     public Rule decimalFloat() {
         return firstOf(
                 sequence(oneOrMore(digit()), '.', zeroOrMore(digit()), optional(exponent()), optional(charSet("fFdD"))),
@@ -967,6 +975,7 @@ public class JavaParser extends BaseParser<Object> {
         return charRange('0', '9');
     }
 
+    @Leaf
     public Rule hexFloat() {
         return sequence(hexSignificant(), binaryExponent(), optional(charSet("fFdD")));
     }
@@ -982,10 +991,12 @@ public class JavaParser extends BaseParser<Object> {
         return sequence(charSet("pP"), optional(charSet("+-")), oneOrMore(digit()));
     }
 
+    @Leaf
     public Rule charLiteral() {
         return sequence('\'', firstOf(escape(), sequence(testNot(charSet("'\\")), any())), '\'');
     }
 
+    @Leaf
     public Rule stringLiteral() {
         return sequence(
                 '"',
@@ -999,6 +1010,7 @@ public class JavaParser extends BaseParser<Object> {
         );
     }
 
+    @Leaf
     public Rule escape() {
         return sequence('\\', firstOf('b', 't', 'n', 'f', 'r', '"', '\'', '\\', octalEscape(), unicodeEscape()));
     }
@@ -1074,10 +1086,12 @@ public class JavaParser extends BaseParser<Object> {
     //  helper methods
     //-------------------------------------------------------------------------
 
+    @Leaf
     public Rule terminal(String string) {
         return sequence(string, optional(spacing())).label(string);
     }
 
+    @Leaf
     public Rule terminal(String string, Rule mustNotFollow) {
         return sequence(string, testNot(mustNotFollow), optional(spacing())).label(string);
     }

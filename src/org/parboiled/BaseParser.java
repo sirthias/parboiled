@@ -43,7 +43,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        return parse(rule, input, Parboiled.Default);
+        return parse(rule, input, Parboiled.RecoverFromErrors);
     }
 
     /**
@@ -61,13 +61,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
 
-        InputLocation startLocation = new InputLocation(inputBuffer);
-
-        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, startLocation, matcher, parseErrors,
+        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>(),
                 Parboiled.isFlagged(flags, Parboiled.RecoverFromErrors));
 
         // run the actual matcher tree
-        context.runMatcher();
+        context.runMatcher(matcher, true);
 
         return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer, context.getCurrentLocation().row + 1);
     }

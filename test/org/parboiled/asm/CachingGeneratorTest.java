@@ -37,7 +37,7 @@ public class CachingGeneratorTest {
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "ch"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 89 L0\n" +
+                "    LINENUMBER 87 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$ch : Ljava/util/HashMap;\n" +
                 "    DUP\n" +
@@ -80,22 +80,22 @@ public class CachingGeneratorTest {
                 "      65535: L5\n" +
                 "      default: L6\n" +
                 "   L4\n" +
-                "    LINENUMBER 91 L4\n" +
+                "    LINENUMBER 89 L4\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.empty ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L7\n" +
                 "   L3\n" +
-                "    LINENUMBER 93 L3\n" +
+                "    LINENUMBER 91 L3\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.any ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L7\n" +
                 "   L5\n" +
-                "    LINENUMBER 95 L5\n" +
+                "    LINENUMBER 93 L5\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.eoi ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L7\n" +
                 "   L6\n" +
-                "    LINENUMBER 97 L6\n" +
+                "    LINENUMBER 95 L6\n" +
                 "    NEW org/parboiled/matchers/CharMatcher\n" +
                 "    DUP\n" +
                 "    ILOAD 1\n" +
@@ -110,8 +110,7 @@ public class CachingGeneratorTest {
                 "   L8\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
-                "    POP\n" +
+                "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)V\n" +
                 "    DUP\n" +
                 "    ALOAD 2\n" +
                 "    SWAP\n" +
@@ -133,7 +132,7 @@ public class CachingGeneratorTest {
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "optional"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 239 L0\n" +
+                "    LINENUMBER 237 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$optional : Ljava/util/HashMap;\n" +
                 "    DUP\n" +
@@ -185,8 +184,7 @@ public class CachingGeneratorTest {
                 "   L3\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
-                "    POP\n" +
+                "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)V\n" +
                 "    DUP\n" +
                 "    ALOAD 2\n" +
                 "    SWAP\n" +
@@ -207,7 +205,7 @@ public class CachingGeneratorTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "empty"), "" +
                 "   L0\n" +
-                "    LINENUMBER 371 L0\n" +
+                "    LINENUMBER 369 L0\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$empty : Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
@@ -234,8 +232,7 @@ public class CachingGeneratorTest {
                 "   L2\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)Lorg/parboiled/matchers/ProxyMatcher;\n" +
-                "    POP\n" +
+                "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)V\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
                 "    SWAP\n" +

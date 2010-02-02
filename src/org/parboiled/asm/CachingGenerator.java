@@ -301,9 +301,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         insert(new TypeInsnNode(CHECKCAST, AsmUtils.MATCHER_TYPE.getInternalName()));
         // stack: <rule> :: <proxyMatcher> :: <matcher>
         insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm",
-                Type.getMethodDescriptor(AsmUtils.PROXY_MATCHER_TYPE, new Type[] {AsmUtils.MATCHER_TYPE})));
-        // stack: <rule> :: <proxyMatcher>
-        insert(new InsnNode(POP));
+                Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {AsmUtils.MATCHER_TYPE})));
         // stack: <rule>
     }
 

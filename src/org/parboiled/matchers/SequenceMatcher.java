@@ -44,7 +44,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
             Matcher<V> matcher = children.get(i);
 
             // remember the current index in the context, so we can access it for building the current follower set
-            context.setTag(i);
+            context.setIntTag(i);
 
             boolean matched = context.runMatcher(matcher, context.isEnforced() || (enforced && i > 0));
             if (!matched) return false;
@@ -68,7 +68,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
     }
 
     public Characters getFollowerChars(MatcherContext<V> context) {
-        int currentIndex = (Integer) context.getTag();
+        int currentIndex = (Integer) context.getIntTag();
         return getStarterChars(currentIndex + 1);
     }
 

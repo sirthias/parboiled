@@ -17,7 +17,6 @@
 package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.MatcherContext;
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.ParsingResult;
@@ -30,7 +29,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         System.out.println("parboiled Java parser, performance test");
-        System.out.println("---------------------------------------\n");
+        System.out.println("---------------------------------------");
 
         System.out.print("Creating parser... :");
         long start = System.currentTimeMillis();
@@ -55,8 +54,7 @@ public class Main {
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<Object> result = parser
-                    .parse(parser.compilationUnit(), sourceText);
+            ParsingResult<Object> result = parser.parse(parser.compilationUnit(), sourceText);
             if (result.hasErrors()) {
                 System.out.printf("\nParse error(s) in file '%s':\nContext '%s'\n%s",
                         sourceFile,
@@ -75,7 +73,6 @@ public class Main {
         System.out.printf("    Files/sec: %.2f\n", sources.size() * 1000.0 / time);
         System.out.printf("    Lines/sec: %s\n", lines * 1000 / time);
         System.out.printf("    Chars/sec: %s\n", characters * 1000 / time);
-        System.out.printf("MatcherContext.count: %s\n", MatcherContext.count);
     }
 
     private static long time(long start) {

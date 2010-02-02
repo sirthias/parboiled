@@ -25,7 +25,7 @@ import org.parboiled.support.ParseError;
 import java.util.List;
 
 /**
- * A Context object is available to parser actions methods during their runtime and provides various support functionality.
+ * A Context object is available to parser actions methods during their runtime and provides various support functionalities.
  *
  * @param <V> the type of the value field of a parse tree node
  */

@@ -96,7 +96,8 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
             // this proxy matcher is already waiting for its label application opportunity,
             // so we need to create another proxy level
             ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) new ProxyMatcher<V>().label(label);
-            return anotherProxy.arm(this);
+            anotherProxy.arm(this);
+            return anotherProxy;
         }
 
         // we already have a target to which we can directly apply the label
@@ -121,9 +122,8 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         return (Rule) target;
     }
 
-    public ProxyMatcher<V> arm(Matcher<V> target) {
+    public void arm(Matcher<V> target) {
         this.target = target;
-        return this;
     }
 
     @SuppressWarnings({"unchecked"})

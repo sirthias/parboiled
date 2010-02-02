@@ -35,7 +35,7 @@ public class ReturnInstructionUnifierTest {
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "ch"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 89 L0\n" +
+                "    LINENUMBER 87 L0\n" +
                 "    ILOAD 1\n" +
                 "    LOOKUPSWITCH\n" +
                 "      65007: L1\n" +
@@ -43,22 +43,22 @@ public class ReturnInstructionUnifierTest {
                 "      65535: L3\n" +
                 "      default: L4\n" +
                 "   L2\n" +
-                "    LINENUMBER 91 L2\n" +
+                "    LINENUMBER 89 L2\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.empty ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L1\n" +
-                "    LINENUMBER 93 L1\n" +
+                "    LINENUMBER 91 L1\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.any ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L3\n" +
-                "    LINENUMBER 95 L3\n" +
+                "    LINENUMBER 93 L3\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/BaseParser.eoi ()Lorg/parboiled/Rule;\n" +
                 "    GOTO L5\n" +
                 "   L4\n" +
-                "    LINENUMBER 97 L4\n" +
+                "    LINENUMBER 95 L4\n" +
                 "    NEW org/parboiled/matchers/CharMatcher\n" +
                 "    DUP\n" +
                 "    ILOAD 1\n" +
@@ -76,7 +76,7 @@ public class ReturnInstructionUnifierTest {
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "charRange"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
                 "   L0\n" +
-                "    LINENUMBER 126 L0\n" +
+                "    LINENUMBER 124 L0\n" +
                 "    ILOAD 1\n" +
                 "    ILOAD 2\n" +
                 "    IF_ICMPNE L1\n" +
