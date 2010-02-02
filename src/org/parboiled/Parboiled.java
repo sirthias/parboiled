@@ -27,17 +27,6 @@ import java.lang.reflect.Constructor;
  */
 public class Parboiled {
 
-    /**
-     * Default flag value indicating no memoization and no parse error recovery.
-     */
-    public static final int Default = 0x00;
-
-    /**
-     * Instructs the parboiled parser to recover from parse errors by either symbol deletion, symbol insertion or
-     * resynchronization.
-     */
-    public static final int RecoverFromErrors = 0x02;
-
     protected Parboiled() {}
 
     /**

@@ -35,7 +35,8 @@ import java.util.List;
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
-     * Runs the given parser rule against the given input string.
+     * Runs the given parser rule against the given input string using the given optimization flags.
+     * See {@link Parboiled} class for defined optimization flags.
      *
      * @param rule  the rule
      * @param input the input string
@@ -43,26 +44,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        return parse(rule, input, Parboiled.RecoverFromErrors);
-    }
-
-    /**
-     * Runs the given parser rule against the given input string using the given optimization flags.
-     * See {@link Parboiled} class for defined optimization flags.
-     *
-     * @param rule  the rule
-     * @param input the input string
-     * @param flags flags indicating requested optimizations, see {@link Parboiled} for defined optimization flags
-     * @return the ParsingResult for the run
-     */
-    @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input, int flags) {
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
 
-        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>(),
-                Parboiled.isFlagged(flags, Parboiled.RecoverFromErrors));
+        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>());
 
         // run the actual matcher tree
         context.runMatcher(matcher, true);

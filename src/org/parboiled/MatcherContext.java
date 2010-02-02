@@ -51,7 +51,6 @@ public class MatcherContext<V> implements Context<V> {
     private final InputBuffer inputBuffer;
     private final List<ParseError> parseErrors;
     private final Reference<Node<V>> lastNodeRef;
-    private final boolean recoverFromErrors;
 
     private MatcherContext<V> parent;
     private MatcherContext<V> subContext;
@@ -67,11 +66,10 @@ public class MatcherContext<V> implements Context<V> {
     private boolean belowLeafLevel;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                          Reference<Node<V>> lastNodeRef, boolean recoverFromErrors) {
+                          Reference<Node<V>> lastNodeRef) {
         this.inputBuffer = inputBuffer;
         this.parseErrors = parseErrors;
         this.lastNodeRef = lastNodeRef;
-        this.recoverFromErrors = recoverFromErrors;
     }
 
     @Override
@@ -240,11 +238,8 @@ public class MatcherContext<V> implements Context<V> {
             boolean matched = context.matcher.match(context);
 
             if (!matched && enforced) {
-                if (matched = recoverFromErrors) {
-                    context.recover();
-                } else {
-                    addUnexpectedInputError(currentLocation.currentChar, matcher.getLabel());
-                }
+                context.recover();
+                matched = true;
             }
             if (context.errorMessage != null) {
                 context.addParserError(ParseError.create(context, context.node, context.errorMessage));
@@ -277,7 +272,7 @@ public class MatcherContext<V> implements Context<V> {
 
         if (subContext == null) {
             // we need to introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef, recoverFromErrors);
+            subContext = new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef);
             subContext.parent = this;
         }
 
@@ -343,7 +338,7 @@ public class MatcherContext<V> implements Context<V> {
         (parent != null ? parent : this).addChildNode(
                 new NodeImpl<V>("ILLEGAL", null, locationBeforeError, currentLocation, null)
         );
-        
+
         // retry the original match, it must succeed since we only recover on the very bottom level of the
         // individual char matchers, they only match one character and we have already verified the "fit"
         startLocation = currentLocation;
