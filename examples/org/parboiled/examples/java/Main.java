@@ -58,7 +58,7 @@ public class Main {
             if (result.hasErrors()) {
                 System.out.printf("\nParse error(s) in file '%s':\nContext '%s'\n%s",
                         sourceFile,
-                        result.parseErrors.get(0).getContext(),
+                        result.parseErrors.get(0).getMatcherPath(),
                         StringUtils.join(result.parseErrors, "---\n"));
                 System.exit(1);
             } else {
@@ -77,7 +77,7 @@ public class Main {
 
     private static long time(long start) {
         long end = System.currentTimeMillis();
-        System.out.printf("%s ms\n", end - start);
+        System.out.printf(" %s ms\n", end - start);
         return end - start;
     }
 

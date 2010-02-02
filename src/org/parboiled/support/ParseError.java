@@ -27,26 +27,26 @@ import org.parboiled.matchers.Matcher;
  */
 public class ParseError {
 
-    private final Context context;
     private final InputLocation errorStart;
     private final InputLocation errorEnd;
+    private final String matcherPath;
     private final Matcher failedMatcher;
     private final Node node;
     private final String errorMessage;
 
-    public ParseError(@NotNull Context context, InputLocation errorStart, InputLocation errorEnd,
+    public ParseError(InputLocation errorStart, InputLocation errorEnd, @NotNull String matcherPath,
                       Matcher failedMatcher, Node node, @NotNull String errorMessage) {
-        this.context = context;
         this.errorStart = errorStart;
         this.errorEnd = errorEnd;
+        this.matcherPath = matcherPath;
         this.failedMatcher = failedMatcher;
         this.node = node;
         this.errorMessage = errorMessage;
     }
 
     @NotNull
-    public Context getContext() {
-        return context;
+    public String getMatcherPath() {
+        return matcherPath;
     }
 
     public InputLocation getErrorStart() {
@@ -95,7 +95,7 @@ public class ParseError {
     }
 
     public static ParseError create(Context context, Node<?> node, String errorMessage) {
-        return new ParseError(context, context.getStartLocation(), context.getCurrentLocation(),
+        return new ParseError(context.getStartLocation(), context.getCurrentLocation(), context.getPath(),
                 context.getMatcher(), node, errorMessage);
     }
 

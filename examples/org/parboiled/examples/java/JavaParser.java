@@ -420,13 +420,13 @@ public class JavaParser extends BaseParser<Object> {
     // to minimize look ahead. In JLS Chapter 15.27, Expression is defined
     // as AssignmentExpression, which is effectively defined as
     // (LeftHandSide AssignmentOperator)* ConditionalExpression.
-    // The above is obtained by allowing ANY ConditionalExpression
+    // The following is obtained by allowing ANY ConditionalExpression
     // as LeftHandSide, which results in accepting statements like 5 = a.
 
     public Rule expression() {
         return sequence(
                 conditionalExpression(),
-                zeroOrMore(sequence(assignmentOperator(), conditionalExpression()))
+                zeroOrMore(enforcedSequence(assignmentOperator(), conditionalExpression()))
         );
     }
 

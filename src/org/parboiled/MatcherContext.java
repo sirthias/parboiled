@@ -91,12 +91,10 @@ public class MatcherContext<V> implements Context<V> {
         return inputBuffer;
     }
 
-    @NotNull
     public InputLocation getStartLocation() {
         return startLocation;
     }
 
-    @NotNull
     public Matcher<V> getMatcher() {
         return matcher;
     }
@@ -106,7 +104,6 @@ public class MatcherContext<V> implements Context<V> {
         return parseErrors;
     }
 
-    @NotNull
     public InputLocation getCurrentLocation() {
         return currentLocation;
     }
@@ -121,7 +118,7 @@ public class MatcherContext<V> implements Context<V> {
 
     @NotNull
     public String getPath() {
-        return (parent == null ? "" : parent.getPath()) + '/' + matcher.getLabel();
+        return (parent == null ? "" : parent.getPath()) + '/' + (matcher == null ? "?" : matcher.getLabel());
     }
 
     public V getNodeValue() {

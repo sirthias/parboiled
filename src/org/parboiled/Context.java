@@ -54,11 +54,10 @@ public interface Context<V> {
     InputBuffer getInputBuffer();
 
     /**
-     * Returns the Matcher this context was constructed for.
+     * Returns the Matcher of this context or null, if this context is not valid anymore.
      *
      * @return the matcher
      */
-    @NotNull
     Matcher<V> getMatcher();
 
     /**
@@ -66,7 +65,6 @@ public interface Context<V> {
      *
      * @return the start location
      */
-    @NotNull
     InputLocation getStartLocation();
 
     /**
@@ -74,7 +72,6 @@ public interface Context<V> {
      *
      * @return the current location
      */
-    @NotNull
     InputLocation getCurrentLocation();
 
     /**
