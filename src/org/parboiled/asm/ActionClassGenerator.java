@@ -28,7 +28,7 @@ import static org.parboiled.asm.AsmUtils.findLoadedClass;
 import static org.parboiled.asm.AsmUtils.loadClass;
 import org.parboiled.support.Checks;
 
-class ActionClassGenerator implements Opcodes {
+class ActionClassGenerator implements Opcodes, Types {
 
     public final ParserClassNode classNode;
     public final ParserMethod method;
@@ -86,7 +86,7 @@ class ActionClassGenerator implements Opcodes {
     @SuppressWarnings({"unchecked"})
     private void generateClassBasics(ClassWriter cw) {
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, actionType.getInternalName(), null,
-                AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), null);
+                ACTION_WRAPPER_BASE_TYPE.getInternalName(), null);
         cw.visitSource(classNode.sourceFile, null);
         cw.visitInnerClass(actionType.getInternalName(), classNode.name, actionSimpleName, ACC_PRIVATE);
         classNode.innerClasses.add(new InnerClassNode(actionType.getInternalName(), classNode.name,
@@ -101,15 +101,14 @@ class ActionClassGenerator implements Opcodes {
         mv.visitVarInsn(ALOAD, 1);
         mv.visitFieldInsn(PUTFIELD, actionType.getInternalName(), "this$0", classNode.getDescriptor());
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(), "<init>", "()V");
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // trigger automatic computing
         mv.visitEnd();
     }
 
     private void generateRunMethod(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run",
-                Type.getMethodDescriptor(Type.BOOLEAN_TYPE, new Type[] {AsmUtils.CONTEXT_TYPE}), null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", '(' + CONTEXT_TYPE.getDescriptor() + ")Z", null, null);
         mv.visitCode();
 
         Label l0 = new Label();
@@ -129,8 +128,8 @@ class ActionClassGenerator implements Opcodes {
         // store Context parameter in protected field
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitFieldInsn(PUTFIELD, AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), "context",
-                AsmUtils.CONTEXT_TYPE.getDescriptor());
+        mv.visitFieldInsn(PUTFIELD, ACTION_WRAPPER_BASE_TYPE.getInternalName(), "context",
+                CONTEXT_TYPE.getDescriptor());
 
         // work backwards through the old instructions list and apply adaptations to the new list
         for (int i = subSet.lastIndex; i >= subSet.firstIndex; i--) {
@@ -176,12 +175,12 @@ class ActionClassGenerator implements Opcodes {
                         "UP(...) or DOWN(...) can only be called on the parser instance itself");
 
         newInstructions.insert(targetSettingInsn, new MethodInsnNode(INVOKEVIRTUAL,
-                AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), contextSwitchType, "()V"));
+                ACTION_WRAPPER_BASE_TYPE.getInternalName(), contextSwitchType, "()V"));
 
         // replace original context-switching call with the opposite one, reversing the context switch done before
         newInstructions.insertBefore(node.instruction, new VarInsnNode(ALOAD, 0));
         newInstructions.insertBefore(node.instruction,
-                new MethodInsnNode(INVOKEVIRTUAL, AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(),
+                new MethodInsnNode(INVOKEVIRTUAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(),
                         "UP".equals(contextSwitchType) ? "DOWN" : "UP", "()V")
         );
         newInstructions.remove(node.instruction);
@@ -197,10 +196,10 @@ class ActionClassGenerator implements Opcodes {
         newInstructions.insertBefore(firstAfterTargetSettingInsn, new VarInsnNode(ALOAD, 0));
         newInstructions.insertBefore(firstAfterTargetSettingInsn,
                 new FieldInsnNode(GETFIELD, actionType.getInternalName(), "context",
-                        AsmUtils.CONTEXT_TYPE.getDescriptor()));
+                        CONTEXT_TYPE.getDescriptor()));
         newInstructions.insertBefore(firstAfterTargetSettingInsn,
-                new MethodInsnNode(INVOKEINTERFACE, AsmUtils.CONTEXT_AWARE_TYPE.getInternalName(),
-                        "setContext", "(" + AsmUtils.CONTEXT_TYPE.getDescriptor() + ")V"));
+                new MethodInsnNode(INVOKEINTERFACE, CONTEXT_AWARE_TYPE.getInternalName(),
+                        "setContext", "(" + CONTEXT_TYPE.getDescriptor() + ")V"));
 
         return true;
     }
@@ -208,7 +207,7 @@ class ActionClassGenerator implements Opcodes {
     private boolean changeThisToInnerClassParent(InsnList newInstructions, AbstractInsnNode insn) {
         if (insn.getOpcode() != ALOAD || ((VarInsnNode) insn).var != 0) return false;
         if (insn.getNext() instanceof MethodInsnNode &&
-                ((MethodInsnNode) insn.getNext()).owner.equals(AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName())) {
+                ((MethodInsnNode) insn.getNext()).owner.equals(ACTION_WRAPPER_BASE_TYPE.getInternalName())) {
             // do not change the "ALOAD 0" we left in place for a following context switch call
             return false;
         }

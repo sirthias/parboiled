@@ -160,7 +160,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     private boolean isAction(BasicValue resultBasicValue) {
-        return resultBasicValue != null && resultBasicValue.getType().equals(AsmUtils.BOOLEAN_TYPE);
+        return resultBasicValue != null && resultBasicValue.getType().equals(Types.BOOLEAN_TYPE);
     }
 
     private boolean isContextSwitch(AbstractInsnNode insn) {
@@ -186,7 +186,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private boolean isRuleCreation(AbstractInsnNode insn) {
         if (insn instanceof MethodInsnNode) {
             MethodInsnNode methodInsn = (MethodInsnNode) insn;
-            return Type.getReturnType(methodInsn.desc).equals(AsmUtils.RULE_TYPE);
+            return Type.getReturnType(methodInsn.desc).equals(Types.RULE_TYPE);
         }
         return false;
     }

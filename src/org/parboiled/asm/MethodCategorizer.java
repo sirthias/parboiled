@@ -35,7 +35,7 @@ import org.parboiled.support.Checks;
  * - rule methods
  * - cached methods
  */
-class MethodCategorizer implements ClassTransformer, Opcodes {
+class MethodCategorizer implements ClassTransformer, Opcodes, Types {
     private final ClassTransformer nextTransformer;
     private ParserMethod method;
 
@@ -69,32 +69,32 @@ class MethodCategorizer implements ClassTransformer, Opcodes {
         if ("<init>".equals(method.name) &&
                 method.ownerClass == classNode.parentClass &&
                 !method.hasAccess(ACC_PRIVATE)) {
-            Checks.ensure(!carriesAnnotation(method, AsmUtils.CACHED_TYPE), "@Cached not allowed on construcors");
-            Checks.ensure(!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE), "@KeepAsIs not allowed on construcors");
-            Checks.ensure(!carriesAnnotation(method, AsmUtils.LABEL_TYPE), "@Label not allowed on construcors");
-            Checks.ensure(!carriesAnnotation(method, AsmUtils.LEAF_TYPE), "@Leaf not allowed on construcors");
+            Checks.ensure(!carriesAnnotation(method, CACHED_TYPE), "@Cached not allowed on construcors");
+            Checks.ensure(!carriesAnnotation(method, KEEP_AS_IS_TYPE), "@KeepAsIs not allowed on construcors");
+            Checks.ensure(!carriesAnnotation(method, LABEL_TYPE), "@Label not allowed on construcors");
+            Checks.ensure(!carriesAnnotation(method, LEAF_TYPE), "@Leaf not allowed on construcors");
             classNode.constructors.add(method);
             return;
         }
 
-        if (Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE) &&
+        if (Type.getReturnType(method.desc).equals(RULE_TYPE) &&
                 Type.getArgumentTypes(method.desc).length == 0) {
-            if (!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE)) {
+            if (!carriesAnnotation(method, KEEP_AS_IS_TYPE)) {
                 ensure(!method.hasAccess(ACC_PRIVATE), "Rule methods must not be private.\n" +
                         "Mark the method protected or package-private if you want to prevent public access!");
                 ensure(!method.hasAccess(ACC_FINAL),
                         "Rule methods must not be final.");
                 classNode.ruleMethods.add(method);
             }
-            ensure(!carriesAnnotation(method, AsmUtils.CACHED_TYPE),
+            ensure(!carriesAnnotation(method, CACHED_TYPE),
                     "@Cached annotation not allowed, rule is automatically cached");
         } else {
-            Checks.ensure(!carriesAnnotation(method, AsmUtils.KEEP_AS_IS_TYPE),
+            Checks.ensure(!carriesAnnotation(method, KEEP_AS_IS_TYPE),
                     "@KeepAsIs not allowed on method '" + method.name + "', only allowed on rule methods");
         }
 
-        if (carriesAnnotation(method, AsmUtils.CACHED_TYPE)) {
-            ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
+        if (carriesAnnotation(method, CACHED_TYPE)) {
+            ensure(Type.getReturnType(method.desc).equals(RULE_TYPE),
                     "@Cached only allowed on rule creating methods taking at least one parameter");
             ensure(!method.hasAccess(ACC_PRIVATE), "@Cached methods must not be private.\n" +
                     "Mark the method protected or package-private if you want to prevent public access!");
@@ -102,8 +102,8 @@ class MethodCategorizer implements ClassTransformer, Opcodes {
             classNode.cachedMethods.add(method);
         }
 
-        if (carriesAnnotation(method, AsmUtils.LABEL_TYPE)) {
-            ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
+        if (carriesAnnotation(method, LABEL_TYPE)) {
+            ensure(Type.getReturnType(method.desc).equals(RULE_TYPE),
                     "@Label only allowed on rule creating methods");
             ensure(!method.hasAccess(ACC_PRIVATE), "@Label methods must not be private.\n" +
                     "Mark the method protected or package-private if you want to prevent public access!");
@@ -111,8 +111,8 @@ class MethodCategorizer implements ClassTransformer, Opcodes {
             classNode.labelMethods.add(method);
         }
 
-        if (carriesAnnotation(method, AsmUtils.LEAF_TYPE)) {
-            ensure(Type.getReturnType(method.desc).equals(AsmUtils.RULE_TYPE),
+        if (carriesAnnotation(method, LEAF_TYPE)) {
+            ensure(Type.getReturnType(method.desc).equals(RULE_TYPE),
                     "@Leaf only allowed on rule creating methods");
             ensure(!method.hasAccess(ACC_PRIVATE), "@Leaf methods must not be private.\n" +
                     "Mark the method protected or package-private if you want to prevent public access!");

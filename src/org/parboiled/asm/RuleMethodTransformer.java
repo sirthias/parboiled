@@ -101,7 +101,7 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
         // insert the call to the super method
         methodInstructions.insertBefore(returnInsn, new VarInsnNode(ALOAD, 0));
         methodInstructions.insertBefore(returnInsn, new MethodInsnNode(INVOKESPECIAL, classNode.getParentType()
-                .getInternalName(), method.name, "()" + AsmUtils.RULE_TYPE.getDescriptor()));
+                .getInternalName(), method.name, "()" + Types.RULE_TYPE.getDescriptor()));
     }
 
 }

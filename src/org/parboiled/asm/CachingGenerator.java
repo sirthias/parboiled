@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class CachingGenerator implements ClassTransformer, Opcodes {
+class CachingGenerator implements ClassTransformer, Opcodes, Types {
 
     private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
@@ -103,7 +103,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         cacheFieldName = findUnusedCacheFieldName();
 
         // if we have no parameters we use a simple Rule field as cache, otherwise a HashMap
-        String cacheFieldDesc = paramTypes.length == 0 ? AsmUtils.RULE_TYPE.getDescriptor() : "Ljava/util/HashMap;";
+        String cacheFieldDesc = paramTypes.length == 0 ? RULE_TYPE.getDescriptor() : "Ljava/util/HashMap;";
         classNode.fields.add(new FieldNode(ACC_PRIVATE, cacheFieldName, cacheFieldDesc, null, null));
 
         // stack:
@@ -169,7 +169,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         // stack: <hashMap> :: <mapKey>
         insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"));
         // stack: <object>
-        insert(new TypeInsnNode(CHECKCAST, AsmUtils.RULE_TYPE.getInternalName()));
+        insert(new TypeInsnNode(CHECKCAST, RULE_TYPE.getInternalName()));
         // stack: <rule>
     }
 
@@ -250,7 +250,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
 
     // <cache> = new ProxyMatcher();
     private void generateStoreNewProxyMatcher() {
-        String proxyMatcherType = AsmUtils.PROXY_MATCHER_TYPE.getInternalName();
+        String proxyMatcherType = PROXY_MATCHER_TYPE.getInternalName();
 
         // stack:
         insert(new TypeInsnNode(NEW, proxyMatcherType));
@@ -276,16 +276,16 @@ class CachingGenerator implements ClassTransformer, Opcodes {
         // stack: <proxyMatcher> :: <rule>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <rule> :: <rule>
-        insert(new TypeInsnNode(INSTANCEOF, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName()));
+        insert(new TypeInsnNode(INSTANCEOF, ABSTRACT_MATCHER_TYPE.getInternalName()));
         // stack: <proxyMatcher> :: <rule> :: <0 or 1>
         LabelNode elseLabel = new LabelNode();
         insert(new JumpInsnNode(IFEQ, elseLabel));
         // stack: <proxyMatcher> :: <rule>
-        insert(new TypeInsnNode(CHECKCAST, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName()));
+        insert(new TypeInsnNode(CHECKCAST, ABSTRACT_MATCHER_TYPE.getInternalName()));
         // stack: <proxyMatcher> :: <abstractMatcher>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, AsmUtils.ABSTRACT_MATCHER_TYPE.getInternalName(), "lock", "()V"));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, ABSTRACT_MATCHER_TYPE.getInternalName(), "lock", "()V"));
         // stack: <proxyMatcher> :: <abstractMatcher>
         insert(elseLabel);
         // stack: <proxyMatcher> :: <rule>
@@ -293,15 +293,14 @@ class CachingGenerator implements ClassTransformer, Opcodes {
 
     // <proxyMatcher>.arm(<rule>)
     private void generateArmProxyMatcher() {
-        String proxyMatcherType = AsmUtils.PROXY_MATCHER_TYPE.getInternalName();
+        String proxyMatcherType = PROXY_MATCHER_TYPE.getInternalName();
 
         // stack: <proxyMatcher> :: <rule>
         insert(new InsnNode(DUP_X1));
         // stack: <rule> :: <proxyMatcher> :: <rule>
-        insert(new TypeInsnNode(CHECKCAST, AsmUtils.MATCHER_TYPE.getInternalName()));
+        insert(new TypeInsnNode(CHECKCAST, MATCHER_TYPE.getInternalName()));
         // stack: <rule> :: <proxyMatcher> :: <matcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm",
-                Type.getMethodDescriptor(Type.VOID_TYPE, new Type[] {AsmUtils.MATCHER_TYPE})));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm", '(' + MATCHER_TYPE.getDescriptor() + ")V"));
         // stack: <rule>
     }
 
@@ -318,7 +317,7 @@ class CachingGenerator implements ClassTransformer, Opcodes {
             // stack: <rule> :: <rule> :: <this>
             insert(new InsnNode(SWAP));
             // stack: <rule> :: <this> :: <rule>
-            insert(new FieldInsnNode(PUTFIELD, classNode.name, cacheFieldName, AsmUtils.RULE_TYPE.getDescriptor()));
+            insert(new FieldInsnNode(PUTFIELD, classNode.name, cacheFieldName, RULE_TYPE.getDescriptor()));
             // stack: <rule>
             return;
         }

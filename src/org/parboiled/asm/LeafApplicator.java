@@ -24,7 +24,7 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.parboiled.common.Preconditions;
 
-class LeafApplicator implements ClassTransformer, Opcodes {
+class LeafApplicator implements ClassTransformer, Opcodes, Types {
 
     private final ClassTransformer nextTransformer;
 
@@ -50,8 +50,8 @@ class LeafApplicator implements ClassTransformer, Opcodes {
         }
 
         // stack: <rule>
-        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, AsmUtils.RULE_TYPE.getInternalName(),
-                "makeLeaf", "()" + AsmUtils.RULE_TYPE.getDescriptor()));
+        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
+                "makeLeaf", "()" + RULE_TYPE.getDescriptor()));
         // stack: <rule>
     }
 
@@ -59,7 +59,7 @@ class LeafApplicator implements ClassTransformer, Opcodes {
         if (method.visibleAnnotations != null) {
             for (Object annotationObj : method.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(AsmUtils.LABEL_TYPE.getDescriptor()) && annotation.values != null) {
+                if (annotation.desc.equals(LABEL_TYPE.getDescriptor()) && annotation.values != null) {
                     Preconditions.checkState("label".equals(annotation.values.get(0)));
                     return (String) annotation.values.get(1);
                 }

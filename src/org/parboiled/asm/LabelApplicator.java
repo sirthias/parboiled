@@ -18,12 +18,11 @@ package org.parboiled.asm;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.merge;
 
-class LabelApplicator implements ClassTransformer, Opcodes {
+class LabelApplicator implements ClassTransformer, Opcodes, Types {
 
     private final ClassTransformer nextTransformer;
 
@@ -52,8 +51,8 @@ class LabelApplicator implements ClassTransformer, Opcodes {
         // stack: <rule>
         instructions.insertBefore(current, new LdcInsnNode(getLabelText(method)));
         // stack: <rule> :: <labelText>
-        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, AsmUtils.RULE_TYPE.getInternalName(),
-                "label", Type.getMethodDescriptor(AsmUtils.RULE_TYPE, new Type[] {Type.getType(String.class)})));
+        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
+                "label", "(Ljava/lang/String;)" + RULE_TYPE.getDescriptor()));
         // stack: <rule>
     }
 
@@ -61,7 +60,7 @@ class LabelApplicator implements ClassTransformer, Opcodes {
         if (method.visibleAnnotations != null) {
             for (Object annotationObj : method.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(AsmUtils.LABEL_TYPE.getDescriptor()) && annotation.values != null) {
+                if (annotation.desc.equals(LABEL_TYPE.getDescriptor()) && annotation.values != null) {
                     Preconditions.checkState("value".equals(annotation.values.get(0)));
                     return (String) annotation.values.get(1);
                 }
