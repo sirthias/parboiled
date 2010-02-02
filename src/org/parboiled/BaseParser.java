@@ -431,11 +431,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param obj the object to convert
      * @return the rule corresponding to the given object
      */
+    @SuppressWarnings({"unchecked"})
     protected Rule toRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
         if (obj instanceof Character) return fromCharLiteral((Character) obj);
         if (obj instanceof String) return fromStringLiteral((String) obj);
-        if (obj instanceof Action) return new ActionMatcher((Action) obj);
+        if (obj instanceof Action) return new ActionMatcher<V>((Action<V>) obj);
 
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
     }

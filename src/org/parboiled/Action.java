@@ -21,13 +21,14 @@ package org.parboiled;
  * If the class also implements the {@link ContextAware} interface this will be used to inform the object of the
  * current parsing {@link Context} immediately before the invocation of the {@link #run} method.
  */
-public interface Action {
+public interface Action<V> {
 
     /**
      * Runs the parser action.
      *
+     * @param context the current parsing context
      * @return true if the parsing process is to proceed, false if the current rule is to fail
      */
-    boolean run();
+    boolean run(Context<V> context);
 
 }

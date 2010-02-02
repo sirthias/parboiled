@@ -67,8 +67,11 @@ public class ActionClassGeneratorTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public run()Z\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
                 "   L0\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/asm/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$simpleActionRule_Action1.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/asm/TestParser.actions : Lorg/parboiled/asm/SimpleActions;\n" +
@@ -85,7 +88,7 @@ public class ActionClassGeneratorTest {
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$simpleActionRule_Action1; L0 L1 0\n" +
                 "    MAXSTACK = 4\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
 
         testActionClassGeneration("upSetActionRule", 0, "" +
@@ -112,8 +115,11 @@ public class ActionClassGeneratorTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public run()Z\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
                 "   L0\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/asm/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
@@ -140,7 +146,7 @@ public class ActionClassGeneratorTest {
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$upSetActionRule_Action1; L0 L1 0\n" +
                 "    MAXSTACK = 3\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
 
         testActionClassGeneration("booleanExpressionActionRule", 0, "" +
@@ -167,8 +173,11 @@ public class ActionClassGeneratorTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public run()Z\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
                 "   L0\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/asm/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$booleanExpressionActionRule_Action1.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
                 "    DUP\n" +
@@ -196,7 +205,7 @@ public class ActionClassGeneratorTest {
                 "   L3\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$booleanExpressionActionRule_Action1; L0 L3 0\n" +
                 "    MAXSTACK = 3\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
 
         testActionClassGeneration("complexActionsRule", 0, "" +
@@ -223,8 +232,11 @@ public class ActionClassGeneratorTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public run()Z\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
                 "   L0\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/asm/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
@@ -259,7 +271,7 @@ public class ActionClassGeneratorTest {
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1; L0 L1 0\n" +
                 "    MAXSTACK = 4\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
 
         testActionClassGeneration("complexActionsRule", 1, "" +
@@ -286,8 +298,11 @@ public class ActionClassGeneratorTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public run()Z\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
                 "   L0\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/asm/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/asm/ActionWrapperBase.UP ()V\n" +
                 "    ALOAD 0\n" +
@@ -310,7 +325,7 @@ public class ActionClassGeneratorTest {
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2; L0 L1 0\n" +
                 "    MAXSTACK = 3\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
 
         testActionClassGeneration("complexActionsRule", 2, "" +
@@ -337,8 +352,11 @@ public class ActionClassGeneratorTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public run()Z\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
                 "   L0\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/asm/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action3.this$0 : Lorg/parboiled/asm/TestParser$$parboiled;\n" +
                 "    DUP\n" +
@@ -350,7 +368,7 @@ public class ActionClassGeneratorTest {
                 "   L1\n" +
                 "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action3; L0 L1 0\n" +
                 "    MAXSTACK = 3\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
     }
 

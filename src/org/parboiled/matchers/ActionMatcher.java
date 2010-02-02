@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
-import org.parboiled.ContextAware;
 import org.parboiled.MatcherContext;
 import org.parboiled.exceptions.ActionException;
 import org.parboiled.support.Characters;
@@ -28,13 +27,10 @@ import org.parboiled.support.Characters;
  */
 public class ActionMatcher<V> extends AbstractMatcher<V> {
 
-    private final Action action;
-    private final ContextAware<V> contextAwareAction;
+    private final Action<V> action;
 
-    @SuppressWarnings({"unchecked"})
-    public ActionMatcher(@NotNull Action action) {
+    public ActionMatcher(@NotNull Action<V> action) {
         this.action = action;
-        this.contextAwareAction = action instanceof ContextAware ? (ContextAware<V>) action : null;
     }
 
     public String getLabel() {
@@ -42,11 +38,8 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (contextAwareAction != null) {
-            contextAwareAction.setContext(context);
-        }
         try {
-            return action.run();
+            return action.run(context);
         } catch (ActionException e) {
             context.addError(e.getMessage());
             return false;

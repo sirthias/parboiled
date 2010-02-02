@@ -42,8 +42,8 @@ public class ActionTest extends AbstractTest {
                     oneOrMore(digit()),
                     SET(actions.timesTwo(Integer.parseInt(LAST_TEXT()))),
                     actions.addOne(),
-                    new Action() {
-                        public boolean run() {
+                    new Action<Object>() {
+                        public boolean run(Context<Object> context) {
                             return actions.addOne();
                         }
                     }

@@ -17,8 +17,9 @@
 package org.parboiled.asm;
 
 import org.objectweb.asm.util.ASMifierClassVisitor;
-import org.parboiled.AbstractAction;
 import org.parboiled.Rule;
+import org.parboiled.Action;
+import org.parboiled.Context;
 import org.parboiled.examples.calculator.CalculatorParser;
 
 import java.util.HashMap;
@@ -27,9 +28,9 @@ public class ASMifierHelper extends CalculatorParser {
 
     private HashMap<CachingGenerator.Arguments, Rule> cache;
 
-    public class ActionWrapper extends AbstractAction<String> {
+    public class ActionWrapper implements Action<String> {
 
-        public boolean run() {
+        public boolean run(Context<String> context) {
             return true;
         }
 

@@ -108,7 +108,8 @@ class ActionClassGenerator implements Opcodes {
     }
 
     private void generateRunMethod(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", "()Z", null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run",
+                Type.getMethodDescriptor(Type.BOOLEAN_TYPE, new Type[] {AsmUtils.CONTEXT_TYPE}), null, null);
         mv.visitCode();
 
         Label l0 = new Label();
@@ -125,6 +126,12 @@ class ActionClassGenerator implements Opcodes {
 
     @SuppressWarnings({"UnnecessaryContinue"})
     private void generateRunMethodBody(MethodVisitor mv) {
+        // store Context parameter in protected field
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitFieldInsn(PUTFIELD, AsmUtils.ACTION_WRAPPER_BASE_TYPE.getInternalName(), "context",
+                AsmUtils.CONTEXT_TYPE.getDescriptor());
+
         // work backwards through the old instructions list and apply adaptations to the new list
         for (int i = subSet.lastIndex; i >= subSet.firstIndex; i--) {
             InstructionGraphNode node = method.getInstructionGraphNodes()[i];

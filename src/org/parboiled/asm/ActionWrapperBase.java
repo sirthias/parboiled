@@ -22,11 +22,13 @@
 
 package org.parboiled.asm;
 
-import org.parboiled.AbstractAction;
+import org.parboiled.Action;
 import org.parboiled.Context;
 import org.parboiled.support.Checks;
 
-public abstract class ActionWrapperBase<V> extends AbstractAction<V> {
+public abstract class ActionWrapperBase<V> implements Action<V> {
+
+    protected Context<V> context;
 
     protected final void UP() {
         Context<V> parentContext = context.getParent();
