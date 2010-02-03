@@ -48,11 +48,18 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
 
-        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>(), matcher);
+        MatcherContext.FurthestMismatch furthestMismatch = new MatcherContext.FurthestMismatch();
+        MatcherContext<V> context =
+                new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>(), furthestMismatch, matcher);
 
         // run the actual matcher tree
         context.runMatcher();
 
+        if (context.getNode() == null) {
+            parseErrors.add(new ParseError(furthestMismatch.location, furthestMismatch.matcher, null,
+                    String.format("Invalid input '%s', expected %s",
+                            furthestMismatch.location.currentChar, furthestMismatch.matcher.getExpectedString())));
+        }
         return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer, context.getCurrentLocation().row + 1);
     }
 

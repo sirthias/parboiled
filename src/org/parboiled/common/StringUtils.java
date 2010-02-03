@@ -19,7 +19,6 @@ package org.parboiled.common;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -31,19 +30,6 @@ public final class StringUtils {
     public static final String NL = System.getProperty("line.separator");
 
     private StringUtils() {}
-
-    /**
-     * Creates a string consisting of n times the given character.
-     *
-     * @param c the char
-     * @param n the number of times to repeat
-     * @return the string
-     */
-    public static String repeat(char c, int n) {
-        char[] array = new char[n];
-        Arrays.fill(array, c);
-        return String.valueOf(array);
-    }
 
     /**
      * Escapes newline sequences ("\r\n" or "\n") with the respective escape characters.

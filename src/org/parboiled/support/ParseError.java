@@ -17,8 +17,6 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.Node;
-import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 
 /**
@@ -26,71 +24,33 @@ import org.parboiled.matchers.Matcher;
  */
 public class ParseError {
 
-    private final InputLocation errorStart;
-    private final InputLocation errorEnd;
-    private final String matcherPath;
-    private final Matcher failedMatcher;
-    private final Node node;
+    private final InputLocation location;
+    private final Matcher matcher;
+    private final String matcherPatch;
     private final String errorMessage;
 
-    public ParseError(InputLocation errorStart, InputLocation errorEnd, @NotNull String matcherPath,
-                      Matcher failedMatcher, Node node, @NotNull String errorMessage) {
-        this.errorStart = errorStart;
-        this.errorEnd = errorEnd;
-        this.matcherPath = matcherPath;
-        this.failedMatcher = failedMatcher;
-        this.node = node;
+    public ParseError(@NotNull InputLocation location, @NotNull Matcher matcher, String matcherPatch,
+                      @NotNull String errorMessage) {
+        this.location = location;
+        this.matcher = matcher;
+        this.matcherPatch = matcherPatch;
         this.errorMessage = errorMessage;
     }
 
-    @NotNull
-    public String getMatcherPath() {
-        return matcherPath;
+    public InputLocation getLocation() {
+        return location;
     }
 
-    public InputLocation getErrorStart() {
-        return errorStart;
+    public Matcher getMatcher() {
+        return matcher;
     }
 
-    public InputLocation getErrorEnd() {
-        return errorEnd;
+    public String getMatcherPatch() {
+        return matcherPatch;
     }
 
-    public Matcher getFailedMatcher() {
-        return failedMatcher;
-    }
-
-    public Node getNode() {
-        return node;
-    }
-
-    @NotNull
     public String getErrorMessage() {
         return errorMessage;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + ": " + errorMessage;
-    }
-
-    public static String createMessageSuffix(@NotNull InputBuffer inputBuffer, @NotNull InputLocation start,
-                                             @NotNull InputLocation end) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format(" (line %s, pos %s):", start.row + 1, start.column + 1));
-        sb.append('\n');
-
-        String line = StringUtils.getLine(inputBuffer.getBuffer(), start.row);
-        sb.append(line);
-        sb.append('\n');
-
-        int charCount = Math
-                .min(start.row == end.row ? end.index - start.index : 1000, StringUtils.length(line) - start.column);
-        sb.append(StringUtils.repeat(' ', start.column));
-        sb.append(StringUtils.repeat('^', Math.max(charCount, 1)));
-        sb.append('\n');
-
-        return sb.toString();
     }
 
 }

@@ -291,5 +291,44 @@ public class ParseTreeUtils {
         return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
     }
 
+    /**
+     * Pretty prints the given parse error showing its location in the given input buffer.
+     *
+     * @param error       the parse error
+     * @param inputBuffer the input buffer
+     * @return the pretty print text
+     */
+    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
+        InputLocation location = error.getLocation();
+        StringBuilder sb = new StringBuilder(error.getErrorMessage());
+        sb.append(String.format(" (line %s, pos %s):", location.row + 1, location.column + 1));
+        sb.append('\n');
+
+        String line = StringUtils.getLine(inputBuffer.getBuffer(), location.row);
+        sb.append(line);
+        sb.append('\n');
+
+        for (int i = 0; i < location.column; i++) sb.append(' ');
+        sb.append("^\n");
+
+        return sb.toString();
+    }
+
+    /**
+     * Pretty prints the given parse errors showing their location in the given input buffer.
+     *
+     * @param errors      the parse errors
+     * @param inputBuffer the input buffer
+     * @return the pretty print text
+     */
+    public static String printParseErrors(@NotNull List<ParseError> errors, @NotNull InputBuffer inputBuffer) {
+        StringBuilder sb = new StringBuilder();
+        for (ParseError error : errors) {
+            if (sb.length() > 0) sb.append("---\n");
+            sb.append(printParseError(error, inputBuffer));
+        }
+        return sb.toString();
+    }
+
 }
 

@@ -44,7 +44,10 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
             context.setIntTag(i);
 
             boolean matched = context.getSubContext(matcher).runMatcher();
-            if (!matched) return false;
+            if (!matched) {
+                context.recordInSequenceMismatch(matcher);
+                return false;
+            }
         }
         context.createNode();
         return true;

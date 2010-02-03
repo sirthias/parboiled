@@ -44,8 +44,8 @@ public abstract class AbstractTest {
                              String expectedErrors) {
         ParsingResult<V> parsingResult = parser.parse(rule, input);
         String actualTree = printNodeTree(parsingResult);
-        assertEqualsMultiline(actualTree, expectedTree);
         assertEqualsMultiline(StringUtils.join(parsingResult.parseErrors, "---\n"), expectedErrors);
+        assertEqualsMultiline(actualTree, expectedTree);
     }
 
 }

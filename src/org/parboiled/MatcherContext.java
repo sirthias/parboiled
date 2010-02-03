@@ -23,8 +23,7 @@ import org.parboiled.exceptions.ActionException;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
-import static org.parboiled.support.ParseTreeUtils.findNode;
-import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
+import static org.parboiled.support.ParseTreeUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +48,15 @@ import java.util.List;
  */
 public class MatcherContext<V> implements Context<V> {
 
+    public static class FurthestMismatch {
+        public InputLocation location;
+        public Matcher<?> matcher;
+    }
+
     private final InputBuffer inputBuffer;
     private final List<ParseError> parseErrors;
     private final Reference<Node<V>> lastNodeRef;
+    private final FurthestMismatch furthestMismatch;
 
     private MatcherContext<V> parent;
     private MatcherContext<V> subContext;
@@ -65,16 +70,18 @@ public class MatcherContext<V> implements Context<V> {
     private boolean belowLeafLevel;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                          Reference<Node<V>> lastNodeRef, Matcher<V> matcher) {
-        this(inputBuffer, parseErrors, lastNodeRef);
+                          Reference<Node<V>> lastNodeRef, FurthestMismatch furthestMismatch, Matcher<V> matcher) {
+        this(inputBuffer, parseErrors, lastNodeRef, furthestMismatch);
         setStartLocation(new InputLocation(inputBuffer));
         this.matcher = matcher;
     }
 
-    public MatcherContext(InputBuffer inputBuffer, List<ParseError> parseErrors, Reference<Node<V>> lastNodeRef) {
+    public MatcherContext(InputBuffer inputBuffer, List<ParseError> parseErrors, Reference<Node<V>> lastNodeRef,
+                          FurthestMismatch furthestMismatch) {
         this.inputBuffer = inputBuffer;
         this.parseErrors = parseErrors;
         this.lastNodeRef = lastNodeRef;
+        this.furthestMismatch = furthestMismatch;
     }
 
     @Override
@@ -203,7 +210,7 @@ public class MatcherContext<V> implements Context<V> {
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef);
+            subContext = new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef, furthestMismatch);
             subContext.parent = this;
         }
 
@@ -230,25 +237,32 @@ public class MatcherContext<V> implements Context<V> {
                 return true;
             }
 
-            /*parseErrors.add(new ParseError(startLocation, currentLocation, getPath(), matcher, node, new StringBuilder()
-            .append("Invalid input ").append(illegalChar != Chars.EOI ? "\'" + illegalChar + '\'' : "EOI")
-            .append(", expected ").append(expected)
-            .append(ParseError.createMessageSuffix(inputBuffer, startLocation, currentLocation))
-            .toString()));*/
-
         } catch (ActionException e) {
-            parseErrors.add(new ParseError(startLocation, currentLocation, getPath(), matcher, node, e.getMessage()));
+            parseErrors.add(new ParseError(currentLocation, matcher, getPath(), e.getMessage()));
         } catch (ParserRuntimeException e) {
             throw e; // don't wrap, just bubble up
 
         } catch (Throwable e) {
-            throw new ParserRuntimeException(e, "Error during execution of parsing %s '%s' at input position%s",
-                    matcher instanceof ActionMatcher ? "action" : "rule", getPath(),
-                    ParseError.createMessageSuffix(inputBuffer, currentLocation, currentLocation));
+            throw new ParserRuntimeException(e, printParseError(new ParseError(currentLocation, matcher, null,
+                    String.format("Error during execution of parsing %s '%s' at input position",
+                            matcher instanceof ActionMatcher ? "action" : "rule", getPath())), inputBuffer));
         }
 
         matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
         return false;
+    }
+
+    public void recordInSequenceMismatch(Matcher<V> matcher) {
+        // if the parser does not find another "solution" to the given input sometime later during the parsing process
+        // we might have a parse error
+        // so, we record the relevant parse error data right now, if
+        // - we have already matched some input in this sequence
+        // - some other recorded in-sequence-mismatch already happened further into the input
+        if (currentLocation != startLocation &&
+                (furthestMismatch.location == null || furthestMismatch.location.index < currentLocation.index)) {
+            furthestMismatch.location = currentLocation;
+            furthestMismatch.matcher = matcher;
+        }
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////

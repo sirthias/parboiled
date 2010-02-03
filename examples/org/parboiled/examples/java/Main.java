@@ -18,7 +18,7 @@ package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
-import org.parboiled.common.StringUtils;
+import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 
 import java.io.*;
@@ -56,10 +56,9 @@ public class Main {
 
             ParsingResult<Object> result = parser.parse(parser.compilationUnit(), sourceText);
             if (result.hasErrors()) {
-                System.out.printf("\nParse error(s) in file '%s':\nContext '%s'\n%s",
+                System.out.printf("\nParse error(s) in file '%s':\n%s",
                         sourceFile,
-                        result.parseErrors.get(0).getMatcherPath(),
-                        StringUtils.join(result.parseErrors, "---\n"));
+                        printParseErrors(result.parseErrors, result.inputBuffer));
                 System.exit(1);
             } else {
                 System.out.print('.');
