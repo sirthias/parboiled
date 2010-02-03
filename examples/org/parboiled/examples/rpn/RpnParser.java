@@ -49,7 +49,7 @@ public class RpnParser extends BaseParser<Node> {
 
     @Leaf
     public Rule exponent() {
-        return enforcedSequence(
+        return sequence(
                 charIgnoreCase('E'),
                 optional(minus()),
                 digits()
@@ -62,7 +62,7 @@ public class RpnParser extends BaseParser<Node> {
 
     @Leaf
     public Rule dotNumber() {
-        return enforcedSequence('.', digits());
+        return sequence('.', digits());
     }
 
     @Leaf

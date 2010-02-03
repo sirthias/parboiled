@@ -39,7 +39,7 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
         Matcher<V> matcher = getChildren().get(0);
 
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.runMatcher(matcher, false)) {
+        while (context.runMatcher(matcher)) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 Checks.fail("The inner rule of ZeroOrMore rule '%s' must not allow empty matches", context.getPath());

@@ -46,7 +46,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
             Matcher<V> matcher = children.get(i);
 
             InputLocation lastLocation = context.getCurrentLocation();
-            boolean matched = context.runMatcher(matcher, false);
+            boolean matched = context.runMatcher(matcher);
             if (matched) {
                 if (context.getCurrentLocation() == lastLocation) {
                     Checks.fail("The inner rule of FirstOf rule '%s' must not allow empty matches", context.getPath());

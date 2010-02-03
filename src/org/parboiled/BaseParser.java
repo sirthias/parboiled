@@ -51,7 +51,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>());
 
         // run the actual matcher tree
-        context.runMatcher(matcher, true);
+        context.runMatcher(matcher);
 
         return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer, context.getCurrentLocation().row + 1);
     }
@@ -144,7 +144,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < string.length(); i++) {
             matchers[i] = ch(string.charAt(i));
         }
-        return new SequenceMatcher(matchers, false).label('"' + string + '"');
+        return new SequenceMatcher(matchers).label('"' + string + '"');
     }
 
     /**
@@ -163,7 +163,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < string.length(); i++) {
             matchers[i] = charIgnoreCase(string.charAt(i));
         }
-        return new SequenceMatcher(matchers, false).label('"' + string + '"');
+        return new SequenceMatcher(matchers).label('"' + string + '"');
     }
 
     /**
@@ -248,40 +248,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule sequence(@NotNull Object[] rules) {
         return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules), false).label("sequence");
-    }
-
-    /**
-     * Creates a new rule that only succeeds if all of its subrules succeed, one after the other.
-     * However, after the first subrule has matched all further subrule matches are enforced, i.e. if one of them
-     * fails a ParseError will be created (and error recovery will be tried).
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
-     * arguments will yield the same rule instance.</p>
-     *
-     * @param rule      the first subrule
-     * @param rule2     the second subrule
-     * @param moreRules the other subrules
-     * @return a new rule
-     */
-    public Rule enforcedSequence(Object rule, Object rule2, @NotNull Object... moreRules) {
-        return enforcedSequence(arrayOf(rule, arrayOf(rule2, moreRules)));
-    }
-
-    /**
-     * Creates a new rule that only succeeds if all of its subrules succeed, one after the other.
-     * However, after the first subrule has matched all further subrule matches are enforced, i.e. if one of them
-     * fails a ParseError will be created (and error recovery will be tried).
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
-     * arguments will yield the same rule instance.</p>
-     *
-     * @param rules the sub rules
-     * @return a new rule
-     */
-    @Cached
-    public Rule enforcedSequence(@NotNull Object[] rules) {
-        return rules.length == 1 ?
-                toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules), true).label("enforcedSequence");
+                new SequenceMatcher(toRules(rules)).label("sequence");
     }
 
     /**

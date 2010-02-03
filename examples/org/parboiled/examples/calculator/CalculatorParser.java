@@ -24,7 +24,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     final CalculatorActions actions = new CalculatorActions();
 
     public Rule inputLine() {
-        return enforcedSequence(
+        return sequence(
                 expression(),
                 eoi()
         );
@@ -33,7 +33,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     public Rule expression() {
         return sequence(
                 term(),
-                zeroOrMore(enforcedSequence(firstOf('+', '-'), term())),
+                zeroOrMore(sequence(firstOf('+', '-'), term())),
                 actions.compute(VALUE("term"), CHARS("z/e/firstOf"), VALUES("z/e/term"))
         );
     }
@@ -41,7 +41,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     public Rule term() {
         return sequence(
                 factor(),
-                zeroOrMore(enforcedSequence(firstOf('*', '/'), factor())),
+                zeroOrMore(sequence(firstOf('*', '/'), factor())),
                 actions.compute(VALUE("factor"), CHARS("z/e/firstOf"), VALUES("z/e/factor"))
         );
     }
@@ -54,7 +54,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     }
 
     public Rule parens() {
-        return enforcedSequence('(', expression(), ')');
+        return sequence('(', expression(), ')');
     }
 
     public Rule number() {

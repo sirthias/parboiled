@@ -339,14 +339,4 @@ public abstract class BaseActions<V> implements ContextAware<V> {
         return context.inPredicate();
     }
 
-    /**
-     * Returns true if the current rule (i.e. the rule containing the action expression) is enforced in the current
-     * parsing Context.
-     *
-     * @return true if enforced
-     */
-    public boolean ENFORCED() {
-        return context.isEnforced();
-    }
-
 }

@@ -33,10 +33,10 @@ import java.util.List;
  * <p>The parsing process works as following:</br>
  * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
  * created a root MatcherContext is instantiated for the root rule (Matcher).
- * A subsequent call to {@link #runMatcher(org.parboiled.matchers.Matcher, boolean)} starts the parsing process.</p>
+ * A subsequent call to {@link #runMatcher(org.parboiled.matchers.Matcher)} starts the parsing process.</p>
  * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext)} passing itself to the Matcher
  * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
- * {@link #runMatcher(org.parboiled.matchers.Matcher, boolean)} on its Context, which creates a sub context of the
+ * {@link #runMatcher(org.parboiled.matchers.Matcher)} on its Context, which creates a sub context of the
  * current MatcherContext and runs the given sub matcher in it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as a kind of companion objects to the matchers, providing them with support for building the
@@ -57,7 +57,6 @@ public class MatcherContext<V> implements Context<V> {
     private InputLocation startLocation;
     private InputLocation currentLocation;
     private Matcher<V> matcher;
-    private boolean enforced;
     private Node<V> node;
     private List<Node<V>> subNodes;
     private String errorMessage;
@@ -160,10 +159,6 @@ public class MatcherContext<V> implements Context<V> {
         return ProxyMatcher.unwrap(matcher) instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
-    public boolean isEnforced() {
-        return enforced;
-    }
-
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setCurrentLocation(InputLocation currentLocation) {
@@ -215,10 +210,9 @@ public class MatcherContext<V> implements Context<V> {
      * Runs the given matcher in a sub context.
      *
      * @param matcher  the matcher to run or null, if the matcher of this context is to be run
-     * @param enforced true if enforced
      * @return true if matched
      */
-    public boolean runMatcher(@NotNull Matcher<V> matcher, boolean enforced) {
+    public boolean runMatcher(@NotNull Matcher<V> matcher) {
         // special case: ActionMatchers need no sub context, error recovery and are always executed
         if (ProxyMatcher.unwrap(matcher) instanceof ActionMatcher) {
             try {
@@ -230,14 +224,10 @@ public class MatcherContext<V> implements Context<V> {
             }
         }
 
-        MatcherContext<V> context = getContext(matcher, enforced);
+        MatcherContext<V> context = getContext(matcher);
         try {
             boolean matched = context.matcher.match(context);
 
-            if (!matched && enforced) {
-                context.recover();
-                matched = true;
-            }
             if (context.errorMessage != null) {
                 context.addParserError(ParseError.create(context, context.node, context.errorMessage));
             }
@@ -258,12 +248,11 @@ public class MatcherContext<V> implements Context<V> {
 
     //////////////////////////////// PRIVATE ////////////////////////////////////
 
-    private MatcherContext<V> getContext(Matcher<V> matcher, boolean enforced) {
+    private MatcherContext<V> getContext(Matcher<V> matcher) {
         if (startLocation == null) {
             // we are the root matcher, so boot strap
             setStartLocation(new InputLocation(inputBuffer));
             this.matcher = matcher;
-            this.enforced = enforced;
             return this;
         }
 
@@ -276,7 +265,6 @@ public class MatcherContext<V> implements Context<V> {
         // normally we just reuse the existing subContext instance
         subContext.matcher = matcher;
         subContext.setStartLocation(currentLocation);
-        subContext.enforced = enforced;
         subContext.node = null;
         subContext.subNodes = null;
         subContext.errorMessage = null;

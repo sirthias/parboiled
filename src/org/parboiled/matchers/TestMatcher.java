@@ -46,7 +46,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
-        boolean matched = context.runMatcher(getChildren().get(0), context.isEnforced() && !inverted);
+        boolean matched = context.runMatcher(getChildren().get(0));
         if (matched && context.getCurrentLocation() == lastLocation && lastLocation.currentChar != Chars.EOI) {
             Checks.fail("The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
         }

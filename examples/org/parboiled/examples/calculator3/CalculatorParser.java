@@ -25,7 +25,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     final CalculatorActions actions = new CalculatorActions();
 
     public Rule inputLine() {
-        return enforcedSequence(
+        return sequence(
                 expression(),
                 eoi()
         );
@@ -35,7 +35,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
         return sequence(
                 term(), SET(), // the SET() sets the value of the "expression" to the value of the "term"
                 zeroOrMore(
-                        enforcedSequence(
+                        sequence(
                                 firstOf('+', '-'),
                                 term(),
                                 UP(UP(SET(actions.createAst(DOWN(DOWN(CHAR("firstOf"))), VALUE(), LAST_VALUE()))))
@@ -51,7 +51,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
         return sequence(
                 factor(), SET(),
                 zeroOrMore(
-                        enforcedSequence(
+                        sequence(
                                 firstOf('*', '/'),
                                 factor(),
                                 UP(UP(SET(actions.createAst(DOWN(DOWN(CHAR("firstOf"))), VALUE(), LAST_VALUE()))))
@@ -64,7 +64,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
         return sequence(
                 atom(), SET(),
                 zeroOrMore(
-                        enforcedSequence(
+                        sequence(
                                 '^',
                                 atom(),
                                 UP(UP(SET(actions.createAst('^', VALUE(), LAST_VALUE()))))
@@ -82,7 +82,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     }
 
     public Rule squareRoot() {
-        return enforcedSequence(
+        return sequence(
                 "SQRT",
                 parens(),
                 SET(actions.createAst('R', VALUE(), VALUE()))
@@ -90,7 +90,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     }
 
     public Rule parens() {
-        return enforcedSequence('(', expression(), ')');
+        return sequence('(', expression(), ')');
     }
 
     public Rule number() {

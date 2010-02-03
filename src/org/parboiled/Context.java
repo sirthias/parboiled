@@ -179,11 +179,5 @@ public interface Context<V> {
      */
     boolean inPredicate();
 
-    /**
-     * Returns true if the current rule is enforced, i.e. must match in order to not trigger the creation of a ParseError.
-     *
-     * @return true if enforced
-     */
-    boolean isEnforced();
 }
 

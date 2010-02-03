@@ -38,12 +38,12 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
     public boolean match(@NotNull MatcherContext<V> context) {
         Matcher<V> matcher = getChildren().get(0);
 
-        boolean matched = context.runMatcher(matcher, context.isEnforced());
+        boolean matched = context.runMatcher(matcher);
         if (!matched) return false;
 
         // collect all further matches as well
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.runMatcher(matcher, false)) {
+        while (context.runMatcher(matcher)) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 Checks.fail("The inner rule of OneOrMore rule '%s' must not allow empty matches", context.getPath());

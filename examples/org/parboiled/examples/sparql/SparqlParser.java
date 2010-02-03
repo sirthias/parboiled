@@ -33,12 +33,12 @@ import org.parboiled.Rule;
 public class SparqlParser extends BaseParser<Object> {
     // <Parser>
     public Rule query() {
-        return enforcedSequence(WS(), prologue(), firstOf(selectQuery(),
+        return sequence(WS(), prologue(), firstOf(selectQuery(),
                 constructQuery(), describeQuery(), askQuery()), eoi());
     }
 
     public Rule prologue() {
-        return enforcedSequence(optional(baseDecl()), zeroOrMore(prefixDecl()));
+        return sequence(optional(baseDecl()), zeroOrMore(prefixDecl()));
     }
 
     public Rule baseDecl() {
@@ -46,11 +46,11 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule prefixDecl() {
-        return enforcedSequence(PREFIX(), PNAME_NS(), IRI_REF());
+        return sequence(PREFIX(), PNAME_NS(), IRI_REF());
     }
 
     public Rule selectQuery() {
-        return enforcedSequence(SELECT(), optional(firstOf(DISTINCT(),
+        return sequence(SELECT(), optional(firstOf(DISTINCT(),
                 REDUCED())), firstOf(oneOrMore(var()), ASTERISK()),
                 zeroOrMore(datasetClause()), whereClause(), solutionModifier());
     }
@@ -127,7 +127,7 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule triplesBlock() {
-        return enforcedSequence(triplesSameSubject(), optional(sequence(DOT(),
+        return sequence(triplesSameSubject(), optional(sequence(DOT(),
                 optional(triplesBlock()))));
     }
 
