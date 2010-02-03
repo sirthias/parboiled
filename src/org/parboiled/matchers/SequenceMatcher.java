@@ -43,7 +43,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
 
-            boolean matched = context.runMatcher(matcher);
+            boolean matched = context.getSubContext(matcher).runMatcher();
             if (!matched) return false;
         }
         context.createNode();

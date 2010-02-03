@@ -48,10 +48,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError> parseErrors = new ArrayList<ParseError>();
 
-        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>());
+        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>(), matcher);
 
         // run the actual matcher tree
-        context.runMatcher(matcher);
+        context.runMatcher();
 
         return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer, context.getCurrentLocation().row + 1);
     }
@@ -119,7 +119,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Leaf
     public Rule charSet(@NotNull String characters) {
         Preconditions.checkArgument(characters.length() > 0);
         if (characters.length() == 1) return ch(characters.charAt(0)); // shortcut
@@ -137,7 +136,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Leaf
     public Rule string(@NotNull String string) {
         if (string.length() == 1) return ch(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
@@ -156,7 +154,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Leaf
     public Rule stringIgnoreCase(@NotNull String string) {
         if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];

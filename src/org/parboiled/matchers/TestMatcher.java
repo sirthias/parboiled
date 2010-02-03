@@ -33,9 +33,11 @@ import org.parboiled.support.InputLocation;
 public class TestMatcher<V> extends AbstractMatcher<V> {
 
     private final boolean inverted;
+    private final Matcher<V> subMatcher;
 
     public TestMatcher(@NotNull Rule subRule, boolean inverted) {
         super(subRule);
+        this.subMatcher = getChildren().get(0);
         this.inverted = inverted;
     }
 
@@ -46,7 +48,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
-        boolean matched = context.runMatcher(getChildren().get(0));
+        boolean matched = context.getSubContext(subMatcher).runMatcher();
         if (matched && context.getCurrentLocation() == lastLocation && lastLocation.currentChar != Chars.EOI) {
             Checks.fail("The inner rule of Test/TestNot rule '%s' must not allow empty matches", context.getPath());
         }
@@ -56,16 +58,15 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
     }
 
     public Characters getStarterChars() {
-        Matcher<V> matcher = getChildren().get(0);
-        Characters characters = matcher.getStarterChars();
-        Checks.ensure(!characters.contains(Chars.EMPTY),
-                "Rule '%s' allows empty matches, unlikely to be correct as a sub rule of a Test/TestNot-Rule", matcher);
+        Characters characters = subMatcher.getStarterChars();
+        Checks.ensure(!characters.contains(Chars.EMPTY), "Rule '%s' allows empty matches, " +
+                "unlikely to be correct as a sub rule of a Test/TestNot-Rule", subMatcher);
         return inverted ? Characters.ALL_EXCEPT_EMPTY.remove(characters) : characters;
     }
 
     @Override
     public String getExpectedString() {
-        return (inverted ? "not " : "") + getChildren().get(0).getExpectedString();
+        return (inverted ? "not " : "") + subMatcher.getExpectedString();
     }
 
 }

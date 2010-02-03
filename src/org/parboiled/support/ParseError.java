@@ -17,7 +17,6 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.Context;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
@@ -92,11 +91,6 @@ public class ParseError {
         sb.append('\n');
 
         return sb.toString();
-    }
-
-    public static ParseError create(Context context, Node<?> node, String errorMessage) {
-        return new ParseError(context.getStartLocation(), context.getCurrentLocation(), context.getPath(),
-                context.getMatcher(), node, errorMessage);
     }
 
 }

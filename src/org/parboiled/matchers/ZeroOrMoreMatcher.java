@@ -31,15 +31,16 @@ import org.parboiled.support.InputLocation;
  */
 public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
+    private final Matcher<V> subMatcher;
+
     public ZeroOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);
+        this.subMatcher = getChildren().get(0);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        Matcher<V> matcher = getChildren().get(0);
-
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.runMatcher(matcher)) {
+        while (context.getSubContext(subMatcher).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 Checks.fail("The inner rule of ZeroOrMore rule '%s' must not allow empty matches", context.getPath());
@@ -52,10 +53,9 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
     }
 
     public Characters getStarterChars() {
-        Matcher<V> matcher = getChildren().get(0);
-        Characters chars = matcher.getStarterChars();
+        Characters chars = subMatcher.getStarterChars();
         Checks.ensure(!chars.contains(Chars.EMPTY),
-                "Rule '%s' must not allow empty matches as sub-rule of a ZeroOrMore-rule", matcher);
+                "Rule '%s' must not allow empty matches as sub-rule of a ZeroOrMore-rule", subMatcher);
         return chars;
     }
 

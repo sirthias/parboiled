@@ -19,6 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
+import org.parboiled.exceptions.ActionException;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
@@ -33,10 +34,10 @@ import java.util.List;
  * <p>The parsing process works as following:</br>
  * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
  * created a root MatcherContext is instantiated for the root rule (Matcher).
- * A subsequent call to {@link #runMatcher(org.parboiled.matchers.Matcher)} starts the parsing process.</p>
+ * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
  * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext)} passing itself to the Matcher
  * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
- * {@link #runMatcher(org.parboiled.matchers.Matcher)} on its Context, which creates a sub context of the
+ * {@link #runMatcher()} on its Context, which creates a sub context of the
  * current MatcherContext and runs the given sub matcher in it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as a kind of companion objects to the matchers, providing them with support for building the
@@ -59,13 +60,18 @@ public class MatcherContext<V> implements Context<V> {
     private Matcher<V> matcher;
     private Node<V> node;
     private List<Node<V>> subNodes;
-    private String errorMessage;
     private V nodeValue;
     private int intTag;
     private boolean belowLeafLevel;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                          Reference<Node<V>> lastNodeRef) {
+                          Reference<Node<V>> lastNodeRef, Matcher<V> matcher) {
+        this(inputBuffer, parseErrors, lastNodeRef);
+        setStartLocation(new InputLocation(inputBuffer));
+        this.matcher = matcher;
+    }
+
+    public MatcherContext(InputBuffer inputBuffer, List<ParseError> parseErrors, Reference<Node<V>> lastNodeRef) {
         this.inputBuffer = inputBuffer;
         this.parseErrors = parseErrors;
         this.lastNodeRef = lastNodeRef;
@@ -156,7 +162,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public boolean inPredicate() {
-        return ProxyMatcher.unwrap(matcher) instanceof TestMatcher || parent != null && parent.inPredicate();
+        return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
@@ -181,24 +187,12 @@ public class MatcherContext<V> implements Context<V> {
         this.intTag = intTag;
     }
 
-    public void addUnexpectedInputError(char illegalChar, @NotNull String expected) {
-        addError(new StringBuilder()
-                .append("Invalid input ").append(illegalChar != Chars.EOI ? "\'" + illegalChar + '\'' : "EOI")
-                .append(", expected ").append(expected)
-                .append(ParseError.createMessageSuffix(inputBuffer, startLocation, currentLocation))
-                .toString());
-    }
-
-    public void addError(@NotNull String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public void createNode() {
         if (belowLeafLevel) {
             return;
         }
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
-        if (!(ProxyMatcher.unwrap(matcher) instanceof TestMatcher)) { // special case: TestMatchers do not add nodes
+        if (!(matcher instanceof TestMatcher)) { // special case: TestMatchers do not add nodes
             if (parent != null) {
                 parent.addChildNode(node);
             }
@@ -206,56 +200,7 @@ public class MatcherContext<V> implements Context<V> {
         }
     }
 
-    /**
-     * Runs the given matcher in a sub context.
-     *
-     * @param matcher  the matcher to run or null, if the matcher of this context is to be run
-     * @return true if matched
-     */
-    public boolean runMatcher(@NotNull Matcher<V> matcher) {
-        // special case: ActionMatchers need no sub context, error recovery and are always executed
-        if (ProxyMatcher.unwrap(matcher) instanceof ActionMatcher) {
-            try {
-                return matcher.match(this);
-            } catch (Throwable e) {
-                throw new ParserRuntimeException(e,
-                        "Error during execution of parsing action '%s/%s' at input position%s", getPath(), matcher,
-                        ParseError.createMessageSuffix(inputBuffer, currentLocation, currentLocation));
-            }
-        }
-
-        MatcherContext<V> context = getContext(matcher);
-        try {
-            boolean matched = context.matcher.match(context);
-
-            if (context.errorMessage != null) {
-                context.addParserError(ParseError.create(context, context.node, context.errorMessage));
-            }
-            if (matched) {
-                setCurrentLocation(context.getCurrentLocation());
-            }
-
-            context.matcher = null; // mark the sub context as "retired"
-            return matched;
-        } catch (ParserRuntimeException e) {
-            throw e; // don't wrap, just bubble up
-        } catch (Throwable e) {
-            throw new ParserRuntimeException(e, "Error during execution of parsing rule '%s' at input position%s",
-                    getPath(), ParseError.createMessageSuffix(inputBuffer, context.currentLocation,
-                            context.currentLocation));
-        }
-    }
-
-    //////////////////////////////// PRIVATE ////////////////////////////////////
-
-    private MatcherContext<V> getContext(Matcher<V> matcher) {
-        if (startLocation == null) {
-            // we are the root matcher, so boot strap
-            setStartLocation(new InputLocation(inputBuffer));
-            this.matcher = matcher;
-            return this;
-        }
-
+    public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
             subContext = new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef);
@@ -263,15 +208,50 @@ public class MatcherContext<V> implements Context<V> {
         }
 
         // normally we just reuse the existing subContext instance
-        subContext.matcher = matcher;
+        subContext.matcher = ProxyMatcher.unwrap(matcher);
         subContext.setStartLocation(currentLocation);
         subContext.node = null;
         subContext.subNodes = null;
-        subContext.errorMessage = null;
         subContext.nodeValue = null;
         subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
         return subContext;
     }
+
+    /**
+     * Runs the contexts matcher.
+     *
+     * @return true if matched
+     */
+    public boolean runMatcher() {
+        try {
+            if (matcher.match(this)) {
+                if (parent != null) parent.setCurrentLocation(currentLocation);
+                matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
+                return true;
+            }
+
+            /*parseErrors.add(new ParseError(startLocation, currentLocation, getPath(), matcher, node, new StringBuilder()
+            .append("Invalid input ").append(illegalChar != Chars.EOI ? "\'" + illegalChar + '\'' : "EOI")
+            .append(", expected ").append(expected)
+            .append(ParseError.createMessageSuffix(inputBuffer, startLocation, currentLocation))
+            .toString()));*/
+
+        } catch (ActionException e) {
+            parseErrors.add(new ParseError(startLocation, currentLocation, getPath(), matcher, node, e.getMessage()));
+        } catch (ParserRuntimeException e) {
+            throw e; // don't wrap, just bubble up
+
+        } catch (Throwable e) {
+            throw new ParserRuntimeException(e, "Error during execution of parsing %s '%s' at input position%s",
+                    matcher instanceof ActionMatcher ? "action" : "rule", getPath(),
+                    ParseError.createMessageSuffix(inputBuffer, currentLocation, currentLocation));
+        }
+
+        matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
+        return false;
+    }
+
+    //////////////////////////////// PRIVATE ////////////////////////////////////
 
     private void setStartLocation(InputLocation location) {
         startLocation = currentLocation = location;
@@ -295,9 +275,8 @@ public class MatcherContext<V> implements Context<V> {
         Characters chars = Characters.NONE;
         MatcherContext<V> parent = this.parent;
         while (parent != null) {
-            Matcher<V> unwrappedMatcher = ProxyMatcher.unwrap(parent.getMatcher());
-            if (unwrappedMatcher instanceof FollowMatcher) {
-                FollowMatcher<V> followMatcher = (FollowMatcher<V>) unwrappedMatcher;
+            if (parent.getMatcher() instanceof FollowMatcher) {
+                FollowMatcher<V> followMatcher = (FollowMatcher<V>) parent.getMatcher();
                 chars = chars.add(followMatcher.getFollowerChars(parent));
                 if (!chars.contains(Chars.EMPTY)) return chars;
             }
@@ -318,7 +297,7 @@ public class MatcherContext<V> implements Context<V> {
 
         // success, we have to skip only one char in order to be able to start the match
         // match the illegal char and create a node for it
-        addUnexpectedInputError(locationBeforeError.currentChar, matcher.getExpectedString());
+        //addUnexpectedInputError(locationBeforeError.currentChar, matcher.getExpectedString());
         advanceInputLocation();
         (parent != null ? parent : this).addChildNode(
                 new NodeImpl<V>("ILLEGAL", null, locationBeforeError, currentLocation, null)
@@ -340,7 +319,7 @@ public class MatcherContext<V> implements Context<V> {
 
         // success, the current mismatching character is a legal follower,
         // so add a ParseError and still "match" (empty)
-        addUnexpectedInputError(currentChar, matcher.getExpectedString());
+        //addUnexpectedInputError(currentChar, matcher.getExpectedString());
         createNode();
         return true;
     }
@@ -350,7 +329,7 @@ public class MatcherContext<V> implements Context<V> {
         createNode(); // create an empty match node
 
         InputLocation locationBeforeError = currentLocation;
-        addUnexpectedInputError(locationBeforeError.currentChar, matcher.getExpectedString());
+        //addUnexpectedInputError(locationBeforeError.currentChar, matcher.getExpectedString());
 
         // consume all illegal characters up until a char that we can continue parsing with
         do {
@@ -360,14 +339,6 @@ public class MatcherContext<V> implements Context<V> {
         (parent != null ? parent : this).addChildNode(
                 new NodeImpl<V>("ILLEGAL", null, locationBeforeError, currentLocation, null)
         );
-    }
-
-    private void addParserError(ParseError error) {
-        // do not add the error if we already have one at the exact same input location
-        for (ParseError parseError : parseErrors) {
-            if (parseError.getErrorStart() == error.getErrorStart()) return;
-        }
-        parseErrors.add(error);
     }
 
 }

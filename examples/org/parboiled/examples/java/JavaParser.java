@@ -1010,7 +1010,6 @@ public class JavaParser extends BaseParser<Object> {
         );
     }
 
-    @Leaf
     public Rule escape() {
         return sequence('\\', firstOf('b', 't', 'n', 'f', 'r', '"', '\'', '\\', octalEscape(), unicodeEscape()));
     }

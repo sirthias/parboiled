@@ -29,18 +29,20 @@ import org.parboiled.support.Chars;
  */
 public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
+    private final Matcher<V> subMatcher;
+
     public OptionalMatcher(@NotNull Rule subRule) {
         super(subRule);
+        this.subMatcher = getChildren().get(0);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        Matcher<V> matcher = getChildren().get(0);
-        context.runMatcher(matcher);
+        context.getSubContext(subMatcher).runMatcher();
         context.createNode();
         return true;
     }
 
     public Characters getStarterChars() {
-        return getChildren().get(0).getStarterChars().add(Chars.EMPTY);
+        return subMatcher.getStarterChars().add(Chars.EMPTY);
     }
 }

@@ -19,7 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
 import org.parboiled.MatcherContext;
-import org.parboiled.exceptions.ActionException;
 import org.parboiled.support.Characters;
 
 /**
@@ -38,12 +37,8 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        try {
-            return action.run(context);
-        } catch (ActionException e) {
-            context.addError(e.getMessage());
-            return false;
-        }
+        // actions need to run in the parent context
+        return action.run(context.getParent());
     }
 
     public Characters getStarterChars() {
