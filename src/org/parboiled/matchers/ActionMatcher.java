@@ -33,7 +33,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     public String getLabel() {
-        return "run " + action.toString();
+        return action.toString();
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

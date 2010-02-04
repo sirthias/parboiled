@@ -26,6 +26,10 @@ import org.parboiled.Action;
 import org.parboiled.Context;
 import org.parboiled.support.Checks;
 
+/**
+ * Base class of generated action classes wrapping action expressions.
+ * @param <V>
+ */
 public abstract class ActionWrapperBase<V> implements Action<V> {
 
     protected Context<V> context;
@@ -40,6 +44,11 @@ public abstract class ActionWrapperBase<V> implements Action<V> {
         Context<V> subContext = context.getSubContext();
         Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
         this.context = subContext;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
 
 }
