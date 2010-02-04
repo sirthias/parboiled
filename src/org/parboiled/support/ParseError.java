@@ -17,23 +17,31 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.matchers.Matcher;
 
 /**
  * Immutable class holding all values describing a certain error encountered during a parsing run.
  */
-public class ParseError {
+public class ParseError<V> {
 
+    /**
+     * The input location where the parse error happened.
+     */
     private final InputLocation location;
-    private final Matcher matcher;
-    private final String matcherPatch;
+
+    /**
+     * The matcher path to the parse error.
+     */
+    private final MatcherPath<V> path;
+
+    /**
+     * The error message.
+     */
     private final String errorMessage;
 
-    public ParseError(@NotNull InputLocation location, @NotNull Matcher matcher, String matcherPatch,
+    public ParseError(@NotNull InputLocation location, @NotNull MatcherPath<V> path,
                       @NotNull String errorMessage) {
         this.location = location;
-        this.matcher = matcher;
-        this.matcherPatch = matcherPatch;
+        this.path = path;
         this.errorMessage = errorMessage;
     }
 
@@ -41,12 +49,8 @@ public class ParseError {
         return location;
     }
 
-    public Matcher getMatcher() {
-        return matcher;
-    }
-
-    public String getMatcherPatch() {
-        return matcherPatch;
+    public MatcherPath<V> getPath() {
+        return path;
     }
 
     public String getErrorMessage() {

@@ -321,7 +321,7 @@ public class ParseTreeUtils {
      * @param inputBuffer the input buffer
      * @return the pretty print text
      */
-    public static String printParseErrors(@NotNull List<ParseError> errors, @NotNull InputBuffer inputBuffer) {
+    public static <V> String printParseErrors(@NotNull List<ParseError<V>> errors, @NotNull InputBuffer inputBuffer) {
         StringBuilder sb = new StringBuilder();
         for (ParseError error : errors) {
             if (sb.length() > 0) sb.append("---\n");

@@ -34,7 +34,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         return sequence(
                 term(),
                 zeroOrMore(sequence(firstOf('+', '-'), term())),
-                actions.compute(VALUE("term"), CHARS("z/e/firstOf"), VALUES("z/e/term"))
+                actions.compute(VALUE("term"), CHARS("z/s/firstOf"), VALUES("z/s/term"))
         );
     }
 
@@ -42,7 +42,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         return sequence(
                 factor(),
                 zeroOrMore(sequence(firstOf('*', '/'), factor())),
-                actions.compute(VALUE("factor"), CHARS("z/e/firstOf"), VALUES("z/e/factor"))
+                actions.compute(VALUE("factor"), CHARS("z/s/firstOf"), VALUES("z/s/factor"))
         );
     }
 

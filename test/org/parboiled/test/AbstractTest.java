@@ -20,6 +20,7 @@ import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.fail;
@@ -42,9 +43,9 @@ public abstract class AbstractTest {
 
     public <V> void testFail(BaseParser<V> parser, Rule rule, String input, String expectedTree,
                              String expectedErrors) {
-        ParsingResult<V> parsingResult = parser.parse(rule, input);
-        String actualTree = printNodeTree(parsingResult);
-        assertEqualsMultiline(StringUtils.join(parsingResult.parseErrors, "---\n"), expectedErrors);
+        ParsingResult<V> result = parser.parse(rule, input, true);
+        String actualTree = printNodeTree(result);
+        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), expectedErrors);
         assertEqualsMultiline(actualTree, expectedTree);
     }
 

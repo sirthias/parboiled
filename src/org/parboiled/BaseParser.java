@@ -24,9 +24,6 @@ import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
  *
@@ -44,23 +41,52 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
+        return parse(rule, input, false);
+    }
+
+    /**
+     * Runs the given parser rule against the given input string using the given optimization flags.
+     * See {@link Parboiled} class for defined optimization flags.
+     *
+     * @param rule                   the rule
+     * @param input                  the input string
+     * @param recoverFromParseErrors flag indicating whether the parser should recover from parse errors
+     * @return the ParsingResult for the run
+     */
+    @SuppressWarnings({"unchecked"})
+    public ParsingResult<V> parse(Rule rule, @NotNull String input, boolean recoverFromParseErrors) {
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         InputBuffer inputBuffer = new InputBuffer(input);
-        List<ParseError> parseErrors = new ArrayList<ParseError>();
+        InputLocation startLocation = new InputLocation(inputBuffer);
+        MatcherContext.Globals<V> globals = new MatcherContext.Globals<V>();
+        ParseErrorMarker<V> marker = new ParseErrorMarker<V>();
+        MatcherContext<V> context;
 
-        MatcherContext.FurthestMismatch furthestMismatch = new MatcherContext.FurthestMismatch();
-        MatcherContext<V> context =
-                new MatcherContext<V>(inputBuffer, parseErrors, new Reference<Node<V>>(), furthestMismatch, matcher);
+        while (true) {
+            globals.currentErrorMarker = marker;
+            context = new MatcherContext<V>(inputBuffer, startLocation, globals, matcher);
 
-        // run the actual matcher tree
-        context.runMatcher();
+            context.runMatcher();
+            if (context.getNode() != null) {
+                break; // parsing completed successfully
+            }
 
-        if (context.getNode() == null) {
-            parseErrors.add(new ParseError(furthestMismatch.location, furthestMismatch.matcher, null,
-                    String.format("Invalid input '%s', expected %s",
-                            furthestMismatch.location.currentChar, furthestMismatch.matcher.getExpectedString())));
+            // the error marker contains the furthest mismatch information, create a new parse error
+            if (!globals.currentErrorMarker.isValid()) {
+                // if we have failed before actually reaching a qualify error sequence we just report failing the root
+                globals.currentErrorMarker.location = context.getCurrentLocation();
+                globals.currentErrorMarker.path = new MatcherPath<V>(context);
+            }
+            globals.parseErrors.add(globals.currentErrorMarker.createParseError());
+
+            if (!recoverFromParseErrors) break;
+
+            // we need to switch to replay mode to rebuild the parser state at the current parse error
+            globals.replayToParseError = true;
         }
-        return new ParsingResult<V>(context.getNode(), parseErrors, inputBuffer, context.getCurrentLocation().row + 1);
+
+        return new ParsingResult<V>(context.getNode(), globals.parseErrors, inputBuffer,
+                context.getCurrentLocation().row + 1);
     }
 
     ////////////////////////////////// RULE CREATION ///////////////////////////////////

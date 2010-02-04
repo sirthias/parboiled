@@ -47,6 +47,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        if (inverted) context.clearEnforcement();
         InputLocation lastLocation = context.getCurrentLocation();
         boolean matched = context.getSubContext(subMatcher).runMatcher();
         if (matched && context.getCurrentLocation() == lastLocation && lastLocation.currentChar != Chars.EOI) {
@@ -66,6 +67,8 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public String getExpectedString() {
+        String label = super.getExpectedString();
+        if (!(inverted ? "testNot" : "test").equals(label)) return label;
         return (inverted ? "not " : "") + subMatcher.getExpectedString();
     }
 

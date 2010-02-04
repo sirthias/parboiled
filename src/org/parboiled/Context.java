@@ -80,7 +80,7 @@ public interface Context<V> {
      * @return the list of parse errors
      */
     @NotNull
-    List<ParseError> getParseErrors();
+    List<ParseError<V>> getParseErrors();
 
     /**
      * Returns the input text matched by the given node.

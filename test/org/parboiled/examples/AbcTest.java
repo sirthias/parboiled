@@ -61,11 +61,11 @@ public class AbcTest extends AbstractTest {
                 "                        ['c'] 'c'\n" +
                 "                ['c'] 'c'\n" +
                 "        ['c']\n", "" +
-                "ParseError: Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
+                "Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
                 "aabbbcc\n" +
                 "    ^\n" +
                 "---\n" +
-                "ParseError: Invalid input EOI, expected 'c' (line 1, pos 8):\n" +
+                "Invalid input 'EOI', expected 'c' (line 1, pos 8):\n" +
                 "aabbbcc\n" +
                 "       ^\n"
         );

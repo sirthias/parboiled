@@ -39,6 +39,7 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        context.clearEnforcement();
         InputLocation lastLocation = context.getCurrentLocation();
         while (context.getSubContext(subMatcher).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();

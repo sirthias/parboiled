@@ -48,15 +48,16 @@ import java.util.List;
  */
 public class MatcherContext<V> implements Context<V> {
 
-    public static class FurthestMismatch {
-        public InputLocation location;
-        public Matcher<?> matcher;
+    public static class Globals<V> {
+        public final List<ParseError<V>> parseErrors = new ArrayList<ParseError<V>>();
+        public Node<V> lastNode;
+        public ParseErrorMarker<V> currentErrorMarker;
+        public boolean replayToParseError;
     }
 
+    // also global but kept in each MatcherContext instance for faster access
     private final InputBuffer inputBuffer;
-    private final List<ParseError> parseErrors;
-    private final Reference<Node<V>> lastNodeRef;
-    private final FurthestMismatch furthestMismatch;
+    private final Globals<V> globals;
 
     private MatcherContext<V> parent;
     private MatcherContext<V> subContext;
@@ -68,20 +69,18 @@ public class MatcherContext<V> implements Context<V> {
     private V nodeValue;
     private int intTag;
     private boolean belowLeafLevel;
+    private boolean enforced;
 
-    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                          Reference<Node<V>> lastNodeRef, FurthestMismatch furthestMismatch, Matcher<V> matcher) {
-        this(inputBuffer, parseErrors, lastNodeRef, furthestMismatch);
-        setStartLocation(new InputLocation(inputBuffer));
+    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
+                          @NotNull Globals<V> globals, Matcher<V> matcher) {
+        this(inputBuffer, globals);
+        setStartLocation(startLocation);
         this.matcher = matcher;
     }
 
-    public MatcherContext(InputBuffer inputBuffer, List<ParseError> parseErrors, Reference<Node<V>> lastNodeRef,
-                          FurthestMismatch furthestMismatch) {
+    private MatcherContext(InputBuffer inputBuffer, Globals<V> globals) {
         this.inputBuffer = inputBuffer;
-        this.parseErrors = parseErrors;
-        this.lastNodeRef = lastNodeRef;
-        this.furthestMismatch = furthestMismatch;
+        this.globals = globals;
     }
 
     @Override
@@ -112,8 +111,8 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     @NotNull
-    public List<ParseError> getParseErrors() {
-        return parseErrors;
+    public List<ParseError<V>> getParseErrors() {
+        return globals.parseErrors;
     }
 
     public InputLocation getCurrentLocation() {
@@ -161,7 +160,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public Node<V> getLastNode() {
-        return lastNodeRef.getTarget();
+        return globals.lastNode;
     }
 
     public List<Node<V>> getSubNodes() {
@@ -203,14 +202,14 @@ public class MatcherContext<V> implements Context<V> {
             if (parent != null) {
                 parent.addChildNode(node);
             }
-            lastNodeRef.setTarget(node);
+            globals.lastNode = node;
         }
     }
 
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef, furthestMismatch);
+            subContext = new MatcherContext<V>(inputBuffer, globals);
             subContext.parent = this;
         }
 
@@ -221,6 +220,7 @@ public class MatcherContext<V> implements Context<V> {
         subContext.subNodes = null;
         subContext.nodeValue = null;
         subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
+        subContext.enforced = enforced;
         return subContext;
     }
 
@@ -237,32 +237,62 @@ public class MatcherContext<V> implements Context<V> {
                 return true;
             }
 
+            if (enforced) {
+                recover();
+                if (parent != null) parent.setCurrentLocation(currentLocation);
+                matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
+                return true;
+            }
+
         } catch (ActionException e) {
-            parseErrors.add(new ParseError(currentLocation, matcher, getPath(), e.getMessage()));
+            globals.parseErrors.add(new ParseError<V>(currentLocation, new MatcherPath<V>(this), e.getMessage()));
         } catch (ParserRuntimeException e) {
             throw e; // don't wrap, just bubble up
 
         } catch (Throwable e) {
-            throw new ParserRuntimeException(e, printParseError(new ParseError(currentLocation, matcher, null,
-                    String.format("Error during execution of parsing %s '%s' at input position",
-                            matcher instanceof ActionMatcher ? "action" : "rule", getPath())), inputBuffer));
+            throw new ParserRuntimeException(e,
+                    printParseError(new ParseError<V>(currentLocation, new MatcherPath<V>(this),
+                            String.format("Error during execution of parsing %s '%s' at input position",
+                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath())), inputBuffer));
         }
 
         matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
         return false;
     }
 
-    public void recordInSequenceMismatch(Matcher<V> matcher) {
-        // if the parser does not find another "solution" to the given input sometime later during the parsing process
-        // we might have a parse error
-        // so, we record the relevant parse error data right now, if
-        // - we have already matched some input in this sequence
-        // - some other recorded in-sequence-mismatch already happened further into the input
-        if (currentLocation != startLocation &&
-                (furthestMismatch.location == null || furthestMismatch.location.index < currentLocation.index)) {
-            furthestMismatch.location = currentLocation;
-            furthestMismatch.matcher = matcher;
+    public void enforceMatch() {
+        enforced = true;
+        runMatcher();
+        enforced = false;
+    }
+
+    public void clearEnforcement() {
+        enforced = false;
+    }
+
+    // if the parser does not find another "solution" to the given input sometime later during the parsing process
+    // we might have a parse error
+    // so, we record the relevant parse error data right now, if
+    // - we have already matched some input in this sequence
+    // - no other recorded in-sequence-mismatch already happened further into the input
+    public boolean recoverFromInSequenceMismatch(Matcher<V> matcher) {
+        if (!enforced) {
+            if (globals.replayToParseError) {
+                if (globals.currentErrorMarker.matchesState(this, matcher)) {
+                    globals.currentErrorMarker = globals.currentErrorMarker.getNext();
+                    globals.replayToParseError = globals.currentErrorMarker.isValid();
+                    return true;
+                }
+            } else {
+                if (currentLocation != startLocation) {
+                    ParseErrorMarker<V> currentErrorMarker = globals.currentErrorMarker;
+                    if (currentErrorMarker.location == null || currentErrorMarker.location.index < currentLocation.index) {
+                        currentErrorMarker.mark(matcher, this);
+                    }
+                }
+            }
         }
+        return false;
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////
@@ -311,18 +341,14 @@ public class MatcherContext<V> implements Context<V> {
 
         // success, we have to skip only one char in order to be able to start the match
         // match the illegal char and create a node for it
-        //addUnexpectedInputError(locationBeforeError.currentChar, matcher.getExpectedString());
         advanceInputLocation();
         (parent != null ? parent : this).addChildNode(
                 new NodeImpl<V>("ILLEGAL", null, locationBeforeError, currentLocation, null)
         );
 
-        // retry the original match, it must succeed since we only recover on the very bottom level of the
-        // individual char matchers, they only match one character and we have already verified the "fit"
         startLocation = currentLocation;
-        Preconditions.checkState(matcher.match(this));
-
-        return true;
+        // retry the original match
+        return matcher.match(this);
     }
 
     // check whether the current char is a legally following next char in the follower set
@@ -333,7 +359,6 @@ public class MatcherContext<V> implements Context<V> {
 
         // success, the current mismatching character is a legal follower,
         // so add a ParseError and still "match" (empty)
-        //addUnexpectedInputError(currentChar, matcher.getExpectedString());
         createNode();
         return true;
     }
@@ -343,7 +368,6 @@ public class MatcherContext<V> implements Context<V> {
         createNode(); // create an empty match node
 
         InputLocation locationBeforeError = currentLocation;
-        //addUnexpectedInputError(locationBeforeError.currentChar, matcher.getExpectedString());
 
         // consume all illegal characters up until a char that we can continue parsing with
         do {

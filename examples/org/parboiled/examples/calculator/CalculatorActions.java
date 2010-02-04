@@ -24,7 +24,7 @@ public class CalculatorActions extends BaseActions<Integer> {
 
     public boolean compute(Integer firstValue, List<Character> operators, List<Integer> values) {
         int value = firstValue != null ? firstValue : 0;
-        for (int i = 0; i < operators.size(); i++) {
+        for (int i = 0; i < Math.min(operators.size(),values.size()); i++) {
             value = performOperation(value, operators.get(i), values.get(i));
         }
         getContext().setNodeValue(value);

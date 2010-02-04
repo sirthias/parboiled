@@ -17,15 +17,16 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
-import org.parboiled.Rule;
-import org.parboiled.MatcherContext;
 
 import java.util.List;
 
 /**
  * A Matcher that executes all of its sub matcher in sequence and only succeeds, if all sub matchers succeed.
+ *
  * @param <V>
  */
 public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
@@ -43,10 +44,11 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
 
-            boolean matched = context.getSubContext(matcher).runMatcher();
-            if (!matched) {
-                context.recordInSequenceMismatch(matcher);
-                return false;
+            if (!context.getSubContext(matcher).runMatcher()) {
+                if (!context.recoverFromInSequenceMismatch(matcher)) {
+                    return false;
+                }
+                context.getSubContext(matcher).enforceMatch();
             }
         }
         context.createNode();

@@ -45,7 +45,9 @@ public class ErrorTest {
         Rule rule = parser.clause();
         ParsingResult<?> result = parser.parse(rule, "1+X");
         assertEqualsMultiline(printParseError(result.parseErrors.get(0), result.inputBuffer), "" +
-                "");
+                "Invalid input 'X', expected digit (line 1, pos 3):\n" +
+                "1+X\n" +
+                "  ^\n");
     }
 
 }
