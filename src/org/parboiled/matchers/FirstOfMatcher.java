@@ -42,7 +42,6 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     public boolean match(@NotNull MatcherContext<V> context) {
         List<Matcher<V>> children = getChildren();
         int size = children.size();
-        context.clearEnforcement();
         for (int i = 0; i < size; i++) {
             Matcher<V> matcher = children.get(i);
 

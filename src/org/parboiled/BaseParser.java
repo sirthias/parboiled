@@ -32,8 +32,7 @@ import org.parboiled.support.*;
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
-     * Runs the given parser rule against the given input string using the given optimization flags.
-     * See {@link Parboiled} class for defined optimization flags.
+     * Runs the given parser rule against the given input string using performing no error recovery.
      *
      * @param rule  the rule
      * @param input the input string
@@ -45,8 +44,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Runs the given parser rule against the given input string using the given optimization flags.
-     * See {@link Parboiled} class for defined optimization flags.
+     * Runs the given parser rule against the given input string.
      *
      * @param rule                   the rule
      * @param input                  the input string
@@ -62,27 +60,33 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         ParseErrorMarker<V> marker = new ParseErrorMarker<V>();
         MatcherContext<V> context;
 
+        loop:
         while (true) {
             globals.currentErrorMarker = marker;
             context = new MatcherContext<V>(inputBuffer, startLocation, globals, matcher);
 
             context.runMatcher();
-            if (context.getNode() != null) {
-                break; // parsing completed successfully
+
+            switch (globals.parsingState) {
+                case Parsing:
+                    if (context.getNode() != null) break; // parsing completed successfully
+                    Preconditions.checkState(globals.currentErrorMarker.isValid());
+                    globals.parseErrors.add(globals.currentErrorMarker.createParseError());
+                    if (!recoverFromParseErrors) break loop;
+                    globals.parsingState = ParsingState.SeekingToParseError;
+                    break;
+
+                case SeekingToParseError:
+                    // we should always be able to find the parse error we previously recorded
+                    throw new IllegalStateException();
+
+                case Recovering:
+                    // no recovery rule caught the error, so just create a catch all illegal input node
+                    context.getSubContext(
+                            (Matcher<V>) sequence(illegal(zeroOrMore(any())), eoi())
+                    ).runMatcher();
+                    break;
             }
-
-            // the error marker contains the furthest mismatch information, create a new parse error
-            if (!globals.currentErrorMarker.isValid()) {
-                // if we have failed before actually reaching a qualify error sequence we just report failing the root
-                globals.currentErrorMarker.location = context.getCurrentLocation();
-                globals.currentErrorMarker.path = new MatcherPath<V>(context);
-            }
-            globals.parseErrors.add(globals.currentErrorMarker.createParseError());
-
-            if (!recoverFromParseErrors) break;
-
-            // we need to switch to replay mode to rebuild the parser state at the current parse error
-            globals.replayToParseError = true;
         }
 
         return new ParsingResult<V>(context.getNode(), globals.parseErrors, inputBuffer,
@@ -152,6 +156,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Leaf
     public Rule charSet(@NotNull String characters) {
         Preconditions.checkArgument(characters.length() > 0);
         if (characters.length() == 1) return ch(characters.charAt(0)); // shortcut
@@ -169,6 +174,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Leaf
     public Rule string(@NotNull String string) {
         if (string.length() == 1) return ch(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
@@ -187,6 +193,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Leaf
     public Rule stringIgnoreCase(@NotNull String string) {
         if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-letter strings
         Rule[] matchers = new Rule[string.length()];
@@ -278,7 +285,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule sequence(@NotNull Object[] rules) {
         return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules)).label("sequence");
+                new SequenceMatcher(toRules(rules)).label("sequence").recoveredBy(defaultSequenceRecoveryRule());
     }
 
     /**
@@ -410,7 +417,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param objects the objects to convert
      * @return the rules corresponding to the given objects
      */
-    protected Rule[] toRules(@NotNull Object... objects) {
+    public Rule[] toRules(@NotNull Object... objects) {
         Rule[] rules = new Rule[objects.length];
 
         // we need to process the sub rule objects in reverse order so as to correctly mix in parameters
@@ -429,13 +436,81 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule corresponding to the given object
      */
     @SuppressWarnings({"unchecked"})
-    protected Rule toRule(Object obj) {
+    public Rule toRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
         if (obj instanceof Character) return fromCharLiteral((Character) obj);
         if (obj instanceof String) return fromStringLiteral((String) obj);
         if (obj instanceof Action) return new ActionMatcher<V>((Action<V>) obj);
 
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
+    }
+
+    public Rule defaultSequenceRecoveryRule() {
+        return sequence(
+                // we only recover if we have already matched something in this sequence,
+                // otherwise just continue bubbling up the parse error through the matcher stack
+                new Action<V>() {
+                    public boolean run(Context<V> context) {
+                        Checks.ensure(context.getParsingState() == ParsingState.Recovering,
+                                "defaultSequenceRecoveryRule() should only be used for recovery actions");
+                        Context recoveryContext = context.getCurrentRecoveryContext();
+                        return recoveryContext.getCurrentLocation() != recoveryContext.getStartLocation();
+                    }
+                },
+                firstOf(
+                        deleteOneRecoveryRule(),
+                        insertOneRecoveryRule(),
+                        resynchronizeRecoveryRule()
+                )
+        );
+    }
+
+    @KeepAsIs
+    private Rule deleteOneRecoveryRule() {
+        return sequence(
+                // match one character and mark it ILLEGAL
+                illegal(any()),
+
+                // retry the failed matcher of the sequence we are recovering for
+                new Action<V>() {
+                    public boolean run(Context<V> context) {
+                        Context<V> recoveryContext = context.getCurrentRecoveryContext();
+                        return match(recoveryContext.getFailedMatcher());
+                    }
+                }
+        );
+    }
+
+    @KeepAsIs
+    private Rule insertOneRecoveryRule() {
+        return toRule(
+                new Action<V>() {
+                    public boolean run(Context<V> context) {
+                        Context<V> recoveryContext = context.getCurrentRecoveryContext();
+                        Matcher<V> failedMatcher = recoveryContext.getFailedMatcher();
+                        Characters starterChars = failedMatcher.getStarterChars();
+
+                        // this rule runs as a recovery of all sequences, so the failed matcher must have failed
+                        // on its first character, otherwise there would have to be another sequence further up
+                        // the error matcher stack catching and recovering the current parse error
+                        Preconditions.checkState(!starterChars.contains(recoveryContext.getCurrentLocation().currentChar));
+
+                        for (Object o : Ch) {
+
+                        }
+                        context.injectVirtualInput();
+                        return false;
+                    }
+                }
+        );
+    }
+
+    public Rule resynchronizeRecoveryRule() {
+        return null;
+    }
+
+    public Rule illegal(Object rule) {
+        return toRule(rule).label(Parboiled.ILLEGAL);
     }
 
 }

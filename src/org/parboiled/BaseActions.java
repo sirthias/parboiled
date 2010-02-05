@@ -17,6 +17,8 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.support.Checks;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
 
@@ -57,6 +59,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Node<V> NODE(String path) {
+        check();
         return context.getNodeByPath(path);
     }
 
@@ -69,6 +72,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public List<Node<V>> NODES(String path) {
+        check();
         return ParseTreeUtils.collectNodesByPath(context.getSubNodes(), path, new ArrayList<Node<V>>());
     }
 
@@ -81,6 +85,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Node<V> NODE_BY_LABEL(String labelPrefix) {
+        check();
         return context.getNodeByLabel(labelPrefix);
     }
 
@@ -93,6 +98,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public List<Node<V>> NODES_BY_LABEL(String labelPrefix) {
+        check();
         return ParseTreeUtils.collectNodes(context.getSubNodes(),
                 new LabelPrefixPredicate<V>(labelPrefix),
                 new ArrayList<Node<V>>()
@@ -107,6 +113,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Node<V> LAST_NODE() {
+        check();
         return context.getLastNode();
     }
 
@@ -118,6 +125,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public V VALUE() {
+        check();
         return context.getTreeValue();
     }
 
@@ -184,6 +192,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public String TEXT(Node<V> node) {
+        check();
         return context.getNodeText(node);
     }
 
@@ -205,6 +214,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public List<String> TEXTS(List<Node<V>> nodes) {
+        check();
         List<String> values = new ArrayList<String>();
         for (Node<V> node : nodes) {
             values.add(context.getNodeText(node));
@@ -241,6 +251,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Character CHAR(Node<V> node) {
+        check();
         return context.getNodeChar(node);
     }
 
@@ -262,6 +273,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public List<Character> CHARS(List<Node<V>> nodes) {
+        check();
         List<Character> values = new ArrayList<Character>();
         for (Node<V> node : nodes) {
             values.add(context.getNodeChar(node));
@@ -310,6 +322,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return a new rule
      */
     public boolean SET(V value) {
+        check();
         context.setNodeValue(value);
         return true;
     }
@@ -320,6 +333,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Character NEXT_CHAR() {
+        check();
         return context.getCurrentLocation().currentChar;
     }
 
@@ -336,7 +350,23 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return true if in a predicate
      */
     public boolean IN_PREDICATE() {
+        check();
         return context.inPredicate();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public boolean match(@NotNull Rule rule) {
+        return match((Matcher<V>) rule);
+    }
+
+    public boolean match(@NotNull Matcher<V> matcher) {
+        check();
+        MatcherContext<V> matcherContext = (MatcherContext<V>) context;
+        return matcherContext.getSubContext(matcher).runMatcher();
+    }
+
+    private void check() {
+        Checks.ensure(context != null, "Illegal rule definition: Unwrapped action expression!");
     }
 
 }

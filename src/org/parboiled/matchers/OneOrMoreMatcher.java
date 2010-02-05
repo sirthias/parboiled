@@ -43,7 +43,6 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
         if (!matched) return false;
 
         // collect all further matches as well
-        context.clearEnforcement();
         InputLocation lastLocation = context.getCurrentLocation();
         while (context.getSubContext(subMatcher).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();

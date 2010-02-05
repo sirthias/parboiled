@@ -27,6 +27,8 @@ import java.lang.reflect.Constructor;
  */
 public class Parboiled {
 
+    public static final String ILLEGAL = "ILLEGAL";
+
     protected Parboiled() {}
 
     /**
@@ -51,10 +53,6 @@ public class Parboiled {
         } catch (Exception e) {
             throw new RuntimeException("Error creating extended parser class: " + e.getMessage(), e);
         }
-    }
-
-    protected static boolean isFlagged(int flags, int flag) {
-        return (flags & flag) > 0;
     }
 
 }

@@ -16,31 +16,35 @@
 
 package org.parboiled;
 
-import org.parboiled.matchers.Matcher;
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.Chars;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParseError;
 
-class ParseErrorMarker<V> {
+public class ParseErrorMarker<V> {
 
-    public InputLocation location;
-    public MatcherPath<V> path;
-    public ParseErrorMarker<V> next;
+    private InputLocation location;
+    private MatcherPath<V> path;
+    private ParseErrorMarker<V> next;
 
-    public void mark(Matcher<V> matcher, MatcherContext<V> context) {
-        location = context.getCurrentLocation();
-        path = new MatcherPath<V>(matcher, context);
+    public InputLocation getLocation() {
+        return location;
     }
 
-    public Matcher<V> getFailedMatcher() {
-        return path.getHead();
+    public void setLocation(InputLocation location) {
+        this.location = location;
     }
 
-    public ParseError<V> createParseError() {
-        return new ParseError<V>(location, path, String.format("Invalid input '%s', expected %s",
-                location.currentChar != Chars.EOI ? location.currentChar : "EOI",
-                getFailedMatcher().getExpectedString()));
+    public MatcherPath<V> getPath() {
+        return path;
+    }
+
+    public void mark(MatcherContext<V> context) {
+        if (location == null || location.index < context.getCurrentLocation().index) {
+            location = context.getCurrentLocation();
+            path = new MatcherPath<V>(context);
+        }
     }
 
     public ParseErrorMarker<V> getNext() {
@@ -54,10 +58,16 @@ class ParseErrorMarker<V> {
         return location != null;
     }
 
-    public boolean matchesState(MatcherContext<V> context, Matcher<V> matcher) {
+    public boolean matchesState(@NotNull MatcherContext<V> context) {
         return location != null &&
                 location.index == context.getCurrentLocation().index &&
-                path.matches(matcher, context);
+                path.matches(context);
+    }
+
+    public ParseError<V> createParseError() {
+        return new ParseError<V>(location, path, String.format("Invalid input '%s', expected %s",
+                location.currentChar != Chars.EOI ? location.currentChar : "EOI",
+                path.getHead().getExpectedString()));
     }
 
 }

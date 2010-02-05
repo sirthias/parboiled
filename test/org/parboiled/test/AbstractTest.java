@@ -17,36 +17,48 @@
 package org.parboiled.test;
 
 import org.parboiled.BaseParser;
+import org.parboiled.Node;
 import org.parboiled.Rule;
-import org.parboiled.common.StringUtils;
+import org.parboiled.common.Function;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import org.parboiled.trees.Printability;
 import static org.testng.Assert.fail;
 
 public abstract class AbstractTest {
 
-    public <V> void test(BaseParser<V> parser, Rule rule, String input, String expectedTree) {
-        ParsingResult<V> parsingResult = parser.parse(rule, input);
-        if (parsingResult.hasErrors()) {
+    public <V> ParsingResult<V> test(BaseParser<V> parser, Rule rule, String input, String expectedTree) {
+        ParsingResult<V> result = parser.parse(rule, input);
+        if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
-                    StringUtils.join(parsingResult.parseErrors, "---\n") +
+                    printParseErrors(result.parseErrors, result.inputBuffer) +
                     "\n--- ParseTree ---\n" +
-                    printNodeTree(parsingResult)
+                    printNodeTree(result)
             );
         }
 
-        String actualTree = printNodeTree(parsingResult);
-        assertEqualsMultiline(actualTree, expectedTree);
+        assertEqualsMultiline(printNodeTree(result), expectedTree);
+        return result;
     }
 
-    public <V> void testFail(BaseParser<V> parser, Rule rule, String input, String expectedTree,
-                             String expectedErrors) {
+    public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors,
+                                         String expectedTree) {
+        return testFail(parser, rule, input, expectedErrors, expectedTree, null);
+    }
+
+    public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors,
+                                         String expectedTree, Function<Node, Printability> filter) {
+        ParsingResult<V> result = testFail(parser, rule, input, expectedErrors);
+        assertEqualsMultiline(printNodeTree(result, filter), expectedTree);
+        return result;
+    }
+
+    public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors) {
         ParsingResult<V> result = parser.parse(rule, input, true);
-        String actualTree = printNodeTree(result);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), expectedErrors);
-        assertEqualsMultiline(actualTree, expectedTree);
+        return result;
     }
 
 }

@@ -19,7 +19,10 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
 import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
+import org.parboiled.exceptions.GrammarException;
 import org.parboiled.support.Characters;
+import org.parboiled.support.Checks;
 
 /**
  * A Matcher that not actually matches input but rather resolves an ActionParameter in the current rule context.
@@ -37,12 +40,19 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        Checks.ensure(!context.isBelowLeafLevel(), "Actions are not allowed in or below @Leaf rules");
+
         // actions need to run in the parent context
         return action.run(context.getParent());
     }
 
     public Characters getStarterChars() {
         return Characters.ONLY_EMPTY;
+    }
+
+    @Override
+    public Rule makeLeaf() {
+        throw new GrammarException("Actions cannot be leaf rules");
     }
 
 }

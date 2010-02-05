@@ -16,38 +16,50 @@
 
 package org.parboiled;
 
-import static org.parboiled.support.ParseTreeUtils.printParseError;
+import org.parboiled.examples.calculator.CalculatorParser;
+import org.parboiled.support.Filters;
+import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.test.AbstractTest;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
-public class ErrorTest {
+public class ErrorTest extends AbstractTest {
 
-    static class Parser extends BaseParser<Object> {
-
-        public Rule clause() {
-            return sequence(digit(), operator(), digit(), eoi());
-        }
-
-        public Rule operator() {
-            return firstOf('+', '-');
-        }
-
-        public Rule digit() {
-            return charRange('0', '9');
-        }
-
+    //@Test
+    public void testReporting() {
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
+        Rule rule = parser.inputLine();
+        ParsingResult<Integer> result = parser.parse(rule, "1+X2*(3-)-4/abc2+1");
+        assertTrue(result.hasErrors());
+        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
+                "Invalid input 'X', expected digit (line 1, pos 3):\n" +
+                "1+X2*(3-)-4/abc2+1\n" +
+                "  ^\n");
     }
 
     @Test
-    public void test() {
-        Parser parser = Parboiled.createParser(Parser.class);
-        Rule rule = parser.clause();
-        ParsingResult<?> result = parser.parse(rule, "1+X");
-        assertEqualsMultiline(printParseError(result.parseErrors.get(0), result.inputBuffer), "" +
-                "Invalid input 'X', expected digit (line 1, pos 3):\n" +
-                "1+X\n" +
-                "  ^\n");
+    public void testRecovery() {
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
+        Rule rule = parser.inputLine();
+        testFail(parser, rule, "1+X2*(3-)-4/abc2+1", "" +
+                "Invalid input 'X', expected term (line 1, pos 3):\n" +
+                "1+X2*(3-)-4/abc2+1\n" +
+                "  ^\n" +
+                "---\n" +
+                "Invalid input ')', expected term (line 1, pos 9):\n" +
+                "1+X2*(3-)-4/abc2+1\n" +
+                "        ^\n" +
+                "---\n" +
+                "Invalid input 'a', expected factor (line 1, pos 13):\n" +
+                "1+X2*(3-)-4/abc2+1\n" +
+                "            ^\n" +
+                "---\n" +
+                "Invalid input 'a', expected eoi (line 1, pos 13):\n" +
+                "1+X2*(3-)-4/abc2+1\n" +
+                "            ^\n", "" +
+                "\n", Filters.SkipEmptyOptionalsAndZeroOrMores);
     }
 
 }

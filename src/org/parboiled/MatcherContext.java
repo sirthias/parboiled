@@ -52,12 +52,13 @@ public class MatcherContext<V> implements Context<V> {
         public final List<ParseError<V>> parseErrors = new ArrayList<ParseError<V>>();
         public Node<V> lastNode;
         public ParseErrorMarker<V> currentErrorMarker;
-        public boolean replayToParseError;
+        public ParsingState parsingState = ParsingState.Parsing;
     }
 
     // also global but kept in each MatcherContext instance for faster access
     private final InputBuffer inputBuffer;
     private final Globals<V> globals;
+    private final int level;
 
     private MatcherContext<V> parent;
     private MatcherContext<V> subContext;
@@ -69,23 +70,24 @@ public class MatcherContext<V> implements Context<V> {
     private V nodeValue;
     private int intTag;
     private boolean belowLeafLevel;
-    private boolean enforced;
+    private boolean recoveryCandidate;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
                           @NotNull Globals<V> globals, Matcher<V> matcher) {
-        this(inputBuffer, globals);
+        this(inputBuffer, globals, 0);
         setStartLocation(startLocation);
         this.matcher = matcher;
     }
 
-    private MatcherContext(InputBuffer inputBuffer, Globals<V> globals) {
+    private MatcherContext(InputBuffer inputBuffer, Globals<V> globals, int level) {
         this.inputBuffer = inputBuffer;
         this.globals = globals;
+        this.level = level;
     }
 
     @Override
     public String toString() {
-        return getPath();
+        return getPath().toString();
     }
 
     //////////////////////////////// CONTEXT INTERFACE ////////////////////////////////////
@@ -98,6 +100,7 @@ public class MatcherContext<V> implements Context<V> {
         return subContext != null && subContext.matcher != null ? subContext : null;
     }
 
+    @NotNull
     public InputBuffer getInputBuffer() {
         return inputBuffer;
     }
@@ -115,6 +118,10 @@ public class MatcherContext<V> implements Context<V> {
         return globals.parseErrors;
     }
 
+    public void addParseError(@NotNull ParseError<V> error) {
+        globals.parseErrors.add(error);
+    }
+
     public InputLocation getCurrentLocation() {
         return currentLocation;
     }
@@ -128,8 +135,12 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     @NotNull
-    public String getPath() {
-        return (parent == null ? "" : parent.getPath()) + '/' + (matcher == null ? "?" : matcher.getLabel());
+    public MatcherPath<V> getPath() {
+        return new MatcherPath<V>(this);
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public V getNodeValue() {
@@ -171,6 +182,48 @@ public class MatcherContext<V> implements Context<V> {
         return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
+    public ParsingState getParsingState() {
+        return globals.parsingState;
+    }
+
+    public boolean isBelowLeafLevel() {
+        return belowLeafLevel;
+    }
+
+    public InputLocation getCurrentParseErrorLocation() {
+        return globals.currentErrorMarker.getLocation();
+    }
+
+    public MatcherPath<V> getCurrentParseErrorPath() {
+        return globals.currentErrorMarker.getPath();
+    }
+
+    public Context<V> getCurrentRecoveryContext() {
+        MatcherContext<V> context = this;
+        while (context != null) {
+            if (context.recoveryCandidate) return context;
+            context = context.getParent();
+        }
+        return null;
+    }
+
+    public Matcher<V> getFailedMatcher() {
+        if (recoveryCandidate) {
+            Matcher<V>[] errorMatchers = getCurrentParseErrorPath().getMatchers();
+            Preconditions.checkState(errorMatchers[level] == this);
+            if (level + 1 < errorMatchers.length) return errorMatchers[level + 1];
+        }
+        return null;
+    }
+
+    public void injectVirtualInput(char virtualInputChar) {
+        currentLocation = currentLocation.insertVirtualInput(virtualInputChar);
+    }
+
+    public void injectVirtualInput(String virtualInputText) {
+        currentLocation = currentLocation.insertVirtualInput(virtualInputText);
+    }
+
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setCurrentLocation(InputLocation currentLocation) {
@@ -185,7 +238,7 @@ public class MatcherContext<V> implements Context<V> {
         return node;
     }
 
-    public Object getIntTag() {
+    public int getIntTag() {
         return intTag;
     }
 
@@ -209,7 +262,7 @@ public class MatcherContext<V> implements Context<V> {
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, globals);
+            subContext = new MatcherContext<V>(inputBuffer, globals, level + 1);
             subContext.parent = this;
         }
 
@@ -220,7 +273,7 @@ public class MatcherContext<V> implements Context<V> {
         subContext.subNodes = null;
         subContext.nodeValue = null;
         subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
-        subContext.enforced = enforced;
+        subContext.recoveryCandidate = false;
         return subContext;
     }
 
@@ -229,70 +282,63 @@ public class MatcherContext<V> implements Context<V> {
      *
      * @return true if matched
      */
+    @SuppressWarnings({"unchecked", "fallthrough"})
     public boolean runMatcher() {
+        boolean matched = false;
         try {
-            if (matcher.match(this)) {
-                if (parent != null) parent.setCurrentLocation(currentLocation);
-                matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
-                return true;
-            }
+            matched = matcher.match(this);
+            if (!matched) {
+                switch (globals.parsingState) {
+                    case Parsing:
+                        globals.currentErrorMarker.mark(this);
+                        break;
 
-            if (enforced) {
-                recover();
-                if (parent != null) parent.setCurrentLocation(currentLocation);
-                matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
-                return true;
+                    case SeekingToParseError:
+                        if (!globals.currentErrorMarker.matchesState(this)) break;
+
+                        // we just failed the matcher causing the previously recorded parse error
+                        // so mark all contexts in the current stack as potential recovery candidates
+                        MatcherContext<V> context = this;
+                        while (context != null) {
+                            context.recoveryCandidate = true;
+                            context = context.getParent();
+                        }
+                        globals.parsingState = ParsingState.Recovering;
+                        // fall-through
+
+                    case Recovering:
+                        if (recoveryCandidate) {
+                            Matcher<V> recoveryRule = (Matcher<V>) matcher.getRecoveryRule();
+                            if (recoveryRule != null) {
+                                if (getSubContext(recoveryRule).runMatcher()) {
+                                    globals.currentErrorMarker = globals.currentErrorMarker.getNext();
+                                    globals.parsingState = globals.currentErrorMarker.isValid() ?
+                                            ParsingState.SeekingToParseError : ParsingState.Parsing;
+                                    matched = true;
+                                }
+                            }
+                        }
+                        break;
+                }
             }
 
         } catch (ActionException e) {
-            globals.parseErrors.add(new ParseError<V>(currentLocation, new MatcherPath<V>(this), e.getMessage()));
+            addParseError(new ParseError<V>(currentLocation, getPath(), e.getMessage()));
         } catch (ParserRuntimeException e) {
             throw e; // don't wrap, just bubble up
 
         } catch (Throwable e) {
             throw new ParserRuntimeException(e,
-                    printParseError(new ParseError<V>(currentLocation, new MatcherPath<V>(this),
+                    printParseError(new ParseError<V>(currentLocation, getPath(),
                             String.format("Error during execution of parsing %s '%s' at input position",
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath())), inputBuffer));
         }
 
-        matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
-        return false;
-    }
-
-    public void enforceMatch() {
-        enforced = true;
-        runMatcher();
-        enforced = false;
-    }
-
-    public void clearEnforcement() {
-        enforced = false;
-    }
-
-    // if the parser does not find another "solution" to the given input sometime later during the parsing process
-    // we might have a parse error
-    // so, we record the relevant parse error data right now, if
-    // - we have already matched some input in this sequence
-    // - no other recorded in-sequence-mismatch already happened further into the input
-    public boolean recoverFromInSequenceMismatch(Matcher<V> matcher) {
-        if (!enforced) {
-            if (globals.replayToParseError) {
-                if (globals.currentErrorMarker.matchesState(this, matcher)) {
-                    globals.currentErrorMarker = globals.currentErrorMarker.getNext();
-                    globals.replayToParseError = globals.currentErrorMarker.isValid();
-                    return true;
-                }
-            } else {
-                if (currentLocation != startLocation) {
-                    ParseErrorMarker<V> currentErrorMarker = globals.currentErrorMarker;
-                    if (currentErrorMarker.location == null || currentErrorMarker.location.index < currentLocation.index) {
-                        currentErrorMarker.mark(matcher, this);
-                    }
-                }
-            }
+        if (matched && parent != null) {
+            parent.setCurrentLocation(currentLocation);
         }
-        return false;
+        matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
+        return matched;
     }
 
     //////////////////////////////// PRIVATE ////////////////////////////////////

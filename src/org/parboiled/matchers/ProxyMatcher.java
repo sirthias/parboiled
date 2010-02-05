@@ -35,6 +35,7 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
     private Matcher<V> target;
     private String label;
     private Boolean leaf;
+    private Rule recoveryRule;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
@@ -67,6 +68,11 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         return target.isLeaf();
     }
 
+    public Rule getRecoveryRule() {
+        apply();
+        return target.getRecoveryRule();
+    }
+
     @Override
     public String toString() {
         if (target == null) return super.toString();
@@ -81,6 +87,9 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         }
         if (leaf != null) {
             makeLeaf();
+        }
+        if (recoveryRule != null) {
+            recoveredBy(recoveryRule);
         }
     }
 
@@ -119,6 +128,29 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         Rule inner = (Rule) unwrap(target);
         target = (Matcher<V>) inner.makeLeaf(); // since leaf marking might change the instance we have to update it
         leaf = null;
+        return (Rule) target;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule recoveredBy(Rule recoveryRule) {
+        if (target == null) {
+            // if we have no target yet we need to save the recovery rule and "apply" it later
+            if (this.label == null) {
+                this.recoveryRule = recoveryRule;
+                return this;
+            }
+
+            // this proxy matcher is already waiting for its recoveryLabel application opportunity,
+            // so we need to create another proxy level
+            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) new ProxyMatcher<V>().recoveredBy(recoveryRule);
+            anotherProxy.arm(this);
+            return anotherProxy;
+        }
+
+        // we already have a target to which we can directly apply the recoveryRule
+        Rule inner = (Rule) unwrap(target);
+        target = (Matcher<V>) inner.recoveredBy(recoveryRule); // since relabelling might change the instance we have to update it
+        this.recoveryRule = null;
         return (Rule) target;
     }
 

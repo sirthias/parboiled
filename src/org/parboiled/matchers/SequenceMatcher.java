@@ -45,10 +45,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
             context.setIntTag(i);
 
             if (!context.getSubContext(matcher).runMatcher()) {
-                if (!context.recoverFromInSequenceMismatch(matcher)) {
-                    return false;
-                }
-                context.getSubContext(matcher).enforceMatch();
+                return false;
             }
         }
         context.createNode();
@@ -70,7 +67,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
     }
 
     public Characters getFollowerChars(MatcherContext<V> context) {
-        int currentIndex = (Integer) context.getIntTag();
+        int currentIndex = context.getIntTag();
         return getStarterChars(currentIndex + 1);
     }
 

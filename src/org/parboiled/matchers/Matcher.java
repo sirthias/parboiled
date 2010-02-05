@@ -18,6 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.support.Characters;
 import org.parboiled.trees.GraphNode;
 
@@ -56,5 +57,7 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      *         matcher can legally match nothing.
      */
     Characters getStarterChars();
+
+    Rule getRecoveryRule();
 
 }

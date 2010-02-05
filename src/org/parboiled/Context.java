@@ -18,9 +18,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.InputBuffer;
-import org.parboiled.support.InputLocation;
-import org.parboiled.support.ParseError;
+import org.parboiled.support.*;
 
 import java.util.List;
 
@@ -51,6 +49,7 @@ public interface Context<V> {
      *
      * @return the InputBuffer
      */
+    @NotNull
     InputBuffer getInputBuffer();
 
     /**
@@ -61,7 +60,7 @@ public interface Context<V> {
     Matcher<V> getMatcher();
 
     /**
-     * Returns the start location of the currently running rule match attempt.
+     * Returns the input location where the matcher of this context started its match.
      *
      * @return the start location
      */
@@ -83,6 +82,13 @@ public interface Context<V> {
     List<ParseError<V>> getParseErrors();
 
     /**
+     * Adds the given ParseError to the list of parse errors.
+     *
+     * @param error the error to add
+     */
+    void addParseError(@NotNull ParseError<V> error);
+
+    /**
      * Returns the input text matched by the given node.
      *
      * @param node the node
@@ -99,12 +105,19 @@ public interface Context<V> {
     Character getNodeChar(Node<?> node);
 
     /**
-     * Returns the '/' separated full path name of the currently running Matcher.
+     * Returns the MatcherPath of the currently running matcher.
      *
      * @return the path
      */
     @NotNull
-    String getPath();
+    MatcherPath<V> getPath();
+
+    /**
+     * Returns the current matcher level, with 0 being the root level, 1 being one level below the root and so on.
+     *
+     * @return the current matcher level
+     */
+    int getLevel();
 
     /**
      * <p>Returns the first node that matches the given path.
@@ -178,6 +191,31 @@ public interface Context<V> {
      * @return true if the current context has a parent which corresponds to a test/testNot rule
      */
     boolean inPredicate();
+
+    /**
+     * Returns the current ParsingState.
+     *
+     * @return the current ParsingState
+     */
+    ParsingState getParsingState();
+
+    /**
+     * Returns true if the current context is running below a context with a matcher marked @Leaf
+     * @return true if the current context is running below a context with a matcher marked @Leaf
+     */
+    boolean isBelowLeafLevel();
+
+    InputLocation getCurrentParseErrorLocation();
+
+    MatcherPath<V> getCurrentParseErrorPath();
+
+    Context<V> getCurrentRecoveryContext();
+
+    Matcher<V> getFailedMatcher();
+
+    void injectVirtualInput(char virtualInputChar);
+
+    void injectVirtualInput(String virtualInputText);
 
 }
 

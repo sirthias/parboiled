@@ -29,6 +29,7 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     private boolean locked;
     private String label;
     private boolean leaf;
+    private Rule recoveryRule;
 
     protected AbstractMatcher() {
         this(new Rule[0]);
@@ -70,12 +71,12 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
 
     @SuppressWarnings({"unchecked"})
     public AbstractMatcher<V> label(@NotNull String label) {
-        if (!isLocked() || label.equals(this.label) ) {
+        if (!isLocked() || label.equals(this.label)) {
             this.label = label;
             return this;
         }
 
-        // if we are locked we are not allowed to change the label anymore
+        // if we are locked we are not allowed to change this instance anymore
         // therefore we need to create a shallow copy, apply the label to it and return the copy
         try {
             AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
@@ -88,16 +89,34 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
 
     @SuppressWarnings({"unchecked"})
     public Rule makeLeaf() {
-        if (isLeaf() || !isLocked()) {
+        if (!isLocked() || isLeaf()) {
             leaf = true;
             return this;
         }
 
-        // if we are locked we are not allowed to change the leaf marker field anymore
+        // if we are locked we are not allowed to change this instance anymore
         // therefore we need to create a shallow copy, apply the leaf marker to it and return the copy
         try {
             AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
             clone.leaf = true;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException();
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule recoveredBy(Rule recoveryRule) {
+        if (!isLocked() || recoveryRule == this.recoveryRule) {
+            this.recoveryRule = recoveryRule;
+            return this;
+        }
+
+        // if we are locked we are not allowed to change this instance anymore
+        // therefore we need to create a shallow copy, apply the recoveryRule to it and return the copy
+        try {
+            AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
+            clone.recoveryRule = recoveryRule;
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException();
@@ -115,6 +134,10 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     @Override
     public String toString() {
         return getLabel();
+    }
+
+    public Rule getRecoveryRule() {
+        return recoveryRule;
     }
 
 }

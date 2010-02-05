@@ -38,4 +38,7 @@ public interface Rule {
      */
     Rule makeLeaf();
 
+
+    Rule recoveredBy(Rule recoveryRule);
+
 }

@@ -18,10 +18,11 @@ package org.parboiled.examples.calculator;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.support.Leaf;
+
+import java.util.List;
 
 public class CalculatorParser extends BaseParser<Integer> {
-
-    final CalculatorActions actions = new CalculatorActions();
 
     public Rule inputLine() {
         return sequence(
@@ -34,7 +35,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         return sequence(
                 term(),
                 zeroOrMore(sequence(firstOf('+', '-'), term())),
-                actions.compute(VALUE("term"), CHARS("z/s/firstOf"), VALUES("z/s/term"))
+                compute(VALUE("term"), CHARS("z/s/firstOf"), VALUES("z/s/term"))
         );
     }
 
@@ -42,7 +43,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         return sequence(
                 factor(),
                 zeroOrMore(sequence(firstOf('*', '/'), factor())),
-                actions.compute(VALUE("factor"), CHARS("z/s/firstOf"), VALUES("z/s/factor"))
+                compute(VALUE("factor"), CHARS("z/s/firstOf"), VALUES("z/s/factor"))
         );
     }
 
@@ -58,11 +59,37 @@ public class CalculatorParser extends BaseParser<Integer> {
     }
 
     public Rule number() {
-        return sequence(oneOrMore(digit()), SET(Integer.parseInt(LAST_TEXT())));
+        return sequence(oneOrMore(digit()).makeLeaf(), SET(Integer.parseInt(LAST_TEXT())));
     }
 
     public Rule digit() {
         return charRange('0', '9');
+    }
+
+    //**************** ACTIONS ****************
+
+    public boolean compute(Integer firstValue, List<Character> operators, List<Integer> values) {
+        int value = firstValue != null ? firstValue : 0;
+        for (int i = 0; i < Math.min(operators.size(),values.size()); i++) {
+            value = performOperation(value, operators.get(i), values.get(i));
+        }
+        getContext().setNodeValue(value);
+        return true;
+    }
+
+    private int performOperation(int value1, Character operator, Integer value2) {
+        if (operator == null || value2 == null) return value1;
+        switch (operator) {
+            case '+':
+                return value1 + value2;
+            case '-':
+                return value1 - value2;
+            case '*':
+                return value1 * value2;
+            case '/':
+                return value1 / value2;
+        }
+        throw new IllegalStateException();
     }
 
 }
