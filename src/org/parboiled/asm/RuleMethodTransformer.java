@@ -43,11 +43,8 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
         for (ParserMethod method : classNode.ruleMethods) {
             if (method.hasActions()) {
                 transformRuleMethodContainingActions(classNode, method);
-            } else {
-                transformRuleMethodWithoutActions(classNode, method);
             }
         }
-
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
@@ -62,6 +59,8 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
                 classNode.actionClassGenerators.add(generator);
             }
         }
+
+        method.localVariables.clear();
     }
 
     private void insertActionClassCreation(ParserClassNode classNode, ParserMethod method,
@@ -77,31 +76,6 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
         methodInstructions.insertBefore(firstAfterAction,
                 new MethodInsnNode(INVOKESPECIAL, actionType.getInternalName(), "<init>",
                         "(" + classNode.getDescriptor() + ")V"));
-    }
-
-    private void transformRuleMethodWithoutActions(ParserClassNode classNode, ParserMethod method) {
-        // replace all method code with a simple call to the super method
-        // we do not just delete the method because its code is later going to wrapped with the caching code
-        InsnList methodInstructions = method.instructions;
-        AbstractInsnNode returnInsn = method.getReturnNode().instruction;
-
-        // do not delete starting label and linenumber instructions
-        AbstractInsnNode current = methodInstructions.getFirst();
-        while (current.getType() == AbstractInsnNode.LABEL || current.getType() == AbstractInsnNode.LINE) {
-            current = current.getNext();
-        }
-
-        // delete all instructions before the return statement
-        while (current != returnInsn) {
-            AbstractInsnNode next = current.getNext();
-            methodInstructions.remove(current);
-            current = next;
-        }
-
-        // insert the call to the super method
-        methodInstructions.insertBefore(returnInsn, new VarInsnNode(ALOAD, 0));
-        methodInstructions.insertBefore(returnInsn, new MethodInsnNode(INVOKESPECIAL, classNode.getParentType()
-                .getInternalName(), method.name, "()" + Types.RULE_TYPE.getDescriptor()));
     }
 
 }

@@ -40,15 +40,17 @@ public class ParserTransformer {
     static ClassNodeInitializer createTransformer() {
         return new ClassNodeInitializer(
                 new MethodCategorizer(
-                        new RuleMethodAnalyzer(
-                                new RuleMethodInstructionGraphPartitioner(
-                                        new RuleMethodTransformer(
-                                                new ConstructorGenerator(
-                                                        new ReturnInstructionUnifier(
-                                                                new LabelApplicator(
-                                                                        new LeafApplicator(
-                                                                                new CachingGenerator(
-                                                                                        new ParserClassDefiner()
+                        new LineNumberRemover(
+                                new RuleMethodAnalyzer(
+                                        new RuleMethodInstructionGraphPartitioner(
+                                                new RuleMethodTransformer(
+                                                        new ConstructorGenerator(
+                                                                new WithCallToSuperReplacer(
+                                                                        new LabelApplicator(
+                                                                                new LeafApplicator(
+                                                                                        new CachingGenerator(
+                                                                                                new ParserClassDefiner()
+                                                                                        )
                                                                                 )
                                                                         )
                                                                 )

@@ -27,28 +27,27 @@ public class RuleMethodTransformerTest {
         ParserClassNode classNode = new ParserClassNode(TestParser.class);
         new ClassNodeInitializer(
                 new MethodCategorizer(
-                        new RuleMethodAnalyzer(
-                                new RuleMethodInstructionGraphPartitioner(
-                                        new RuleMethodTransformer(null)
+                        new LineNumberRemover(
+                                new RuleMethodAnalyzer(
+                                        new RuleMethodInstructionGraphPartitioner(
+                                                new RuleMethodTransformer(
+                                                        new WithCallToSuperReplacer(null)
+                                                )
+                                        )
                                 )
                         )
                 )
         ).transform(classNode);
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "noActionRule"), "" +
-                "   L0\n" +
-                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/asm/TestParser.noActionRule ()Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
-                "   L1\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L1 0\n" +
                 "    MAXSTACK = 7\n" +
                 "    MAXLOCALS = 1\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "simpleActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -61,13 +60,11 @@ public class RuleMethodTransformerTest {
                 "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L1\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L1 0\n" +
                 "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 1\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "upSetActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -95,13 +92,11 @@ public class RuleMethodTransformerTest {
                 "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L1\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L1 0\n" +
                 "    MAXSTACK = 11\n" +
                 "    MAXLOCALS = 1\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "booleanExpressionActionRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -129,13 +124,11 @@ public class RuleMethodTransformerTest {
                 "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L1\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L1 0\n" +
                 "    MAXSTACK = 8\n" +
                 "    MAXLOCALS = 1\n");
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "complexActionsRule"), "" +
                 "   L0\n" +
-                "    LINENUMBER XXX L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -182,7 +175,6 @@ public class RuleMethodTransformerTest {
                 "    INVOKEVIRTUAL org/parboiled/asm/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n" +
                 "   L1\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/asm/TestParser; L0 L1 0\n" +
                 "    MAXSTACK = 14\n" +
                 "    MAXLOCALS = 1\n");
 

@@ -23,9 +23,12 @@
 package org.parboiled.asm;
 
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -173,6 +176,37 @@ class AsmUtils {
             if (fieldName.equals(field.name)) return field;
         }
         return null;
+    }
+
+    public static InsnList createArgumentLoaders(String methodDescriptor) {
+        InsnList instructions = new InsnList();
+        Type[] types = Type.getArgumentTypes(methodDescriptor);
+        for (int i = 0; i < types.length; i++) {
+            instructions.add(new VarInsnNode(getLoadingOpcode(types[i]), i + 1));
+        }
+        return instructions;
+    }
+
+    private static int getLoadingOpcode(Type argType) {
+        switch (argType.getSort()) {
+            case Type.BOOLEAN:
+            case Type.BYTE:
+            case Type.CHAR:
+            case Type.SHORT:
+            case Type.INT:
+                return Opcodes.ILOAD;
+            case Type.DOUBLE:
+                return Opcodes.DLOAD;
+            case Type.FLOAT:
+                return Opcodes.FLOAD;
+            case Type.LONG:
+                return Opcodes.LLOAD;
+            case Type.OBJECT:
+            case Type.ARRAY:
+                return Opcodes.ALOAD;
+            default:
+                throw new IllegalStateException();
+        }
     }
 
 }

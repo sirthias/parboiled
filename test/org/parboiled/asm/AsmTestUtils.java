@@ -19,7 +19,6 @@ package org.parboiled.asm;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -70,22 +69,7 @@ public class AsmTestUtils {
     }
 
     public static void assertTraceDumpEquality(@NotNull MethodNode method, String traceDump) throws Exception {
-        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor() {
-            @SuppressWarnings({"unchecked"})
-            @Override
-            // do not print actual line numbers so as to not fail the test just because the line numbers changed
-            public void visitLineNumber(int line, Label start) {
-                buf.setLength(0);
-                buf.append(tab2).append("LINENUMBER XXX ");
-                appendLabel(start);
-                buf.append('\n');
-                text.add(buf.toString());
-
-                if (mv != null) {
-                    mv.visitLineNumber(line, start);
-                }
-            }
-        };
+        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor();
         // MethodAdapter checkMethodAdapter = new MethodAdapter(traceMethodVisitor);
         MethodAdapter checkMethodAdapter = new CheckMethodAdapter(traceMethodVisitor);
         method.accept(checkMethodAdapter);

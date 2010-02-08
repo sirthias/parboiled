@@ -76,7 +76,7 @@ class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
     }
 
     public void visitSource(String source, String debug) {
-        classNode.visitSource(source, debug);
+        classNode.visitSource(null, null);
     }
 
     @SuppressWarnings("unchecked")

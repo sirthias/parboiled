@@ -48,7 +48,6 @@ public class ActionClassGeneratorTest {
                 "// access flags 33\n" +
                 "public class org/parboiled/asm/TestParser$$parboiled$simpleActionRule_Action1 extends org/parboiled/asm/ActionWrapperBase  {\n" +
                 "\n" +
-                "  // compiled from: BaseActions.java\n" +
                 "  // access flags 2\n" +
                 "  private INNERCLASS org/parboiled/asm/TestParser$$parboiled$simpleActionRule_Action1 org/parboiled/asm/TestParser$$parboiled simpleActionRule_Action1\n" +
                 "\n" +
@@ -96,7 +95,6 @@ public class ActionClassGeneratorTest {
                 "// access flags 33\n" +
                 "public class org/parboiled/asm/TestParser$$parboiled$upSetActionRule_Action1 extends org/parboiled/asm/ActionWrapperBase  {\n" +
                 "\n" +
-                "  // compiled from: BaseActions.java\n" +
                 "  // access flags 2\n" +
                 "  private INNERCLASS org/parboiled/asm/TestParser$$parboiled$upSetActionRule_Action1 org/parboiled/asm/TestParser$$parboiled upSetActionRule_Action1\n" +
                 "\n" +
@@ -154,7 +152,6 @@ public class ActionClassGeneratorTest {
                 "// access flags 33\n" +
                 "public class org/parboiled/asm/TestParser$$parboiled$booleanExpressionActionRule_Action1 extends org/parboiled/asm/ActionWrapperBase  {\n" +
                 "\n" +
-                "  // compiled from: BaseActions.java\n" +
                 "  // access flags 2\n" +
                 "  private INNERCLASS org/parboiled/asm/TestParser$$parboiled$booleanExpressionActionRule_Action1 org/parboiled/asm/TestParser$$parboiled booleanExpressionActionRule_Action1\n" +
                 "\n" +
@@ -213,7 +210,6 @@ public class ActionClassGeneratorTest {
                 "// access flags 33\n" +
                 "public class org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1 extends org/parboiled/asm/ActionWrapperBase  {\n" +
                 "\n" +
-                "  // compiled from: BaseActions.java\n" +
                 "  // access flags 2\n" +
                 "  private INNERCLASS org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action1 org/parboiled/asm/TestParser$$parboiled complexActionsRule_Action1\n" +
                 "\n" +
@@ -279,7 +275,6 @@ public class ActionClassGeneratorTest {
                 "// access flags 33\n" +
                 "public class org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2 extends org/parboiled/asm/ActionWrapperBase  {\n" +
                 "\n" +
-                "  // compiled from: BaseActions.java\n" +
                 "  // access flags 2\n" +
                 "  private INNERCLASS org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action2 org/parboiled/asm/TestParser$$parboiled complexActionsRule_Action2\n" +
                 "\n" +
@@ -333,7 +328,6 @@ public class ActionClassGeneratorTest {
                 "// access flags 33\n" +
                 "public class org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action3 extends org/parboiled/asm/ActionWrapperBase  {\n" +
                 "\n" +
-                "  // compiled from: BaseActions.java\n" +
                 "  // access flags 2\n" +
                 "  private INNERCLASS org/parboiled/asm/TestParser$$parboiled$complexActionsRule_Action3 org/parboiled/asm/TestParser$$parboiled complexActionsRule_Action3\n" +
                 "\n" +

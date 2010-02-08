@@ -64,7 +64,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
         this.instructions = method.instructions;
         this.current = instructions.getFirst();
 
-        skipStartingLabelAndLineNumInstructions();
+        skipStartingLabels();
         generateCacheHitReturn();
         generateStoreNewProxyMatcher();
         seekToReturnInstruction();
@@ -73,8 +73,8 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
         generateStoreInCache();
     }
 
-    private void skipStartingLabelAndLineNumInstructions() {
-        while (current.getType() == AbstractInsnNode.LABEL || current.getType() == AbstractInsnNode.LINE) {
+    private void skipStartingLabels() {
+        while (current.getType() == AbstractInsnNode.LABEL) {
             current = current.getNext();
         }
     }

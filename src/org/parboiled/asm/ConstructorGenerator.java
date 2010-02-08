@@ -18,11 +18,11 @@ package org.parboiled.asm;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+import static org.parboiled.asm.AsmUtils.createArgumentLoaders;
 import org.parboiled.support.Checks;
 
 /**
@@ -55,12 +55,10 @@ class ConstructorGenerator implements ClassTransformer, Opcodes {
                 new MethodNode(ACC_PUBLIC, constructor.name, constructor.desc, constructor.signature,
                         (String[]) constructor.exceptions.toArray(new String[constructor.exceptions.size()]));
 
-        Type[] argTypes = Type.getArgumentTypes(constructor.desc);
-        for (int i = 0; i <= argTypes.length; i++) {
-            newConstructor.instructions.add(new VarInsnNode(ALOAD, i));
-        }
-        newConstructor.instructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.getParentType().getInternalName(),
-                "<init>", constructor.desc));
+        newConstructor.instructions.add(new VarInsnNode(ALOAD, 0));
+        newConstructor.instructions.add(createArgumentLoaders(constructor.desc));
+        newConstructor.instructions.add(new MethodInsnNode(INVOKESPECIAL,
+                classNode.getParentType().getInternalName(), "<init>", constructor.desc));
         newConstructor.instructions.add(new InsnNode(RETURN));
 
         classNode.methods.add(newConstructor);

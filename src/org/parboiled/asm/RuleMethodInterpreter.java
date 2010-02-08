@@ -106,7 +106,6 @@ class RuleMethodInterpreter extends BasicInterpreter {
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
         switch (method.instructions.get(instructionIndex).getType()) {
             case AbstractInsnNode.LABEL:
-            case AbstractInsnNode.LINE:
             case AbstractInsnNode.JUMP_INSN:
                 additionalEdges.add(new int[] {instructionIndex, successorIndex});
                 return;

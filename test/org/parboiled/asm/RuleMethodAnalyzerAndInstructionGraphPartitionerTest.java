@@ -20,8 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Value;
 import static org.parboiled.asm.AsmTestUtils.getMethodInstructionList;
 import static org.parboiled.asm.AsmUtils.getMethodByName;
-import static org.parboiled.test.TestUtils.*;
 import org.parboiled.test.FileUtils;
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.parboiled.test.TestUtils.computeCRC;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.BeforeClass;
@@ -42,8 +43,10 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
     public void setup() throws Exception {
         new ClassNodeInitializer(
                 new MethodCategorizer(
-                        new RuleMethodAnalyzer(
-                                new RuleMethodInstructionGraphPartitioner(null)
+                        new LineNumberRemover(
+                                new RuleMethodAnalyzer(
+                                        new RuleMethodInstructionGraphPartitioner(null)
+                                )
                         )
                 )
         ).transform(classNode);
@@ -51,19 +54,19 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
 
     @Test
     public void testMethodAnalysis() throws Exception {
-        testMethodAnalysis("noActionRule", 1998088504L, false);
+        testMethodAnalysis("noActionRule", 2618091842L, false);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("simpleActionRule", 450882377L, true);
+        testMethodAnalysis("simpleActionRule", 4229098772L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("upSetActionRule", 2759802575L, true);
+        testMethodAnalysis("upSetActionRule", 4201510744L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("booleanExpressionActionRule", 727215768L, true);
+        testMethodAnalysis("booleanExpressionActionRule", 2149486368L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("complexActionsRule", 2150516099L, true);
+        testMethodAnalysis("complexActionsRule", 1549029409L, true);
         // renderToGraphViz(dotSource);
     }
 
