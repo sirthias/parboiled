@@ -56,4 +56,8 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
         return Characters.of(charLow, charUp);
     }
 
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
+    }
+
 }

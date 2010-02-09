@@ -41,11 +41,31 @@ public class Chars {
 
     /**
      * Determines wheter c is a special char
+     *
      * @param c the char
      * @return true if c is special
      */
     public static boolean isSpecial(char c) {
         return c == EOI || c == ANY || c == EMPTY;
+    }
+
+    /**
+     * Returns the string value of the given char, correctly expanding special chars.
+     *
+     * @param c the character
+     * @return the string value
+     */
+    public static String toString(char c) {
+        switch (c) {
+            case Chars.EOI:
+                return "EOI";
+            case Chars.EMPTY:
+                return "EMPTY";
+            case Chars.ANY:
+                return "ANY";
+            default:
+                return String.valueOf(c);
+        }
     }
 
 }

@@ -31,7 +31,7 @@ import org.parboiled.support.InputLocation;
  */
 public class TestNotMatcher<V> extends AbstractMatcher<V> {
 
-    private final Matcher<V> subMatcher;
+    public final Matcher<V> subMatcher;
 
     public TestNotMatcher(@NotNull Rule subRule) {
         super(subRule);
@@ -50,6 +50,8 @@ public class TestNotMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        context.clearEnforcement();
+        
         InputLocation lastLocation = context.getCurrentLocation();
         if (context.getSubContext(subMatcher).runMatcher()) {
             context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
@@ -68,6 +70,10 @@ public class TestNotMatcher<V> extends AbstractMatcher<V> {
         String label = super.getExpectedString();
         if (!"testNot".equals(label)) return label;
         return "not " + subMatcher.getExpectedString();
+    }
+
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
     }
 
 }

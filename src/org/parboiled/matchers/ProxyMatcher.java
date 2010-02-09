@@ -79,6 +79,11 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.getRecoveryMatcher();
     }
 
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        apply();
+        target.accept(visitor);
+    }
+
     @Override
     public String toString() {
         if (target == null) return super.toString();
@@ -105,7 +110,8 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
 
             // this proxy matcher is already waiting for its label application opportunity,
             // so we need to create another proxy level
-            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) createClone().label(label);
+            ProxyMatcher<V> anotherProxy = createClone();
+            anotherProxy.label = label;
             anotherProxy.arm(this);
             return anotherProxy;
         }
@@ -143,7 +149,8 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
 
             // this proxy matcher is already waiting for its recoveryLabel application opportunity,
             // so we need to create another proxy level
-            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) createClone().recoveredBy(recoveryRule);
+            ProxyMatcher<V> anotherProxy = createClone();
+            anotherProxy.recoveryRule = recoveryRule;
             anotherProxy.arm(this);
             return anotherProxy;
         }
@@ -163,9 +170,9 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
             return this;
         }
 
-        // we already have a target to which we can directly apply the pull up marker
+        // we already have a target to which we can directly apply the marker
         Rule inner = (Rule) unwrap(target);
-        target = (Matcher<V>) inner.withoutNode(); // since pull up marking might change the instance we have to update it
+        target = (Matcher<V>) inner.withoutNode(); // might change the instance so update it
         withoutNode = false;
         return (Rule) target;
     }
@@ -176,7 +183,12 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
 
     @SuppressWarnings({"unchecked"})
     public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
-        return matcher instanceof ProxyMatcher ? unwrap(((ProxyMatcher<V>) matcher).target) : matcher;
+        if (matcher instanceof ProxyMatcher) {
+            ProxyMatcher<V> proxyMatcher = (ProxyMatcher<V>) matcher;
+            proxyMatcher.apply();
+            return proxyMatcher.target;
+        }
+        return matcher;
     }
 
     // creates a shallow copy

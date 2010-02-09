@@ -31,8 +31,11 @@ import java.util.List;
  */
 public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
-    public SequenceMatcher(@NotNull Rule[] subRules) {
+    public final boolean enforced;
+
+    public SequenceMatcher(@NotNull Rule[] subRules, boolean enforced) {
         super(subRules);
+        this.enforced = enforced;
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
@@ -40,6 +43,8 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
         int size = children.size();
         for (int i = 0; i < size; i++) {
             Matcher<V> matcher = children.get(i);
+
+            if (i > 0 && enforced) context.setEnforcement();
 
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
@@ -69,6 +74,10 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
     public Characters getFollowerChars(MatcherContext<V> context) {
         int currentIndex = context.getIntTag();
         return getStarterChars(currentIndex + 1);
+    }
+
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
     }
 
 }

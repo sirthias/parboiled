@@ -21,6 +21,8 @@ import org.parboiled.MatcherContext;
 import org.parboiled.common.Utils;
 import org.parboiled.matchers.Matcher;
 
+import java.util.Arrays;
+
 /**
  * Describes a path of rule matchers as they are nested within each other at a certain point during the parsing process.
  */
@@ -101,6 +103,20 @@ public class MatcherPath<V> {
             if (matchers[i] == matcher) return i;
         }
         return -1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MatcherPath)) return false;
+        MatcherPath that = (MatcherPath) o;
+        return Arrays.equals(matchers, that.matchers);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(matchers);
     }
 
     @Override

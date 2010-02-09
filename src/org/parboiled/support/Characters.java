@@ -19,6 +19,7 @@ package org.parboiled.support;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * An immutable, set-like aggregation of (relatively few) characters that allows for an inverted semantic (all chars
@@ -309,4 +310,21 @@ public class Characters {
         return new Characters(true, chars.clone());
     }
 
+    /**
+     * Finds a character that is in the set and returns it. Guaranteed to succeed unless the set is empty,
+     * in which case this method returns null.
+     *
+     * @return a character that is in this set
+     */
+    public Character getRepresentative() {
+        if (equals(Characters.NONE) || equals(Characters.ONLY_EMPTY)) return null;
+        if (isSubtractive()) {
+            Random random = new Random();
+            while (true) {
+                char c = (char) random.nextInt(Character.MIN_SUPPLEMENTARY_CODE_POINT);
+                if (contains(c)) return c;
+            }
+        }
+        return chars[0] != Chars.EMPTY ? chars[0] : chars[1];
+    }
 }

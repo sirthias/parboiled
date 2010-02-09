@@ -26,7 +26,7 @@ import java.util.List;
 public class CalculatorParser extends BaseParser<Integer> {
 
     public Rule inputLine() {
-        return sequence(
+        return enforcedSequence(
                 expression(),
                 eoi()
         );
@@ -35,7 +35,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     public Rule expression() {
         return sequence(
                 term(),
-                zeroOrMore(sequence(firstOf('+', '-'), term())),
+                zeroOrMore(enforcedSequence(firstOf('+', '-'), term())),
                 compute(VALUE("term"), CHARS("z/s/firstOf"), VALUES("z/s/term"))
         );
     }
@@ -43,7 +43,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     public Rule term() {
         return sequence(
                 factor(),
-                zeroOrMore(sequence(firstOf('*', '/'), factor())),
+                zeroOrMore(enforcedSequence(firstOf('*', '/'), factor())),
                 compute(VALUE("factor"), CHARS("z/s/firstOf"), VALUES("z/s/factor"))
         );
     }
@@ -56,7 +56,7 @@ public class CalculatorParser extends BaseParser<Integer> {
     }
 
     public Rule parens() {
-        return sequence('(', expression(), ')');
+        return enforcedSequence('(', expression(), ')');
     }
 
     public Rule number() {

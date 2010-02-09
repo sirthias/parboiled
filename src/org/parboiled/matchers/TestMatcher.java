@@ -31,7 +31,7 @@ import org.parboiled.support.InputLocation;
  */
 public class TestMatcher<V> extends AbstractMatcher<V> {
 
-    private final Matcher<V> subMatcher;
+    public final Matcher<V> subMatcher;
 
     public TestMatcher(@NotNull Rule subRule) {
         super(subRule);
@@ -68,6 +68,10 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         String label = super.getExpectedString();
         if (!"test".equals(label)) return label;
         return subMatcher.getExpectedString();
+    }
+
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
     }
 
 }

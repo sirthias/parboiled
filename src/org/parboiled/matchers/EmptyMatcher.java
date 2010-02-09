@@ -42,4 +42,7 @@ public class EmptyMatcher<V> extends AbstractMatcher<V> {
         return Characters.of(Chars.EMPTY);
     }
 
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
+    }
 }

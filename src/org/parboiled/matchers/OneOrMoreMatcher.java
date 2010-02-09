@@ -31,7 +31,7 @@ import org.parboiled.support.InputLocation;
  */
 public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
-    private final Matcher<V> subMatcher;
+    public final Matcher<V> subMatcher;
 
     public OneOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);
@@ -41,6 +41,8 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
     public boolean match(@NotNull MatcherContext<V> context) {
         boolean matched = context.getSubContext(subMatcher).runMatcher();
         if (!matched) return false;
+
+        context.clearEnforcement();
 
         // collect all further matches as well
         InputLocation lastLocation = context.getCurrentLocation();
@@ -73,5 +75,9 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
         // i.e. the submatcher can either match once more or the repetition can legally terminate which means
         // our follower set addition is incomplete -> add EMPTY
         return getStarterChars().add(Chars.EMPTY);
+    }
+
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
     }
 }

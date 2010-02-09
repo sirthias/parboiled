@@ -27,19 +27,19 @@ import org.testng.annotations.Test;
 
 public class ErrorTest extends AbstractTest {
 
-    @Test
+    //@Test
     public void testReporting() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();
         ParsingResult<Integer> result = parser.parse(rule, "1+X2*(3-)-4/abc2+1");
         assertTrue(result.hasErrors());
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
-                "Invalid input 'X', expected digit (line 1, pos 3):\n" +
+                "Invalid input 'X', expected term (line 1, pos 3):\n" +
                 "1+X2*(3-)-4/abc2+1\n" +
                 "  ^\n");
     }
 
-    //@Test
+    @Test
     public void testRecovery() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();

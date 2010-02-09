@@ -24,9 +24,6 @@ import org.parboiled.common.Utils;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
-import org.parboiled.support.InputLocation;
-
-import java.util.List;
 
 /**
  * A Matcher trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
@@ -40,19 +37,10 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        List<Matcher<V>> children = getChildren();
-        int size = children.size();
-        for (int i = 0; i < size; i++) {
-            Matcher<V> matcher = children.get(i);
+        context.clearEnforcement();
 
-            InputLocation lastLocation = context.getCurrentLocation();
-            boolean matched = context.getSubContext(matcher).runMatcher();
-            if (matched) {
-                if (context.getCurrentLocation() == lastLocation && i < size - 1) {
-                    String path = context.getPath().toString();
-                    Checks.fail("Rule '%s' must not allow empty matches as a FirstOf sub rule",
-                            path + '/' + matcher);
-                }
+        for (Matcher<V> matcher : getChildren()) {
+            if (context.getSubContext(matcher).runMatcher()) {
                 context.createNode();
                 return true;
             }
@@ -81,4 +69,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
                 " or " + getChildren().get(count - 1);
     }
 
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
+    }
 }

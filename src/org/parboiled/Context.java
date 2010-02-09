@@ -193,29 +193,49 @@ public interface Context<V> {
     boolean inPredicate();
 
     /**
-     * Returns the current ParsingState.
-     *
-     * @return the current ParsingState
-     */
-    ParsingState getParsingState();
-
-    /**
      * Returns true if the current context is running below a context with a matcher marked @Leaf
+     *
      * @return true if the current context is running below a context with a matcher marked @Leaf
      */
     boolean isBelowLeafLevel();
 
-    InputLocation getCurrentParseErrorLocation();
+    /**
+     * Returns the parser instance whose {@link BaseParser#parse(Rule, String, ParseErrorHandler)}
+     * method is currently running.
+     *
+     * @return the parser instance
+     */
+    @NotNull
+    BaseParser<V> getParser();
 
-    MatcherPath<V> getCurrentParseErrorPath();
-
-    Context<V> getCurrentRecoveryContext();
-
-    Matcher<V> getFailedMatcher();
-
+    /**
+     * Injects the given char as a virtual input text at the current input location.
+     * The injected char is temporarily "visible" to matchers running underneath this context.
+     * Should the matcher at this context level fail the injection is lost. If the matcher succeeds the parent
+     * level will see the injection as well, however if the parent level context then does not succeed with matching
+     * its matcher the injection will be lost. (And so on, you see where this is going...)
+     *
+     * @param virtualInputChar the character to ibject
+     */
     void injectVirtualInput(char virtualInputChar);
 
+    /**
+     * Injects the given string as a virtual input text at the current input location.
+     * The injected string is temporarily "visible" to matchers running underneath this context.
+     * Should the matcher at this context level fail the injection is lost. If the matcher succeeds the parent
+     * level will see the injection as well, however if the parent level context then does not succeed with matching
+     * its matcher the injection will be lost. (And so on, you see where this is going...)
+     *
+     * @param virtualInputText the string to inject
+     */
     void injectVirtualInput(String virtualInputText);
 
+    /**
+     * Gets the Characters that can legally follow the currently running matcher in this context and/or any
+     * ancestor contexts. Used during parse error recovery to determine the resynchronization characters.
+     *
+     * @return the Characters that can legally follow the currently running matcher according to the grammar
+     */
+    Characters getCurrentFollowerChars();
 }
 

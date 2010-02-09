@@ -31,7 +31,7 @@ import org.parboiled.support.InputLocation;
  */
 public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
 
-    private final Matcher<V> subMatcher;
+    public final Matcher<V> subMatcher;
 
     public ZeroOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);
@@ -39,6 +39,8 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        context.clearEnforcement();
+        
         InputLocation lastLocation = context.getCurrentLocation();
         while (context.getSubContext(subMatcher).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
@@ -61,6 +63,10 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
 
     public Characters getFollowerChars(MatcherContext<V> context) {
         return getStarterChars().add(Chars.EMPTY);
+    }
+
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
     }
 
 }

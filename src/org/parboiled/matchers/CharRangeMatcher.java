@@ -55,4 +55,8 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         return chars;
     }
 
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
+    }
+
 }

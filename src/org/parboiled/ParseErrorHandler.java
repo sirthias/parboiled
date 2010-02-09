@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,10 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled;
 
-/**
- * A simple container holding a reference to another object.
- * @param <T>
- */
-public class Reference<T> {
-
-    private T target;
-
-    public Reference() {
-    }
-
-    public Reference(T target) {
-        this.target = target;
-    }
-
-    public T getTarget() {
-        return target;
-    }
-
-    public void setTarget(T target) {
-        this.target = target;
-    }
-
-    public boolean hasTarget() {
-        return target != null;
-    }
+public interface ParseErrorHandler<V> {
+    
+    boolean handleParseError(MatcherContext<V> context);
 
 }

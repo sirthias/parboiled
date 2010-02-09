@@ -48,7 +48,7 @@ public class SimpleTest extends AbstractTest {
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
                 "    [{abcd}] 'b'\n" +
-                "    [eoi]\n");
+                "    [EOI]\n");
     }
 
 }

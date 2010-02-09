@@ -69,4 +69,11 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      */
     Matcher<V> getRecoveryMatcher();
 
+    /**
+     * Accepts the given matcher visitor.
+     *
+     * @param visitor the visitor
+     */
+    void accept(@NotNull MatcherVisitor<V> visitor);
+
 }

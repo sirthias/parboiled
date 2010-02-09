@@ -29,7 +29,7 @@ import org.parboiled.support.Chars;
  */
 public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
-    private final Matcher<V> subMatcher;
+    public final Matcher<V> subMatcher;
 
     public OptionalMatcher(@NotNull Rule subRule) {
         super(subRule);
@@ -37,6 +37,7 @@ public class OptionalMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        context.clearEnforcement();
         context.getSubContext(subMatcher).runMatcher();
         context.createNode();
         return true;
@@ -44,5 +45,9 @@ public class OptionalMatcher<V> extends AbstractMatcher<V> {
 
     public Characters getStarterChars() {
         return subMatcher.getStarterChars().add(Chars.EMPTY);
+    }
+
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
     }
 }

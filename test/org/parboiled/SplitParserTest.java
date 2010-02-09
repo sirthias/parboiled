@@ -56,7 +56,7 @@ public class SplitParserTest extends AbstractTest {
                 "    [operator] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
-                "    [eoi]\n");
+                "    [EOI]\n");
     }
 
 }

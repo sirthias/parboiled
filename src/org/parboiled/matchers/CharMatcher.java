@@ -51,4 +51,8 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
         return Characters.of(character);
     }
 
+    public void accept(@NotNull MatcherVisitor<V> visitor) {
+        visitor.visit(this);
+    }
+
 }

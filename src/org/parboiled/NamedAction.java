@@ -16,7 +16,7 @@
 
 package org.parboiled;
 
-public abstract class NamedAction implements Action {
+public abstract class NamedAction<V> implements Action<V> {
 
     private final String name;
 

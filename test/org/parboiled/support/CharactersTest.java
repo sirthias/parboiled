@@ -16,8 +16,10 @@
 
 package org.parboiled.support;
 
-import org.testng.annotations.Test;
+import org.parboiled.common.ImmutableList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import org.testng.annotations.Test;
 
 public class CharactersTest {
 
@@ -56,15 +58,29 @@ public class CharactersTest {
         assertEquals(Characters.ONLY_EMPTY.remove(Characters.ALL), Characters.NONE);
         assertEquals(Characters.ALL.remove(Characters.ONLY_EMPTY), Characters.allBut(Chars.EMPTY));
 
-        assertEquals(Characters.of('A','B').add(Characters.of('B','C')), Characters.of('A','B','C'));
-        assertEquals(Characters.allBut('A','B').add(Characters.of('B','C')), Characters.allBut('A'));
-        assertEquals(Characters.of('A','B').add(Characters.allBut('B','C')), Characters.allBut('C'));
-        assertEquals(Characters.allBut('A','B').add(Characters.allBut('B','C')), Characters.allBut('B'));
+        assertEquals(Characters.of('A', 'B').add(Characters.of('B', 'C')), Characters.of('A', 'B', 'C'));
+        assertEquals(Characters.allBut('A', 'B').add(Characters.of('B', 'C')), Characters.allBut('A'));
+        assertEquals(Characters.of('A', 'B').add(Characters.allBut('B', 'C')), Characters.allBut('C'));
+        assertEquals(Characters.allBut('A', 'B').add(Characters.allBut('B', 'C')), Characters.allBut('B'));
 
-        assertEquals(Characters.of('A','B').remove(Characters.of('B','C')), Characters.of('A'));
-        assertEquals(Characters.allBut('A','B').remove(Characters.of('B','C')), Characters.allBut('A', 'B', 'C'));
-        assertEquals(Characters.of('A','B').remove(Characters.allBut('B','C')), Characters.of('B'));
-        assertEquals(Characters.allBut('A','B').remove(Characters.allBut('B','C')), Characters.of('C'));
+        assertEquals(Characters.of('A', 'B').remove(Characters.of('B', 'C')), Characters.of('A'));
+        assertEquals(Characters.allBut('A', 'B').remove(Characters.of('B', 'C')), Characters.allBut('A', 'B', 'C'));
+        assertEquals(Characters.of('A', 'B').remove(Characters.allBut('B', 'C')), Characters.of('B'));
+        assertEquals(Characters.allBut('A', 'B').remove(Characters.allBut('B', 'C')), Characters.of('C'));
+    }
+
+    @Test
+    public void testGetRepresentative() {
+        for (Characters characters : ImmutableList.of(
+                Characters.ONLY_EOI,
+                Characters.ONLY_EOI_AND_EMPTY,
+                Characters.allBut('A', 'B'),
+                Characters.ALL_EXCEPT_EOI,
+                Characters.ALL_EXCEPT_EOI_AND_EMPTY,
+                Characters.of('x')
+        )) {
+            assertTrue(characters.contains(characters.getRepresentative()));
+        }
     }
 
 }
