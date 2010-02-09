@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 
 public class ErrorTest extends AbstractTest {
 
-    //@Test
+    @Test
     public void testReporting() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();
@@ -39,7 +39,7 @@ public class ErrorTest extends AbstractTest {
                 "  ^\n");
     }
 
-    @Test
+    //@Test
     public void testRecovery() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();

@@ -18,11 +18,16 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
+import org.parboiled.ContextAware;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.exceptions.GrammarException;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Checks;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Matcher that not actually matches input but rather resolves an ActionParameter in the current rule context.
@@ -30,9 +35,30 @@ import org.parboiled.support.Checks;
 public class ActionMatcher<V> extends AbstractMatcher<V> {
 
     private final Action<V> action;
+    private final List<ContextAware<V>> contextAwares = new ArrayList<ContextAware<V>>();
 
+    @SuppressWarnings({"unchecked"})
     public ActionMatcher(@NotNull Action<V> action) {
         this.action = action;
+
+        // in order to make anonymous inner classes and other member classes work seamlessly
+        // we collect the synthetic references to the outer parent classes and inform them of
+        // the current parsing context if they implement ContextAware
+        Class<?> actionClass = action.getClass();
+        Field[] declaredFields = actionClass.getDeclaredFields();
+        for (Field field : declaredFields) {
+            if (field.isSynthetic() && ContextAware.class.isAssignableFrom(field.getType())) {
+                field.setAccessible(true);
+                try {
+                    ContextAware<V> contextAware = (ContextAware<V>) field.get(action);
+                    if (contextAware != null) contextAwares.add(contextAware);
+                } catch (IllegalAccessException e) {
+                    // ignore
+                } finally {
+                    field.setAccessible(false);
+                }
+            }
+        }
     }
 
     public String getLabel() {
@@ -43,7 +69,11 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         Checks.ensure(!context.isBelowLeafLevel(), "Actions are not allowed in or below @Leaf rules");
 
         // actions need to run in the parent context
-        return action.run(context.getParent());
+        context = context.getParent();        
+        for (ContextAware<V> contextAware : contextAwares) {
+            contextAware.setContext(context);
+        }
+        return action.run(context);
     }
 
     public Characters getStarterChars() {
@@ -51,7 +81,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     @Override
-    public Rule makeLeaf() {
+    public Rule asLeaf() {
         throw new GrammarException("Actions cannot be leaf rules");
     }
 

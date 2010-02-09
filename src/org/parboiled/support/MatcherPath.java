@@ -18,7 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Context;
+import org.parboiled.common.Utils;
 import org.parboiled.matchers.Matcher;
 
 /**
@@ -28,7 +28,8 @@ public class MatcherPath<V> {
 
     private final Matcher[] matchers;
 
-    public MatcherPath(MatcherContext<V> context) {
+    @SuppressWarnings({"ConstantConditions"})
+    public MatcherPath(@NotNull MatcherContext<V> context) {
         matchers = new Matcher[context.getLevel() + 1];
         while (context != null) {
             matchers[context.getLevel()] = context.getMatcher();
@@ -62,7 +63,7 @@ public class MatcherPath<V> {
      * @return true if this path matches
      */
     public boolean matches(@NotNull MatcherContext<V> context) {
-        return context.getLevel() == matchers.length + 1 && prefixMatches(context);
+        return context.getLevel() == matchers.length - 1 && prefixMatches(context);
     }
 
     /**
@@ -104,7 +105,7 @@ public class MatcherPath<V> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(matchers[0].toString());
+        StringBuilder sb = new StringBuilder(Utils.toString(matchers[0]));
         for (int i = 1; i < matchers.length; i++) {
             sb.append('/');
             sb.append(matchers[i]);

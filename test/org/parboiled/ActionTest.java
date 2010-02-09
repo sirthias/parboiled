@@ -16,8 +16,8 @@
 
 package org.parboiled;
 
-import org.testng.annotations.Test;
 import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
 
 public class ActionTest extends AbstractTest {
 
@@ -54,6 +54,24 @@ public class ActionTest extends AbstractTest {
             return charRange('0', '9');
         }
 
+        public Rule a() {
+            return sequence('a', b());
+        }
+
+        public Rule b() {
+            return sequence('b', c());
+        }
+
+        public Rule c() {
+            return sequence('c',
+                    new Action() {
+                        public boolean run(Context context) {
+                            return getContext() == context;
+                        }
+                    }
+            );
+        }
+
     }
 
     @Test
@@ -65,6 +83,14 @@ public class ActionTest extends AbstractTest {
                 "        [digit] '1'\n" +
                 "        [digit] '2'\n" +
                 "        [digit] '3'\n");
+
+        test(parser, parser.a(), "abc", "" +
+                "[a] 'abc'\n" +
+                "    ['a'] 'a'\n" +
+                "    [b] 'bc'\n" +
+                "        ['b'] 'b'\n" +
+                "        [c] 'c'\n" +
+                "            ['c'] 'c'\n");
     }
 
 }

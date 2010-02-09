@@ -51,7 +51,7 @@ class LeafApplicator implements ClassTransformer, Opcodes, Types {
 
         // stack: <rule>
         instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
-                "makeLeaf", "()" + RULE_TYPE.getDescriptor()));
+                "asLeaf", "()" + RULE_TYPE.getDescriptor()));
         // stack: <rule>
     }
 

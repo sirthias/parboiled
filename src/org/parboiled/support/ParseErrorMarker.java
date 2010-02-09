@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.Chars;
-import org.parboiled.support.InputLocation;
-import org.parboiled.support.MatcherPath;
-import org.parboiled.support.ParseError;
+import org.parboiled.MatcherContext;
 
 public class ParseErrorMarker<V> {
 

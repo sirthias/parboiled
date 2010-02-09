@@ -26,10 +26,11 @@ import org.parboiled.trees.ImmutableGraphNode;
  */
 public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
 
-    private boolean locked;
     private String label;
+    private Matcher<V> recoveryMatcher;
+    private boolean locked;
     private boolean leaf;
-    private Rule recoveryRule;
+    private boolean withoutNode;
 
     protected AbstractMatcher() {
         this(new Rule[0]);
@@ -69,58 +70,8 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return leaf;
     }
 
-    @SuppressWarnings({"unchecked"})
-    public AbstractMatcher<V> label(@NotNull String label) {
-        if (!isLocked() || label.equals(this.label)) {
-            this.label = label;
-            return this;
-        }
-
-        // if we are locked we are not allowed to change this instance anymore
-        // therefore we need to create a shallow copy, apply the label to it and return the copy
-        try {
-            AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
-            clone.label = label;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException();
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public Rule makeLeaf() {
-        if (!isLocked() || isLeaf()) {
-            leaf = true;
-            return this;
-        }
-
-        // if we are locked we are not allowed to change this instance anymore
-        // therefore we need to create a shallow copy, apply the leaf marker to it and return the copy
-        try {
-            AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
-            clone.leaf = true;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException();
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public Rule recoveredBy(Rule recoveryRule) {
-        if (!isLocked() || recoveryRule == this.recoveryRule) {
-            this.recoveryRule = recoveryRule;
-            return this;
-        }
-
-        // if we are locked we are not allowed to change this instance anymore
-        // therefore we need to create a shallow copy, apply the recoveryRule to it and return the copy
-        try {
-            AbstractMatcher<V> clone = (AbstractMatcher<V>) clone();
-            clone.recoveryRule = recoveryRule;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException();
-        }
+    public boolean isWithoutNode() {
+        return withoutNode;
     }
 
     public boolean hasLabel() {
@@ -136,8 +87,46 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return getLabel();
     }
 
-    public Rule getRecoveryRule() {
-        return recoveryRule;
+    public Matcher<V> getRecoveryMatcher() {
+        return recoveryMatcher;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public AbstractMatcher<V> label(@NotNull String label) {
+        AbstractMatcher<V> matcher = isLocked() && !label.equals(this.label) ? createClone() : this;
+        matcher.label = label;
+        return matcher;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule asLeaf() {
+        AbstractMatcher<V> matcher = isLocked() && !isLeaf() ? createClone() : this;
+        matcher.leaf = true;
+        return matcher;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule recoveredBy(Rule recoveryRule) {
+        AbstractMatcher<V> matcher = isLocked() && recoveryRule != this.recoveryMatcher ? createClone() : this;
+        matcher.recoveryMatcher = (Matcher<V>) recoveryRule;
+        return matcher;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule withoutNode() {
+        AbstractMatcher<V> matcher = isLocked() && !withoutNode ? createClone() : this;
+        matcher.withoutNode = true;
+        return matcher;
+    }
+
+    // creates a shallow copy
+    @SuppressWarnings({"unchecked"})
+    private AbstractMatcher<V> createClone() {
+        try {
+            return (AbstractMatcher<V>) clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException();
+        }
     }
 
 }

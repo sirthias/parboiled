@@ -36,14 +36,31 @@ public class Characters {
     public static final Characters ALL_EXCEPT_EMPTY = Characters.allBut(Chars.EMPTY);
     public static final Characters ALL_EXCEPT_EOI_AND_EMPTY = Characters.allBut(Chars.EOI, Chars.EMPTY);
 
-    // if the set is negative its semantics change from "includes all characters in the set" to
+    // if the set is subtractive its semantics change from "includes all characters in the set" to
     // "includes all characters not in the set"
-    private final boolean negative;
+    private final boolean subtractive;
     private final char[] chars;
 
-    private Characters(boolean negative, @NotNull char[] chars) {
-        this.negative = negative;
+    private Characters(boolean subtractive, @NotNull char[] chars) {
+        this.subtractive = subtractive;
         this.chars = chars;
+    }
+
+    /**
+     * @return true if the set is subtractive
+     */
+    public boolean isSubtractive() {
+        return subtractive;
+    }
+
+    /**
+     * Returns the characters in this set, if it is additive.
+     * If the set is subtractive the method returns the characters <b>not</b> in the set.
+     *
+     * @return the characters
+     */
+    public char[] getChars() {
+        return chars;
     }
 
     /**
@@ -59,7 +76,7 @@ public class Characters {
                     (contains(Chars.EMPTY) ? Characters.ALL : Characters.ALL_EXCEPT_EMPTY) :
                     (contains(Chars.EMPTY) ? Characters.ALL_EXCEPT_EOI : Characters.ALL_EXCEPT_EOI_AND_EMPTY);
         }
-        return negative ? removeFromChars(c) : addToChars(c);
+        return subtractive ? removeFromChars(c) : addToChars(c);
     }
 
     /**
@@ -75,7 +92,7 @@ public class Characters {
                     (contains(Chars.EMPTY) ? Characters.ONLY_EOI_AND_EMPTY : Characters.ONLY_EOI) :
                     (contains(Chars.EMPTY) ? Characters.ONLY_EMPTY : Characters.NONE);
         }
-        return negative ? addToChars(c) : removeFromChars(c);
+        return subtractive ? addToChars(c) : removeFromChars(c);
     }
 
     /**
@@ -87,10 +104,10 @@ public class Characters {
      */
     public boolean contains(char c) {
         if (c == Chars.ANY) {
-            return negative && (chars.length == 0 || equals(Characters.ONLY_EOI) || equals(
+            return subtractive && (chars.length == 0 || equals(Characters.ONLY_EOI) || equals(
                     Characters.ONLY_EMPTY) || equals(Characters.ONLY_EOI_AND_EMPTY));
         }
-        return indexOf(chars, c) == -1 ? negative : !negative;
+        return indexOf(chars, c) == -1 ? subtractive : !subtractive;
     }
 
     /**
@@ -102,13 +119,13 @@ public class Characters {
      */
     @NotNull
     public Characters add(@NotNull Characters other) {
-        if (!negative && !other.negative) {
+        if (!subtractive && !other.subtractive) {
             return addToChars(other.chars);
         }
-        if (negative && other.negative) {
+        if (subtractive && other.subtractive) {
             return retainAllChars(other.chars);
         }
-        return negative ? removeFromChars(other.chars) : other.removeFromChars(chars);
+        return subtractive ? removeFromChars(other.chars) : other.removeFromChars(chars);
     }
 
     /**
@@ -120,19 +137,19 @@ public class Characters {
      */
     @NotNull
     public Characters remove(@NotNull Characters other) {
-        if (!negative && !other.negative) {
+        if (!subtractive && !other.subtractive) {
             return removeFromChars(other.chars);
         }
-        if (negative && other.negative) {
+        if (subtractive && other.subtractive) {
             return new Characters(false, other.removeFromChars(chars).chars);
         }
-        return negative ? addToChars(other.chars) : retainAllChars(other.chars);
+        return subtractive ? addToChars(other.chars) : retainAllChars(other.chars);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(negative ? "![" : "[");
+        sb.append(subtractive ? "![" : "[");
         for (int i = 0; i < chars.length; i++) {
             if (i > 0) sb.append(',');
             char c = chars[i];
@@ -156,12 +173,12 @@ public class Characters {
         if (this == o) return true;
         if (!(o instanceof Characters)) return false;
         Characters that = (Characters) o;
-        return negative == that.negative && equivalent(chars, that.chars);
+        return subtractive == that.subtractive && equivalent(chars, that.chars);
     }
 
     @Override
     public int hashCode() {
-        int result = (negative ? 1 : 0);
+        int result = (subtractive ? 1 : 0);
         result = 31 * result + Arrays.hashCode(chars);
         return result;
     }
@@ -181,7 +198,7 @@ public class Characters {
         char[] newChars = new char[chars.length + 1];
         System.arraycopy(chars, 0, newChars, 1, chars.length);
         newChars[0] = c;
-        return new Characters(negative, newChars);
+        return new Characters(subtractive, newChars);
     }
 
     @NotNull
@@ -197,11 +214,11 @@ public class Characters {
     private Characters removeFromChars(char c) {
         int ix = indexOf(chars, c);
         if (ix == -1) return this;
-        if (chars.length == 1) return negative ? Characters.ALL : Characters.NONE;
+        if (chars.length == 1) return subtractive ? Characters.ALL : Characters.NONE;
         char[] newChars = new char[chars.length - 1];
         System.arraycopy(chars, 0, newChars, 0, ix);
         System.arraycopy(chars, ix + 1, newChars, ix, chars.length - ix - 1);
-        return new Characters(negative, newChars);
+        return new Characters(subtractive, newChars);
     }
 
     @NotNull

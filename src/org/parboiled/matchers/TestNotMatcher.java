@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,27 +25,27 @@ import org.parboiled.support.InputLocation;
 
 /**
  * A special Matcher not actually matching any input but rather trying its sub matcher against the current input
- * position. Succeeds if the sub matcher would succeed.
+ * position. Succeeds if the sub matcher would fail.
  *
  * @param <V>
  */
-public class TestMatcher<V> extends AbstractMatcher<V> {
+public class TestNotMatcher<V> extends AbstractMatcher<V> {
 
     private final Matcher<V> subMatcher;
 
-    public TestMatcher(@NotNull Rule subRule) {
+    public TestNotMatcher(@NotNull Rule subRule) {
         super(subRule);
         this.subMatcher = getChildren().get(0);
     }
 
     @Override
     public String getLabel() {
-        return hasLabel() ? super.getLabel() : "&(" + getChildren().get(0) + ")";
+        return hasLabel() ? super.getLabel() : "!(" + getChildren().get(0) + ")";
     }
 
     @Override
     public Rule withoutNode() {
-        throw new GrammarException("test rules cannot be marked as withoutNode-rules, " +
+        throw new GrammarException("testNot rules cannot be marked as withoutNode-rules, " +
                 "they never create parse tree nodes");
     }
 
@@ -53,21 +53,21 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         InputLocation lastLocation = context.getCurrentLocation();
         if (context.getSubContext(subMatcher).runMatcher()) {
             context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
-            return true;
+            return false;
         }
         context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
-        return false;
+        return true;
     }
 
     public Characters getStarterChars() {
-        return subMatcher.getStarterChars();
+        return Characters.ALL_EXCEPT_EMPTY.remove(subMatcher.getStarterChars());
     }
 
     @Override
     public String getExpectedString() {
         String label = super.getExpectedString();
-        if (!"test".equals(label)) return label;
-        return subMatcher.getExpectedString();
+        if (!"testNot".equals(label)) return label;
+        return "not " + subMatcher.getExpectedString();
     }
 
 }

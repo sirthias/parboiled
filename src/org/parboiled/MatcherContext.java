@@ -210,7 +210,7 @@ public class MatcherContext<V> implements Context<V> {
     public Matcher<V> getFailedMatcher() {
         if (recoveryCandidate) {
             Matcher<V>[] errorMatchers = getCurrentParseErrorPath().getMatchers();
-            Preconditions.checkState(errorMatchers[level] == this);
+            Preconditions.checkState(errorMatchers[level] == matcher);
             if (level + 1 < errorMatchers.length) return errorMatchers[level + 1];
         }
         return null;
@@ -230,6 +230,10 @@ public class MatcherContext<V> implements Context<V> {
         this.currentLocation = currentLocation;
     }
 
+    public void setStartLocation(InputLocation location) {
+        startLocation = currentLocation = location;
+    }
+
     public void advanceInputLocation() {
         setCurrentLocation(currentLocation.advance(inputBuffer));
     }
@@ -247,16 +251,26 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void createNode() {
-        if (belowLeafLevel) {
+        if (belowLeafLevel || matcher instanceof TestMatcher) {
+            return;
+        }
+        if (matcher.isWithoutNode()) {
+            if (parent != null) parent.addChildNodes(subNodes);
             return;
         }
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
-        if (!(matcher instanceof TestMatcher)) { // special case: TestMatchers do not add nodes
-            if (parent != null) {
-                parent.addChildNode(node);
-            }
-            globals.lastNode = node;
-        }
+        if (parent != null) parent.addChildNode(node);
+        globals.lastNode = node;
+    }
+
+    public void addChildNode(Node<V> node) {
+        if (subNodes == null) subNodes = new ArrayList<Node<V>>();
+        subNodes.add(node);
+    }
+
+    public void addChildNodes(List<Node<V>> nodes) {
+        if (subNodes == null) subNodes = new ArrayList<Node<V>>();
+        subNodes.addAll(nodes);
     }
 
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
@@ -308,7 +322,7 @@ public class MatcherContext<V> implements Context<V> {
 
                     case Recovering:
                         if (recoveryCandidate) {
-                            Matcher<V> recoveryRule = (Matcher<V>) matcher.getRecoveryRule();
+                            Matcher<V> recoveryRule = matcher.getRecoveryMatcher();
                             if (recoveryRule != null) {
                                 if (getSubContext(recoveryRule).runMatcher()) {
                                     globals.currentErrorMarker = globals.currentErrorMarker.getNext();
@@ -341,29 +355,16 @@ public class MatcherContext<V> implements Context<V> {
         return matched;
     }
 
-    //////////////////////////////// PRIVATE ////////////////////////////////////
-
-    private void setStartLocation(InputLocation location) {
-        startLocation = currentLocation = location;
-    }
-
-    private void addChildNode(Node<V> node) {
-        if (subNodes == null) subNodes = new ArrayList<Node<V>>();
-        subNodes.add(node);
-    }
-
-    private void recover() throws Throwable {
-        if (trySingleSymbolDeletion()) return;
-
-        Characters followerChars = getFollowerChars();
-        if (trySingleSymbolInsertion(followerChars)) return;
-        resynchronize(followerChars);
-    }
-
+    /**
+     * Gets the Characters that can legally follow the currently running matcher in this context and/or any
+     * ancestor contexts. Used during parse error recovery to determine the resynchronization characters.
+     *
+     * @return the Characters that can legally follow the currently running matcher according to the grammar
+     */
     @SuppressWarnings({"unchecked"})
-    private Characters getFollowerChars() {
+    public Characters getCurrentFollowerChars() {
         Characters chars = Characters.NONE;
-        MatcherContext<V> parent = this.parent;
+        MatcherContext<V> parent = this;
         while (parent != null) {
             if (parent.getMatcher() instanceof FollowMatcher) {
                 FollowMatcher<V> followMatcher = (FollowMatcher<V>) parent.getMatcher();
@@ -373,56 +374,6 @@ public class MatcherContext<V> implements Context<V> {
             parent = parent.parent;
         }
         return chars.remove(Chars.EMPTY).add(Chars.EOI);
-    }
-
-    // check whether the current char is a junk char that we can simply discard to continue with the next char
-    private boolean trySingleSymbolDeletion() throws Throwable {
-        Characters starterChars = matcher.getStarterChars();
-        Preconditions.checkState(!starterChars.contains(Chars.EMPTY));
-        InputLocation locationBeforeError = currentLocation;
-        char lookAheadOne = locationBeforeError.lookAhead(inputBuffer, 1);
-        if (!starterChars.contains(lookAheadOne)) {
-            return false;
-        }
-
-        // success, we have to skip only one char in order to be able to start the match
-        // match the illegal char and create a node for it
-        advanceInputLocation();
-        (parent != null ? parent : this).addChildNode(
-                new NodeImpl<V>("ILLEGAL", null, locationBeforeError, currentLocation, null)
-        );
-
-        startLocation = currentLocation;
-        // retry the original match
-        return matcher.match(this);
-    }
-
-    // check whether the current char is a legally following next char in the follower set
-    // if so, just virtually "insert" the missing expected character and continue
-    private boolean trySingleSymbolInsertion(Characters followerChars) {
-        char currentChar = currentLocation.currentChar;
-        if (!followerChars.contains(currentChar)) return false;
-
-        // success, the current mismatching character is a legal follower,
-        // so add a ParseError and still "match" (empty)
-        createNode();
-        return true;
-    }
-
-    // consume all characters until we see a legal follower
-    private void resynchronize(Characters followerChars) {
-        createNode(); // create an empty match node
-
-        InputLocation locationBeforeError = currentLocation;
-
-        // consume all illegal characters up until a char that we can continue parsing with
-        do {
-            advanceInputLocation();
-        } while (!followerChars.contains(currentLocation.currentChar) && currentLocation.currentChar != Chars.EOI);
-
-        (parent != null ? parent : this).addChildNode(
-                new NodeImpl<V>("ILLEGAL", null, locationBeforeError, currentLocation, null)
-        );
     }
 
 }

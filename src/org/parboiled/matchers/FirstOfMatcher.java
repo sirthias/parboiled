@@ -48,8 +48,10 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
             InputLocation lastLocation = context.getCurrentLocation();
             boolean matched = context.getSubContext(matcher).runMatcher();
             if (matched) {
-                if (context.getCurrentLocation() == lastLocation) {
-                    Checks.fail("The inner rule of FirstOf rule '%s' must not allow empty matches", context.getPath());
+                if (context.getCurrentLocation() == lastLocation && i < size - 1) {
+                    String path = context.getPath().toString();
+                    Checks.fail("Rule '%s' must not allow empty matches as a FirstOf sub rule",
+                            path + '/' + matcher);
                 }
                 context.createNode();
                 return true;

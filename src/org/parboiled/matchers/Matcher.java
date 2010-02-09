@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Rule;
 import org.parboiled.support.Characters;
 import org.parboiled.trees.GraphNode;
 
@@ -37,6 +36,11 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      * @return true if this matcher has been marked as a leaf matcher
      */
     boolean isLeaf();
+
+    /**
+     * @return true if this matcher has been marked as a "without node" matcher
+     */
+    boolean isWithoutNode();
 
     /**
      * @return a string describing what content is expected by this matcher
@@ -58,6 +62,11 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      */
     Characters getStarterChars();
 
-    Rule getRecoveryRule();
+    /**
+     * Returns the recovery matcher assigned to this matcher, or null if none has been assigned.
+     *
+     * @return the recovery matcher
+     */
+    Matcher<V> getRecoveryMatcher();
 
 }

@@ -18,8 +18,9 @@ package org.parboiled.examples.calculator;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.support.Leaf;
+import static org.parboiled.common.StringUtils.isEmpty;
 
+import static java.lang.Integer.parseInt;
 import java.util.List;
 
 public class CalculatorParser extends BaseParser<Integer> {
@@ -59,7 +60,10 @@ public class CalculatorParser extends BaseParser<Integer> {
     }
 
     public Rule number() {
-        return sequence(oneOrMore(digit()).makeLeaf(), SET(Integer.parseInt(LAST_TEXT())));
+        return sequence(
+                oneOrMore(digit()).asLeaf(),
+                SET(parseInt(isEmpty(LAST_TEXT()) ? "0" : LAST_TEXT()))
+        );
     }
 
     public Rule digit() {
@@ -70,7 +74,7 @@ public class CalculatorParser extends BaseParser<Integer> {
 
     public boolean compute(Integer firstValue, List<Character> operators, List<Integer> values) {
         int value = firstValue != null ? firstValue : 0;
-        for (int i = 0; i < Math.min(operators.size(),values.size()); i++) {
+        for (int i = 0; i < Math.min(operators.size(), values.size()); i++) {
             value = performOperation(value, operators.get(i), values.get(i));
         }
         getContext().setNodeValue(value);

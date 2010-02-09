@@ -33,12 +33,26 @@ public interface Rule {
      * Marks this rule as a leaf rule. The parse tree nodes created by this rule will be leaf nodes in the parse tree,
      * i.e. sub rules will not create parse tree nodes.
      * Additionally this rule and all sub rules are not allowed to contain parser actions.
+     * Leaf rules can be parsed significantly faster than ordinary, parse tree node creating rules.
      *
      * @return this Rule
      */
-    Rule makeLeaf();
+    Rule asLeaf();
 
-
+    /**
+     * Assigns the given rule as parse error recovery rule to this rule.
+     *
+     * @param recoveryRule the rule to execute as parse error recovery rule
+     * @return this Rule
+     */
     Rule recoveredBy(Rule recoveryRule);
+
+    /**
+     * Marks this rule as not creating its own parse tree node.
+     * Instead all nodes created by sub rules are "pulled up" to become direct children of this rules parent rule.
+     *
+     * @return this Rule
+     */
+    Rule withoutNode();
 
 }

@@ -69,7 +69,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
             switch (globals.parsingState) {
                 case Parsing:
-                    if (context.getNode() != null) break; // parsing completed successfully
+                    if (context.getNode() != null) break loop; // parsing completed successfully
                     Preconditions.checkState(globals.currentErrorMarker.isValid());
                     globals.parseErrors.add(globals.currentErrorMarker.createParseError());
                     if (!recoverFromParseErrors) break loop;
@@ -112,8 +112,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
                 return empty();
             case Chars.ANY:
                 return any();
-            case Chars.EOI:
-                return eoi();
             default:
                 return new CharMatcher(c);
         }
@@ -159,7 +157,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Leaf
     public Rule charSet(@NotNull String characters) {
         Preconditions.checkArgument(characters.length() > 0);
-        if (characters.length() == 1) return ch(characters.charAt(0)); // shortcut
+        if (characters.length() == 1) return ch(characters.charAt(0)); // optimize one-char sets
         return firstOf(toObjectArray(characters.toCharArray())).label('{' + characters + '}');
     }
 
@@ -176,12 +174,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Leaf
     public Rule string(@NotNull String string) {
-        if (string.length() == 1) return ch(string.charAt(0)); // optimize one-letter strings
+        if (string.length() == 1) return ch(string.charAt(0)); // optimize one-char strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
             matchers[i] = ch(string.charAt(i));
         }
-        return new SequenceMatcher(matchers).label('"' + string + '"');
+        return sequence(matchers).label('"' + string + '"');
     }
 
     /**
@@ -195,12 +193,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Leaf
     public Rule stringIgnoreCase(@NotNull String string) {
-        if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-letter strings
+        if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-char strings
         Rule[] matchers = new Rule[string.length()];
         for (int i = 0; i < string.length(); i++) {
             matchers[i] = charIgnoreCase(string.charAt(i));
         }
-        return new SequenceMatcher(matchers).label('"' + string + '"');
+        return sequence(matchers).label('"' + string + '"');
     }
 
     /**
@@ -285,7 +283,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule sequence(@NotNull Object[] rules) {
         return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules)).label("sequence").recoveredBy(defaultSequenceRecoveryRule());
+                new SequenceMatcher(toRules(rules)).label("sequence");
     }
 
     /**
@@ -300,7 +298,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule test(Object rule) {
-        return new TestMatcher(toRule(rule), false);
+        return new TestMatcher(toRule(rule));
     }
 
     /**
@@ -315,7 +313,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule testNot(Object rule) {
-        return new TestMatcher(toRule(rule), true);
+        return new TestNotMatcher(toRule(rule));
     }
 
     /**
@@ -337,8 +335,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @KeepAsIs
     public Rule eoi() {
-        return new CharMatcher<V>(Chars.EOI);
+        return ch(Chars.EOI);
     }
 
     /**
@@ -419,10 +418,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     public Rule[] toRules(@NotNull Object... objects) {
         Rule[] rules = new Rule[objects.length];
-
-        // we need to process the sub rule objects in reverse order so as to correctly mix in parameters
-        // from the parameter stack
-        for (int i = objects.length - 1; i >= 0; i--) {
+        for (int i = 0; i < objects.length; i++) {
             rules[i] = toRule(objects[i]);
         }
         return rules;
@@ -449,64 +445,31 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         return sequence(
                 // we only recover if we have already matched something in this sequence,
                 // otherwise just continue bubbling up the parse error through the matcher stack
-                new Action<V>() {
-                    public boolean run(Context<V> context) {
-                        Checks.ensure(context.getParsingState() == ParsingState.Recovering,
-                                "defaultSequenceRecoveryRule() should only be used for recovery actions");
-                        Context recoveryContext = context.getCurrentRecoveryContext();
-                        return recoveryContext.getCurrentLocation() != recoveryContext.getStartLocation();
-                    }
-                },
+                DefaultActions.checkRecoveryContextAlreadyMatchedSomething,
+
+                // check for two simple cases, if they don't work: resync
                 firstOf(
-                        deleteOneRecoveryRule(),
-                        insertOneRecoveryRule(),
-                        resynchronizeRecoveryRule()
-                )
-        );
-    }
+                        // first test: delete one char and retry
+                        sequence(
+                                illegal(any()), // match one character and mark it ILLEGAL
+                                DefaultActions.rematchFailedMatcher
+                        ).withoutNode().label("deleteOne"),
 
-    @KeepAsIs
-    private Rule deleteOneRecoveryRule() {
-        return sequence(
-                // match one character and mark it ILLEGAL
-                illegal(any()),
+                        // second test: insert one char and retry
+                        DefaultActions.insertCharAndRetry,
 
-                // retry the failed matcher of the sequence we are recovering for
-                new Action<V>() {
-                    public boolean run(Context<V> context) {
-                        Context<V> recoveryContext = context.getCurrentRecoveryContext();
-                        return match(recoveryContext.getFailedMatcher());
-                    }
-                }
-        );
-    }
-
-    @KeepAsIs
-    private Rule insertOneRecoveryRule() {
-        return toRule(
-                new Action<V>() {
-                    public boolean run(Context<V> context) {
-                        Context<V> recoveryContext = context.getCurrentRecoveryContext();
-                        Matcher<V> failedMatcher = recoveryContext.getFailedMatcher();
-                        Characters starterChars = failedMatcher.getStarterChars();
-
-                        // this rule runs as a recovery of all sequences, so the failed matcher must have failed
-                        // on its first character, otherwise there would have to be another sequence further up
-                        // the error matcher stack catching and recovering the current parse error
-                        Preconditions.checkState(!starterChars.contains(recoveryContext.getCurrentLocation().currentChar));
-
-                        for (Object o : Ch) {
-
-                        }
-                        context.injectVirtualInput();
-                        return false;
-                    }
-                }
-        );
-    }
-
-    public Rule resynchronizeRecoveryRule() {
-        return null;
+                        // fallback: resync
+                        sequence(
+                                DefaultActions.createEmptyNodeForFailedMatcher,
+                                zeroOrMore(
+                                        sequence(
+                                                testNot(DefaultActions.isNextCharRecoveryFollower),
+                                                illegal(any())
+                                        ).withoutNode()
+                                ).withoutNode()
+                        ).withoutNode().label("resync")
+                ).withoutNode()
+        ).withoutNode();
     }
 
     public Rule illegal(Object rule) {

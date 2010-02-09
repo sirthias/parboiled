@@ -30,11 +30,12 @@ import java.util.List;
  *
  * @param <V>
  */
-public class ProxyMatcher<V> implements Rule, Matcher<V> {
+public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
 
     private Matcher<V> target;
     private String label;
-    private Boolean leaf;
+    private boolean leaf;
+    private boolean withoutNode;
     private Rule recoveryRule;
 
     @NotNull
@@ -68,9 +69,14 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
         return target.isLeaf();
     }
 
-    public Rule getRecoveryRule() {
+    public boolean isWithoutNode() {
         apply();
-        return target.getRecoveryRule();
+        return target.isWithoutNode();
+    }
+
+    public Matcher<V> getRecoveryMatcher() {
+        apply();
+        return target.getRecoveryMatcher();
     }
 
     @Override
@@ -82,15 +88,10 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
 
     private void apply() {
         Preconditions.checkState(target != null);
-        if (label != null) {
-            label(label);
-        }
-        if (leaf != null) {
-            makeLeaf();
-        }
-        if (recoveryRule != null) {
-            recoveredBy(recoveryRule);
-        }
+        if (label != null) label(label);
+        if (leaf) asLeaf();
+        if (withoutNode) withoutNode();
+        if (recoveryRule != null) recoveredBy(recoveryRule);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -104,7 +105,7 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
 
             // this proxy matcher is already waiting for its label application opportunity,
             // so we need to create another proxy level
-            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) new ProxyMatcher<V>().label(label);
+            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) createClone().label(label);
             anotherProxy.arm(this);
             return anotherProxy;
         }
@@ -117,7 +118,7 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Rule makeLeaf() {
+    public Rule asLeaf() {
         if (target == null) {
             // if we have no target yet we need to save the leaf marker and "apply" it later
             leaf = true;
@@ -126,8 +127,8 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
 
         // we already have a target to which we can directly apply the leaf marker
         Rule inner = (Rule) unwrap(target);
-        target = (Matcher<V>) inner.makeLeaf(); // since leaf marking might change the instance we have to update it
-        leaf = null;
+        target = (Matcher<V>) inner.asLeaf(); // since leaf marking might change the instance we have to update it
+        leaf = false;
         return (Rule) target;
     }
 
@@ -135,22 +136,37 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
     public Rule recoveredBy(Rule recoveryRule) {
         if (target == null) {
             // if we have no target yet we need to save the recovery rule and "apply" it later
-            if (this.label == null) {
+            if (this.recoveryRule == null) {
                 this.recoveryRule = recoveryRule;
                 return this;
             }
 
             // this proxy matcher is already waiting for its recoveryLabel application opportunity,
             // so we need to create another proxy level
-            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) new ProxyMatcher<V>().recoveredBy(recoveryRule);
+            ProxyMatcher<V> anotherProxy = (ProxyMatcher<V>) createClone().recoveredBy(recoveryRule);
             anotherProxy.arm(this);
             return anotherProxy;
         }
 
         // we already have a target to which we can directly apply the recoveryRule
         Rule inner = (Rule) unwrap(target);
-        target = (Matcher<V>) inner.recoveredBy(recoveryRule); // since relabelling might change the instance we have to update it
+        target = (Matcher<V>) inner.recoveredBy(recoveryRule); // might change the instance so update it
         this.recoveryRule = null;
+        return (Rule) target;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule withoutNode() {
+        if (target == null) {
+            // if we have no target yet we need to save the pull up marker and "apply" it later
+            withoutNode = true;
+            return this;
+        }
+
+        // we already have a target to which we can directly apply the pull up marker
+        Rule inner = (Rule) unwrap(target);
+        target = (Matcher<V>) inner.withoutNode(); // since pull up marking might change the instance we have to update it
+        withoutNode = false;
         return (Rule) target;
     }
 
@@ -161,6 +177,16 @@ public class ProxyMatcher<V> implements Rule, Matcher<V> {
     @SuppressWarnings({"unchecked"})
     public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
         return matcher instanceof ProxyMatcher ? unwrap(((ProxyMatcher<V>) matcher).target) : matcher;
+    }
+
+    // creates a shallow copy
+    @SuppressWarnings({"unchecked"})
+    private ProxyMatcher<V> createClone() {
+        try {
+            return (ProxyMatcher<V>) clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException();
+        }
     }
 
 }

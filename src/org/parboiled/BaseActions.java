@@ -366,7 +366,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     private void check() {
-        Checks.ensure(context != null, "Illegal rule definition: Unwrapped action expression!");
+        Checks.ensure(context != null && context.getMatcher() != null,
+                "Illegal rule definition: Unwrapped action expression!");
     }
 
 }
