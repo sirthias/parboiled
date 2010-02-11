@@ -20,6 +20,12 @@ import org.parboiled.matchers.*;
 
 import java.util.List;
 
+/**
+ * MatcherVisitor that expands a matcher to the list of matcher labels that correspond to all "non-labelled"
+ * matchers the given matcher can legally start a match with.
+ *
+ * @param <V>
+ */
 public class ToFirstLabelVisitor<V> extends DefaultMatcherVisitor<V, Void> {
 
     private final CanMatchEmptyVisitor<V> canMatchEmptyVisitor = new CanMatchEmptyVisitor<V>();
@@ -78,7 +84,7 @@ public class ToFirstLabelVisitor<V> extends DefaultMatcherVisitor<V, Void> {
 
     @Override
     public Void visit(TestNotMatcher<V> matcher) {
-        if (!"testNot".equals(matcher.getLabel())) return add(matcher);        
+        if (!"testNot".equals(matcher.getLabel())) return add(matcher);
         int oldLen = stringList.size();
         matcher.subMatcher.accept(this);
         for (int i = oldLen; i < stringList.size(); i++) {

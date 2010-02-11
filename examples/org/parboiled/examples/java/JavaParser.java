@@ -56,15 +56,15 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule packageDeclaration() {
-        return sequence(zeroOrMore(annotation()), sequence(PACKAGE, qualifiedIdentifier(), SEMI));
+        return sequence(zeroOrMore(annotation()), enforcedSequence(PACKAGE, qualifiedIdentifier(), SEMI));
     }
 
     public Rule importDeclaration() {
-        return sequence(
+        return enforcedSequence(
                 IMPORT,
                 optional(STATIC),
                 qualifiedIdentifier(),
-                optional(sequence(DOT, STAR)),
+                optional(enforcedSequence(DOT, STAR)),
                 SEMI
         );
     }
@@ -89,12 +89,12 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule classDeclaration() {
-        return sequence(
+        return enforcedSequence(
                 CLASS,
                 identifier(),
                 optional(typeParameters()),
-                optional(sequence(EXTENDS, classType())),
-                optional(sequence(IMPLEMENTS, classTypeList())),
+                optional(enforcedSequence(EXTENDS, classType())),
+                optional(enforcedSequence(IMPLEMENTS, classTypeList())),
                 classBody()
         );
     }
@@ -113,11 +113,11 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule memberDecl() {
         return firstOf(
-                sequence(typeParameters(), genericMethodOrConstructorRest()),
+                enforcedSequence(typeParameters(), genericMethodOrConstructorRest()),
                 sequence(type(), identifier(), methodDeclaratorRest()),
                 sequence(type(), variableDeclarators()),
-                sequence(VOID, identifier(), voidMethodDeclaratorRest()),
-                sequence(identifier(), constructorDeclaratorRest()),
+                enforcedSequence(VOID, identifier(), voidMethodDeclaratorRest()),
+                enforcedSequence(identifier(), constructorDeclaratorRest()),
                 interfaceDeclaration(),
                 classDeclaration(),
                 enumDeclaration(),
@@ -136,7 +136,7 @@ public class JavaParser extends BaseParser<Object> {
         return sequence(
                 formalParameters(),
                 zeroOrMore(dim()),
-                optional(sequence(THROWS, classTypeList())),
+                optional(enforcedSequence(THROWS, classTypeList())),
                 firstOf(methodBody(), SEMI)
         );
     }
@@ -144,13 +144,13 @@ public class JavaParser extends BaseParser<Object> {
     public Rule voidMethodDeclaratorRest() {
         return sequence(
                 formalParameters(),
-                optional(sequence(THROWS, classTypeList())),
+                optional(enforcedSequence(THROWS, classTypeList())),
                 firstOf(methodBody(), SEMI)
         );
     }
 
     public Rule constructorDeclaratorRest() {
-        return sequence(formalParameters(), optional(sequence(THROWS, classTypeList())), methodBody());
+        return sequence(formalParameters(), optional(enforcedSequence(THROWS, classTypeList())), methodBody());
     }
 
     public Rule methodBody() {
@@ -162,11 +162,11 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule interfaceDeclaration() {
-        return sequence(
+        return enforcedSequence(
                 INTERFACE,
                 identifier(),
                 optional(typeParameters()),
-                optional(sequence(EXTENDS, classTypeList())),
+                optional(enforcedSequence(EXTENDS, classTypeList())),
                 interfaceBody()
         );
     }
@@ -209,7 +209,7 @@ public class JavaParser extends BaseParser<Object> {
         return sequence(
                 formalParameters(),
                 zeroOrMore(dim()),
-                optional(sequence(THROWS, classTypeList())),
+                optional(enforcedSequence(THROWS, classTypeList())),
                 SEMI
         );
     }
@@ -219,11 +219,11 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule voidInterfaceMethodDeclaratorsRest() {
-        return sequence(formalParameters(), optional(sequence(THROWS, classTypeList())), SEMI);
+        return sequence(formalParameters(), optional(enforcedSequence(THROWS, classTypeList())), SEMI);
     }
 
     public Rule constantDeclaratorsRest() {
-        return sequence(constantDeclaratorRest(), zeroOrMore(sequence(COMMA, constantDeclarator())));
+        return sequence(constantDeclaratorRest(), zeroOrMore(enforcedSequence(COMMA, constantDeclarator())));
     }
 
     public Rule constantDeclarator() {
@@ -239,10 +239,10 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule enumDeclaration() {
-        return sequence(
+        return enforcedSequence(
                 ENUM,
                 identifier(),
-                optional(sequence(IMPLEMENTS, classTypeList())),
+                optional(enforcedSequence(IMPLEMENTS, classTypeList())),
                 enumBody()
         );
     }
@@ -258,7 +258,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule enumConstants() {
-        return sequence(enumConstant(), zeroOrMore(sequence(COMMA, enumConstant())));
+        return sequence(enumConstant(), zeroOrMore(enforcedSequence(COMMA, enumConstant())));
     }
 
     public Rule enumConstant() {
@@ -284,11 +284,11 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule variableDeclarators() {
-        return sequence(variableDeclarator(), zeroOrMore(sequence(COMMA, variableDeclarator())));
+        return sequence(variableDeclarator(), zeroOrMore(enforcedSequence(COMMA, variableDeclarator())));
     }
 
     public Rule variableDeclarator() {
-        return sequence(identifier(), zeroOrMore(dim()), optional(sequence(EQU, variableInitializer())));
+        return sequence(identifier(), zeroOrMore(dim()), optional(enforcedSequence(EQU, variableInitializer())));
     }
 
     //-------------------------------------------------------------------------
@@ -296,7 +296,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     public Rule formalParameters() {
-        return sequence(LPAR, optional(formalParameterDecls()), RPAR);
+        return enforcedSequence(LPAR, optional(formalParameterDecls()), RPAR);
     }
 
     public Rule formalParameter() {
@@ -309,8 +309,8 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule formalParameterDeclsRest() {
         return firstOf(
-                sequence(variableDeclaratorId(), optional(sequence(COMMA, formalParameterDecls()))),
-                sequence(ELLIPSIS, variableDeclaratorId())
+                sequence(variableDeclaratorId(), optional(enforcedSequence(COMMA, formalParameterDecls()))),
+                enforcedSequence(ELLIPSIS, variableDeclaratorId())
         );
     }
 
@@ -323,7 +323,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------    
 
     public Rule block() {
-        return sequence(LWING, blockStatements(), RWING);
+        return enforcedSequence(LWING, blockStatements(), RWING);
     }
 
     public Rule blockStatements() {
@@ -341,33 +341,33 @@ public class JavaParser extends BaseParser<Object> {
     public Rule statement() {
         return firstOf(
                 block(),
-                sequence(ASSERT, expression(), optional(sequence(COLON, expression())), SEMI),
-                sequence(IF, parExpression(), statement(), optional(sequence(ELSE, statement()))),
-                sequence(FOR, LPAR, optional(forInit()), SEMI, optional(expression()), SEMI, optional(forUpdate()),
-                        RPAR, statement()),
-                sequence(FOR, LPAR, formalParameter(), COLON, expression(), RPAR, statement()),
-                sequence(WHILE, parExpression(), statement()),
-                sequence(DO, statement(), WHILE, parExpression(), SEMI),
-                sequence(TRY, block(),
+                enforcedSequence(ASSERT, expression(), optional(sequence(COLON, expression())), SEMI),
+                enforcedSequence(IF, parExpression(), statement(), optional(sequence(ELSE, statement()))),
+                enforcedSequence(sequence(FOR, LPAR, optional(forInit()), SEMI),
+                        optional(expression()), SEMI, optional(forUpdate()), RPAR, statement()),
+                enforcedSequence(FOR, LPAR, formalParameter(), COLON, expression(), RPAR, statement()),
+                enforcedSequence(WHILE, parExpression(), statement()),
+                enforcedSequence(DO, statement(), WHILE, parExpression(), SEMI),
+                enforcedSequence(TRY, block(),
                         firstOf(sequence(oneOrMore(catch_()), optional(finally_())), finally_())),
-                sequence(SWITCH, parExpression(), LWING, switchBlockStatementGroups(), RWING),
-                sequence(SYNCHRONIZED, parExpression(), block()),
-                sequence(RETURN, optional(expression()), SEMI),
-                sequence(THROW, expression(), SEMI),
-                sequence(BREAK, optional(identifier()), SEMI),
-                sequence(CONTINUE, optional(identifier()), SEMI),
-                sequence(sequence(identifier(), COLON), statement()),
-                sequence(statementExpression(), SEMI),
+                enforcedSequence(SWITCH, parExpression(), LWING, switchBlockStatementGroups(), RWING),
+                enforcedSequence(SYNCHRONIZED, parExpression(), block()),
+                enforcedSequence(RETURN, optional(expression()), SEMI),
+                enforcedSequence(THROW, expression(), SEMI),
+                enforcedSequence(BREAK, optional(identifier()), SEMI),
+                enforcedSequence(CONTINUE, optional(identifier()), SEMI),
+                enforcedSequence(sequence(identifier(), COLON), statement()),
+                enforcedSequence(statementExpression(), SEMI),
                 SEMI
         );
     }
 
     public Rule catch_() {
-        return sequence(CATCH, LPAR, formalParameter(), RPAR, block());
+        return enforcedSequence(CATCH, LPAR, formalParameter(), RPAR, block());
     }
 
     public Rule finally_() {
-        return sequence(FINALLY, block());
+        return enforcedSequence(FINALLY, block());
     }
 
     public Rule switchBlockStatementGroups() {
@@ -380,21 +380,21 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule switchLabel() {
         return firstOf(
-                sequence(CASE, constantExpression(), COLON),
-                sequence(CASE, enumConstantName(), COLON),
-                sequence(DEFAULT, COLON)
+                enforcedSequence(CASE, constantExpression(), COLON),
+                enforcedSequence(CASE, enumConstantName(), COLON),
+                enforcedSequence(DEFAULT, COLON)
         );
     }
 
     public Rule forInit() {
         return firstOf(
                 sequence(zeroOrMore(firstOf(FINAL, annotation())), type(), variableDeclarators()),
-                sequence(statementExpression(), zeroOrMore(sequence(COMMA, statementExpression())))
+                sequence(statementExpression(), zeroOrMore(enforcedSequence(COMMA, statementExpression())))
         );
     }
 
     public Rule forUpdate() {
-        return sequence(statementExpression(), zeroOrMore(sequence(COMMA, statementExpression())));
+        return sequence(statementExpression(), zeroOrMore(enforcedSequence(COMMA, statementExpression())));
     }
 
     public Rule enumConstantName() {
@@ -426,7 +426,7 @@ public class JavaParser extends BaseParser<Object> {
     public Rule expression() {
         return sequence(
                 conditionalExpression(),
-                zeroOrMore(sequence(assignmentOperator(), conditionalExpression()))
+                zeroOrMore(enforcedSequence(assignmentOperator(), conditionalExpression()))
         );
     }
 
@@ -437,49 +437,49 @@ public class JavaParser extends BaseParser<Object> {
     public Rule conditionalExpression() {
         return sequence(
                 conditionalOrExpression(),
-                zeroOrMore(sequence(QUERY, expression(), COLON, conditionalOrExpression()))
+                zeroOrMore(enforcedSequence(QUERY, expression(), COLON, conditionalOrExpression()))
         );
     }
 
     public Rule conditionalOrExpression() {
         return sequence(
                 conditionalAndExpression(),
-                zeroOrMore(sequence(OROR, conditionalAndExpression()))
+                zeroOrMore(enforcedSequence(OROR, conditionalAndExpression()))
         );
     }
 
     public Rule conditionalAndExpression() {
         return sequence(
                 inclusiveOrExpression(),
-                zeroOrMore(sequence(ANDAND, inclusiveOrExpression()))
+                zeroOrMore(enforcedSequence(ANDAND, inclusiveOrExpression()))
         );
     }
 
     public Rule inclusiveOrExpression() {
         return sequence(
                 exclusiveOrExpression(),
-                zeroOrMore(sequence(OR, exclusiveOrExpression()))
+                zeroOrMore(enforcedSequence(OR, exclusiveOrExpression()))
         );
     }
 
     public Rule exclusiveOrExpression() {
         return sequence(
                 andExpression(),
-                zeroOrMore(sequence(HAT, andExpression()))
+                zeroOrMore(enforcedSequence(HAT, andExpression()))
         );
     }
 
     public Rule andExpression() {
         return sequence(
                 equalityExpression(),
-                zeroOrMore(sequence(AND, equalityExpression()))
+                zeroOrMore(enforcedSequence(AND, equalityExpression()))
         );
     }
 
     public Rule equalityExpression() {
         return sequence(
                 relationalExpression(),
-                zeroOrMore(sequence(firstOf(EQUAL, NOTEQUAL), relationalExpression()))
+                zeroOrMore(enforcedSequence(firstOf(EQUAL, NOTEQUAL), relationalExpression()))
         );
     }
 
@@ -488,8 +488,8 @@ public class JavaParser extends BaseParser<Object> {
                 shiftExpression(),
                 zeroOrMore(
                         firstOf(
-                                sequence(firstOf(LE, GE, LT, GT), shiftExpression()),
-                                sequence(INSTANCEOF, referenceType())
+                                enforcedSequence(firstOf(LE, GE, LT, GT), shiftExpression()),
+                                enforcedSequence(INSTANCEOF, referenceType())
                         )
                 )
         );
@@ -498,21 +498,21 @@ public class JavaParser extends BaseParser<Object> {
     public Rule shiftExpression() {
         return sequence(
                 additiveExpression(),
-                zeroOrMore(sequence(firstOf(SL, SR, BSR), additiveExpression()))
+                zeroOrMore(enforcedSequence(firstOf(SL, SR, BSR), additiveExpression()))
         );
     }
 
     public Rule additiveExpression() {
         return sequence(
                 multiplicativeExpression(),
-                zeroOrMore(sequence(firstOf(PLUS, MINUS), multiplicativeExpression()))
+                zeroOrMore(enforcedSequence(firstOf(PLUS, MINUS), multiplicativeExpression()))
         );
     }
 
     public Rule multiplicativeExpression() {
         return sequence(
                 unaryExpression(),
-                zeroOrMore(sequence(firstOf(STAR, DIV, MOD), unaryExpression()))
+                zeroOrMore(enforcedSequence(firstOf(STAR, DIV, MOD), unaryExpression()))
         );
     }
 
@@ -527,17 +527,17 @@ public class JavaParser extends BaseParser<Object> {
     public Rule primary() {
         return firstOf(
                 parExpression(),
-                sequence(
+                enforcedSequence(
                         nonWildcardTypeArguments(),
                         firstOf(explicitGenericInvocationSuffix(), sequence(THIS, arguments()))
                 ),
                 sequence(THIS, optional(arguments())),
-                sequence(SUPER, superSuffix()),
+                enforcedSequence(SUPER, superSuffix()),
                 literal(),
-                sequence(NEW, creator()),
+                enforcedSequence(NEW, creator()),
                 sequence(qualifiedIdentifier(), optional(identifierSuffix())),
-                sequence(basicType(), zeroOrMore(dim()), DOT, CLASS),
-                sequence(VOID, DOT, CLASS)
+                enforcedSequence(basicType(), zeroOrMore(dim()), DOT, CLASS),
+                enforcedSequence(VOID, DOT, CLASS)
         );
     }
 
@@ -564,16 +564,16 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule explicitGenericInvocation() {
-        return sequence(nonWildcardTypeArguments(), explicitGenericInvocationSuffix());
+        return enforcedSequence(nonWildcardTypeArguments(), explicitGenericInvocationSuffix());
     }
 
     public Rule nonWildcardTypeArguments() {
-        return sequence(LPOINT, referenceType(), zeroOrMore(sequence(COMMA, referenceType())), RPOINT);
+        return sequence(LPOINT, referenceType(), zeroOrMore(enforcedSequence(COMMA, referenceType())), RPOINT);
     }
 
     public Rule explicitGenericInvocationSuffix() {
         return firstOf(
-                sequence(SUPER, superSuffix()),
+                enforcedSequence(SUPER, superSuffix()),
                 sequence(identifier(), arguments())
         );
     }
@@ -612,7 +612,7 @@ public class JavaParser extends BaseParser<Object> {
     public Rule arguments() {
         return sequence(
                 LPAR,
-                optional(sequence(expression(), zeroOrMore(sequence(COMMA, expression())))),
+                optional(sequence(expression(), zeroOrMore(enforcedSequence(COMMA, expression())))),
                 RPAR
         );
     }
@@ -708,30 +708,30 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule classTypeList() {
-        return sequence(classType(), zeroOrMore(sequence(COMMA, classType())));
+        return sequence(classType(), zeroOrMore(enforcedSequence(COMMA, classType())));
     }
 
     public Rule typeArguments() {
-        return sequence(LPOINT, typeArgument(), zeroOrMore(sequence(COMMA, typeArgument())), RPOINT);
+        return sequence(LPOINT, typeArgument(), zeroOrMore(enforcedSequence(COMMA, typeArgument())), RPOINT);
     }
 
     public Rule typeArgument() {
         return firstOf(
                 referenceType(),
-                sequence(QUERY, optional(sequence(firstOf(EXTENDS, SUPER), referenceType())))
+                enforcedSequence(QUERY, optional(enforcedSequence(firstOf(EXTENDS, SUPER), referenceType())))
         );
     }
 
     public Rule typeParameters() {
-        return sequence(LPOINT, typeParameter(), zeroOrMore(sequence(COMMA, typeParameter())), RPOINT);
+        return sequence(LPOINT, typeParameter(), zeroOrMore(enforcedSequence(COMMA, typeParameter())), RPOINT);
     }
 
     public Rule typeParameter() {
-        return sequence(identifier(), optional(sequence(EXTENDS, bound())));
+        return sequence(identifier(), optional(enforcedSequence(EXTENDS, bound())));
     }
 
     public Rule bound() {
-        return sequence(classType(), zeroOrMore(sequence(AND, classType())));
+        return sequence(classType(), zeroOrMore(enforcedSequence(AND, classType())));
     }
 
     // the following common definition of Modifier is part of the modification
@@ -754,7 +754,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------    
 
     public Rule annotationTypeDeclaration() {
-        return sequence(sequence(AT, INTERFACE), identifier(), annotationTypeBody());
+        return enforcedSequence(sequence(AT, INTERFACE), identifier(), annotationTypeBody());
     }
 
     public Rule annotationTypeBody() {
@@ -788,7 +788,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule defaultValue() {
-        return sequence(DEFAULT, elementValue());
+        return enforcedSequence(DEFAULT, elementValue());
     }
 
     public Rule annotation() {
@@ -815,7 +815,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule elementValues() {
-        return sequence(elementValue(), zeroOrMore(sequence(COMMA, elementValue())));
+        return sequence(elementValue(), zeroOrMore(enforcedSequence(COMMA, elementValue())));
     }
 
     //-------------------------------------------------------------------------
@@ -1023,7 +1023,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule unicodeEscape() {
-        return sequence('u', hexDigit(), hexDigit(), hexDigit(), hexDigit());
+        return enforcedSequence('u', hexDigit(), hexDigit(), hexDigit(), hexDigit());
     }
 
     //-------------------------------------------------------------------------
@@ -1087,12 +1087,12 @@ public class JavaParser extends BaseParser<Object> {
 
     @Leaf
     public Rule terminal(String string) {
-        return sequence(string, optional(spacing())).label(string);
+        return sequence(string, optional(spacing())).label('\'' + string + '\'');
     }
 
     @Leaf
     public Rule terminal(String string, Rule mustNotFollow) {
-        return sequence(string, testNot(mustNotFollow), optional(spacing())).label(string);
+        return sequence(string, testNot(mustNotFollow), optional(spacing())).label('\'' + string + '\'');
     }
 
 }

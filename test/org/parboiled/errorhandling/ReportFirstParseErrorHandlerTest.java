@@ -19,6 +19,7 @@ package org.parboiled.errorhandling;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.examples.calculator.CalculatorParser;
+import org.parboiled.examples.java.JavaParser;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
@@ -65,7 +66,7 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
     };
 
     @Test
-    public void testReporting() {
+    public void testSimpleReporting() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();
         for (int i = 0; i < inputs.length; i++) {
@@ -73,6 +74,30 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
             assertEquals(result.parseErrors.size(), 1);
             assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), errorMessages[i]);
         }
+    }
+
+    @Test
+    public void testJavaError1() {
+        String sourceWithErrors = "package org.parboiled.examples;\n" +
+            "\n" +
+            "public class JavaTestSource {\n" +
+            "\n" +
+            "    @SuppressWarnings({\"UnnecessaryLocalVariable\", \"UnusedDeclaration\"})\n" +
+            "    public String method(int param) {\n" +
+            "        String name = toString(;\n" +
+            "        return name;\n" +
+            "    }\n" +
+            "\n" +
+            "}";
+
+        JavaParser parser = Parboiled.createParser(JavaParser.class);
+        Rule rule = parser.compilationUnit();
+        ParsingResult<Object> result = Parboiled.parse(parser, rule, sourceWithErrors);
+        assertEquals(result.parseErrors.size(), 1);
+        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
+                "Invalid input ';', expected spacing, expression or ')' (line 7, pos 32):\n" +
+                "        String name = toString(;\n" +
+                "                               ^\n");
     }
 
 }
