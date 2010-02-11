@@ -355,14 +355,14 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public boolean match(@NotNull Rule rule) {
-        return match((Matcher<V>) rule);
+    public boolean match(@NotNull Rule rule, boolean enforce) {
+        return match((Matcher<V>) rule, enforce);
     }
 
-    public boolean match(@NotNull Matcher<V> matcher) {
+    public boolean match(@NotNull Matcher<V> matcher, boolean enforce) {
         check();
         MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-        return matcherContext.getSubContext(matcher).runMatcher();
+        return matcherContext.getSubContext(matcher, enforce).runMatcher();
     }
 
     private void check() {

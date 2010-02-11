@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.common.Preconditions;
-import org.parboiled.support.Characters;
 
 import java.util.List;
 
@@ -49,16 +48,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.match(context);
     }
 
-    public String getExpectedString() {
-        apply();
-        return target.getExpectedString();
-    }
-
-    public Characters getStarterChars() {
-        apply();
-        return target.getStarterChars();
-    }
-
     public String getLabel() {
         apply();
         return target.getLabel();
@@ -79,9 +68,9 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.getRecoveryMatcher();
     }
 
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
         apply();
-        target.accept(visitor);
+        return target.accept(visitor);
     }
 
     @Override

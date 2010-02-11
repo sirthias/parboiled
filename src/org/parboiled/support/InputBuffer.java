@@ -17,6 +17,7 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.Parboiled;
 
 /**
  * Simple immutable wrapper around a char[] buffer providing basic access methods.
@@ -58,7 +59,7 @@ public class InputBuffer {
      * @return the character at the given index or Chars.EOI.
      */
     public char charAt(int index) {
-        return index >= 0 && index < buffer.length ? buffer[index] : Chars.EOI;
+        return index >= 0 && index < buffer.length ? buffer[index] : Parboiled.EOI;
     }
 
     /**

@@ -33,12 +33,12 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<?> result = parser.parse(parser.time(), input);
+            ParsingResult<?> result = Parboiled.parse(parser, parser.time(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println(printNodeTree(result) + '\n');
 
-            if (result.hasErrors()) {
+            if (!result.matched) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));
             }
         }

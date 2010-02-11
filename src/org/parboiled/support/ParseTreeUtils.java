@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.errorhandling.ParseError;
 import org.parboiled.common.Function;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;

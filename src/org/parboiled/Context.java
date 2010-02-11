@@ -17,8 +17,11 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.errorhandling.ParseError;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.*;
+import org.parboiled.support.InputBuffer;
+import org.parboiled.support.InputLocation;
+import org.parboiled.support.MatcherPath;
 
 import java.util.List;
 
@@ -200,7 +203,7 @@ public interface Context<V> {
     boolean isBelowLeafLevel();
 
     /**
-     * Returns the parser instance whose {@link BaseParser#parse(Rule, String, ParseErrorHandler)}
+     * Returns the parser instance whose {@link BaseParser#parse(Rule, String, org.parboiled.errorhandling.ParseErrorHandler)}
      * method is currently running.
      *
      * @return the parser instance
@@ -231,11 +234,11 @@ public interface Context<V> {
     void injectVirtualInput(String virtualInputText);
 
     /**
-     * Gets the Characters that can legally follow the currently running matcher in this context and/or any
-     * ancestor contexts. Used during parse error recovery to determine the resynchronization characters.
+     * Returns a list of matchers that can legally follow the currently running matcher according to the grammar.
      *
-     * @return the Characters that can legally follow the currently running matcher according to the grammar
+     * @return a list of matchers that can legally follow the currently running matcher according to the grammar
      */
-    Characters getCurrentFollowerChars();
+    List<Matcher<V>> getCurrentFollowerMatchers();
+
 }
 

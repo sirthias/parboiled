@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
+import org.parboiled.Parboiled;
 
 /**
  * (Almost) immutable value container identifying a certain position in an InputBuffer.
@@ -51,7 +52,7 @@ public class InputLocation {
         switch (currentChar) {
             case '\n':
                 return next = new InputLocation(inputBuffer, index + 1, row + 1, 0);
-            case Chars.EOI:
+            case Parboiled.EOI:
                 return next = this;
             default:
                 return next = new InputLocation(inputBuffer, index + 1, row, column + 1);

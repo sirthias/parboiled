@@ -17,9 +17,13 @@
 package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.*;
+import org.parboiled.Action;
+import org.parboiled.ContextAware;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
+import org.parboiled.errorhandling.ParseError;
+import org.parboiled.exceptions.ActionException;
 import org.parboiled.exceptions.GrammarException;
-import org.parboiled.support.Characters;
 import org.parboiled.support.Checks;
 
 import java.lang.reflect.Field;
@@ -58,6 +62,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         }
     }
 
+    @Override
     public String getLabel() {
         return action.toString();
     }
@@ -65,20 +70,18 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     public boolean match(@NotNull MatcherContext<V> context) {
         Checks.ensure(!context.isBelowLeafLevel(), "Actions are not allowed in or below @Leaf rules");
 
-        // actions do not create parse errors or trigger parse error recovery
-        context.clearEnforcement();
-
         // actions need to run in the parent context
         context = context.getParent();
         for (ContextAware<V> contextAware : contextAwares) {
             contextAware.setContext(context);
         }
 
-        return action.run(context);
-    }
-
-    public Characters getStarterChars() {
-        return Characters.ONLY_EMPTY;
+        try {
+            return action.run(context);
+        } catch (ActionException e) {
+            context.addParseError(new ParseError<V>(context.getCurrentLocation(), context.getPath(), e.getMessage()));
+            return false;
+        }
     }
 
     @Override
@@ -86,8 +89,8 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         throw new GrammarException("Actions cannot be leaf rules");
     }
 
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

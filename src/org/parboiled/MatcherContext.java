@@ -19,9 +19,14 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Reference;
-import org.parboiled.exceptions.ActionException;
+import org.parboiled.errorhandling.FollowMatchersVisitor;
+import org.parboiled.errorhandling.ParseError;
+import org.parboiled.errorhandling.ParseErrorHandler;
 import org.parboiled.exceptions.ParserRuntimeException;
-import org.parboiled.matchers.*;
+import org.parboiled.matchers.ActionMatcher;
+import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.ProxyMatcher;
+import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.*;
 
@@ -49,13 +54,13 @@ import java.util.List;
 public class MatcherContext<V> implements Context<V> {
 
     private final InputBuffer inputBuffer;
-    private final List<ParseError<V>> parseErrors;
-    private final Reference<Node<V>> lastNodeRef;
-    private final ParseErrorHandler<V> parseErrorHandler;
     private final BaseParser<V> parser;
+    private final List<ParseError<V>> parseErrors;
+    private final ParseErrorHandler<V> parseErrorHandler;
+    private final Reference<Node<V>> lastNodeRef;
+    private final MatcherContext<V> parent;
     private final int level;
 
-    private MatcherContext<V> parent;
     private MatcherContext<V> subContext;
     private InputLocation startLocation;
     private InputLocation currentLocation;
@@ -66,23 +71,27 @@ public class MatcherContext<V> implements Context<V> {
     private int intTag;
     private boolean belowLeafLevel;
     private boolean enforced;
+    private boolean hasMatched;
+    private boolean rematch;
 
-    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError<V>> parseErrors,
-                          @NotNull Reference<Node<V>> lastNodeRef, @NotNull ParseErrorHandler<V> parseErrorHandler,
-                          @NotNull BaseParser<V> parser, Matcher<V> matcher) {
-        this(inputBuffer, parseErrors, lastNodeRef, parseErrorHandler, parser, 0);
+    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
+                          @NotNull List<ParseError<V>> parseErrors,
+                          ParseErrorHandler<V> parseErrorHandler, Matcher<V> matcher) {
+        this(inputBuffer, parser, parseErrors, parseErrorHandler, new Reference<Node<V>>(), null, 0);
         setStartLocation(new InputLocation(inputBuffer));
         this.matcher = matcher;
+        this.enforced = true;
     }
 
-    private MatcherContext(InputBuffer inputBuffer, @NotNull List<ParseError<V>> parseErrors,
-                           @NotNull Reference<Node<V>> lastNodeRef, @NotNull ParseErrorHandler<V> parseErrorHandler,
-                           @NotNull BaseParser<V> parser, int level) {
+    private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
+                           @NotNull List<ParseError<V>> parseErrors, ParseErrorHandler<V> parseErrorHandler,
+                           @NotNull Reference<Node<V>> lastNodeRef, MatcherContext<V> parent, int level) {
         this.inputBuffer = inputBuffer;
-        this.parseErrors = parseErrors;
-        this.lastNodeRef = lastNodeRef;
-        this.parseErrorHandler = parseErrorHandler;
         this.parser = parser;
+        this.parseErrors = parseErrors;
+        this.parseErrorHandler = parseErrorHandler;
+        this.lastNodeRef = lastNodeRef;
+        this.parent = parent;
         this.level = level;
     }
 
@@ -201,18 +210,18 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Characters getCurrentFollowerChars() {
-        Characters chars = Characters.NONE;
-        MatcherContext<V> parent = this;
-        while (parent != null) {
-            if (parent.getMatcher() instanceof FollowMatcher) {
-                FollowMatcher<V> followMatcher = (FollowMatcher<V>) parent.getMatcher();
-                chars = chars.add(followMatcher.getFollowerChars(parent));
-                if (!chars.contains(Chars.EMPTY)) return chars;
-            }
-            parent = parent.parent;
+    @NotNull
+    public List<Matcher<V>> getCurrentFollowerMatchers() {
+        List<Matcher<V>> followerMatchers = new ArrayList<Matcher<V>>();
+        FollowMatchersVisitor<V> followMatchersVisitor = new FollowMatchersVisitor<V>(followerMatchers);
+        MatcherContext<V> context = this;
+        while (context != null) {
+            followMatchersVisitor.setContext(context);
+            boolean complete = context.getMatcher().accept(followMatchersVisitor);
+            if (complete) return followerMatchers;
+            context = context.parent;
         }
-        return chars.remove(Chars.EMPTY).add(Chars.EOI);
+        return followerMatchers;
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
@@ -229,12 +238,8 @@ public class MatcherContext<V> implements Context<V> {
         setCurrentLocation(currentLocation.advance(inputBuffer));
     }
 
-    public void setEnforcement() {
-        enforced = true;
-    }
-
-    public void clearEnforcement() {
-        enforced = false;
+    public boolean isEnforced() {
+        return enforced;
     }
 
     public Node<V> getNode() {
@@ -254,7 +259,7 @@ public class MatcherContext<V> implements Context<V> {
             return;
         }
         if (matcher.isWithoutNode()) {
-            if (parent != null) parent.addChildNodes(subNodes);
+            if (parent != null && subNodes != null) parent.addChildNodes(subNodes);
             return;
         }
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
@@ -262,22 +267,33 @@ public class MatcherContext<V> implements Context<V> {
         lastNodeRef.setTarget(node);
     }
 
-    public void addChildNode(Node<V> node) {
+    public void addChildNode(@NotNull Node<V> node) {
         if (subNodes == null) subNodes = new ArrayList<Node<V>>();
         subNodes.add(node);
     }
 
-    public void addChildNodes(List<Node<V>> nodes) {
+    public void addChildNodes(@NotNull List<Node<V>> nodes) {
         if (subNodes == null) subNodes = new ArrayList<Node<V>>();
         subNodes.addAll(nodes);
     }
 
-    public MatcherContext<V> getSubContext(Matcher<V> matcher) {
+    public boolean hasMatched() {
+        return hasMatched;
+    }
+
+    public void forceHasMatched() {
+        this.hasMatched = true;
+    }
+
+    public boolean isRematch() {
+        return rematch;
+    }
+
+    public MatcherContext<V> getSubContext(Matcher<V> matcher, boolean enforced) {
         if (subContext == null) {
             // we need to introduce a new level
-            subContext =
-                    new MatcherContext<V>(inputBuffer, parseErrors, lastNodeRef, parseErrorHandler, parser, level + 1);
-            subContext.parent = this;
+            subContext = new MatcherContext<V>(inputBuffer, parser, parseErrors, parseErrorHandler, lastNodeRef, this,
+                    level + 1);
         }
 
         // normally we just reuse the existing subContext instance
@@ -291,21 +307,19 @@ public class MatcherContext<V> implements Context<V> {
         return subContext;
     }
 
-    /**
-     * Runs the contexts matcher.
-     *
-     * @return true if matched
-     */
     public boolean runMatcher() {
-        boolean matched = false;
         try {
-            matched = matcher.match(this);
-            if (!matched && enforced) {
-                matched = parseErrorHandler.handleParseError(this);
-            }
+            do {
+                hasMatched = matcher.match(this);
+                rematch = parseErrorHandler != null && parseErrorHandler.handleMatchAttempt(this);
+            } while (rematch);
 
-        } catch (ActionException e) {
-            addParseError(new ParseError<V>(currentLocation, getPath(), e.getMessage()));
+            if (hasMatched && parent != null) {
+                parent.setCurrentLocation(currentLocation);
+            }
+            matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
+            return hasMatched;
+
         } catch (ParserRuntimeException e) {
             throw e; // don't wrap, just bubble up
         } catch (Throwable e) {
@@ -314,12 +328,6 @@ public class MatcherContext<V> implements Context<V> {
                             String.format("Error during execution of parsing %s '%s' at input position",
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath())), inputBuffer));
         }
-
-        if (matched && parent != null) {
-            parent.setCurrentLocation(currentLocation);
-        }
-        matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
-        return matched;
     }
 
 }

@@ -19,8 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Preconditions;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 
 public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
@@ -28,7 +26,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
     public final char cHigh;
 
     public CharRangeMatcher(char cLow, char cHigh) {
-        Preconditions.checkArgument(cLow < cHigh && !Chars.isSpecial(cLow) && !Chars.isSpecial(cHigh));
+        Preconditions.checkArgument(cLow < cHigh);
         this.cLow = cLow;
         this.cHigh = cHigh;
     }
@@ -47,16 +45,8 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public Characters getStarterChars() {
-        Characters chars = Characters.NONE;
-        for (char c = cLow; c <= cHigh; c++) {
-            chars = chars.add(c);
-        }
-        return chars;
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

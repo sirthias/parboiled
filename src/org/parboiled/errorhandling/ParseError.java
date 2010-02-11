@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.errorhandling;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.InputLocation;
+import org.parboiled.support.MatcherPath;
 
 /**
  * Immutable class holding all values describing a certain error encountered during a parsing run.

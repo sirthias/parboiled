@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
+import org.parboiled.Parboiled;
 
 public class InputLocationTest {
 
@@ -31,14 +32,14 @@ public class InputLocationTest {
         assertEquals(readToEnd(buf, loc.advance(buf).advance(buf)), "cdefgh");
         assertEquals(loc.advance(buf).lookAhead(buf, 0), 'b');
         assertEquals(loc.advance(buf).lookAhead(buf, 1), 'c');
-        assertEquals(loc.advance(buf).lookAhead(buf, 20), Chars.EOI);
+        assertEquals(loc.advance(buf).lookAhead(buf, 20), Parboiled.EOI);
         assertEquals(readToEnd(buf, loc.advance(buf).insertVirtualInput('X')), "Xbcdefgh");
         assertEquals(readToEnd(buf, loc.insertVirtualInput("XYZ")), "XYZabcdefgh");
     }
 
     private String readToEnd(InputBuffer inputBuffer, InputLocation location) {
         StringBuilder sb = new StringBuilder();
-        while(location.currentChar != Chars.EOI) {
+        while(location.currentChar != Parboiled.EOI) {
             sb.append(location.currentChar);
             location = location.advance(inputBuffer);
         }

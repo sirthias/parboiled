@@ -19,8 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
 
@@ -29,7 +27,7 @@ import org.parboiled.support.InputLocation;
  *
  * @param <V>
  */
-public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
+public class OneOrMoreMatcher<V> extends AbstractMatcher<V> {
 
     public final Matcher<V> subMatcher;
 
@@ -39,14 +37,12 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        boolean matched = context.getSubContext(subMatcher).runMatcher();
+        boolean matched = context.getSubContext(subMatcher, context.isEnforced()).runMatcher();
         if (!matched) return false;
-
-        context.clearEnforcement();
 
         // collect all further matches as well
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.getSubContext(subMatcher).runMatcher()) {
+        while (context.getSubContext(subMatcher, false).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 Checks.fail("The inner rule of OneOrMore rule '%s' must not allow empty matches", context.getPath());
@@ -58,26 +54,7 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMat
         return true;
     }
 
-    public String getExpectedString() {
-        String label = super.getExpectedString();
-        return !"oneOrMore".equals(label) ? label : subMatcher.getExpectedString();
-    }
-
-    public Characters getStarterChars() {
-        Characters chars = subMatcher.getStarterChars();
-        Checks.ensure(!chars.contains(Chars.EMPTY),
-                "Rule '%s' must not allow empty matches as sub-rule of an OneOrMore-rule", subMatcher);
-        return chars;
-    }
-
-    public Characters getFollowerChars(MatcherContext<V> context) {
-        // since this call is only legal when we are currently within a match of our sub matcher,
-        // i.e. the submatcher can either match once more or the repetition can legally terminate which means
-        // our follower set addition is incomplete -> add EMPTY
-        return getStarterChars().add(Chars.EMPTY);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 }

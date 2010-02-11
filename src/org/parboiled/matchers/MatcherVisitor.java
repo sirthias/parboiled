@@ -16,32 +16,32 @@
 
 package org.parboiled.matchers;
 
-public interface MatcherVisitor<V> {
+public interface MatcherVisitor<V, R> {
 
-    void visit(ActionMatcher<V> matcher);
+    R visit(ActionMatcher<V> matcher);
 
-    void visit(AnyCharMatcher<V> matcher);
+    R visit(AnyCharMatcher<V> matcher);
 
-    void visit(CharIgnoreCaseMatcher<V> matcher);
+    R visit(CharIgnoreCaseMatcher<V> matcher);
 
-    void visit(CharMatcher<V> matcher);
+    R visit(CharMatcher<V> matcher);
 
-    void visit(CharRangeMatcher<V> matcher);
+    R visit(CharRangeMatcher<V> matcher);
 
-    void visit(EmptyMatcher<V> matcher);
+    R visit(EmptyMatcher<V> matcher);
 
-    void visit(FirstOfMatcher<V> matcher);
+    R visit(FirstOfMatcher<V> matcher);
 
-    void visit(OneOrMoreMatcher<V> matcher);
+    R visit(OneOrMoreMatcher<V> matcher);
 
-    void visit(OptionalMatcher<V> matcher);
+    R visit(OptionalMatcher<V> matcher);
 
-    void visit(SequenceMatcher<V> matcher);
+    R visit(SequenceMatcher<V> matcher);
 
-    void visit(TestMatcher<V> matcher);
+    R visit(TestMatcher<V> matcher);
 
-    void visit(TestNotMatcher<V> matcher);
+    R visit(TestNotMatcher<V> matcher);
 
-    void visit(ZeroOrMoreMatcher<V> matcher);
+    R visit(ZeroOrMoreMatcher<V> matcher);
 
 }

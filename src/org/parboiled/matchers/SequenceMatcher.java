@@ -19,8 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ import java.util.List;
  *
  * @param <V>
  */
-public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
+public class SequenceMatcher<V> extends AbstractMatcher<V> {
 
     public final boolean enforced;
 
@@ -44,12 +42,10 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
         for (int i = 0; i < size; i++) {
             Matcher<V> matcher = children.get(i);
 
-            if (i > 0 && enforced) context.setEnforcement();
-
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
 
-            if (!context.getSubContext(matcher).runMatcher()) {
+            if (!context.getSubContext(matcher, context.isEnforced() || enforced && i > 0).runMatcher()) {
                 return false;
             }
         }
@@ -57,27 +53,8 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> implements FollowMatc
         return true;
     }
 
-    public Characters getStarterChars() {
-        return getStarterChars(0);
-    }
-
-    private Characters getStarterChars(int startIndex) {
-        Characters chars = Characters.ONLY_EMPTY;
-        for (int i = startIndex; i < getChildren().size(); i++) {
-            Characters matcherStarters = getChildren().get(i).getStarterChars();
-            chars = chars.add(matcherStarters);
-            if (!matcherStarters.contains(Chars.EMPTY)) return chars.remove(Chars.EMPTY);
-        }
-        return chars;
-    }
-
-    public Characters getFollowerChars(MatcherContext<V> context) {
-        int currentIndex = context.getIntTag();
-        return getStarterChars(currentIndex + 1);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

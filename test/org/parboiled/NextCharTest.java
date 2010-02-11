@@ -34,8 +34,8 @@ public class NextCharTest extends AbstractTest {
     @Test
     public void test() {
         NextCharTestParser parser = Parboiled.createParser(NextCharTestParser.class);
-        assertFalse(parser.parse(parser.clause(), "a").hasErrors());
-        assertTrue(parser.parse(parser.clause(), "b").hasErrors());
+        assertFalse(Parboiled.parse(parser, parser.clause(), "a").hasErrors());
+        assertTrue(Parboiled.parse(parser, parser.clause(), "b").hasErrors());
     }
 
 }

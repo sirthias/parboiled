@@ -34,7 +34,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
+            ParsingResult<CalcNode> result = Parboiled.parse(parser, parser.inputLine(), input);
 
             CalcNode astRoot = result.parseTreeRoot.getValue();
             System.out.println(input + " = " + astRoot.getValue() + '\n');
@@ -44,7 +44,7 @@ public class Main {
             System.out.println("Abstract Syntax Tree:\n" +
                     printTree(result.parseTreeRoot.getValue(), new ToStringFormatter<CalcNode>(null)) + '\n');
 
-            if (result.hasErrors()) {
+            if (!result.matched) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));
             }
         }

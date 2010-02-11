@@ -36,12 +36,12 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Node> result = parser.parse(parser.operation(), input);
+            ParsingResult<Node> result = Parboiled.parse(parser, parser.operation(), input);
 
             System.out.println(ParseTreeUtils.printNodeTree(result, Filters.SkipEmptyOptionalsAndZeroOrMores));
 
             List<BigDecimal> output = result.parseTreeRoot.getValue().getResult();
-            if (result.hasErrors()) {
+            if (!result.matched) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));
             }
             System.out.println(result.parseTreeRoot.getValue().getWarnings());

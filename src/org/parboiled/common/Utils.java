@@ -17,6 +17,7 @@
 package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.Parboiled;
 import org.parboiled.exceptions.ParserRuntimeException;
 
 import java.lang.reflect.*;
@@ -161,7 +162,7 @@ public final class Utils {
      * @return the empty string of obj is null, otherwise obj.toString()
      */
     public static String toString(Object obj) {
-        return obj == null ? "" : obj.toString();
+        return obj == null ? "" : obj.equals(Parboiled.EOI) ? "EOI" : obj.toString();
     }
 
     // Subarrays

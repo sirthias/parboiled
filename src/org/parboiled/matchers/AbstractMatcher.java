@@ -78,10 +78,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return label != null;
     }
 
-    public String getExpectedString() {
-        return getLabel(); // default implementation
-    }
-
     @Override
     public String toString() {
         return getLabel();

@@ -19,6 +19,8 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.asm.ParserTransformer;
 import static org.parboiled.common.Utils.findConstructor;
+import org.parboiled.errorhandling.ReportFirstParseErrorHandler;
+import org.parboiled.support.ParsingResult;
 
 import java.lang.reflect.Constructor;
 
@@ -27,13 +29,14 @@ import java.lang.reflect.Constructor;
  */
 public class Parboiled {
 
+    public static final char EOI = '\uFFFF';
     public static final String ILLEGAL = "ILLEGAL";
 
     protected Parboiled() {}
 
     /**
      * Creates a parser object whose rule creation methods can then be used with the
-     * {@link BaseParser#parse(Rule, String)} method.
+     * {@link BaseParser#parse(Rule, String, org.parboiled.errorhandling.ParseErrorHandler)} method.
      * Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
      * Also your parser class has to be derived from BaseParser. If you want to use a non-default constructor you also
@@ -53,6 +56,14 @@ public class Parboiled {
         } catch (Exception e) {
             throw new RuntimeException("Error creating extended parser class: " + e.getMessage(), e);
         }
+    }
+
+    public static <V> ParsingResult<V> parse(@NotNull BaseParser<V> parser, @NotNull Rule rule, @NotNull String input) {
+        ParsingResult<V> result = parser.parse(rule, input, null);
+        if (!result.matched) {
+            result = parser.parse(rule, input, new ReportFirstParseErrorHandler<V>());
+        }
+        return result;
     }
 
 }

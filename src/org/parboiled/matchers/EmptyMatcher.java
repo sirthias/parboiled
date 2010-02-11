@@ -18,8 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 
 /**
  * A Matcher always successfully matching nothing.
@@ -38,11 +36,7 @@ public class EmptyMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public Characters getStarterChars() {
-        return Characters.of(Chars.EMPTY);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 }

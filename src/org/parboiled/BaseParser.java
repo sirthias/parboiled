@@ -18,9 +18,11 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Preconditions;
-import org.parboiled.common.Reference;
 import static org.parboiled.common.Utils.arrayOf;
 import static org.parboiled.common.Utils.toObjectArray;
+import org.parboiled.errorhandling.ParseError;
+import org.parboiled.errorhandling.ParseErrorHandler;
+import org.parboiled.errorhandling.StarterCharsVisitor;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
@@ -36,32 +38,6 @@ import java.util.List;
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
-     * Runs the given parser rule against the given input string using performing no error recovery.
-     *
-     * @param rule  the rule
-     * @param input the input string
-     * @return the ParsingResult for the run
-     */
-    @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        return parse(rule, input, false);
-    }
-
-    /**
-     * Runs the given parser rule against the given input string using performing no error recovery.
-     *
-     * @param rule                   the rule
-     * @param input                  the input string
-     * @param recoverFromParseErrors flag indicating whether the parser should recover from parse errors
-     * @return the ParsingResult for the run
-     */
-    @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input, boolean recoverFromParseErrors) {
-        return parse(rule, input, recoverFromParseErrors ?
-                new RecoveringParseErrorHandler<V>() : new ReportingParseErrorHandler<V>());
-    }
-
-    /**
      * Runs the given parser rule against the given input string.
      *
      * @param rule              the rule
@@ -70,21 +46,17 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the ParsingResult for the run
      */
     @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input, @NotNull ParseErrorHandler<V> parseErrorHandler) {
+    public ParsingResult<V> parse(Rule rule, @NotNull String input, ParseErrorHandler<V> parseErrorHandler) {
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError<V>> parseErrors = new ArrayList<ParseError<V>>();
-        Reference<Node<V>> lastNodeRef = new Reference<Node<V>>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
 
-        MatcherContext<V> context = new MatcherContext<V>(
-                inputBuffer, parseErrors, lastNodeRef, parseErrorHandler, this, matcher
-        );
-        context.setEnforcement();
+        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, this, parseErrors, parseErrorHandler, matcher);
 
         // run the actual matcher tree
-        context.runMatcher();
+        boolean matched = context.runMatcher();
 
-        return new ParsingResult<V>(lastNodeRef.getTarget(), parseErrors, inputBuffer,
+        return new ParsingResult<V>(matched, context.getNode(), parseErrors, inputBuffer,
                 context.getCurrentLocation().row + 1);
     }
 
@@ -102,14 +74,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule ch(char c) {
-        switch (c) {
-            case Chars.EMPTY:
-                return empty();
-            case Chars.ANY:
-                return any();
-            default:
-                return new CharMatcher(c);
-        }
+        return new CharMatcher(c);
     }
 
     /**
@@ -364,11 +329,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @KeepAsIs
     public Rule eoi() {
-        return ch(Chars.EOI);
+        return ch(Parboiled.EOI);
     }
 
     /**
-     * Matches any character except {@link org.parboiled.support.Chars#EOI}.
+     * Matches any character except {@link org.parboiled.Parboiled#EOI}.
      *
      * @return a new rule
      */
@@ -472,44 +437,42 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         return toRule(rule).label(Parboiled.ILLEGAL);
     }
 
-    public Rule defaultSingleCharRecoveryRule(Context<V> failedMatcherContext) {
-        return firstOf(
-                // first test: delete one char and retry
-                sequence(
-                        // match one character and mark it ILLEGAL
-                        illegal(any()),
-
-                        // rerun the failed matcher
-                        Actions.match(failedMatcherContext.getMatcher())
-                ).withoutNode().label("deleteOne"),
-
-                // second test: insert one char and retry
-                sequence(
-                        // test whether current mismatching character is a legal follower
-                        Actions.isNextCharIn(failedMatcherContext.getCurrentFollowerChars()),
-
-                        // if so, match "empty"
-                        Actions.createEmptyNodeFor(failedMatcherContext.getMatcher())
-                ).withoutNode().label("insertOne")
-        );
+    @Label
+    public Rule skipCharAndRetry(@NotNull Matcher<V> failedMatcher) {
+        return sequence(
+                illegal(any()), // match one character and mark it ILLEGAL
+                Actions.match(failedMatcher, false) // rerun the failed matcher
+        ).withoutNode();
     }
 
-    public Rule defaultSequenceRecoveryRule(Context<V> failedMatcherContext) {
+    @Label
+    public Rule insertCharAndRetry(@NotNull Matcher<V> failedMatcher) {
         return sequence(
-                // we only recover if we have already matched something in this sequence,
-                // otherwise just continue bubbling up the parse error through the matcher stack
-                Actions.testContextAlreadyMatchedSomething(failedMatcherContext),
+                Actions.injectVirtualInput(failedMatcher.accept(new StarterCharsVisitor<V>()).getRepresentative()),
+                Actions.match(failedMatcher, false) // rerun the failed matcher
+        ).withoutNode();
+    }
 
-                // fallback: resync
-                sequence(
-                        Actions.createEmptyNodeFor(failedMatcherContext.getMatcher()),
+    @Label
+    public Rule singleCharErrorRecovery(@NotNull Matcher<V> failedMatcher) {
+        return firstOf(
+                skipCharAndRetry(failedMatcher),
+                insertCharAndRetry(failedMatcher)
+        ).withoutNode();
+    }
+
+    @Label
+    public Rule resynchronize(@NotNull Context<V> failedMatcherContext) {
+        return sequence(
+                Actions.createEmptyNodeFor(failedMatcherContext.getMatcher()),
+                illegal( // gooble up all illegal input up until a legal follower
                         zeroOrMore(
                                 sequence(
-                                        testNot(Actions.isNextCharIn(failedMatcherContext.getCurrentFollowerChars())),
-                                        illegal(any())
-                                ).withoutNode()
+                                        testNot(Actions.isNextCharLegalFollower(failedMatcherContext)),
+                                        any().withoutNode()
+                                )
                         ).withoutNode()
-                ).withoutNode().label("resync")
+                )
         ).withoutNode();
     }
 

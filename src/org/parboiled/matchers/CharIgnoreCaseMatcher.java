@@ -18,8 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
+import org.parboiled.Parboiled;
 
 /**
  * A Matcher matching a single character case independently.
@@ -39,7 +38,7 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
     @Override
     public String getLabel() {
         if (hasLabel()) return super.getLabel();
-        if (charLow == Chars.EOI) return "EOI";
+        if (charLow == Parboiled.EOI) return "EOI";
         if (charLow == charUp) return "\'" + charLow + '\'';
         return "\'" + charLow + '/' + charUp + '\'';
     }
@@ -52,12 +51,8 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public Characters getStarterChars() {
-        return Characters.of(charLow, charUp);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

@@ -17,9 +17,9 @@
 package org.parboiled.examples.calculator;
 
 import org.parboiled.Parboiled;
-import org.parboiled.support.ParsingResult;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.common.StringUtils;
+import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import org.parboiled.support.ParsingResult;
 
 import java.util.Scanner;
 
@@ -27,18 +27,18 @@ public class Main {
 
     public static void main(String[] args) {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
-        
+
         while (true) {
             System.out.print("Enter a calculator expression (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
+            ParsingResult<Integer> result = Parboiled.parse(parser, parser.inputLine(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
 
-            if (result.hasErrors()) {
+            if (!result.matched) {
                 System.out.println(StringUtils.join(result.parseErrors, "---\n"));
             }
         }

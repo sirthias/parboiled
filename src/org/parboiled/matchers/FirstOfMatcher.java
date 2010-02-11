@@ -19,11 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.common.StringUtils;
-import org.parboiled.common.Utils;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
-import org.parboiled.support.Checks;
 
 /**
  * A Matcher trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
@@ -37,10 +32,8 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        context.clearEnforcement();
-
         for (Matcher<V> matcher : getChildren()) {
-            if (context.getSubContext(matcher).runMatcher()) {
+            if (context.getSubContext(matcher, false).runMatcher()) {
                 context.createNode();
                 return true;
             }
@@ -48,28 +41,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
         return false;
     }
 
-    public Characters getStarterChars() {
-        Characters chars = Characters.NONE;
-        for (Matcher matcher : getChildren()) {
-            chars = chars.add(matcher.getStarterChars());
-            Checks.ensure(!chars.contains(Chars.EMPTY),
-                    "Rule '%s' allows empty matches, unlikely to be correct as a sub rule of a FirstOf-Rule", matcher);
-        }
-        return chars;
-    }
-
-    public String getExpectedString() {
-        String label = super.getExpectedString();
-        if (!"firstOf".equals(label)) return label;
-
-        int count = getChildren().size();
-        if (count == 0) return "";
-        if (count == 1) return getChildren().get(0).toString();
-        return StringUtils.join(Utils.subarray(getChildren().toArray(), 0, count - 1), ", ") +
-                " or " + getChildren().get(count - 1);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 }

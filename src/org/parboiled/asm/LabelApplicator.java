@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.Preconditions;
+import org.parboiled.common.StringUtils;
 import static org.parboiled.common.Utils.merge;
 
 class LabelApplicator implements ClassTransformer, Opcodes, Types {
@@ -62,7 +63,8 @@ class LabelApplicator implements ClassTransformer, Opcodes, Types {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;
                 if (annotation.desc.equals(LABEL_TYPE.getDescriptor()) && annotation.values != null) {
                     Preconditions.checkState("value".equals(annotation.values.get(0)));
-                    return (String) annotation.values.get(1);
+                    String labelValue = (String) annotation.values.get(1);
+                    return StringUtils.isEmpty(labelValue) ? method.name : labelValue;
                 }
             }
         }

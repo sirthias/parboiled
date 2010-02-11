@@ -47,7 +47,7 @@ public class Calculator2Test extends AbstractTest {
     }
 
     private void test(String input, int value) {
-        ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
+        ParsingResult<CalcNode> result = Parboiled.parse(parser, parser.inputLine(), input);
         int resultValue = result.parseTreeRoot.getValue().getValue();
         assertFalse(result.hasErrors());
         assertEquals(resultValue, value);

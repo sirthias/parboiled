@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
 import org.parboiled.trees.GraphNode;
 
 /**
@@ -43,11 +42,6 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
     boolean isWithoutNode();
 
     /**
-     * @return a string describing what content is expected by this matcher
-     */
-    String getExpectedString();
-
-    /**
      * Tries a match on the given MatcherContext.
      *
      * @param context the MatcherContext
@@ -55,12 +49,6 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      * @throws Throwable the throwable
      */
     boolean match(@NotNull MatcherContext<V> context) throws Throwable;
-
-    /**
-     * @return all characters that this matcher can legally start a match with. Contains Chars.EMPTY if the
-     *         matcher can legally match nothing.
-     */
-    Characters getStarterChars();
 
     /**
      * Returns the recovery matcher assigned to this matcher, or null if none has been assigned.
@@ -73,7 +61,8 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      * Accepts the given matcher visitor.
      *
      * @param visitor the visitor
+     * @return the value returned by the given visitor
      */
-    void accept(@NotNull MatcherVisitor<V> visitor);
+    <R> R accept(@NotNull MatcherVisitor<V, R> visitor);
 
 }

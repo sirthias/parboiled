@@ -63,7 +63,7 @@ public class IndentDedentTest extends AbstractTest {
     public void test() {
         IndentDedentParser parser = Parboiled.createParser(IndentDedentParser.class);
         Rule rule = parser.file();
-        ParsingResult<?> result = parser.parse(rule, "" +
+        ParsingResult<?> result = Parboiled.parse(parser, rule, "" +
                 "a file containing\n" +
                 "  some\n" +
                 "     indents\n" +

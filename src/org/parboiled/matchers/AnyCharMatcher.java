@@ -18,8 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
+import org.parboiled.Parboiled;
 
 /**
  * A Matcher matching any character except for EOI.
@@ -34,18 +33,14 @@ public class AnyCharMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (context.getCurrentLocation().currentChar == Chars.EOI) return false;
+        if (context.getCurrentLocation().currentChar == Parboiled.EOI) return false;
         context.advanceInputLocation();
         context.createNode();
         return true;
     }
 
-    public Characters getStarterChars() {
-        return Characters.of(Chars.ANY);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

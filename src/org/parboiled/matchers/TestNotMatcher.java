@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.exceptions.GrammarException;
-import org.parboiled.support.Characters;
 import org.parboiled.support.InputLocation;
 
 /**
@@ -50,10 +49,8 @@ public class TestNotMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        context.clearEnforcement();
-        
         InputLocation lastLocation = context.getCurrentLocation();
-        if (context.getSubContext(subMatcher).runMatcher()) {
+        if (context.getSubContext(subMatcher, false).runMatcher()) {
             context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
             return false;
         }
@@ -61,19 +58,8 @@ public class TestNotMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public Characters getStarterChars() {
-        return Characters.ALL_EXCEPT_EMPTY.remove(subMatcher.getStarterChars());
-    }
-
-    @Override
-    public String getExpectedString() {
-        String label = super.getExpectedString();
-        if (!"testNot".equals(label)) return label;
-        return "not " + subMatcher.getExpectedString();
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

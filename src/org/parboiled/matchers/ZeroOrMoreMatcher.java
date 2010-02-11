@@ -19,8 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 import org.parboiled.support.InputLocation;
 
@@ -29,7 +27,7 @@ import org.parboiled.support.InputLocation;
  *
  * @param <V>
  */
-public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMatcher<V> {
+public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> {
 
     public final Matcher<V> subMatcher;
 
@@ -39,10 +37,8 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        context.clearEnforcement();
-        
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.getSubContext(subMatcher).runMatcher()) {
+        while (context.getSubContext(subMatcher, false).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 Checks.fail("The inner rule of ZeroOrMore rule '%s' must not allow empty matches", context.getPath());
@@ -54,19 +50,8 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> implements FollowMa
         return true;
     }
 
-    public Characters getStarterChars() {
-        Characters chars = subMatcher.getStarterChars();
-        Checks.ensure(!chars.contains(Chars.EMPTY),
-                "Rule '%s' must not allow empty matches as sub-rule of a ZeroOrMore-rule", subMatcher);
-        return chars;
-    }
-
-    public Characters getFollowerChars(MatcherContext<V> context) {
-        return getStarterChars().add(Chars.EMPTY);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

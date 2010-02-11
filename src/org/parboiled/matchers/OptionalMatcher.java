@@ -19,8 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
 
 /**
  * A Matcher that tries its sub matcher once against the input and always succeeds.
@@ -37,17 +35,12 @@ public class OptionalMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        context.clearEnforcement();
-        context.getSubContext(subMatcher).runMatcher();
+        context.getSubContext(subMatcher, false).runMatcher();
         context.createNode();
         return true;
     }
 
-    public Characters getStarterChars() {
-        return subMatcher.getStarterChars().add(Chars.EMPTY);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 }

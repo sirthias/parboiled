@@ -35,16 +35,16 @@ public class CalculatorParser extends BaseParser<Integer> {
     public Rule expression() {
         return sequence(
                 term(),
-                zeroOrMore(enforcedSequence(firstOf('+', '-'), term())),
-                compute(VALUE("term"), CHARS("z/s/firstOf"), VALUES("z/s/term"))
+                zeroOrMore(enforcedSequence(charSet("+-"), term())),
+                compute(VALUE("term"), CHARS("z/e/firstOf"), VALUES("z/e/term"))
         );
     }
 
     public Rule term() {
         return sequence(
                 factor(),
-                zeroOrMore(enforcedSequence(firstOf('*', '/'), factor())),
-                compute(VALUE("factor"), CHARS("z/s/firstOf"), VALUES("z/s/factor"))
+                zeroOrMore(enforcedSequence(charSet("*/"), factor())),
+                compute(VALUE("factor"), CHARS("z/e/firstOf"), VALUES("z/e/factor"))
         );
     }
 

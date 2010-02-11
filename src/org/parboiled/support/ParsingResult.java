@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.errorhandling.ParseError;
 
 import java.util.List;
 
@@ -25,6 +26,11 @@ import java.util.List;
  * A simple container for encapsulating the result of a parsing run.
  */
 public class ParsingResult<V> {
+
+    /**
+     * Indicated whether the input was successfully parsed.
+     */
+    public final boolean matched;
 
     /**
      * The root node of the parse tree created by the parsing run.
@@ -48,13 +54,16 @@ public class ParsingResult<V> {
 
     /**
      * Creates a new ParsingResult.
+     *
+     * @param matched       true if the rule matched the input
      * @param parseTreeRoot the parse tree root node
-     * @param parseErrors the list of parse errors
-     * @param inputBuffer the input buffer
-     * @param totalRows the number of total number of rows in the parsed input text
+     * @param parseErrors   the list of parse errors
+     * @param inputBuffer   the input buffer
+     * @param totalRows     the number of total number of rows in the parsed input text
      */
-    public ParsingResult(Node<V> parseTreeRoot, @NotNull List<ParseError<V>> parseErrors,
+    public ParsingResult(boolean matched, Node<V> parseTreeRoot, @NotNull List<ParseError<V>> parseErrors,
                          @NotNull InputBuffer inputBuffer, int totalRows) {
+        this.matched = matched;
         this.parseTreeRoot = parseTreeRoot;
         this.parseErrors = parseErrors;
         this.inputBuffer = inputBuffer;
@@ -62,7 +71,7 @@ public class ParsingResult<V> {
     }
 
     /**
-     * @return true if the parsing run was completed without errors.
+     * @return true if this parsing result contains parsing errors.
      */
     public boolean hasErrors() {
         return !parseErrors.isEmpty();

@@ -17,25 +17,20 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.Utils;
 
 import java.util.Arrays;
 import java.util.Random;
 
 /**
  * An immutable, set-like aggregation of (relatively few) characters that allows for an inverted semantic (all chars
- * except these few) and proper treatment of the special characters defined in {@link Chars}.
+ * except these few).
  */
 public class Characters {
 
     private static final char[] NO_CHARS = new char[0];
     public static final Characters NONE = new Characters(false, NO_CHARS);
-    public static final Characters ONLY_EOI = Characters.of(Chars.EOI);
-    public static final Characters ONLY_EMPTY = Characters.of(Chars.EMPTY);
-    public static final Characters ONLY_EOI_AND_EMPTY = Characters.of(Chars.EOI, Chars.EMPTY);
     public static final Characters ALL = new Characters(true, NO_CHARS);
-    public static final Characters ALL_EXCEPT_EOI = Characters.allBut(Chars.EOI);
-    public static final Characters ALL_EXCEPT_EMPTY = Characters.allBut(Chars.EMPTY);
-    public static final Characters ALL_EXCEPT_EOI_AND_EMPTY = Characters.allBut(Chars.EOI, Chars.EMPTY);
 
     // if the set is subtractive its semantics change from "includes all characters in the set" to
     // "includes all characters not in the set"
@@ -72,11 +67,6 @@ public class Characters {
      */
     @NotNull
     public Characters add(char c) {
-        if (c == Chars.ANY) {
-            return contains(Chars.EOI) ?
-                    (contains(Chars.EMPTY) ? Characters.ALL : Characters.ALL_EXCEPT_EMPTY) :
-                    (contains(Chars.EMPTY) ? Characters.ALL_EXCEPT_EOI : Characters.ALL_EXCEPT_EOI_AND_EMPTY);
-        }
         return subtractive ? removeFromChars(c) : addToChars(c);
     }
 
@@ -88,11 +78,6 @@ public class Characters {
      */
     @NotNull
     public Characters remove(char c) {
-        if (c == Chars.ANY) {
-            return contains(Chars.EOI) ?
-                    (contains(Chars.EMPTY) ? Characters.ONLY_EOI_AND_EMPTY : Characters.ONLY_EOI) :
-                    (contains(Chars.EMPTY) ? Characters.ONLY_EMPTY : Characters.NONE);
-        }
         return subtractive ? addToChars(c) : removeFromChars(c);
     }
 
@@ -104,10 +89,6 @@ public class Characters {
      * @return true if this instance contains c
      */
     public boolean contains(char c) {
-        if (c == Chars.ANY) {
-            return subtractive && (chars.length == 0 || equals(Characters.ONLY_EOI) || equals(
-                    Characters.ONLY_EMPTY) || equals(Characters.ONLY_EOI_AND_EMPTY));
-        }
         return indexOf(chars, c) == -1 ? subtractive : !subtractive;
     }
 
@@ -153,17 +134,7 @@ public class Characters {
         sb.append(subtractive ? "![" : "[");
         for (int i = 0; i < chars.length; i++) {
             if (i > 0) sb.append(',');
-            char c = chars[i];
-            switch (c) {
-                case Chars.EOI:
-                    sb.append("EOI");
-                    break;
-                case Chars.EMPTY:
-                    sb.append("EMPTY");
-                    break;
-                default:
-                    sb.append(c);
-            }
+            sb.append(Utils.toString(chars[i]));
         }
         sb.append(']');
         return sb.toString();
@@ -258,37 +229,29 @@ public class Characters {
     }
 
     /**
-     * Creates a new Characters instance containing only the given char or, if c is {@link Chars#ANY},
-     * or all non-EOI, non-EMPTY characters.
+     * Creates a new Characters instance containing only the given char or.
      *
      * @param c the char
      * @return a new Characters object
      */
     @NotNull
     public static Characters of(char c) {
-        return c == Chars.ANY ? Characters.ALL_EXCEPT_EOI_AND_EMPTY : new Characters(false, new char[] {c});
+        return new Characters(false, new char[] {c});
     }
 
     /**
      * Creates a new Characters instance containing only the given chars.
-     * {@link Chars#ANY} will be expanded to all non-EOI, non-EMPTY characters if it is contained in the given array.
      *
      * @param chars the chars
      * @return a new Characters object
      */
     @NotNull
     public static Characters of(char... chars) {
-        return indexOf(chars, Chars.ANY) == -1 ? new Characters(false, chars.clone()) :
-                indexOf(chars, Chars.EOI) == -1 ?
-                        (indexOf(chars, Chars.EMPTY) == -1 ?
-                                Characters.ALL_EXCEPT_EOI_AND_EMPTY : Characters.ALL_EXCEPT_EMPTY) :
-                        (indexOf(chars, Chars.EMPTY) == -1 ?
-                                Characters.ALL_EXCEPT_EOI : Characters.ALL);
+        return chars.length == 0 ? Characters.NONE : new Characters(false, chars.clone());
     }
 
     /**
-     * Creates a new Characters instance containing all characters (including {@link Chars#EOI} and {@link Chars#EMPTY})
-     * minus the given one.
+     * Creates a new Characters instance containing all characters minus the given one.
      *
      * @param c the char to NOT include
      * @return a new Characters object
@@ -299,15 +262,14 @@ public class Characters {
     }
 
     /**
-     * Creates a new Characters instance containing all characters (including {@link Chars#EOI} and {@link Chars#EMPTY})
-     * minus the given ones.
+     * Creates a new Characters instance containing all characters minus the given ones.
      *
      * @param chars the chars to NOT include
      * @return a new Characters object
      */
     @NotNull
     public static Characters allBut(char... chars) {
-        return new Characters(true, chars.clone());
+        return chars.length == 0 ? Characters.ALL : new Characters(true, chars.clone());
     }
 
     /**
@@ -317,7 +279,7 @@ public class Characters {
      * @return a character that is in this set
      */
     public Character getRepresentative() {
-        if (equals(Characters.NONE) || equals(Characters.ONLY_EMPTY)) return null;
+        if (equals(Characters.NONE)) return null;
         if (isSubtractive()) {
             Random random = new Random();
             while (true) {
@@ -325,6 +287,6 @@ public class Characters {
                 if (contains(c)) return c;
             }
         }
-        return chars[0] != Chars.EMPTY ? chars[0] : chars[1];
+        return chars[0];
     }
 }

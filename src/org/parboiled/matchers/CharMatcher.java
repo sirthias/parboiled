@@ -18,8 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Chars;
+import org.parboiled.Parboiled;
 
 /**
  * A Matcher matching a single character.
@@ -37,7 +36,7 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
     @Override
     public String getLabel() {
         if (hasLabel()) return super.getLabel();
-        return character == Chars.EOI ? "EOI" : "\'" + character + '\'';
+        return character == Parboiled.EOI ? "EOI" : "\'" + character + '\'';
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
@@ -47,12 +46,8 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public Characters getStarterChars() {
-        return Characters.of(character);
-    }
-
-    public void accept(@NotNull MatcherVisitor<V> visitor) {
-        visitor.visit(this);
+    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+        return visitor.visit(this);
     }
 
 }

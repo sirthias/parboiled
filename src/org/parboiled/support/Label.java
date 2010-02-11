@@ -23,10 +23,10 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to be used on parser methods returning Rule objects. Instructs parboiled to automatically label the
- * created rules with the given label.
+ * created rules with the given label or the method name (if no value is given).
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Label {
-    String value();
+    String value() default "";
 }

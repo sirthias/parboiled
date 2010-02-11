@@ -77,8 +77,7 @@ class MethodCategorizer implements ClassTransformer, Opcodes, Types {
             return;
         }
 
-        if (Type.getReturnType(method.desc).equals(RULE_TYPE) &&
-                Type.getArgumentTypes(method.desc).length == 0) {
+        if (Type.getReturnType(method.desc).equals(RULE_TYPE) && Type.getArgumentTypes(method.desc).length == 0) {
             if (!carriesAnnotation(method, KEEP_AS_IS_TYPE)) {
                 ensure(!method.hasAccess(ACC_PRIVATE), "Rule methods must not be private.\n" +
                         "Mark the method protected or package-private if you want to prevent public access!");
