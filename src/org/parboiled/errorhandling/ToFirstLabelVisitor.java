@@ -106,7 +106,11 @@ public class ToFirstLabelVisitor<V> extends DefaultMatcherVisitor<V, Void> {
     }
 
     private Void add(Matcher<V> matcher) {
-        stringList.add(matcher.getLabel());
+        String label = matcher.getLabel();
+        if (!stringList.contains(label)) {
+            // we don't use a set here since we need indexed access and will never have many list entries
+            stringList.add(label);
+        }
         return null;
     }
 

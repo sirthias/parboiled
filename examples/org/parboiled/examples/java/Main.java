@@ -54,7 +54,7 @@ public class Main {
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<Object> result = Parboiled.parse(parser, parser.compilationUnit(), sourceText);
+            ParsingResult<Object> result = parser.parse(parser.compilationUnit(), sourceText);
             if (!result.matched) {
                 System.out.printf("\nParse error(s) in file '%s':\n%s",
                         sourceFile,

@@ -16,6 +16,8 @@
 
 package org.parboiled.common;
 
+import org.parboiled.Parboiled;
+
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -32,18 +34,39 @@ public final class StringUtils {
     private StringUtils() {}
 
     /**
-     * Escapes newline sequences ("\r\n" or "\n") with the respective escape characters.
+     * Replaces carriage returns, newlines, tabs, formfeeds and {@link Parboiled#EOI}
+     * with their respective escape sequences.
      *
      * @param string the string
      * @return the string with newlines escaped.
      */
-    public static String escapeNLs(String string) {
-        return string == null ? "" : string
-                .replace("\r\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\n", "\\n")
-                .replace("\t", "\\t")
-                .replace("\f", "\\f");
+    public static String escape(String string) {
+        if (isEmpty(string)) return "";
+        StringBuilder sb = new StringBuilder();
+        char[] chars = string.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            switch (c) {
+                case '\r':
+                    sb.append(i + 1 < chars.length && chars[i + 1] == '\n' ? "\\n" : "\\r");
+                    break;
+                case '\n':
+                    sb.append("\\n");
+                    break;
+                case '\t':
+                    sb.append("\\t");
+                    break;
+                case '\f':
+                    sb.append("\\f");
+                    break;
+                case Parboiled.EOI:
+                    sb.append("EOI");
+                    break;
+                default:
+                    sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     /**

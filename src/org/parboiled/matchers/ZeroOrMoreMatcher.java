@@ -38,7 +38,7 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.getSubContext(subMatcher, false).runMatcher()) {
+        while (context.getSubContext(subMatcher).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 Checks.fail("The inner rule of ZeroOrMore rule '%s' must not allow empty matches", context.getPath());

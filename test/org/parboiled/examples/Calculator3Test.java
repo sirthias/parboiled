@@ -39,7 +39,7 @@ public class Calculator3Test extends AbstractTest {
     }
 
     private void test(String input, double value) {
-        ParsingResult<CalcNode> result = Parboiled.parse(parser, parser.inputLine(), input);
+        ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
         double resultValue = result.parseTreeRoot.getValue().getValue();
         assertFalse(result.hasErrors());
         assertEquals(resultValue, value);

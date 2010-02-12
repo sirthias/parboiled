@@ -31,19 +31,19 @@ public class ParseError<V> {
     private final InputLocation location;
 
     /**
-     * The matcher path to the parse error.
+     * The path to the matcher that matched the input immediately before the parse error location.
+     * Can be null if no match ever succeeded, i.e. the very first is illegal.
      */
-    private final MatcherPath<V> path;
+    private final MatcherPath<V> lastMatchPath;
 
     /**
      * The error message.
      */
     private final String errorMessage;
 
-    public ParseError(@NotNull InputLocation location, @NotNull MatcherPath<V> path,
-                      @NotNull String errorMessage) {
+    public ParseError(@NotNull InputLocation location, MatcherPath<V> lastMatchPath, @NotNull String errorMessage) {
         this.location = location;
-        this.path = path;
+        this.lastMatchPath = lastMatchPath;
         this.errorMessage = errorMessage;
     }
 
@@ -51,8 +51,8 @@ public class ParseError<V> {
         return location;
     }
 
-    public MatcherPath<V> getPath() {
-        return path;
+    public MatcherPath<V> getLastMatchPath() {
+        return lastMatchPath;
     }
 
     public String getErrorMessage() {

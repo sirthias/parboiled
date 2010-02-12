@@ -25,7 +25,19 @@ public class RecoveringParseErrorHandler<V> extends DefaultMatcherVisitor<V, Rul
 
     private MatcherContext<V> context;
 
-    public boolean handleMatchAttempt(MatcherContext<V> context) {
+    public void beforeParsingRun(MatcherContext<V> rootContext) {
+
+    }
+
+    public void handleMatch(MatcherContext<V> context) {
+
+    }
+
+    public boolean handleMismatch(MatcherContext<V> context) {
+        return false;
+    }
+
+    public boolean isRerunRequested(MatcherContext<V> rootContext) {
         return false;
     }
 
@@ -38,7 +50,7 @@ public class RecoveringParseErrorHandler<V> extends DefaultMatcherVisitor<V, Rul
             this.context = context;
             recoveryRule = (Matcher<V>) failedMatcher.accept(this);
         }
-        return recoveryRule != null && context.getSubContext(recoveryRule, false).runMatcher();
+        return recoveryRule != null && context.getSubContext(recoveryRule).runMatcher();
     }
 
     @Override

@@ -35,7 +35,7 @@ public class OptionalMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        context.getSubContext(subMatcher, false).runMatcher();
+        context.getSubContext(subMatcher).runMatcher();
         context.createNode();
         return true;
     }

@@ -36,7 +36,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Node> result = Parboiled.parse(parser, parser.operation(), input);
+            ParsingResult<Node> result = parser.parse(parser.operation(), input);
 
             System.out.println(ParseTreeUtils.printNodeTree(result, Filters.SkipEmptyOptionalsAndZeroOrMores));
 

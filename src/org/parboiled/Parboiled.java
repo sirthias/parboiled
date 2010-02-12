@@ -19,8 +19,6 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.asm.ParserTransformer;
 import static org.parboiled.common.Utils.findConstructor;
-import org.parboiled.errorhandling.ReportFirstParseErrorHandler;
-import org.parboiled.support.ParsingResult;
 
 import java.lang.reflect.Constructor;
 
@@ -56,14 +54,6 @@ public class Parboiled {
         } catch (Exception e) {
             throw new RuntimeException("Error creating extended parser class: " + e.getMessage(), e);
         }
-    }
-
-    public static <V> ParsingResult<V> parse(@NotNull BaseParser<V> parser, @NotNull Rule rule, @NotNull String input) {
-        ParsingResult<V> result = parser.parse(rule, input, null);
-        if (!result.matched) {
-            result = parser.parse(rule, input, new ReportFirstParseErrorHandler<V>());
-        }
-        return result;
     }
 
 }

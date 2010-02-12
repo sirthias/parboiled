@@ -33,7 +33,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Integer> result = Parboiled.parse(parser, parser.inputLine(), input);
+            ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');

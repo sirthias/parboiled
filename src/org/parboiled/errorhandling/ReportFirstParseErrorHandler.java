@@ -17,59 +17,77 @@
 package org.parboiled.errorhandling;
 
 import org.parboiled.MatcherContext;
-import org.parboiled.common.Utils;
+import org.parboiled.common.ImmutableList;
+import org.parboiled.common.Preconditions;
+import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.InputLocation;
+import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
 
+    private MatcherContext<V> rootContext;
     private InputLocation errorLocation;
-    private List<Matcher<V>> lastMatchFollowers;
+    private boolean seekingToParseError;
+    private boolean addedFirstError;
 
-    public boolean handleMatchAttempt(MatcherContext<V> context) {
-        if (context.hasMatched()) {
-            // for every successful match record the location reached and the current follower matchers
-            // so we can create a nice error message should this match be the last successful one we see
-            if (errorLocation == null || errorLocation.index < context.getCurrentLocation().index) {
-                errorLocation = context.getCurrentLocation();
-                lastMatchFollowers = context.getCurrentFollowerMatchers();
-            }
-        } else if (context.isEnforced()) {
-            createParseError(context);
-        }
-        return false;
+    public void beforeParsingRun(MatcherContext<V> rootContext) {
+        this.rootContext = rootContext;
     }
 
-    private void createParseError(MatcherContext<V> context) {
-        // if we have never seen a successfull match initialize here
-        if (errorLocation == null)  {
+    public void handleMatch(MatcherContext<V> context) {
+        if (seekingToParseError) {
+            if (!addedFirstError && context.getCurrentLocation().index == errorLocation.index) {
+                // we are back at the location we previously marked as the error location
+                createParseError(context.getPath(), context.getCurrentFollowerMatchers());
+                addedFirstError = true;
+            }
+        } else if (errorLocation == null || errorLocation.index < context.getCurrentLocation().index) {
+            // record the last successful match, the current location might be a parse error
             errorLocation = context.getCurrentLocation();
-            lastMatchFollowers = new ArrayList<Matcher<V>>();
-            lastMatchFollowers.add(context.getMatcher());
         }
+    }
 
-        // only create errors at input locations we have not already covered
-        for (ParseError<V> error : context.getParseErrors()) {
-            if (error.getLocation().index >= errorLocation.index) return;
+    public boolean handleMismatch(MatcherContext<V> context) {
+        if (context == rootContext) {
+            if (seekingToParseError) {
+                // we completed the second run and already added the error, so don't rerun
+                seekingToParseError = false;
+                Preconditions.checkState(addedFirstError);
+            } else {
+                if (errorLocation == null) {
+                    // if we have never seen a successful match
+                    // create a parse error for the first input char and don't rerun
+                    errorLocation = context.getCurrentLocation();
+                    createParseError(null, ImmutableList.of(context.getMatcher()));
+                } else {
+                    seekingToParseError = true;
+                }
+            }
         }
+        return false; // never "overrule" a mismatch, since we don't recover
+    }
 
-        // add a new parse error
-        context.addParseError(new ParseError<V>(errorLocation, context.getPath(),
+    public boolean isRerunRequested(MatcherContext<V> context) {
+        return seekingToParseError;
+    }
+
+    private void createParseError(MatcherPath<V> lastMatchPath, List<Matcher<V>> expectedMatchers) {
+        rootContext.addParseError(new ParseError<V>(errorLocation, lastMatchPath,
                 String.format("Invalid input '%s', expected %s",
-                        Utils.toString(errorLocation.currentChar),
-                        getExpectedString()
+                        StringUtils.escape(String.valueOf(errorLocation.currentChar)),
+                        getExpectedString(expectedMatchers)
                 )
         ));
     }
 
-    // creates a new expected string from the follow matchers of the last successful match
-    private String getExpectedString() {
+    private String getExpectedString(List<Matcher<V>> expectedMatchers) {
         List<String> labelList = new ArrayList<String>();
         ToFirstLabelVisitor<V> toFirstLabelVisitor = new ToFirstLabelVisitor<V>(labelList);
-        for (Matcher<V> follower : lastMatchFollowers) {
+        for (Matcher<V> follower : expectedMatchers) {
             follower.accept(toFirstLabelVisitor);
         }
 
@@ -78,7 +96,7 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
             if (i > 0) sb.append(i < labelList.size() - 1 ? ", " : " or ");
             sb.append(labelList.get(i));
         }
-        return sb.toString();
+        return StringUtils.escape(sb.toString());
     }
 
 }

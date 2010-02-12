@@ -41,7 +41,7 @@ public class JavaTest {
     }
 
     public <V> String test(BaseParser<V> parser, Rule rule, String input) {
-        ParsingResult<V> parsingResult = Parboiled.parse(parser, rule, input);
+        ParsingResult<V> parsingResult = parser.parse(rule, input);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +

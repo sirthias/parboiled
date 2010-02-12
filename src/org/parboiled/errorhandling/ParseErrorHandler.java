@@ -27,6 +27,10 @@ import org.parboiled.MatcherContext;
  */
 public interface ParseErrorHandler<V> {
 
+    void beforeParsingRun(MatcherContext<V> rootContext);
+
+    void handleMatch(MatcherContext<V> context);
+
     /**
      * <p>This method is being called by the parboiled parser every time a rule match was attempted (and either
      * succeeded or failed). Since this is the case many times during a parsing run this method should be fast
@@ -37,6 +41,8 @@ public interface ParseErrorHandler<V> {
      * @param context the context of the rule attempt that was just performed
      * @return true for rematch
      */
-    boolean handleMatchAttempt(MatcherContext<V> context);
+    boolean handleMismatch(MatcherContext<V> context);
+
+    boolean isRerunRequested(MatcherContext<V> rootContext);
 
 }

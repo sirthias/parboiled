@@ -22,6 +22,7 @@ import static org.parboiled.common.Utils.arrayOf;
 import static org.parboiled.common.Utils.toObjectArray;
 import org.parboiled.errorhandling.ParseError;
 import org.parboiled.errorhandling.ParseErrorHandler;
+import org.parboiled.errorhandling.ReportFirstParseErrorHandler;
 import org.parboiled.errorhandling.StarterCharsVisitor;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
@@ -40,21 +41,37 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Runs the given parser rule against the given input string.
      *
+     * @param rule  the rule
+     * @param input the input string
+     * @return the ParsingResult for the run
+     */
+    @SuppressWarnings({"unchecked"})
+    public ParsingResult<V> parse(Rule rule, @NotNull String input) {
+        return parse(rule, input, new ReportFirstParseErrorHandler<V>());
+    }
+
+    /**
+     * Runs the given parser rule against the given input string using the given ParseErrorHandler during the
+     * parsing run.
+     *
      * @param rule              the rule
      * @param input             the input string
      * @param parseErrorHandler the ParseErrorHandler to use
      * @return the ParsingResult for the run
      */
     @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input, ParseErrorHandler<V> parseErrorHandler) {
+    public ParsingResult<V> parse(Rule rule, @NotNull String input, @NotNull ParseErrorHandler<V> parseErrorHandler) {
         InputBuffer inputBuffer = new InputBuffer(input);
         List<ParseError<V>> parseErrors = new ArrayList<ParseError<V>>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
+        MatcherContext<V> context;
 
-        MatcherContext<V> context = new MatcherContext<V>(inputBuffer, this, parseErrors, parseErrorHandler, matcher);
-
-        // run the actual matcher tree
-        boolean matched = context.runMatcher();
+        boolean matched;        
+        do {
+            context = new MatcherContext<V>(inputBuffer, this, parseErrors, parseErrorHandler, matcher);
+            parseErrorHandler.beforeParsingRun(context);
+            matched = context.runMatcher();
+        } while (!matched && parseErrorHandler.isRerunRequested(context));
 
         return new ParsingResult<V>(matched, context.getNode(), parseErrors, inputBuffer,
                 context.getCurrentLocation().row + 1);
@@ -243,39 +260,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule sequence(@NotNull Object[] rules) {
         return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules), false).label("sequence");
-    }
-
-    /**
-     * Creates a new rule that only succeeds if all of its subrules succeed, one after the other.
-     * However, after the first subrule has matched all further subrule matches are enforced, i.e. if one of them
-     * fails a ParseError will be created (and error recovery will be tried).
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
-     * arguments will yield the same rule instance.</p>
-     *
-     * @param rule      the first subrule
-     * @param rule2     the second subrule
-     * @param moreRules the other subrules
-     * @return a new rule
-     */
-    public Rule enforcedSequence(Object rule, Object rule2, @NotNull Object... moreRules) {
-        return enforcedSequence(arrayOf(rule, arrayOf(rule2, moreRules)));
-    }
-
-    /**
-     * Creates a new rule that only succeeds if all of its subrules succeed, one after the other.
-     * However, after the first subrule has matched all further subrule matches are enforced, i.e. if one of them
-     * fails a ParseError will be created (and error recovery will be tried).
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
-     * arguments will yield the same rule instance.</p>
-     *
-     * @param rules the sub rules
-     * @return a new rule
-     */
-    @Cached
-    public Rule enforcedSequence(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules), true).label("enforcedSequence");
+                new SequenceMatcher(toRules(rules)).label("sequence");
     }
 
     /**
@@ -441,7 +426,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule skipCharAndRetry(@NotNull Matcher<V> failedMatcher) {
         return sequence(
                 illegal(any()), // match one character and mark it ILLEGAL
-                Actions.match(failedMatcher, false) // rerun the failed matcher
+                Actions.match(failedMatcher) // rerun the failed matcher
         ).withoutNode();
     }
 
@@ -449,7 +434,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule insertCharAndRetry(@NotNull Matcher<V> failedMatcher) {
         return sequence(
                 Actions.injectVirtualInput(failedMatcher.accept(new StarterCharsVisitor<V>()).getRepresentative()),
-                Actions.match(failedMatcher, false) // rerun the failed matcher
+                Actions.match(failedMatcher) // rerun the failed matcher
         ).withoutNode();
     }
 

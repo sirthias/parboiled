@@ -33,7 +33,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         for (Matcher<V> matcher : getChildren()) {
-            if (context.getSubContext(matcher, false).runMatcher()) {
+            if (context.getSubContext(matcher).runMatcher()) {
                 context.createNode();
                 return true;
             }

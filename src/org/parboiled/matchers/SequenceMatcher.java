@@ -29,11 +29,8 @@ import java.util.List;
  */
 public class SequenceMatcher<V> extends AbstractMatcher<V> {
 
-    public final boolean enforced;
-
-    public SequenceMatcher(@NotNull Rule[] subRules, boolean enforced) {
+    public SequenceMatcher(@NotNull Rule[] subRules) {
         super(subRules);
-        this.enforced = enforced;
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
@@ -45,7 +42,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> {
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
 
-            if (!context.getSubContext(matcher, context.isEnforced() || enforced && i > 0).runMatcher()) {
+            if (!context.getSubContext(matcher).runMatcher()) {
                 return false;
             }
         }

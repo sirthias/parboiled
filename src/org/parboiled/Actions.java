@@ -25,12 +25,12 @@ import org.parboiled.support.Characters;
 
 public class Actions {
 
-    public static <V> Action<V> match(@NotNull final Matcher<V> matcher, final boolean enforce) {
+    public static <V> Action<V> match(@NotNull final Matcher<V> matcher) {
         return new NamedAction<V>("match") {
             @SuppressWarnings({"unchecked"})
             public boolean run(Context<V> context) {
                 MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-                return matcherContext.getSubContext(matcher, enforce).runMatcher();
+                return matcherContext.getSubContext(matcher).runMatcher();
             }
         };
     }
@@ -64,7 +64,7 @@ public class Actions {
             @SuppressWarnings({"unchecked"})
             public boolean run(Context<V> context) {
                 MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-                return matcherContext.getSubContext(emptyMatcher, false).runMatcher();
+                return matcherContext.getSubContext(emptyMatcher).runMatcher();
             }
         };
     }

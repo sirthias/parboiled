@@ -34,7 +34,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<CalcNode> result = Parboiled.parse(parser, parser.inputLine(), input);
+            ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
 
             CalcNode astRoot = result.parseTreeRoot.getValue();
             System.out.println(input + " = " + astRoot.getValue() + '\n');

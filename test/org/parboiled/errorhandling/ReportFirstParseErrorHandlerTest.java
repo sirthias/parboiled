@@ -48,7 +48,7 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
     };
 
     private final String[] errorMessages = new String[] {
-            "Invalid input 'X', expected factor (line 1, pos 1):\nX1+2\n^\n",
+            "Invalid input 'X', expected inputLine (line 1, pos 1):\nX1+2\n^\n",
             "Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 2):\n1X+2\n ^\n",
             "Invalid input 'X', expected term (line 1, pos 3):\n1+X2\n  ^\n",
             "Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):\n1+2X\n   ^\n",
@@ -70,7 +70,7 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();
         for (int i = 0; i < inputs.length; i++) {
-            ParsingResult<Integer> result = Parboiled.parse(parser, rule, inputs[i]);
+            ParsingResult<Integer> result = parser.parse(rule, inputs[i]);
             assertEquals(result.parseErrors.size(), 1);
             assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), errorMessages[i]);
         }
@@ -79,25 +79,43 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
     @Test
     public void testJavaError1() {
         String sourceWithErrors = "package org.parboiled.examples;\n" +
-            "\n" +
-            "public class JavaTestSource {\n" +
-            "\n" +
-            "    @SuppressWarnings({\"UnnecessaryLocalVariable\", \"UnusedDeclaration\"})\n" +
-            "    public String method(int param) {\n" +
-            "        String name = toString(;\n" +
-            "        return name;\n" +
-            "    }\n" +
-            "\n" +
-            "}";
+                "public class JavaTestSource {\n" +
+                "    @SuppressWarnings({\"UnnecessaryLocalVariable\", \"UnusedDeclaration\"})\n" +
+                "    public String method(int param) {\n" +
+                "        String name = toString(;\n" +
+                "        return name;\n" +
+                "    }\n" +
+                "}";
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.compilationUnit();
-        ParsingResult<Object> result = Parboiled.parse(parser, rule, sourceWithErrors);
+        ParsingResult<Object> result = parser.parse(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
-                "Invalid input ';', expected spacing, expression or ')' (line 7, pos 32):\n" +
+                "Invalid input ';', expected spacing, expression or ')' (line 5, pos 32):\n" +
                 "        String name = toString(;\n" +
                 "                               ^\n");
+    }
+
+    @Test
+    public void testJavaError2() {
+        String sourceWithErrors = "package org.parboiled.examples;\n" +
+                "public class JavaTestSource {\n" +
+                "    @SuppressWarnings({\"UnnecessaryLocalVariable\", \"UnusedDeclaration\"})\n" +
+                "    public String method(int param) {\n" +
+                "        String name  toString();\n" +
+                "        return name;\n" +
+                "    }\n" +
+                "}";
+
+        JavaParser parser = Parboiled.createParser(JavaParser.class);
+        Rule rule = parser.compilationUnit();
+        ParsingResult<Object> result = parser.parse(rule, sourceWithErrors);
+        assertEquals(result.parseErrors.size(), 1);
+        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
+                "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", dim, '=', ',' or ';' (line 5, pos 22):\n" +
+                "        String name  toString();\n" +
+                "                     ^\n");
     }
 
 }
