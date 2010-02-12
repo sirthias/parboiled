@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.common.Preconditions;
 import org.parboiled.common.Utils;
 import org.parboiled.matchers.Matcher;
 
@@ -40,6 +41,19 @@ public class MatcherPath<V> {
     }
 
     /**
+     * @return the length of this path
+     */
+    public int length() {
+        return matchers.length;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Matcher<V> get(int i) {
+        Preconditions.checkElementIndex(i, matchers.length);
+        return matchers[i];
+    }
+
+    /**
      * Returns the matcher along the path starting with the root matcher.
      * The last matcher in the returned list is the "deepest" matcher.
      *
@@ -59,27 +73,17 @@ public class MatcherPath<V> {
     }
 
     /**
-     * Determines whether this path matches the given context.
+     * Determines the length of the longest common path prefix of this path and the given other path.
      *
-     * @param context the context
-     * @return true if this path matches
+     * @param other the other path
+     * @return the length of the longest common path prefix of this path and the given other path
      */
-    public boolean matches(@NotNull MatcherContext<V> context) {
-        return context.getLevel() == matchers.length - 1 && prefixMatches(context);
-    }
-
-    /**
-     * Determines whether the given context matches a prefix of this path.
-     *
-     * @param context the context
-     * @return true if the given context matches a prefix of this path
-     */
-    public boolean prefixMatches(MatcherContext<V> context) {
-        while (context != null) {
-            if (matchers[context.getLevel()] != context.getMatcher()) return false;
-            context = context.getParent();
+    public int getCommonPrefixLength(MatcherPath<V> other) {
+        if (other == null) return 0;
+        for (int i = 0; i < matchers.length; i++) {
+            if (other.length() == i || matchers[i] != other.get(i)) return i;
         }
-        return true;
+        return matchers.length;
     }
 
     /**

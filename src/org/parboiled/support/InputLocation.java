@@ -17,8 +17,8 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.StringUtils;
 import org.parboiled.Parboiled;
+import org.parboiled.common.StringUtils;
 
 /**
  * (Almost) immutable value container identifying a certain position in an InputBuffer.

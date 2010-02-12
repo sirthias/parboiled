@@ -40,7 +40,7 @@ public class ParsingResult<V> {
     /**
      * The list of parse errors created during the parsing run.
      */
-    public final List<ParseError<V>> parseErrors;
+    public final List<ParseError> parseErrors;
 
     /**
      * The underlying input buffer.
@@ -61,7 +61,7 @@ public class ParsingResult<V> {
      * @param inputBuffer   the input buffer
      * @param totalRows     the number of total number of rows in the parsed input text
      */
-    public ParsingResult(boolean matched, Node<V> parseTreeRoot, @NotNull List<ParseError<V>> parseErrors,
+    public ParsingResult(boolean matched, Node<V> parseTreeRoot, @NotNull List<ParseError> parseErrors,
                          @NotNull InputBuffer inputBuffer, int totalRows) {
         this.matched = matched;
         this.parseTreeRoot = parseTreeRoot;

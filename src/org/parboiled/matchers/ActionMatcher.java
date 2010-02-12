@@ -21,7 +21,7 @@ import org.parboiled.Action;
 import org.parboiled.ContextAware;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.errorhandling.ParseError;
+import org.parboiled.errorhandling.ActionError;
 import org.parboiled.exceptions.ActionException;
 import org.parboiled.exceptions.GrammarException;
 import org.parboiled.support.Checks;
@@ -79,7 +79,8 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         try {
             return action.run(context);
         } catch (ActionException e) {
-            context.addParseError(new ParseError<V>(context.getCurrentLocation(), context.getPath(), e.getMessage()));
+            context.getParseErrors().add(
+                    new ActionError<V>(context.getCurrentLocation(), e.getMessage(), context.getPath(), e));
             return false;
         }
     }

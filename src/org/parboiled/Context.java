@@ -82,14 +82,7 @@ public interface Context<V> {
      * @return the list of parse errors
      */
     @NotNull
-    List<ParseError<V>> getParseErrors();
-
-    /**
-     * Adds the given ParseError to the list of parse errors.
-     *
-     * @param error the error to add
-     */
-    void addParseError(@NotNull ParseError<V> error);
+    List<ParseError> getParseErrors();
 
     /**
      * Returns the input text matched by the given node.
@@ -232,13 +225,6 @@ public interface Context<V> {
      * @param virtualInputText the string to inject
      */
     void injectVirtualInput(String virtualInputText);
-
-    /**
-     * Returns a list of matchers that can legally follow the currently running matcher according to the grammar.
-     *
-     * @return a list of matchers that can legally follow the currently running matcher according to the grammar
-     */
-    List<Matcher<V>> getCurrentFollowerMatchers();
 
 }
 

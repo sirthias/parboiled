@@ -20,10 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
 import static org.parboiled.common.Utils.toObjectArray;
-import org.parboiled.errorhandling.ParseError;
-import org.parboiled.errorhandling.ParseErrorHandler;
-import org.parboiled.errorhandling.ReportFirstParseErrorHandler;
-import org.parboiled.errorhandling.StarterCharsVisitor;
+import org.parboiled.errorhandling.*;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
@@ -62,7 +59,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input, @NotNull ParseErrorHandler<V> parseErrorHandler) {
         InputBuffer inputBuffer = new InputBuffer(input);
-        List<ParseError<V>> parseErrors = new ArrayList<ParseError<V>>();
+        List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         MatcherContext<V> context;
 

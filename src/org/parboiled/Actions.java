@@ -47,9 +47,9 @@ public class Actions {
     public static <V> Action<V> isNextCharLegalFollower(@NotNull Context<V> context) {
         final Characters followChars = Characters.NONE;
         StarterCharsVisitor<V> starterCharsVisitor = new StarterCharsVisitor<V>();
-        for (Matcher<V> followMatcher : context.getCurrentFollowerMatchers()) {
+        /*for (Matcher<V> followMatcher : context.getCurrentFollowerMatchers()) {
             followChars.add(followMatcher.accept(starterCharsVisitor));
-        }
+        }*/
 
         return new NamedAction<V>("isNextCharLegalFollower") {
             public boolean run(Context<V> context) {

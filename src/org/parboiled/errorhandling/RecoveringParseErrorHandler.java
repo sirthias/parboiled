@@ -16,14 +16,9 @@
 
 package org.parboiled.errorhandling;
 
-import org.parboiled.BaseParser;
 import org.parboiled.MatcherContext;
-import org.parboiled.Rule;
-import org.parboiled.matchers.*;
 
-public class RecoveringParseErrorHandler<V> extends DefaultMatcherVisitor<V, Rule> implements ParseErrorHandler<V> {
-
-    private MatcherContext<V> context;
+public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     public void beforeParsingRun(MatcherContext<V> rootContext) {
 
@@ -41,7 +36,7 @@ public class RecoveringParseErrorHandler<V> extends DefaultMatcherVisitor<V, Rul
         return false;
     }
 
-    @SuppressWarnings({"unchecked"})
+    /*@SuppressWarnings({"unchecked"})
     public boolean handleParseError(MatcherContext<V> context) {
         Matcher<V> failedMatcher = context.getMatcher();
         Matcher<V> recoveryRule = failedMatcher.getRecoveryMatcher();
@@ -80,6 +75,5 @@ public class RecoveringParseErrorHandler<V> extends DefaultMatcherVisitor<V, Rul
     @Override
     public Rule defaultValue(AbstractMatcher<V> matcher) {
         return context.getParser().singleCharErrorRecovery(matcher);
-    }
-
+    }*/
 }

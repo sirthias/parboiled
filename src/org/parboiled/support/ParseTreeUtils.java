@@ -18,11 +18,11 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.errorhandling.ParseError;
 import org.parboiled.common.Function;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
+import org.parboiled.errorhandling.ParseError;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
 import org.parboiled.trees.Printability;
@@ -300,7 +300,7 @@ public class ParseTreeUtils {
      * @return the pretty print text
      */
     public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
-        InputLocation location = error.getLocation();
+        InputLocation location = error.getErrorLocation();
         StringBuilder sb = new StringBuilder(error.getErrorMessage());
         sb.append(String.format(" (line %s, pos %s):", location.row + 1, location.column + 1));
         sb.append('\n');
@@ -322,7 +322,7 @@ public class ParseTreeUtils {
      * @param inputBuffer the input buffer
      * @return the pretty print text
      */
-    public static <V> String printParseErrors(@NotNull List<ParseError<V>> errors, @NotNull InputBuffer inputBuffer) {
+    public static String printParseErrors(@NotNull List<ParseError> errors, @NotNull InputBuffer inputBuffer) {
         StringBuilder sb = new StringBuilder();
         for (ParseError error : errors) {
             if (sb.length() > 0) sb.append("---\n");

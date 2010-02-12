@@ -18,9 +18,10 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
-import org.parboiled.errorhandling.FollowMatchersVisitor;
+import org.parboiled.common.StringUtils;
 import org.parboiled.errorhandling.ParseError;
 import org.parboiled.errorhandling.ParseErrorHandler;
+import org.parboiled.errorhandling.SimpleParseError;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.Matcher;
@@ -54,7 +55,7 @@ public class MatcherContext<V> implements Context<V> {
 
     private final InputBuffer inputBuffer;
     private final BaseParser<V> parser;
-    private final List<ParseError<V>> parseErrors;
+    private final List<ParseError> parseErrors;
     private final ParseErrorHandler<V> parseErrorHandler;
     private final Reference<Node<V>> lastNodeRef;
     private final MatcherContext<V> parent;
@@ -71,7 +72,7 @@ public class MatcherContext<V> implements Context<V> {
     private boolean belowLeafLevel;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
-                          @NotNull List<ParseError<V>> parseErrors,
+                          @NotNull List<ParseError> parseErrors,
                           @NotNull ParseErrorHandler<V> parseErrorHandler, @NotNull Matcher<V> matcher) {
         this(inputBuffer, parser, parseErrors, parseErrorHandler, new Reference<Node<V>>(), null, 0);
         setStartLocation(new InputLocation(inputBuffer));
@@ -79,7 +80,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
-                           @NotNull List<ParseError<V>> parseErrors, @NotNull ParseErrorHandler<V> parseErrorHandler,
+                           @NotNull List<ParseError> parseErrors, @NotNull ParseErrorHandler<V> parseErrorHandler,
                            @NotNull Reference<Node<V>> lastNodeRef, MatcherContext<V> parent, int level) {
         this.inputBuffer = inputBuffer;
         this.parser = parser;
@@ -120,12 +121,8 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     @NotNull
-    public List<ParseError<V>> getParseErrors() {
+    public List<ParseError> getParseErrors() {
         return parseErrors;
-    }
-
-    public void addParseError(@NotNull ParseError<V> error) {
-        parseErrors.add(error);
     }
 
     public InputLocation getCurrentLocation() {
@@ -203,21 +200,6 @@ public class MatcherContext<V> implements Context<V> {
 
     public void injectVirtualInput(String virtualInputText) {
         currentLocation = currentLocation.insertVirtualInput(virtualInputText);
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @NotNull
-    public List<Matcher<V>> getCurrentFollowerMatchers() {
-        List<Matcher<V>> followerMatchers = new ArrayList<Matcher<V>>();
-        FollowMatchersVisitor<V> followMatchersVisitor = new FollowMatchersVisitor<V>(followerMatchers);
-        MatcherContext<V> context = this;
-        while (context != null) {
-            followMatchersVisitor.setContext(context);
-            boolean complete = context.getMatcher().accept(followMatchersVisitor);
-            if (complete) return followerMatchers;
-            context = context.parent;
-        }
-        return followerMatchers;
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
@@ -304,9 +286,9 @@ public class MatcherContext<V> implements Context<V> {
             throw e; // don't wrap, just bubble up
         } catch (Throwable e) {
             throw new ParserRuntimeException(e,
-                    printParseError(new ParseError<V>(currentLocation, getPath(),
-                            String.format("Error while parsing %s '%s' at input position",
-                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath())), inputBuffer));
+                    printParseError(new SimpleParseError(currentLocation,
+                            StringUtils.escape(String.format("Error while parsing %s '%s' at input position",
+                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer));
         }
     }
 
