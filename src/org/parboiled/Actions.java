@@ -17,9 +17,6 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.errorhandling.StarterCharsVisitor;
-import org.parboiled.matchers.AbstractMatcher;
-import org.parboiled.matchers.EmptyMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.Characters;
 
@@ -30,7 +27,12 @@ public class Actions {
             @SuppressWarnings({"unchecked"})
             public boolean run(Context<V> context) {
                 MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-                return matcherContext.getSubContext(matcher).runMatcher();
+                MatcherContext<V> actionMatcherContext = matcherContext.getSubContext();
+                boolean matched = actionMatcherContext.getSubContext(matcher).runMatcher();
+                if (matched && actionMatcherContext.getSubNodes() != null) {
+                    matcherContext.addChildNodes(actionMatcherContext.getSubNodes());
+                }
+                return matched;
             }
         };
     }
@@ -44,27 +46,10 @@ public class Actions {
         };
     }
 
-    public static <V> Action<V> isNextCharLegalFollower(@NotNull Context<V> context) {
-        final Characters followChars = Characters.NONE;
-        StarterCharsVisitor<V> starterCharsVisitor = new StarterCharsVisitor<V>();
-        /*for (Matcher<V> followMatcher : context.getCurrentFollowerMatchers()) {
-            followChars.add(followMatcher.accept(starterCharsVisitor));
-        }*/
-
-        return new NamedAction<V>("isNextCharLegalFollower") {
+    public static <V> Action<V> isNextCharIn(@NotNull final Characters testChars) {
+        return new NamedAction<V>("isNextCharIn") {
             public boolean run(Context<V> context) {
-                return followChars.contains(context.getCurrentLocation().currentChar);
-            }
-        };
-    }
-
-    public static <V> Action<V> createEmptyNodeFor(@NotNull Matcher<V> matcher) {
-        final AbstractMatcher emptyMatcher = new EmptyMatcher().label(matcher.getLabel());
-        return new NamedAction<V>("createEmptyNodeFor") {
-            @SuppressWarnings({"unchecked"})
-            public boolean run(Context<V> context) {
-                MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-                return matcherContext.getSubContext(emptyMatcher).runMatcher();
+                return testChars.contains(context.getCurrentLocation().currentChar);
             }
         };
     }

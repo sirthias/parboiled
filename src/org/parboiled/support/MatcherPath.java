@@ -33,11 +33,15 @@ public class MatcherPath<V> {
 
     @SuppressWarnings({"ConstantConditions"})
     public MatcherPath(@NotNull MatcherContext<V> context) {
-        matchers = new Matcher[context.getLevel() + 1];
+        this(context.getLevel() + 1);
         while (context != null) {
             matchers[context.getLevel()] = context.getMatcher();
             context = context.getParent();
         }
+    }
+
+    private MatcherPath(int length) {
+        matchers = new Matcher[length];
     }
 
     /**
@@ -47,6 +51,12 @@ public class MatcherPath<V> {
         return matchers.length;
     }
 
+    /**
+     * Returns the matcher with the given index.
+     *
+     * @param i the index to get
+     * @return the matcher at the given index
+     */
     @SuppressWarnings({"unchecked"})
     public Matcher<V> get(int i) {
         Preconditions.checkElementIndex(i, matchers.length);
@@ -107,6 +117,19 @@ public class MatcherPath<V> {
             if (matchers[i] == matcher) return i;
         }
         return -1;
+    }
+
+    /**
+     * Appends the given matcher in a new instance.
+     *
+     * @param matcher the matcher to append
+     * @return a new MatcherPath 
+     */
+    public MatcherPath<V> append(@NotNull Matcher<V> matcher) {
+        MatcherPath<V> newPath = new MatcherPath<V>(length() + 1);
+        System.arraycopy(matchers, 0, newPath.matchers, 0, length());
+        newPath.matchers[length()] = matcher;
+        return newPath;
     }
 
     @Override

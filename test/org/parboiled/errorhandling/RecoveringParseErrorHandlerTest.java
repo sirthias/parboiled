@@ -16,24 +16,22 @@
 
 package org.parboiled.errorhandling;
 
-import org.parboiled.MatcherContext;
+import org.parboiled.Parboiled;
+import org.parboiled.examples.calculator.CalculatorParser;
+import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
 
-public class NopParseErrorHandler<V> implements ParseErrorHandler<V> {
+public class RecoveringParseErrorHandlerTest extends AbstractTest {
 
-    private NopParseErrorHandler() {
+    @Test
+    public void testFail() {
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
+        testFail(parser, parser.inputLine(), "X1+2", "" +
+                "Invalid input 'X', expected inputLine (line 1, pos 1):\n" +
+                "X1+2\n" +
+                "^\n", "" +
+                "\n"
+        );
     }
 
-    public void beforeParsingRun(MatcherContext rootContext) {
-    }
-
-    public void handleMatch(MatcherContext context) {
-    }
-
-    public boolean handleMismatch(MatcherContext context) {
-        return false;
-    }
-
-    public boolean isRerunRequested(MatcherContext rootContext) {
-        return false;
-    }
 }

@@ -362,7 +362,12 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     public boolean match(@NotNull Matcher<V> matcher) {
         check();
         MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-        return matcherContext.getSubContext(matcher).runMatcher();
+        MatcherContext<V> actionMatcherContext = matcherContext.getSubContext();
+        boolean matched = actionMatcherContext.getSubContext(matcher).runMatcher();
+        if (matched && actionMatcherContext.getSubNodes() != null) {
+            matcherContext.addChildNodes(actionMatcherContext.getSubNodes());
+        }
+        return matched;
     }
 
     private void check() {

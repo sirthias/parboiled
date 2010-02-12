@@ -63,7 +63,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         MatcherContext<V> context;
 
-        boolean matched;        
+        boolean matched;
         do {
             context = new MatcherContext<V>(inputBuffer, this, parseErrors, parseErrorHandler, matcher);
             parseErrorHandler.beforeParsingRun(context);
@@ -445,12 +445,21 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     @Label
     public Rule resynchronize(@NotNull Context<V> failedMatcherContext) {
+        StarterCharsVisitor<V> starterCharsVisitor = new StarterCharsVisitor<V>();
+        FollowMatchersVisitor<V> followMatchersVisitor = new FollowMatchersVisitor<V>();
+        MatcherContext<V> context = (MatcherContext<V>) failedMatcherContext;
+        Characters followChars = Characters.NONE;
+        for (Matcher<V> followMatcher : followMatchersVisitor.getFollowMatchers(context)) {
+            followChars.add(followMatcher.accept(starterCharsVisitor));
+        }
         return sequence(
-                Actions.createEmptyNodeFor(failedMatcherContext.getMatcher()),
+                // match empty with the failedMatchers label
+                Actions.match(new EmptyMatcher<V>().label(failedMatcherContext.getMatcher().getLabel())),
+
                 illegal( // gooble up all illegal input up until a legal follower
                         zeroOrMore(
                                 sequence(
-                                        testNot(Actions.isNextCharLegalFollower(failedMatcherContext)),
+                                        testNot(Actions.isNextCharIn(followChars)),
                                         any().withoutNode()
                                 )
                         ).withoutNode()

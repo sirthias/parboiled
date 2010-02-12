@@ -39,7 +39,7 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
     private MatcherPath<V> lastMatch;
 
     public ReportFirstParseErrorHandler() {
-        this(DefaultInvalidInputErrorFormatter.<V>instance());
+        this(new DefaultInvalidInputErrorFormatter<V>());
     }
 
     public ReportFirstParseErrorHandler(Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
@@ -67,10 +67,6 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
                     state = State.Reporting;
                 }
                 break;
-
-            case Reporting:
-                // ignore
-                break;
         }
     }
 
@@ -82,9 +78,7 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
                         state = State.Seeking;
                     } else {
                         // mismatched the very first character
-                        errorLocation = context.getCurrentLocation();
-                        failedMatchers.add(context.getPath());
-                        createParseError();
+                        handleMismatchWhileReporting(context);
                     }
                 }
                 break;
@@ -94,15 +88,19 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
                 break;
 
             case Reporting:
-                if (context.getCurrentLocation().index == errorLocation.index) {
-                    failedMatchers.add(context.getPath());
-                }
-                if (context == rootContext) {
-                    createParseError();
-                }
+                handleMismatchWhileReporting(context);
                 break;
         }
         return false; // never "overrule" a mismatch, since we don't recover
+    }
+
+    private void handleMismatchWhileReporting(MatcherContext<V> context) {
+        if (context.getCurrentLocation().index == errorLocation.index) {
+            failedMatchers.add(context.getPath());
+        }
+        if (context == rootContext) {
+            createParseError();
+        }
     }
 
     public boolean isRerunRequested(MatcherContext<V> context) {

@@ -16,7 +16,6 @@
 
 package org.parboiled.errorhandling;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
@@ -27,19 +26,6 @@ import java.util.List;
 
 public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<V, Boolean>
         implements Formatter<InvalidInputError<V>> {
-
-    private static DefaultInvalidInputErrorFormatter instance;
-
-    @SuppressWarnings({"unchecked"})
-    @NotNull
-    public static <V> DefaultInvalidInputErrorFormatter<V> instance() {
-        if (instance == null) {
-            instance = new DefaultInvalidInputErrorFormatter<V>();
-        }
-        return (DefaultInvalidInputErrorFormatter<V>) instance;
-    }
-
-    private DefaultInvalidInputErrorFormatter() {}
 
     public String format(InvalidInputError<V> error) {
         if (error == null) return "";
