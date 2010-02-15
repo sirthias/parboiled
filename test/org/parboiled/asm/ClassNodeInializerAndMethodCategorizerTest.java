@@ -38,9 +38,9 @@ public class ClassNodeInializerAndMethodCategorizerTest {
         assertEqualsMultiline(join(classNode.ruleMethods),
                 "noActionRule,simpleActionRule,upSetActionRule,booleanExpressionActionRule,complexActionsRule,any,empty");
         assertEqualsMultiline(join(classNode.cachedMethods),
-                "ch,charIgnoreCase,charRange,charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,enforcedSequence,test,testNot,zeroOrMore");
+                "ch,charIgnoreCase,charRange,charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,test,testNot,zeroOrMore");
         assertEqualsMultiline(join(classNode.labelMethods),
-                "");
+                "skipCharAndRetry,insertCharAndRetry,resynchronize,defaultRecovery");
         assertEqualsMultiline(join(classNode.leafMethods),
                 "charSet,string,stringIgnoreCase");
     }

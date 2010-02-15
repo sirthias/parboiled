@@ -50,10 +50,17 @@ class LabelApplicator implements ClassTransformer, Opcodes, Types {
         }
 
         // stack: <rule>
+        instructions.insertBefore(current, new InsnNode(DUP));
+        // stack: <rule> :: <rule>
+        LabelNode isNullLabel = new LabelNode();
+        instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
+        // stack: <rule>
         instructions.insertBefore(current, new LdcInsnNode(getLabelText(method)));
         // stack: <rule> :: <labelText>
         instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
                 "label", "(Ljava/lang/String;)" + RULE_TYPE.getDescriptor()));
+        // stack: <rule>
+        instructions.insertBefore(current, isNullLabel);
         // stack: <rule>
     }
 

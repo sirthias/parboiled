@@ -18,10 +18,7 @@ package org.parboiled.asm;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.AnnotationNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.*;
 import org.parboiled.common.Preconditions;
 
 class LeafApplicator implements ClassTransformer, Opcodes, Types {
@@ -50,8 +47,15 @@ class LeafApplicator implements ClassTransformer, Opcodes, Types {
         }
 
         // stack: <rule>
+        instructions.insertBefore(current, new InsnNode(DUP));
+        // stack: <rule> :: <rule>
+        LabelNode isNullLabel = new LabelNode();
+        instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
+        // stack: <rule>
         instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
                 "asLeaf", "()" + RULE_TYPE.getDescriptor()));
+        // stack: <rule>
+        instructions.insertBefore(current, isNullLabel);
         // stack: <rule>
     }
 
