@@ -50,7 +50,7 @@ public class RecoveringParseErrorHandlerTest extends AbstractTest {
     }
 
     private void runTest(CalculatorParser parser, String test) {
-        String[] s = test.split("---\r?\n");
+        String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
             testFail(parser, parser.inputLine(), s[0].replaceAll("\r?\n", ""), s[1], s[2]);
         }
