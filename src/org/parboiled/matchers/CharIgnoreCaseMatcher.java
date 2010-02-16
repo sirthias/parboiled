@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Parboiled;
 
 /**
  * A Matcher matching a single character case independently.
@@ -38,8 +37,6 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
     @Override
     public String getLabel() {
         if (hasLabel()) return super.getLabel();
-        if (charLow == Parboiled.EOI) return "EOI";
-        if (charLow == charUp) return "\'" + charLow + '\'';
         return "\'" + charLow + '/' + charUp + '\'';
     }
 

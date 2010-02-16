@@ -19,19 +19,41 @@ package org.parboiled.errorhandling;
 import org.parboiled.Parboiled;
 import org.parboiled.examples.calculator.CalculatorParser;
 import org.parboiled.test.AbstractTest;
+import org.parboiled.test.FileUtils;
 import org.testng.annotations.Test;
 
 public class RecoveringParseErrorHandlerTest extends AbstractTest {
 
     @Test
-    public void testFail() {
+    public void testSingleErrorRecovery() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
-        testFail(parser, parser.inputLine(), "X1+2", "" +
-                "Invalid input 'X', expected inputLine (line 1, pos 1):\n" +
-                "X1+2\n" +
-                "^\n", "" +
-                "\n"
-        );
+        String[] tests = FileUtils.readAllTextFromResource("res/CalculatorErrorRecoveryTest.tests")
+                .split("###\r?\n");
+
+        if (!runSingleTest(parser, tests)) {
+            // no single, important test found, so run all tests
+            for (String test : tests) {
+                runTest(parser, test);
+            }
+        }
+    }
+
+    // if there is a test with its input starting with '>>>' only run that one
+    private boolean runSingleTest(CalculatorParser parser, String[] tests) {
+        for (String test : tests) {
+            if (test.startsWith(">>>")) {
+                runTest(parser, test.substring(3));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void runTest(CalculatorParser parser, String test) {
+        String[] s = test.split("---\r?\n");
+        if (!s[0].startsWith("//")) {
+            testFail(parser, parser.inputLine(), s[0].replaceAll("\r?\n", ""), s[1], s[2]);
+        }
     }
 
 }

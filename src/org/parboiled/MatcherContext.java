@@ -251,6 +251,18 @@ public class MatcherContext<V> implements Context<V> {
         subNodes.addAll(nodes);
     }
 
+    public ParseErrorHandler<V> getParseErrorHandler() {
+        return parseErrorHandler;
+    }
+
+    public void clearSubLeafNodeSuppression() {
+        MatcherContext<V> context = this;
+        while (context != null && context.belowLeafLevel) {
+            context.belowLeafLevel = false;
+            context = context.getParent();
+        }
+    }
+
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
@@ -291,5 +303,4 @@ public class MatcherContext<V> implements Context<V> {
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer));
         }
     }
-
 }

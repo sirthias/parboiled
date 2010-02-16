@@ -36,7 +36,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         return sequence(
                 term(),
                 zeroOrMore(sequence(charSet("+-"), term())),
-                compute(VALUE("term"), CHARS("z/s/firstOf"), VALUES("z/s/term"))
+                compute(VALUE("term"), CHARS("z/s/["), VALUES("z/s/term"))
         );
     }
 
@@ -44,7 +44,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         return sequence(
                 factor(),
                 zeroOrMore(sequence(charSet("*/"), factor())),
-                compute(VALUE("factor"), CHARS("z/s/firstOf"), VALUES("z/s/factor"))
+                compute(VALUE("factor"), CHARS("z/s/["), VALUES("z/s/factor"))
         );
     }
 
@@ -82,16 +82,17 @@ public class CalculatorParser extends BaseParser<Integer> {
     }
 
     private int performOperation(int value1, Character operator, Integer value2) {
-        if (operator == null || value2 == null) return value1;
-        switch (operator) {
-            case '+':
-                return value1 + value2;
-            case '-':
-                return value1 - value2;
-            case '*':
-                return value1 * value2;
-            case '/':
-                return value1 / value2;
+        if (operator != null && value2 != null) {
+            switch (operator) {
+                case '+':
+                    return value1 + value2;
+                case '-':
+                    return value1 - value2;
+                case '*':
+                    return value1 * value2;
+                case '/':
+                    return value1 / value2;
+            }
         }
         throw new IllegalStateException();
     }

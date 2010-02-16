@@ -123,13 +123,17 @@ public class MatcherPath<V> {
      * Appends the given matcher in a new instance.
      *
      * @param matcher the matcher to append
-     * @return a new MatcherPath 
+     * @return a new MatcherPath
      */
     public MatcherPath<V> append(@NotNull Matcher<V> matcher) {
         MatcherPath<V> newPath = new MatcherPath<V>(length() + 1);
         System.arraycopy(matchers, 0, newPath.matchers, 0, length());
         newPath.matchers[length()] = matcher;
         return newPath;
+    }
+
+    public boolean isPrefixOf(MatcherPath<V> other) {
+        return getCommonPrefixLength(other) == length();
     }
 
     @Override
@@ -155,4 +159,5 @@ public class MatcherPath<V> {
         }
         return sb.toString();
     }
+
 }

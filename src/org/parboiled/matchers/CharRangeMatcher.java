@@ -19,6 +19,7 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Preconditions;
+import org.parboiled.common.StringUtils;
 
 public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
@@ -33,7 +34,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public String getLabel() {
-        return hasLabel() ? super.getLabel() : cLow + ".." + cHigh;
+        return hasLabel() ? super.getLabel() : StringUtils.escape(cLow) + ".." + StringUtils.escape(cHigh);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

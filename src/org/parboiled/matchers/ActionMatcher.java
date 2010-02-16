@@ -24,7 +24,6 @@ import org.parboiled.Rule;
 import org.parboiled.errorhandling.ActionError;
 import org.parboiled.exceptions.ActionException;
 import org.parboiled.exceptions.GrammarException;
-import org.parboiled.support.Checks;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -68,8 +67,6 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        Checks.ensure(!context.isBelowLeafLevel(), "Actions are not allowed in or below @Leaf rules");
-
         // actions need to run in the parent context
         context = context.getParent();
         for (ContextAware<V> contextAware : contextAwares) {

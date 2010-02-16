@@ -20,7 +20,7 @@ public interface MatcherVisitor<V, R> {
 
     R visit(ActionMatcher<V> matcher);
 
-    R visit(AnyCharMatcher<V> matcher);
+    R visit(CharactersMatcher<V> matcher);
 
     R visit(CharIgnoreCaseMatcher<V> matcher);
 

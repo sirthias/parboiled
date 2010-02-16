@@ -65,7 +65,7 @@ public class InputLocation {
 
     @Override
     public String toString() {
-        return String.format("#%s(%s,%s)'%s'", index, row, column, currentChar);
+        return String.format("#%s(%s,%s)'%s'", index, row, column, StringUtils.escape(currentChar));
     }
 
     public InputLocation insertVirtualInput(char virtualChar) {

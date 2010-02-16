@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,29 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Parboiled;
+import org.parboiled.support.Characters;
 
 /**
- * A Matcher matching any character except for EOI.
+ * A Matcher matching a single character out of a {@link org.parboiled.support.Characters} set
  *
  * @param <V>
  */
-public class AnyCharMatcher<V> extends AbstractMatcher<V> {
+public class CharactersMatcher<V> extends AbstractMatcher<V> {
+
+    public final Characters characters;
+
+    public CharactersMatcher(@NotNull Characters characters) {
+        this.characters = characters;
+    }
 
     @Override
     public String getLabel() {
-        return hasLabel() ? super.getLabel() : "ANY";
+        if (hasLabel()) return super.getLabel();
+        return characters.toString();
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (context.getCurrentLocation().currentChar == Parboiled.EOI) return false;
+        if (!characters.contains(context.getCurrentLocation().currentChar)) return false;
         context.advanceInputLocation();
         context.createNode();
         return true;

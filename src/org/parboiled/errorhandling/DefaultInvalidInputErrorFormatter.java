@@ -39,32 +39,47 @@ public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<
     private String getExpectedString(InvalidInputError<V> error) {
         List<String> labelList = new ArrayList<String>();
         for (MatcherPath<V> path : error.getFailedMatchers()) {
-            String label = chooseLabelFromPath(path, error);
-            if (label != null && !labelList.contains(label)) {
-                labelList.add(label);
+            String[] labels = chooseLabelFromPath(path, error);
+            if (labels == null) continue;
+            for (String label : labels) {
+                if (label != null && !labelList.contains(label)) {
+                    labelList.add(label);
+                }
             }
         }
         return join(labelList);
     }
 
-    private String chooseLabelFromPath(MatcherPath<V> path, InvalidInputError<V> error) {
+    private String[] chooseLabelFromPath(MatcherPath<V> path, InvalidInputError<V> error) {
         if (path.equals(error.getLastMatch())) {
-            return path.getHead().getLabel();
+            return getLabels(path.getHead());
         }
         int commonPrefixLength = path.getCommonPrefixLength(error.getLastMatch());
         return findFirstProperLabel(path, commonPrefixLength);
     }
 
-    private String findFirstProperLabel(MatcherPath<V> path, int startIndex) {
-        boolean negative = false;
+    private String[] findFirstProperLabel(MatcherPath<V> path, int startIndex) {
         for (int i = startIndex; i < path.length(); i++) {
             Matcher<V> matcher = path.get(i);
             if (matcher.accept(this)) {
-                return negative ? "no " + matcher.getLabel() : matcher.getLabel();
+                return getLabels(matcher);
             }
-            if (matcher instanceof TestNotMatcher) negative = !negative;
         }
         return null;
+    }
+
+    private String[] getLabels(Matcher<V> matcher) {
+        if (matcher instanceof CharactersMatcher) {
+            CharactersMatcher cMatcher = (CharactersMatcher) matcher;
+            if (!cMatcher.characters.isSubtractive()) {
+                String[] labels = new String[cMatcher.characters.getChars().length];
+                for (int i = 0; i < labels.length; i++) {
+                    labels[i] = '\'' + String.valueOf(cMatcher.characters.getChars()[i]) + '\'';
+                }
+                return labels;
+            }
+        }
+        return new String[] {matcher.getLabel()};
     }
 
     private String join(List<String> labelList) {
@@ -92,7 +107,7 @@ public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<
     @Override
     public Boolean visit(FirstOfMatcher<V> matcher) {
         String label = matcher.getLabel();
-        return !"firstOf".equals(label) && !label.startsWith("{") && !label.endsWith("}");
+        return !"firstOf".equals(label);
     }
 
     @Override
@@ -108,16 +123,6 @@ public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<
     @Override
     public Boolean visit(SequenceMatcher<V> matcher) {
         return !"sequence".equals(matcher.getLabel());
-    }
-
-    @Override
-    public Boolean visit(TestMatcher<V> matcher) {
-        return !"test".equals(matcher.getLabel());
-    }
-
-    @Override
-    public Boolean visit(TestNotMatcher<V> matcher) {
-        return !"testNot".equals(matcher.getLabel());
     }
 
     @Override

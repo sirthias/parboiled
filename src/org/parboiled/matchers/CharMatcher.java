@@ -18,7 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.Parboiled;
+import org.parboiled.common.StringUtils;
 
 /**
  * A Matcher matching a single character.
@@ -36,7 +36,7 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
     @Override
     public String getLabel() {
         if (hasLabel()) return super.getLabel();
-        return character == Parboiled.EOI ? "EOI" : "\'" + character + '\'';
+        return "\'" + StringUtils.escape(character) + '\'';
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

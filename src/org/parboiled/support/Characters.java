@@ -17,7 +17,7 @@
 package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Utils;
+import org.parboiled.common.StringUtils;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -134,7 +134,7 @@ public class Characters {
         sb.append(subtractive ? "![" : "[");
         for (int i = 0; i < chars.length; i++) {
             if (i > 0) sb.append(',');
-            sb.append(Utils.toString(chars[i]));
+            sb.append(StringUtils.escape(chars[i]));
         }
         sb.append(']');
         return sb.toString();
@@ -251,6 +251,17 @@ public class Characters {
     }
 
     /**
+     * Creates a new Characters instance containing only the given chars.
+     *
+     * @param chars the chars
+     * @return a new Characters object
+     */
+    @NotNull
+    public static Characters of(String chars) {
+        return StringUtils.isEmpty(chars) ? Characters.NONE : new Characters(false, chars.toCharArray());
+    }
+
+    /**
      * Creates a new Characters instance containing all characters minus the given one.
      *
      * @param c the char to NOT include
@@ -270,6 +281,17 @@ public class Characters {
     @NotNull
     public static Characters allBut(char... chars) {
         return chars.length == 0 ? Characters.ALL : new Characters(true, chars.clone());
+    }
+
+    /**
+     * Creates a new Characters instance containing all characters minus the given ones.
+     *
+     * @param chars the chars to NOT include
+     * @return a new Characters object
+     */
+    @NotNull
+    public static Characters allBut(String chars) {
+        return StringUtils.isEmpty(chars) ? Characters.ALL : new Characters(true, chars.toCharArray());
     }
 
     /**

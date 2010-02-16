@@ -38,35 +38,40 @@ public final class StringUtils {
      * with their respective escape sequences.
      *
      * @param string the string
-     * @return the string with newlines escaped.
+     * @return the escaped string
      */
     public static String escape(String string) {
         if (isEmpty(string)) return "";
         StringBuilder sb = new StringBuilder();
         char[] chars = string.toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            char c = chars[i];
-            switch (c) {
-                case '\r':
-                    sb.append(i + 1 < chars.length && chars[i + 1] == '\n' ? "\\n" : "\\r");
-                    break;
-                case '\n':
-                    sb.append("\\n");
-                    break;
-                case '\t':
-                    sb.append("\\t");
-                    break;
-                case '\f':
-                    sb.append("\\f");
-                    break;
-                case Parboiled.EOI:
-                    sb.append("EOI");
-                    break;
-                default:
-                    sb.append(c);
-            }
+            sb.append(chars[i] == '\r' && i + 1 < chars.length && chars[i + 1] == '\n' ? "\\n" : escape(chars[i]));
         }
         return sb.toString();
+    }
+
+    /**
+     * Replaces carriage returns, newlines, tabs, formfeeds and {@link Parboiled#EOI}
+     * with their respective escape sequences.
+     *
+     * @param c the character to escape
+     * @return the escaped string
+     */
+    public static String escape(char c) {
+        switch (c) {
+            case '\r':
+                return "\\r";
+            case '\n':
+                return "\\n";
+            case '\t':
+                return "\\t";
+            case '\f':
+                return "\\f";
+            case Parboiled.EOI:
+                return "EOI";
+            default:
+                return String.valueOf(c);
+        }
     }
 
     /**

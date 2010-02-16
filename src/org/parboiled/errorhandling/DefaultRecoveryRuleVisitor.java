@@ -17,74 +17,17 @@
 package org.parboiled.errorhandling;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.BaseParser;
 import org.parboiled.Context;
-import org.parboiled.ContextAware;
 import org.parboiled.Rule;
-import org.parboiled.matchers.*;
+import org.parboiled.matchers.MatcherVisitor;
+import org.parboiled.support.MatcherPath;
+import org.parboiled.support.InputLocation;
 
-public class DefaultRecoveryRuleVisitor<V> implements MatcherVisitor<V, Rule>, ContextAware<V> {
+public interface DefaultRecoveryRuleVisitor<V> extends MatcherVisitor<V, Rule> {
 
-    private Context<V> context;
+    void setContext(@NotNull Context<V> context);
 
-    public void setContext(@NotNull Context<V> context) {
-        this.context = context;
-    }
+    void setLastMatch(MatcherPath<V> lastMatch);
 
-    public Rule visit(ActionMatcher<V> matcher) {
-        return null;
-    }
-
-    public Rule visit(AnyCharMatcher<V> matcher) {
-        return context.getParser().singleCharErrorRecovery(matcher);
-    }
-
-    public Rule visit(CharIgnoreCaseMatcher<V> matcher) {
-        return context.getParser().singleCharErrorRecovery(matcher);
-    }
-
-    public Rule visit(CharMatcher<V> matcher) {
-        return context.getParser().singleCharErrorRecovery(matcher);
-    }
-
-    public Rule visit(CharRangeMatcher<V> matcher) {
-        return context.getParser().singleCharErrorRecovery(matcher);
-    }
-
-    public Rule visit(EmptyMatcher<V> matcher) {
-        throw new IllegalStateException(); // EmptyMatchers should never cause a mismatch
-    }
-
-    public Rule visit(FirstOfMatcher<V> matcher) {
-        return null;
-    }
-
-    public Rule visit(OneOrMoreMatcher<V> matcher) {
-        return null;
-    }
-
-    public Rule visit(OptionalMatcher<V> matcher) {
-        throw new IllegalStateException(); // OptionalMatchers should never cause a mismatch
-    }
-
-    public Rule visit(SequenceMatcher<V> matcher) {
-        BaseParser<V> parser = context.getParser();
-        return parser.firstOf(
-                parser.singleCharErrorRecovery(matcher),
-                parser.resynchronize(context)
-        ).withoutNode().label("sequenceRecovery");
-    }
-
-    public Rule visit(TestMatcher<V> matcher) {
-        return null;
-    }
-
-    public Rule visit(TestNotMatcher<V> matcher) {
-        return null;
-    }
-
-    public Rule visit(ZeroOrMoreMatcher<V> matcher) {
-        throw new IllegalStateException(); // ZeroOrMoreMatchers should never cause a mismatch
-    }
-
+    void setErrorLocation(InputLocation errorLocation);
 }

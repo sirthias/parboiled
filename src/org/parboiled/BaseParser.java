@@ -19,7 +19,6 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Preconditions;
 import static org.parboiled.common.Utils.arrayOf;
-import static org.parboiled.common.Utils.toObjectArray;
 import org.parboiled.errorhandling.*;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
@@ -128,11 +127,26 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Leaf
     public Rule charSet(@NotNull String characters) {
         Preconditions.checkArgument(characters.length() > 0);
         if (characters.length() == 1) return ch(characters.charAt(0)); // optimize one-char sets
-        return firstOf(toObjectArray(characters.toCharArray())).label('{' + characters + '}');
+        return charSet(Characters.of(characters));
+    }
+
+    /**
+     * Creates a new rule that matches the first of the given characters.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters
+     * @return a new rule
+     */
+    @Cached
+    public Rule charSet(@NotNull Characters characters) {
+        if (!characters.isSubtractive() && characters.getChars().length == 1) {
+            return ch(characters.getChars()[0]); // optimize one-char sets
+        }
+        return new CharactersMatcher<V>(characters);
     }
 
     /**
@@ -200,8 +214,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label
     public Rule firstOf(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules)).label("firstOf");
+        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules));
     }
 
     /**
@@ -214,8 +229,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label
     public Rule oneOrMore(Object rule) {
-        return new OneOrMoreMatcher(toRule(rule)).label("oneOrMore");
+        return new OneOrMoreMatcher(toRule(rule));
     }
 
     /**
@@ -228,8 +244,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label
     public Rule optional(Object rule) {
-        return new OptionalMatcher(toRule(rule)).label("optional");
+        return new OptionalMatcher(toRule(rule));
     }
 
     /**
@@ -255,9 +272,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label
     public Rule sequence(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) :
-                new SequenceMatcher(toRules(rules)).label("sequence");
+        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
     }
 
     /**
@@ -311,7 +328,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @KeepAsIs
     public Rule eoi() {
-        return ch(Parboiled.EOI);
+        return ch(Parboiled.EOI).label("EOI");
     }
 
     /**
@@ -320,7 +337,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule any() {
-        return new AnyCharMatcher<V>();
+        return new CharactersMatcher<V>(Characters.allBut(Parboiled.EOI)).label("ANY");
     }
 
     /**
@@ -415,56 +432,76 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
     }
 
-    public Rule illegal(Object rule) {
-        return toRule(rule).label(Parboiled.ILLEGAL);
-    }
+    ///************************* RECOVERY RULES ***************************///
 
     @Label
-    public Rule skipCharAndRetry(@NotNull Matcher<V> failedMatcher) {
+    public Rule skipCharRecovery(@NotNull Matcher<V> failedMatcher) {
         return sequence(
-                illegal(any()), // match one character and mark it ILLEGAL
-                Actions.match(failedMatcher) // rerun the failed matcher
+                any().label(Parboiled.ILLEGAL), // match one illegal character
+                test(charSet(getStarterChars(failedMatcher))), // check, whether we can continue
+                failedMatcher
         ).withoutNode();
     }
 
     @Label
-    public Rule insertCharAndRetry(@NotNull Matcher<V> failedMatcher) {
+    public Rule emptyMatchRecovery(@NotNull Context<V> failedMatcherContext) {
         return sequence(
-                Actions.injectVirtualInput(failedMatcher.accept(new StarterCharsVisitor<V>()).getRepresentative()),
-                Actions.match(failedMatcher) // rerun the failed matcher
+                test(charSet(getStarterCharsOfFollowers(failedMatcherContext))),
+                empty().label(failedMatcherContext.getMatcher().getLabel()) // match empty
         ).withoutNode();
     }
 
     @Label
-    public Rule singleCharErrorRecovery(@NotNull Matcher<V> failedMatcher) {
+    public Rule singleCharRecovery(@NotNull Context<V> failedMatcherContext) {
         return firstOf(
-                skipCharAndRetry(failedMatcher),
-                insertCharAndRetry(failedMatcher)
+                skipCharRecovery(failedMatcherContext.getMatcher()),
+                emptyMatchRecovery(failedMatcherContext)
         ).withoutNode();
     }
 
     @Label
     public Rule resynchronize(@NotNull Context<V> failedMatcherContext) {
+        return sequence(
+                // match empty with the failedMatchers label
+                empty().label(failedMatcherContext.getMatcher().getLabel()),
+
+                // gooble up all illegal input up until a legal follower
+                zeroOrMore(
+                        sequence(
+                                testNot(charSet(getStarterCharsOfFollowers(failedMatcherContext))),
+                                any()
+                        )
+                ).asLeaf().label(Parboiled.ILLEGAL)
+        ).withoutNode();
+    }
+
+    @Label
+    public Rule rootRecovery(@NotNull Matcher<V> failedRootMatcher) {
+        return sequence(
+                // gooble up all illegal input up until a legal starter
+                zeroOrMore(
+                        sequence(
+                                testNot(charSet(getStarterChars(failedRootMatcher))),
+                                any()
+                        )
+                ).asLeaf().label(Parboiled.ILLEGAL),
+                failedRootMatcher // rerun the failed root matcher
+        ).withoutNode();
+    }
+
+    private Characters getStarterChars(Matcher<V> matcher) {
+        return matcher.accept(new StarterCharsVisitor<V>());
+    }
+
+    private Characters getStarterCharsOfFollowers(Context<V> failedMatcherContext) {
         StarterCharsVisitor<V> starterCharsVisitor = new StarterCharsVisitor<V>();
         FollowMatchersVisitor<V> followMatchersVisitor = new FollowMatchersVisitor<V>();
         MatcherContext<V> context = (MatcherContext<V>) failedMatcherContext;
-        Characters followChars = Characters.NONE;
+        Characters starterChars = Characters.NONE;
         for (Matcher<V> followMatcher : followMatchersVisitor.getFollowMatchers(context)) {
-            followChars.add(followMatcher.accept(starterCharsVisitor));
+            starterChars = starterChars.add(followMatcher.accept(starterCharsVisitor));
         }
-        return sequence(
-                // match empty with the failedMatchers label
-                Actions.match(new EmptyMatcher<V>().label(failedMatcherContext.getMatcher().getLabel())),
-
-                illegal( // gooble up all illegal input up until a legal follower
-                        zeroOrMore(
-                                sequence(
-                                        testNot(Actions.isNextCharIn(followChars)),
-                                        any().withoutNode()
-                                )
-                        ).withoutNode()
-                )
-        ).withoutNode();
+        return starterChars;
     }
 
 }

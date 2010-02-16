@@ -30,7 +30,7 @@ public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
         return true;
     }
 
-    public Boolean visit(AnyCharMatcher<V> matcher) {
+    public Boolean visit(CharactersMatcher<V> matcher) {
         return false;
     }
 

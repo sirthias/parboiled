@@ -16,7 +16,6 @@
 
 package org.parboiled.errorhandling;
 
-import org.parboiled.Parboiled;
 import org.parboiled.matchers.*;
 import org.parboiled.support.Characters;
 
@@ -27,16 +26,14 @@ import org.parboiled.support.Characters;
  */
 public class StarterCharsVisitor<V> implements MatcherVisitor<V, Characters> {
 
-    private static final Characters ALL_BUT_EOI = Characters.allBut(Parboiled.EOI);
-
     private final CanMatchEmptyVisitor<V> canMatchEmptyVisitor = new CanMatchEmptyVisitor<V>();
 
     public Characters visit(ActionMatcher<V> matcher) {
         return Characters.NONE;
     }
 
-    public Characters visit(AnyCharMatcher<V> matcher) {
-        return ALL_BUT_EOI;
+    public Characters visit(CharactersMatcher<V> matcher) {
+        return matcher.characters;
     }
 
     public Characters visit(CharIgnoreCaseMatcher<V> matcher) {

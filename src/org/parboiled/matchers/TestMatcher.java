@@ -39,7 +39,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public String getLabel() {
-        return hasLabel() ? super.getLabel() : "&(" + getChildren().get(0) + ")";
+        return hasLabel() ? super.getLabel() : "&(" + subMatcher + ")";
     }
 
     @Override
