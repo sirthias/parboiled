@@ -16,9 +16,11 @@
 
 package org.parboiled.errorhandling;
 
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Preconditions;
+import org.parboiled.common.Provider;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 
@@ -28,7 +30,7 @@ import java.util.List;
 /**
  * A {@link ParseErrorHandler} that reports the first parse error if the input does not conform to the rule grammar.
  * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
- * than the {@link NopParseErrorHandler} on valid input. It is therefore the default {@link ParseErrorHandler} used by
+ * than the {@link BasicParseErrorHandler} on valid input. It is therefore the default {@link ParseErrorHandler} used by
  * {@link org.parboiled.BaseParser#parse(org.parboiled.Rule, String)}.
  *
  * @param <V>
@@ -42,7 +44,6 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
     private final List<MatcherPath<V>> failedMatchers = new ArrayList<MatcherPath<V>>();
     private final Formatter<InvalidInputError<V>> invalidInputErrorFormatter;
     private State state;
-    private MatcherContext<V> rootContext;
     private InputLocation errorLocation;
     private MatcherPath<V> lastMatch;
 
@@ -54,14 +55,38 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 
-    public void initialize() {
+    public boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider) {
         failedMatchers.clear();
+        MatcherContext<V> rootContext = rootContextProvider.get();
+        errorLocation = rootContext.getCurrentLocation();
         state = State.Parsing;
+
+        if (rootContext.runMatcher()) {
+            return true;
+        }
+
+        state = errorLocation.index == 0 ? State.Reporting : State.Seeking;
+
+        rootContext = rootContextProvider.get();
+        rootContext.runMatcher();
+        Preconditions.checkState(state != State.Seeking);
+
+        rootContext.getParseErrors().add(
+                new InvalidInputError<V>(errorLocation, lastMatch, failedMatchers, invalidInputErrorFormatter)
+        );
+        return false;
     }
 
-    public void initializeBeforeParsingRerun(MatcherContext<V> rootContext) {
-        this.rootContext = rootContext;
-        if (errorLocation == null) errorLocation = rootContext.getCurrentLocation();
+    public boolean match(MatcherContext<V> context) throws Throwable {
+        if (context.getMatcher().match(context)) {
+            handleMatch(context);
+            return true;
+        }
+
+        if (state == State.Reporting && context.getCurrentLocation() == errorLocation) {
+            failedMatchers.add(context.getPath());
+        }
+        return false;
     }
 
     public void handleMatch(MatcherContext<V> context) {
@@ -74,56 +99,13 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
                 break;
 
             case Seeking:
-                if (context.getCurrentLocation().index == errorLocation.index) {
+                if (context.getCurrentLocation() == errorLocation) {
                     // we are back at the location we previously marked as the error location
                     lastMatch = context.getPath();
                     state = State.Reporting;
                 }
                 break;
         }
-    }
-
-    public boolean handleMismatch(MatcherContext<V> context) {
-        switch (state) {
-            case Parsing:
-                if (context == rootContext) {
-                    if (errorLocation.index > 0) {
-                        state = State.Seeking;
-                    } else {
-                        // mismatched the very first character
-                        handleMismatchWhileReporting(context);
-                    }
-                }
-                break;
-
-            case Seeking:
-                Preconditions.checkState(context != rootContext);
-                break;
-
-            case Reporting:
-                handleMismatchWhileReporting(context);
-                break;
-        }
-        return false; // never "overrule" a mismatch, since we don't recover
-    }
-
-    private void handleMismatchWhileReporting(MatcherContext<V> context) {
-        if (context.getCurrentLocation().index == errorLocation.index) {
-            failedMatchers.add(context.getPath());
-        }
-        if (context == rootContext) {
-            createParseError();
-        }
-    }
-
-    public boolean isRerunRequested(MatcherContext<V> context) {
-        return state == State.Seeking;
-    }
-
-    public void createParseError() {
-        rootContext.getParseErrors().add(
-                new InvalidInputError<V>(errorLocation, lastMatch, failedMatchers, invalidInputErrorFormatter)
-        );
     }
 
 }

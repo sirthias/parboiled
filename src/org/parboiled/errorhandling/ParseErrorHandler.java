@@ -17,60 +17,22 @@
 package org.parboiled.errorhandling;
 
 import org.parboiled.MatcherContext;
+import org.parboiled.common.Provider;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * <p>A handler for parse errors that can be passed to
  * {@link org.parboiled.BaseParser#parse(org.parboiled.Rule, String, ParseErrorHandler)} in order to run custom logic
  * in the event of parse errors.</p>
- * <p>Parboiled comes with three default implementations: {@link NopParseErrorHandler},
+ * <p>Parboiled comes with three default implementations: {@link BasicParseErrorHandler},
  * {@link ReportFirstParseErrorHandler} and {@link RecoveringParseErrorHandler}</p>
  *
  * @param <V>
  */
 public interface ParseErrorHandler<V> {
 
-    /**
-     * Called before this handler is (re)used for a parsing run.
-     * Most handlers will want to reinitialize to the same state as after the first instantiation.
-     */
-    void initialize();
+    boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider);
 
-    /**
-     * Called before an actual parsing run or parsing rerun (see {@link #isRerunRequested(org.parboiled.MatcherContext)}
-     * on the given root context.
-     *
-     * @param rootContext the context for the root rule
-     */
-    void initializeBeforeParsingRerun(MatcherContext<V> rootContext);
-
-    /**
-     * <p>This method is being called by the parboiled parser every time a rule match was attempted and succeeded.
-     * Since this is the case many times during a parsing run this method should be fast if parsing performance is
-     * of the essence.</p>
-     *
-     * @param context the context whose matcher just matched successfully
-     */
-    void handleMatch(MatcherContext<V> context);
-
-    /**
-     * <p>This method is being called by the parboiled parser every time a rule match was attempted and failed.</p>
-     * <p>The method can return true to "overrule" the mismatch and tell the parser to continue parsing as if the
-     * contexts matcher had matched</p>
-     * <p>Since this is the case many times during a parsing run this method should be fast if parsing performance is
-     * of the essence.</p>
-     *
-     * @param context the context whose matcher just matched failed
-     * @return true to "overrule" the mismatch and still match
-     */
-    boolean handleMismatch(MatcherContext<V> context);
-
-    /**
-     * Called by the parser if the root match did not succeed. If the handler returns true the parser will
-     * reperform the complete parsing run from the beginning.
-     *
-     * @param rootContext the root context
-     * @return true to redo the parsing run.
-     */
-    boolean isRerunRequested(MatcherContext<V> rootContext);
+    boolean match(MatcherContext<V> context) throws Throwable;
 
 }

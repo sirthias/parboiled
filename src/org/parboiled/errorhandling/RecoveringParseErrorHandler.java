@@ -17,12 +17,10 @@
 package org.parboiled.errorhandling;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.BaseParser;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
-import org.parboiled.Parboiled;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.Preconditions;
+import org.parboiled.common.Provider;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.InputLocation;
@@ -34,10 +32,10 @@ import java.util.List;
 /**
  * A {@link ParseErrorHandler} that tries to recover from parse errors and is therefore capable of reporting all
  * errors found in the input. Since it needs to performs several parsing reruns in order to be able to report and
- * recover from parse errors it is considerable slower than the {@link NopParseErrorHandler} and the
+ * recover from parse errors it is considerable slower than the {@link BasicParseErrorHandler} and the
  * {@link ReportFirstParseErrorHandler} on invalid input.
  * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
- * than the {@link NopParseErrorHandler} on valid input. On valid input it performs about the same as the
+ * than the {@link BasicParseErrorHandler} on valid input. On valid input it performs about the same as the
  * {@link ReportFirstParseErrorHandler}.
  *
  * @param <V>
@@ -78,15 +76,28 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 
-    public void initialize() {
+    public boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider) {
+        rootContext = rootContextProvider.get();
         firstRecord = new RecoveryRecord<V>();
+        firstRecord.errorLocation = rootContext.getCurrentLocation();
         state = State.Parsing;
+        do {
+            currentRecord = firstRecord;
+            if (rootContext.runMatcher()) {
+                return true;
+            }
+            handleRootMismatch();
+            rootContext = rootContextProvider.get();
+        } while (state != State.Parsing);
+        return false;
     }
 
-    public void initializeBeforeParsingRerun(MatcherContext<V> rootContext) {
-        this.rootContext = rootContext;
-        currentRecord = firstRecord;
-        if (currentRecord.errorLocation == null) currentRecord.errorLocation = rootContext.getCurrentLocation();
+    public boolean match(MatcherContext<V> context) throws Throwable {
+        if (context.getMatcher().match(context)) {
+            handleMatch(context);
+            return true;
+        }
+        return handleMismatch(context);
     }
 
     public void handleMatch(MatcherContext<V> context) {
@@ -96,14 +107,14 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
                 break;
 
             case SeekingToReport:
-                if (currentRecord.matchesLocation(context.getCurrentLocation())) {
+                if (currentRecord.errorLocation == context.getCurrentLocation()) {
                     currentRecord.lastMatch = context.getPath();
                     state = State.Reporting;
                 }
                 break;
 
             case SeekingToRecover:
-                if (currentRecord.matchesLocation(context.getCurrentLocation())) {
+                if (currentRecord.errorLocation == context.getCurrentLocation()) {
                     state = State.Recovering;
                 }
                 break;
@@ -112,54 +123,36 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     public boolean handleMismatch(MatcherContext<V> context) {
         switch (state) {
-            case Parsing:
-                if (context == rootContext) {
-                    if (currentRecord == firstRecord) {
-                        seekTo(State.Reporting);
-                    } else {
-                        seekTo(State.Recovering);
-                    }
+            case Reporting:
+                if (currentRecord.errorLocation == context.getCurrentLocation()) {
+                    currentRecord.failedMatcherPaths.add(context.getPath());
                 }
+                break;
+
+            case Recovering:
+                if (recover(context)) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+
+    private void handleRootMismatch() {
+        switch (state) {
+            case Parsing:
+                seekTo(currentRecord == firstRecord ? State.Reporting : State.Recovering);
                 break;
 
             case SeekingToReport:
             case SeekingToRecover:
-                Preconditions.checkState(context != rootContext);
-                break;
+                throw new IllegalStateException();
 
             case Reporting:
-                handleMismatchWhileReporting(context);
-                return false;
-
-            case Recovering:
-                return handleMismatchWhileRecovering(context);
+                rootContext.getParseErrors().add(currentRecord.createParseError(invalidInputErrorFormatter));
+                seekTo(State.Recovering);
+                break;
         }
-        return false;
-    }
-
-    public void handleMismatchWhileReporting(MatcherContext<V> context) {
-        if (currentRecord.matchesLocation(context.getCurrentLocation())) {
-            currentRecord.failedMatcherPaths.add(context.getPath());
-        }
-        if (context == rootContext) {
-            rootContext.getParseErrors().add(currentRecord.createParseError(invalidInputErrorFormatter));
-            seekTo(State.Recovering);
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public boolean handleMismatchWhileRecovering(MatcherContext<V> failedMatcherContext) {
-        if (recover(failedMatcherContext)) {
-            return true;
-        }
-        if (failedMatcherContext == rootContext) {
-            // we failed to recover, so simply mark all characters up until EOI as illegal
-            state = State.InRecovery;
-            matchIllegalUntilEOI();
-            state = State.Parsing; // set state to "not repeating"
-            return true;
-        }
-        return false;
     }
 
     public boolean recover(MatcherContext<V> failedMatcherContext) {
@@ -188,32 +181,25 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
     public Matcher<V> getRecoveryRule(MatcherContext<V> failedMatcherContext) {
         Matcher<V> recoveryRule = failedMatcherContext.getMatcher().getRecoveryMatcher();
         if (recoveryRule == null) {
-            defaultRecoveryVisitor.setContext(failedMatcherContext);
-            defaultRecoveryVisitor.setLastMatch(currentRecord.lastMatch);
-            defaultRecoveryVisitor.setErrorLocation(currentRecord.errorLocation);
-            recoveryRule = (Matcher<V>) failedMatcherContext.getMatcher().accept(defaultRecoveryVisitor);
+            if (failedMatcherContext != rootContext) {
+                defaultRecoveryVisitor.setContext(failedMatcherContext);
+                defaultRecoveryVisitor.setLastMatch(currentRecord.lastMatch);
+                defaultRecoveryVisitor.setErrorLocation(currentRecord.errorLocation);
+                recoveryRule = (Matcher<V>) failedMatcherContext.getMatcher().accept(defaultRecoveryVisitor);
+            } else {
+                recoveryRule = (Matcher<V>) rootContext.getParser().resynchronize(rootContext, Integer.MAX_VALUE);
+            }
         }
         return recoveryRule;
     }
 
-    @SuppressWarnings({"SimplifiableIfStatement"})
     public boolean runRecovery(Matcher<V> recoveryRule, MatcherContext<V> failedContext) {
-        if (failedContext.getParent() != null) {
-            return runStandardRecovery(recoveryRule, failedContext);
-        }
-        Preconditions.checkState(failedContext == rootContext);
-        if (failedContext.getSubContext(recoveryRule).runMatcher()) {
-            postRootRecoveryFix();
-            return true;
-        }
-        return false;
-    }
-
-    public boolean runStandardRecovery(Matcher<V> recoveryRule, MatcherContext<V> failedContext) {
         MatcherContext<V> recoveryContext = failedContext.getSubContext(recoveryRule);
         recoveryContext.clearSubLeafNodeSuppression();
         if (!recoveryContext.runMatcher()) return false;
-        if (!(failedContext.getMatcher() instanceof TestMatcher) && failedContext.getSubNodes() != null) {
+        if (failedContext == rootContext) {
+            postRootRecoveryFix();
+        } else if (!(failedContext.getMatcher() instanceof TestMatcher) && failedContext.getSubNodes() != null) {
             failedContext.getParent().addChildNodes(failedContext.getSubNodes());
         }
         return true;
@@ -242,18 +228,6 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
         }
     }
 
-    public boolean isRerunRequested(MatcherContext<V> context) {
-        return state != State.Parsing;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public void matchIllegalUntilEOI() {
-        BaseParser<V> parser = rootContext.getParser();
-        Matcher<V> matchToEOI = (Matcher<V>) parser.zeroOrMore(parser.any()).asLeaf().label(Parboiled.ILLEGAL);
-        Preconditions.checkState(rootContext.getSubContext(matchToEOI).runMatcher());
-        rootContext.createNode();
-    }
-
     public static class RecoveryRecord<V> {
 
         public final List<MatcherPath<V>> failedMatcherPaths = new ArrayList<MatcherPath<V>>();
@@ -273,10 +247,6 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
             parseError = new InvalidInputError<V>(errorLocation, lastMatch, failedMatcherPaths,
                     invalidInputErrorFormatter);
             return parseError;
-        }
-
-        public boolean matchesLocation(InputLocation location) {
-            return errorLocation.index == location.index;
         }
 
         public void advanceErrorLocation(InputLocation currentLocation) {

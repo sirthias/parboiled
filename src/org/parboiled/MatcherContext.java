@@ -71,11 +71,11 @@ public class MatcherContext<V> implements Context<V> {
     private int intTag;
     private boolean belowLeafLevel;
 
-    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
-                          @NotNull List<ParseError> parseErrors,
+    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
+                          @NotNull BaseParser<V> parser, @NotNull List<ParseError> parseErrors,
                           @NotNull ParseErrorHandler<V> parseErrorHandler, @NotNull Matcher<V> matcher) {
         this(inputBuffer, parser, parseErrors, parseErrorHandler, new Reference<Node<V>>(), null, 0);
-        setStartLocation(new InputLocation(inputBuffer));
+        setStartLocation(startLocation);
         this.matcher = ProxyMatcher.unwrap(matcher);
     }
 
@@ -282,18 +282,13 @@ public class MatcherContext<V> implements Context<V> {
 
     public boolean runMatcher() {
         try {
-            if (matcher.match(this)) {
-                parseErrorHandler.handleMatch(this);
-            } else {
-                if (!parseErrorHandler.handleMismatch(this)) {
-                    matcher = null; // "retire" this context
-                    return false;
-                }
+            if (parseErrorHandler.match(this)) {
+                if (parent != null) parent.setCurrentLocation(currentLocation);
+                matcher = null; // "retire" this context
+                return true;
             }
-            if (parent != null) parent.setCurrentLocation(currentLocation);
             matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
-            return true;
-
+            return false;
         } catch (ParserRuntimeException e) {
             throw e; // don't wrap, just bubble up
         } catch (Throwable e) {

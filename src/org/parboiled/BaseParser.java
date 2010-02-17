@@ -18,6 +18,8 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Preconditions;
+import org.parboiled.common.Provider;
+import org.parboiled.common.Reference;
 import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.errorhandling.*;
 import org.parboiled.exceptions.ParserRuntimeException;
@@ -56,22 +58,26 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the ParsingResult for the run
      */
     @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input, @NotNull ParseErrorHandler<V> parseErrorHandler) {
-        InputBuffer inputBuffer = new InputBuffer(input);
-        List<ParseError> parseErrors = new ArrayList<ParseError>();
-        Matcher<V> matcher = (Matcher<V>) toRule(rule);
-        MatcherContext<V> context;
-        parseErrorHandler.initialize();
+    public ParsingResult<V> parse(Rule rule, @NotNull String input,
+                                  @NotNull final ParseErrorHandler<V> parseErrorHandler) {
+        final InputBuffer inputBuffer = new InputBuffer(input);
+        final InputLocation startLocation = new InputLocation(inputBuffer);
+        final List<ParseError> parseErrors = new ArrayList<ParseError>();
+        final Matcher<V> rootMatcher = (Matcher<V>) toRule(rule);
+        final Reference<MatcherContext<V>> rootContextRef = new Reference<MatcherContext<V>>();
 
-        boolean matched;
-        do {
-            context = new MatcherContext<V>(inputBuffer, this, parseErrors, parseErrorHandler, matcher);
-            parseErrorHandler.initializeBeforeParsingRerun(context);
-            matched = context.runMatcher();
-        } while (!matched && parseErrorHandler.isRerunRequested(context));
+        boolean matched = parseErrorHandler.matchRoot(
+                new Provider<MatcherContext<V>>() {
+                    public MatcherContext<V> get() {
+                        rootContextRef.setTarget(new MatcherContext<V>(inputBuffer, startLocation, BaseParser.this,
+                                parseErrors, parseErrorHandler, rootMatcher));
+                        return rootContextRef.getTarget();
+                    }
+                }
+        );
 
-        return new ParsingResult<V>(matched, context.getNode(), parseErrors, inputBuffer,
-                context.getCurrentLocation().row + 1);
+        return new ParsingResult<V>(matched, rootContextRef.getTarget().getNode(), parseErrors, inputBuffer,
+                rootContextRef.getTarget().getCurrentLocation().row + 1);
     }
 
     ////////////////////////////////// RULE CREATION ///////////////////////////////////
@@ -463,8 +469,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     @Label
-    public Rule resynchronize(@NotNull final Context<V> failedMatcherContext,
-                              @NotNull final InputLocation errorLocation) {
+    public Rule resynchronize(@NotNull final Context<V> failedMatcherContext, final int errorLocationIndex) {
         // we wrap the resynchronization sequence with an optional rule in order to be able to name it properly
         // which simplifies debugging (the optional rule does not itself create a node)
         return optional(
@@ -491,7 +496,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
                                                 // if we are still before the error location we definitily gobble
                                                 new NamedAction("testBeforeErrorLocation") {
                                                     public boolean run(Context context) {
-                                                        return context.getCurrentLocation().index < errorLocation.index;
+                                                        return context.getCurrentLocation().index < errorLocationIndex;
                                                     }
                                                 },
                                                 testNot(charSet(getStarterCharsOfFollowers(failedMatcherContext)))

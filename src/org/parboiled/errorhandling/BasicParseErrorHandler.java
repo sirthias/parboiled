@@ -17,6 +17,8 @@
 package org.parboiled.errorhandling;
 
 import org.parboiled.MatcherContext;
+import org.parboiled.common.Provider;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The most trivial implementation of the {@link ParseErrorHandler} interface.
@@ -25,25 +27,14 @@ import org.parboiled.MatcherContext;
  *
  * @param <V>
  */
-public class NopParseErrorHandler<V> implements ParseErrorHandler<V> {
+public class BasicParseErrorHandler<V> implements ParseErrorHandler<V> {
 
-    private NopParseErrorHandler() {
+    public boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider) {
+        return rootContextProvider.get().runMatcher();
     }
 
-    public void initialize() {
+    public boolean match(MatcherContext<V> context) throws Throwable {
+        return context.getMatcher().match(context);
     }
 
-    public void initializeBeforeParsingRerun(MatcherContext rootContext) {
-    }
-
-    public void handleMatch(MatcherContext context) {
-    }
-
-    public boolean handleMismatch(MatcherContext context) {
-        return false;
-    }
-
-    public boolean isRerunRequested(MatcherContext rootContext) {
-        return false;
-    }
 }

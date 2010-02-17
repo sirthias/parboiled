@@ -89,7 +89,7 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
         // sequences are the only rules we use resynchronization on
         // however, we only resync if the sequence qualifies as a resynchronization sequence
         return isResynchronizationSequence(matcher) ?
-                context.getParser().resynchronize(context, errorLocation) : null;
+                context.getParser().resynchronize(context, errorLocation.index) : null;
     }
 
     public Rule visit(TestMatcher<V> matcher) {
