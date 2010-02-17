@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 
 /**
- * A Matcher always successfully matching nothing.
+ * A Matcher that always successfully matches nothing.
  *
  * @param <V>
  */

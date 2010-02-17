@@ -438,16 +438,18 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule skipCharRecovery(@NotNull Matcher<V> failedMatcher) {
         return sequence(
                 any().label(Parboiled.ILLEGAL), // match one illegal character
-                test(charSet(getStarterChars(failedMatcher))), // check, whether we can continue
-                failedMatcher
+                failedMatcher  // retry the failed matcher
         ).withoutNode();
     }
 
     @Label
     public Rule emptyMatchRecovery(@NotNull Context<V> failedMatcherContext) {
         return sequence(
+                // if the current char is a legal follower starter char of the failed matcher
                 test(charSet(getStarterCharsOfFollowers(failedMatcherContext))),
-                empty().label(failedMatcherContext.getMatcher().getLabel()) // match empty
+
+                // we match empty
+                empty().label(failedMatcherContext.getMatcher().getLabel())
         ).withoutNode();
     }
 
@@ -460,37 +462,41 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     @Label
-    public Rule resynchronize(@NotNull Context<V> failedMatcherContext) {
-        return sequence(
-                // match empty with the failedMatchers label
-                empty().label(failedMatcherContext.getMatcher().getLabel()),
+    public Rule resynchronize(@NotNull final Context<V> failedMatcherContext,
+                              @NotNull final InputLocation errorLocation) {
+        // we wrap the resynchronization sequence with an optional rule in order to be able to name it properly
+        // which simplifies debugging (the optional rule does not itself create a node)
+        return optional(
 
-                // gooble up all illegal input up until a legal follower
-                zeroOrMore(
-                        sequence(
-                                testNot(charSet(getStarterCharsOfFollowers(failedMatcherContext))),
-                                any()
-                        )
-                ).asLeaf().label(Parboiled.ILLEGAL)
+                // recovery rules create nodes that will become sub nodes of the failed rules parent,
+                // this sequence becomes the replacement for the failed sequence we need to resynchronize on
+                sequence(
+                        // because there might already be nodes that have been matched in the failed sequence
+                        // before the parse error occurred we need to move over these nodes to this mock sequence
+                        new NamedAction<V>("includeAlreadyMatchedNodes") {
+                            public boolean run(Context<V> context) {
+                                ((MatcherContext<V>) context).addChildNodes(failedMatcherContext.getSubNodes());
+                                failedMatcherContext.getSubNodes().clear();
+                                return true;
+                            }
+                        },
+                        // gooble up all illegal input up until a legal follower
+                        zeroOrMore(
+                                sequence(
+                                        firstOf(
+                                                // if we are still before the error location we definitily gobble
+                                                new NamedAction("testBeforeErrorLocation") {
+                                                    public boolean run(Context context) {
+                                                        return context.getCurrentLocation().index < errorLocation.index;
+                                                    }
+                                                },
+                                                testNot(charSet(getStarterCharsOfFollowers(failedMatcherContext)))
+                                        ),
+                                        any()
+                                )
+                        ).asLeaf().label(Parboiled.ILLEGAL)
+                ).label(failedMatcherContext.getMatcher().getLabel())
         ).withoutNode();
-    }
-
-    @Label
-    public Rule rootRecovery(@NotNull Matcher<V> failedRootMatcher) {
-        return sequence(
-                // gooble up all illegal input up until a legal starter
-                zeroOrMore(
-                        sequence(
-                                testNot(charSet(getStarterChars(failedRootMatcher))),
-                                any()
-                        )
-                ).asLeaf().label(Parboiled.ILLEGAL),
-                failedRootMatcher // rerun the failed root matcher
-        ).withoutNode();
-    }
-
-    private Characters getStarterChars(Matcher<V> matcher) {
-        return matcher.accept(new StarterCharsVisitor<V>());
     }
 
     private Characters getStarterCharsOfFollowers(Context<V> failedMatcherContext) {

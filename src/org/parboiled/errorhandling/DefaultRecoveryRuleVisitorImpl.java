@@ -86,16 +86,10 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
     }
 
     public Rule visit(SequenceMatcher<V> matcher) {
-        if (context.getParent() == null) {
-            // special case: on the root matcher we try deletion of all illegal leading characters before rematching
-            // we do not need to include a resync case into the recovery rule since there will already be the
-            // root "match-illegal-up-to-EOI" fallback kicking in if this recovery fails
-            return errorLocation.index == 0 ? context.getParser().rootRecovery(matcher) : null;
-        }
         // sequences are the only rules we use resynchronization on
         // however, we only resync if the sequence qualifies as a resynchronization sequence
-        return context.getPath().isPrefixOf(lastMatch) && isResynchronizationSequence(matcher) ?
-                context.getParser().resynchronize(context) : null;
+        return isResynchronizationSequence(matcher) ?
+                context.getParser().resynchronize(context, errorLocation) : null;
     }
 
     public Rule visit(TestMatcher<V> matcher) {
@@ -131,6 +125,9 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
     private boolean isResynchronizationSequence(Matcher<V> matcher) {
         // never resync on "helper" sequences without a "real" name
         if ("sequence".equals(matcher.getLabel())) return false;
+
+        // don't resync if we are not a parent sequence of the last match
+        if (!context.getPath().isPrefixOf(lastMatch)) return false;
 
         // also dont resync if the sequence is actually "not really" a sequence since it only has less than two
         // real rule children, helper constructs like test/testNot rules and actions do not qualify as "real children"
