@@ -65,7 +65,7 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
             "Invalid input ')', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 8):\n1+2*3-4)-5\n       ^\n"
     };
 
-    @Test
+    //@Test
     public void testSimpleReporting() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();
@@ -97,7 +97,7 @@ public class ReportFirstParseErrorHandlerTest extends AbstractTest {
                 "                               ^\n");
     }
 
-    @Test
+    //@Test
     public void testJavaError2() {
         String sourceWithErrors = "package org.parboiled.examples;\n" +
                 "public class JavaTestSource {\n" +

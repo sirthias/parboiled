@@ -69,9 +69,9 @@ public class Main {
         long time = time(start);
 
         System.out.println("Parsing statistics:");
-        System.out.printf("    Files/sec: %.2f\n", sources.size() * 1000.0 / time);
-        System.out.printf("    Lines/sec: %s\n", lines * 1000 / time);
-        System.out.printf("    Chars/sec: %s\n", characters * 1000 / time);
+        System.out.printf("    %6d Files -> %6.2f Files/sec\n", sources.size(), sources.size() * 1000.0 / time);
+        System.out.printf("    %6d Lines -> %6d Lines/sec\n", lines, lines * 1000 / time);
+        System.out.printf("    %6d Chars -> %6d Chars/sec\n", characters, characters * 1000 / time);
     }
 
     private static long time(long start) {

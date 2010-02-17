@@ -16,10 +16,10 @@
 
 package org.parboiled.examples;
 
-import org.testng.annotations.Test;
+import org.parboiled.Parboiled;
 import org.parboiled.examples.abc.AbcParser;
 import org.parboiled.test.AbstractTest;
-import org.parboiled.Parboiled;
+import org.testng.annotations.Test;
 
 public class AbcTest extends AbstractTest {
 
@@ -45,11 +45,18 @@ public class AbcTest extends AbstractTest {
     public void testFail() {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
         testFail(parser, parser.S(), "aabbbcc", "" +
+                "Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
+                "aabbbcc\n" +
+                "    ^\n" +
+                "---\n" +
+                "Invalid input 'EOI', expected 'c' (line 1, pos 8):\n" +
+                "aabbbcc\n" +
+                "       ^\n", "" +
                 "[S] 'aabbbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
                 "        ['a'] 'a'\n" +
-                "    [B] 'bbbcc'\n" +
+                "    [B]\n" +
                 "        ['b'] 'b'\n" +
                 "        [optional] 'bbcc'\n" +
                 "            [B] 'bbcc'\n" +
@@ -60,14 +67,7 @@ public class AbcTest extends AbstractTest {
                 "                        [optional]\n" +
                 "                        ['c'] 'c'\n" +
                 "                ['c'] 'c'\n" +
-                "        ['c']\n", "" +
-                "Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
-                "aabbbcc\n" +
-                "    ^\n" +
-                "---\n" +
-                "Invalid input 'EOI', expected 'c' (line 1, pos 8):\n" +
-                "aabbbcc\n" +
-                "       ^\n"
+                "        [ILLEGAL]\n"
         );
     }
 

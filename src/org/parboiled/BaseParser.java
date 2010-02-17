@@ -61,11 +61,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         List<ParseError> parseErrors = new ArrayList<ParseError>();
         Matcher<V> matcher = (Matcher<V>) toRule(rule);
         MatcherContext<V> context;
+        parseErrorHandler.initialize();
 
         boolean matched;
         do {
             context = new MatcherContext<V>(inputBuffer, this, parseErrors, parseErrorHandler, matcher);
-            parseErrorHandler.beforeParsingRun(context);
+            parseErrorHandler.initializeBeforeParsingRerun(context);
             matched = context.runMatcher();
         } while (!matched && parseErrorHandler.isRerunRequested(context));
 
@@ -475,8 +476,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
                         // before the parse error occurred we need to move over these nodes to this mock sequence
                         new NamedAction<V>("includeAlreadyMatchedNodes") {
                             public boolean run(Context<V> context) {
-                                ((MatcherContext<V>) context).addChildNodes(failedMatcherContext.getSubNodes());
-                                failedMatcherContext.getSubNodes().clear();
+                                List<Node<V>> nodes = failedMatcherContext.getSubNodes();
+                                if (nodes != null) {
+                                    ((MatcherContext<V>) context).addChildNodes(nodes);
+                                    failedMatcherContext.getSubNodes().clear();
+                                }
                                 return true;
                             }
                         },

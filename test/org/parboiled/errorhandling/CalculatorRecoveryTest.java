@@ -22,12 +22,12 @@ import org.parboiled.test.AbstractTest;
 import org.parboiled.test.FileUtils;
 import org.testng.annotations.Test;
 
-public class RecoveringParseErrorHandlerTest extends AbstractTest {
+public class CalculatorRecoveryTest extends AbstractTest {
 
     @Test
-    public void testSingleErrorRecovery() {
+    public void testCalculatorErrorRecovery() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
-        String[] tests = FileUtils.readAllTextFromResource("res/CalculatorErrorRecoveryTest.tests")
+        String[] tests = FileUtils.readAllTextFromResource("res/CalculatorErrorRecoveryTest.test")
                 .split("###\r?\n");
 
         if (!runSingleTest(parser, tests)) {

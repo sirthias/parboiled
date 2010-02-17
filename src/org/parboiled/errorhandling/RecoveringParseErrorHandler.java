@@ -21,16 +21,27 @@ import org.parboiled.BaseParser;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
 import org.parboiled.Parboiled;
-import org.parboiled.support.MatcherPath;
-import org.parboiled.support.InputLocation;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Preconditions;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.TestMatcher;
+import org.parboiled.support.InputLocation;
+import org.parboiled.support.MatcherPath;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * A {@link ParseErrorHandler} that tries to recover from parse errors and is therefore capable of reporting all
+ * errors found in the input. Since it needs to performs several parsing reruns in order to be able to report and
+ * recover from parse errors it is considerable slower than the {@link NopParseErrorHandler} and the
+ * {@link ReportFirstParseErrorHandler} on invalid input.
+ * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
+ * than the {@link NopParseErrorHandler} on valid input. On valid input it performs about the same as the
+ * {@link ReportFirstParseErrorHandler}.
+ *
+ * @param <V>
+ */
 public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     private enum State {
@@ -44,9 +55,9 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     private final DefaultRecoveryRuleVisitor<V> defaultRecoveryVisitor;
     private final Formatter<InvalidInputError<V>> invalidInputErrorFormatter;
-    private State state = State.Parsing;
+    private State state;
     private MatcherContext<V> rootContext;
-    private RecoveryRecord<V> firstRecord = new RecoveryRecord<V>();
+    private RecoveryRecord<V> firstRecord;
     private RecoveryRecord<V> currentRecord;
 
     public RecoveringParseErrorHandler() {
@@ -67,7 +78,12 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 
-    public void beforeParsingRun(MatcherContext<V> rootContext) {
+    public void initialize() {
+        firstRecord = new RecoveryRecord<V>();
+        state = State.Parsing;
+    }
+
+    public void initializeBeforeParsingRerun(MatcherContext<V> rootContext) {
         this.rootContext = rootContext;
         currentRecord = firstRecord;
         if (currentRecord.errorLocation == null) currentRecord.errorLocation = rootContext.getCurrentLocation();
@@ -254,7 +270,8 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
         }
 
         public InvalidInputError<V> createParseError(Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
-            parseError = new InvalidInputError<V>(errorLocation, lastMatch, failedMatcherPaths, invalidInputErrorFormatter);
+            parseError = new InvalidInputError<V>(errorLocation, lastMatch, failedMatcherPaths,
+                    invalidInputErrorFormatter);
             return parseError;
         }
 

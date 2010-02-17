@@ -101,6 +101,7 @@ public class CachingGeneratorTest {
 
         assertTraceDumpEquality(getMethodByName(classNode.cachedMethods, "optional"), "" +
                 "  @Lorg/parboiled/support/Cached;()\n" +
+                "  @Lorg/parboiled/support/Label;()\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/asm/TestParser$$parboiled.cache$optional : Ljava/util/HashMap;\n" +
                 "    DUP\n" +

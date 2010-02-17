@@ -86,7 +86,7 @@ public class StarterCharsVisitor<V> implements MatcherVisitor<V, Characters> {
     }
 
     public Characters visit(TestNotMatcher<V> matcher) {
-        return Characters.ALL.remove(matcher.subMatcher.accept(this));
+        return Characters.NONE;
     }
 
     public Characters visit(ZeroOrMoreMatcher<V> matcher) {

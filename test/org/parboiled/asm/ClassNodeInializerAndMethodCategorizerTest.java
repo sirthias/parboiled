@@ -38,11 +38,11 @@ public class ClassNodeInializerAndMethodCategorizerTest {
         assertEqualsMultiline(join(classNode.ruleMethods),
                 "noActionRule,simpleActionRule,upSetActionRule,booleanExpressionActionRule,complexActionsRule,any,empty");
         assertEqualsMultiline(join(classNode.cachedMethods),
-                "ch,charIgnoreCase,charRange,charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,test,testNot,zeroOrMore");
+                "ch,charIgnoreCase,charRange,charSet,charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,test,testNot,zeroOrMore");
         assertEqualsMultiline(join(classNode.labelMethods),
-                "skipCharRecovery,emptyMatchRecovery,resynchronize,defaultRecovery");
+                "firstOf,oneOrMore,optional,sequence,skipCharRecovery,emptyMatchRecovery,singleCharRecovery,resynchronize");
         assertEqualsMultiline(join(classNode.leafMethods),
-                "charSet,string,stringIgnoreCase");
+                "string,stringIgnoreCase");
     }
 
     private String join(List<ParserMethod> methods) {

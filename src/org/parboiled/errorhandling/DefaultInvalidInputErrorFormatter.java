@@ -18,14 +18,14 @@ package org.parboiled.errorhandling;
 
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
-import org.parboiled.matchers.*;
+import org.parboiled.matchers.CharactersMatcher;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<V, Boolean>
-        implements Formatter<InvalidInputError<V>> {
+public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidInputError<V>> {
 
     public String format(InvalidInputError<V> error) {
         if (error == null) return "";
@@ -36,11 +36,12 @@ public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<
         );
     }
 
-    private String getExpectedString(InvalidInputError<V> error) {
+    public String getExpectedString(InvalidInputError<V> error) {
         List<String> labelList = new ArrayList<String>();
         for (MatcherPath<V> path : error.getFailedMatchers()) {
-            String[] labels = chooseLabelFromPath(path, error);
-            if (labels == null) continue;
+            Matcher<V> labelMatcher = ErrorUtils.findProperLabelMatcher(path, error.getLastMatch());
+            if (labelMatcher == null) continue;
+            String[] labels = getLabels(labelMatcher);
             for (String label : labels) {
                 if (label != null && !labelList.contains(label)) {
                     labelList.add(label);
@@ -50,25 +51,7 @@ public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<
         return join(labelList);
     }
 
-    private String[] chooseLabelFromPath(MatcherPath<V> path, InvalidInputError<V> error) {
-        if (path.equals(error.getLastMatch())) {
-            return getLabels(path.getHead());
-        }
-        int commonPrefixLength = path.getCommonPrefixLength(error.getLastMatch());
-        return findFirstProperLabel(path, commonPrefixLength);
-    }
-
-    private String[] findFirstProperLabel(MatcherPath<V> path, int startIndex) {
-        for (int i = startIndex; i < path.length(); i++) {
-            Matcher<V> matcher = path.get(i);
-            if (matcher.accept(this)) {
-                return getLabels(matcher);
-            }
-        }
-        return null;
-    }
-
-    private String[] getLabels(Matcher<V> matcher) {
+    public String[] getLabels(Matcher<V> matcher) {
         if (matcher instanceof CharactersMatcher) {
             CharactersMatcher cMatcher = (CharactersMatcher) matcher;
             if (!cMatcher.characters.isSubtractive()) {
@@ -82,57 +65,13 @@ public class DefaultInvalidInputErrorFormatter<V> extends DefaultMatcherVisitor<
         return new String[] {matcher.getLabel()};
     }
 
-    private String join(List<String> labelList) {
+    public String join(List<String> labelList) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < labelList.size(); i++) {
             if (i > 0) sb.append(i < labelList.size() - 1 ? ", " : " or ");
             sb.append(labelList.get(i));
         }
         return StringUtils.escape(sb.toString());
-    }
-
-    // the following MatcherVisitor overrides determine whether the given matcher has a label we want to show
-    // in the expected string of the InvalidInputError
-
-    @Override
-    public Boolean visit(ActionMatcher<V> matcher) {
-        return false;
-    }
-
-    @Override
-    public Boolean visit(EmptyMatcher<V> matcher) {
-        return false;
-    }
-
-    @Override
-    public Boolean visit(FirstOfMatcher<V> matcher) {
-        String label = matcher.getLabel();
-        return !"firstOf".equals(label);
-    }
-
-    @Override
-    public Boolean visit(OneOrMoreMatcher<V> matcher) {
-        return !"oneOrMore".equals(matcher.getLabel());
-    }
-
-    @Override
-    public Boolean visit(OptionalMatcher<V> matcher) {
-        return !"optional".equals(matcher.getLabel());
-    }
-
-    @Override
-    public Boolean visit(SequenceMatcher<V> matcher) {
-        return !"sequence".equals(matcher.getLabel());
-    }
-
-    @Override
-    public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
-        return !"zeroOrMore".equals(matcher.getLabel());
-    }
-
-    @Override
-    public Boolean defaultValue(AbstractMatcher<V> matcher) {
-        return true;
     }
 
 }

@@ -18,12 +18,22 @@ package org.parboiled.errorhandling;
 
 import org.parboiled.MatcherContext;
 
+/**
+ * The most trivial implementation of the {@link ParseErrorHandler} interface.
+ * It does not report any parse errors nor recover from them. Therefore it never causes the parser to perform more
+ * than one parsing run and is the faster way to determine whether a given input conforms to the rule grammar.
+ *
+ * @param <V>
+ */
 public class NopParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     private NopParseErrorHandler() {
     }
 
-    public void beforeParsingRun(MatcherContext rootContext) {
+    public void initialize() {
+    }
+
+    public void initializeBeforeParsingRerun(MatcherContext rootContext) {
     }
 
     public void handleMatch(MatcherContext context) {

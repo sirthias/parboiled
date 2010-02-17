@@ -47,24 +47,24 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
     }
 
     public Rule visit(CharactersMatcher<V> matcher) {
-        // try one char deletion and then one char insertion if we are underneatch a sequence
-        return defaultSingleCharRecovery();
+        // try one char deletion and then one char insertion if we are underneath a sequence
+        return defaultSingleCharRecovery(matcher, true);
     }
 
     public Rule visit(CharIgnoreCaseMatcher<V> matcher) {
-        // try one char deletion and then one char insertion if we are underneatch a sequence
-        return defaultSingleCharRecovery();
+        // try one char deletion and then one char insertion if we are underneath a sequence
+        return defaultSingleCharRecovery(matcher, true);
     }
 
     public Rule visit(CharMatcher<V> matcher) {
-        // try one char deletion and then one char insertion if we are underneatch a sequence
-        return defaultSingleCharRecovery();
+        // try one char deletion and then one char insertion if we are underneath a sequence
+        return defaultSingleCharRecovery(matcher, true);
     }
 
     public Rule visit(CharRangeMatcher<V> matcher) {
-        // try one char deletion if we are underneatch a sequence, we don't try single char insertion since
-        // conjuring up a digit for example is not very helpful in most cases
-        return defaultSingleCharDeletion();
+        // try one char deletion if we are underneath a sequence, we don't try single char insertion since
+        // conjuring up something like a digit for example is not very helpful in most cases
+        return defaultSingleCharRecovery(matcher, false);
     }
 
     public Rule visit(EmptyMatcher<V> matcher) {
@@ -72,13 +72,13 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
     }
 
     public Rule visit(FirstOfMatcher<V> matcher) {
-        // try one char deletion if we are underneatch a sequence
-        return defaultSingleCharDeletion();
+        // try one char deletion if we are underneath a sequence
+        return defaultSingleCharRecovery(matcher, false);
     }
 
     public Rule visit(OneOrMoreMatcher<V> matcher) {
-        // try one char deletion if we are underneatch a sequence
-        return defaultSingleCharDeletion();
+        // try one char deletion if we are underneath a sequence
+        return defaultSingleCharRecovery(matcher, false);
     }
 
     public Rule visit(OptionalMatcher<V> matcher) {
@@ -93,11 +93,11 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
     }
 
     public Rule visit(TestMatcher<V> matcher) {
-        return defaultSingleCharDeletion();
+        return defaultSingleCharRecovery(matcher, false);
     }
 
     public Rule visit(TestNotMatcher<V> matcher) {
-        return defaultSingleCharDeletion();
+        return defaultSingleCharRecovery(matcher, false);
     }
 
     public Rule visit(ZeroOrMoreMatcher<V> matcher) {
@@ -106,31 +106,33 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
 
     // ****************** PRIVATE ***********************
 
-    private Rule defaultSingleCharRecovery() {
-        return context.getCurrentLocation().index == errorLocation.index &&
-                getParentMatcher() instanceof SequenceMatcher ?
-                context.getParser().singleCharRecovery(context) : null;
+    public Rule defaultSingleCharRecovery(Matcher<V> matcher, boolean alsoAllowEmptyMatchRecovery) {
+        if (context.getCurrentLocation().index == errorLocation.index &&
+                getParentMatcher() instanceof SequenceMatcher) {
+            if (alsoAllowEmptyMatchRecovery) {
+                Matcher<V> labelMatcher = ErrorUtils.findProperLabelMatcher(context.getPath(), lastMatch);
+                if (labelMatcher != null && labelMatcher.getLabel().equals(matcher.getLabel())) {
+                    return context.getParser().singleCharRecovery(context);
+                }
+            }
+            return context.getParser().skipCharRecovery(matcher);
+        }
+        return null;
     }
 
-    private Rule defaultSingleCharDeletion() {
-        return context.getCurrentLocation().index == errorLocation.index &&
-                getParentMatcher() instanceof SequenceMatcher ?
-                context.getParser().skipCharRecovery(context.getMatcher()) : null;
-    }
-
-    private Matcher<V> getParentMatcher() {
+    public Matcher<V> getParentMatcher() {
         return context.getParent() != null ? context.getParent().getMatcher() : null;
     }
 
-    private boolean isResynchronizationSequence(Matcher<V> matcher) {
+    public boolean isResynchronizationSequence(Matcher<V> matcher) {
         // never resync on "helper" sequences without a "real" name
         if ("sequence".equals(matcher.getLabel())) return false;
 
         // don't resync if we are not a parent sequence of the last match
         if (!context.getPath().isPrefixOf(lastMatch)) return false;
 
-        // also dont resync if the sequence is actually "not really" a sequence since it only has less than two
-        // real rule children, helper constructs like test/testNot rules and actions do not qualify as "real children"
+        // also dont resync if the sequence is actually "not really" a sequence since it has only one real rule child,
+        // helper constructs like test/testNot rules and actions do not qualify as "real children"
         int realChildren = 0;
         for (Matcher<V> child : matcher.getChildren()) {
             if (child instanceof TestMatcher || child instanceof TestNotMatcher || child instanceof ActionMatcher) {

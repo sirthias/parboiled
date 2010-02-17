@@ -44,6 +44,9 @@ public class CharactersTest {
         assertEquals(Characters.NONE.remove(Characters.ALL), Characters.NONE);
         assertEquals(Characters.ALL.remove(Characters.NONE), Characters.ALL);
 
+        assertEquals(Characters.ALL.remove(Characters.of('A','B')).toString(), "![B,A]");
+        assertEquals(Characters.ALL.remove(Characters.allBut('A','B')).toString(), "[A,B]");
+
         assertEquals(Characters.of('A', 'B').add(Characters.of('B', 'C')), Characters.of('A', 'B', 'C'));
         assertEquals(Characters.allBut('A', 'B').add(Characters.of('B', 'C')), Characters.allBut('A'));
         assertEquals(Characters.of('A', 'B').add(Characters.allBut('B', 'C')), Characters.allBut('C'));

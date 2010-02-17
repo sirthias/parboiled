@@ -25,6 +25,14 @@ import org.parboiled.support.MatcherPath;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A {@link ParseErrorHandler} that reports the first parse error if the input does not conform to the rule grammar.
+ * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
+ * than the {@link NopParseErrorHandler} on valid input. It is therefore the default {@link ParseErrorHandler} used by
+ * {@link org.parboiled.BaseParser#parse(org.parboiled.Rule, String)}.
+ *
+ * @param <V>
+ */
 public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     private enum State {
@@ -33,7 +41,7 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
 
     private final List<MatcherPath<V>> failedMatchers = new ArrayList<MatcherPath<V>>();
     private final Formatter<InvalidInputError<V>> invalidInputErrorFormatter;
-    private State state = State.Parsing;
+    private State state;
     private MatcherContext<V> rootContext;
     private InputLocation errorLocation;
     private MatcherPath<V> lastMatch;
@@ -46,7 +54,12 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 
-    public void beforeParsingRun(MatcherContext<V> rootContext) {
+    public void initialize() {
+        failedMatchers.clear();
+        state = State.Parsing;
+    }
+
+    public void initializeBeforeParsingRerun(MatcherContext<V> rootContext) {
         this.rootContext = rootContext;
         if (errorLocation == null) errorLocation = rootContext.getCurrentLocation();
     }
