@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
+import java.util.List;
+
 /**
  * A Matcher trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
  *
@@ -32,7 +34,10 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        for (Matcher<V> matcher : getChildren()) {
+        List<Matcher<V>> children = getChildren();
+        int size = children.size();
+        for (int i = 0; i < size; i++) {
+            Matcher<V> matcher = children.get(i);
             if (context.getSubContext(matcher).runMatcher()) {
                 context.createNode();
                 return true;

@@ -18,6 +18,7 @@ package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
+import org.parboiled.errorhandling.BasicParseErrorHandler;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 
@@ -54,7 +55,7 @@ public class Main {
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<Object> result = parser.parse(parser.compilationUnit(), sourceText);
+            ParsingResult<Object> result = parser.parse(parser.compilationUnit(), sourceText, new BasicParseErrorHandler<Object>());
             if (!result.matched) {
                 System.out.printf("\nParse error(s) in file '%s':\n%s",
                         sourceFile,

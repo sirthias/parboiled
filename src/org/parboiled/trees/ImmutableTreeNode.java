@@ -43,8 +43,10 @@ public class ImmutableTreeNode<T extends TreeNode<T>> extends ImmutableGraphNode
 
     @SuppressWarnings({"unchecked"})
     protected void acquireChildren() {
-        for (T child : getChildren()) {
-            ImmutableTreeNode node = (ImmutableTreeNode) child;
+        List<T> children = getChildren();
+        int size = children.size();
+        for (int i = 0; i < size; i++) {
+            ImmutableTreeNode node = (ImmutableTreeNode) children.get(i);
             if (node != null) node.parent = this;
         }
     }
