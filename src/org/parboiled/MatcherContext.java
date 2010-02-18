@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
@@ -30,7 +31,6 @@ import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.*;
 import static org.parboiled.support.ParseTreeUtils.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,7 +66,7 @@ public class MatcherContext<V> implements Context<V> {
     private InputLocation currentLocation;
     private Matcher<V> matcher;
     private Node<V> node;
-    private List<Node<V>> subNodes;
+    private List<Node<V>> subNodes = ImmutableList.of();
     private V nodeValue;
     private int intTag;
     private boolean belowLeafLevel;
@@ -156,11 +156,9 @@ public class MatcherContext<V> implements Context<V> {
 
     public V getTreeValue() {
         V treeValue = nodeValue;
-        if (subNodes != null) {
-            int i = subNodes.size();
-            while (treeValue == null && i-- > 0) {
-                treeValue = subNodes.get(i).getValue();
-            }
+        int i = subNodes.size();
+        while (treeValue == null && i-- > 0) {
+            treeValue = subNodes.get(i).getValue();
         }
         return treeValue;
     }
@@ -177,6 +175,7 @@ public class MatcherContext<V> implements Context<V> {
         return lastNodeRef.getTarget();
     }
 
+    @NotNull
     public List<Node<V>> getSubNodes() {
         return subNodes;
     }
@@ -233,7 +232,7 @@ public class MatcherContext<V> implements Context<V> {
             return;
         }
         if (matcher.isWithoutNode()) {
-            if (parent != null && subNodes != null) parent.addChildNodes(subNodes);
+            if (parent != null) parent.addChildNodes(subNodes);
             return;
         }
         node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
@@ -241,14 +240,66 @@ public class MatcherContext<V> implements Context<V> {
         lastNodeRef.setTarget(node);
     }
 
+    @SuppressWarnings({"unchecked"})
     public void addChildNode(@NotNull Node<V> node) {
-        if (subNodes == null) subNodes = new ArrayList<Node<V>>();
-        subNodes.add(node);
+        switch (subNodes.size()) {
+            case 0:
+                subNodes = ImmutableList.of(node);
+                break;
+            case 1:
+                subNodes = ImmutableList.of(subNodes.get(0), node);
+                break;
+            case 2:
+                subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), node);
+                break;
+            case 3:
+                subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), subNodes.get(2), node);
+                break;
+            case 4:
+                subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), subNodes.get(2), subNodes.get(3), node);
+                break;
+            default:
+                int size = subNodes.size();
+                Node[] elements = new Node[size + 1];
+                for (int i = 0; i < size; i++) elements[i] = subNodes.get(i);
+                elements[size] = node;
+                subNodes = ImmutableList.of((Node<V>[]) elements);
+                break;
+        }
     }
 
+    @SuppressWarnings({"unchecked"})
     public void addChildNodes(@NotNull List<Node<V>> nodes) {
-        if (subNodes == null) subNodes = new ArrayList<Node<V>>();
-        subNodes.addAll(nodes);
+        switch (nodes.size()) {
+            case 0:
+                return;
+            case 1:
+                addChildNode(nodes.get(0));
+                return;
+            case 2:
+                switch(subNodes.size()) {
+                    case 0:
+                        subNodes = ImmutableList.copyOf(nodes);
+                        return;
+                    case 1:
+                        subNodes = ImmutableList.of(subNodes.get(0), nodes.get(0), nodes.get(1));
+                        return;
+                    case 2:
+                        subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), nodes.get(0), nodes.get(1));
+                        return;
+                }
+                break;
+        }
+        int size = subNodes.size();
+        int newSize = size + nodes.size();
+        Node[] elements = new Node[newSize];
+        for (int i = 0; i < size; i++) elements[i] = subNodes.get(i);
+        for (int i = size; i < newSize; i++) elements[i] = nodes.get(i - size);
+        subNodes = ImmutableList.of((Node<V>[]) elements);
+    }
+
+    public void setSubNodes(@NotNull List<Node<V>> nodes) {
+        subNodes = ImmutableList.copyOf(nodes);
     }
 
     public ParseErrorHandler<V> getParseErrorHandler() {
@@ -274,7 +325,7 @@ public class MatcherContext<V> implements Context<V> {
         subContext.matcher = ProxyMatcher.unwrap(matcher);
         subContext.setStartLocation(currentLocation);
         subContext.node = null;
-        subContext.subNodes = null;
+        subContext.subNodes = ImmutableList.of();
         subContext.nodeValue = null;
         subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
         return subContext;

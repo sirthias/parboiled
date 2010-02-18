@@ -17,10 +17,10 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.matchers.Matcher;
 import org.parboiled.support.Checks;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
+import static org.parboiled.support.ParseTreeUtils.collectNodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +99,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      */
     public List<Node<V>> NODES_BY_LABEL(String labelPrefix) {
         check();
-        return ParseTreeUtils.collectNodes(context.getSubNodes(),
+        return collectNodes(context.getSubNodes(),
                 new LabelPrefixPredicate<V>(labelPrefix),
                 new ArrayList<Node<V>>()
         );
@@ -352,22 +352,6 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     public boolean IN_PREDICATE() {
         check();
         return context.inPredicate();
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public boolean match(@NotNull Rule rule) {
-        return match((Matcher<V>) rule);
-    }
-
-    public boolean match(@NotNull Matcher<V> matcher) {
-        check();
-        MatcherContext<V> matcherContext = (MatcherContext<V>) context;
-        MatcherContext<V> actionMatcherContext = matcherContext.getSubContext();
-        boolean matched = actionMatcherContext.getSubContext(matcher).runMatcher();
-        if (matched && actionMatcherContext.getSubNodes() != null) {
-            matcherContext.addChildNodes(actionMatcherContext.getSubNodes());
-        }
-        return matched;
     }
 
     private void check() {

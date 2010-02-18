@@ -16,6 +16,8 @@
 
 package org.parboiled.errorhandling;
 
+import com.google.common.base.Supplier;
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
@@ -27,8 +29,6 @@ import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Supplier;
 
 /**
  * A {@link ParseErrorHandler} that tries to recover from parse errors and is therefore capable of reporting all
@@ -200,7 +200,7 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
         if (!recoveryContext.runMatcher()) return false;
         if (failedContext == rootContext) {
             postRootRecoveryFix();
-        } else if (!(failedContext.getMatcher() instanceof TestMatcher) && failedContext.getSubNodes() != null) {
+        } else if (!(failedContext.getMatcher() instanceof TestMatcher)) {
             failedContext.getParent().addChildNodes(failedContext.getSubNodes());
         }
         return true;
@@ -211,8 +211,10 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
     public void postRootRecoveryFix() {
         Node<V> rootNode = rootContext.getNodeByPath(rootContext.getMatcher().getLabel());
         if (rootNode != null) {
-            rootContext.getSubNodes().remove(rootNode);
-            rootContext.getSubNodes().addAll(rootNode.getChildren());
+            List<Node<V>> nodes = Lists.newArrayList(rootContext.getSubNodes());
+            nodes.remove(rootNode);
+            nodes.addAll(rootNode.getChildren());
+            rootContext.setSubNodes(nodes);
         }
         rootContext.createNode();
     }

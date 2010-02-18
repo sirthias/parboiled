@@ -29,6 +29,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import static com.google.common.collect.ObjectArrays.concat;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
@@ -482,11 +483,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
                         // before the parse error occurred we need to move over these nodes to this mock sequence
                         new NamedAction<V>("includeAlreadyMatchedNodes") {
                             public boolean run(Context<V> context) {
-                                List<Node<V>> nodes = failedMatcherContext.getSubNodes();
-                                if (nodes != null) {
-                                    ((MatcherContext<V>) context).addChildNodes(nodes);
-                                    failedMatcherContext.getSubNodes().clear();
-                                }
+                                ((MatcherContext<V>) context).addChildNodes(failedMatcherContext.getSubNodes());
+                                ((MatcherContext<V>) failedMatcherContext).setSubNodes(ImmutableList.<Node<V>>of());
                                 return true;
                             }
                         },
