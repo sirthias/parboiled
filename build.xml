@@ -8,6 +8,7 @@
         <pathelement location="lib/asm/asm-3.2.jar"/>
         <pathelement location="lib/asm/asm-analysis-3.2.jar"/>
         <pathelement location="lib/asm/asm-tree-3.2.jar"/>
+        <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
         <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
         <pathelement location="lib/annotations.jar"/>
     </path>
