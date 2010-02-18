@@ -33,12 +33,13 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.ContextAware;
 import static org.parboiled.asm.AsmUtils.*;
-import org.parboiled.common.Preconditions;
 import org.parboiled.exceptions.GrammarException;
 import org.parboiled.support.Checks;
 
 import java.lang.reflect.Modifier;
 import java.util.*;
+
+import com.google.common.base.Preconditions;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
@@ -54,6 +55,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
         this.method = method;
     }
 
+    @Override
     public Value newValue(Type type) {
         BasicValue basicValue = (BasicValue) super.newValue(type);
         if (basicValue == BasicValue.REFERENCE_VALUE) {
@@ -62,6 +64,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
         return basicValue;
     }
 
+    @Override
     public Value newOperation(AbstractInsnNode insn) throws AnalyzerException {
         return createNode(insn, super.newOperation(insn));
     }
@@ -71,19 +74,23 @@ class RuleMethodInterpreter extends BasicInterpreter {
         return createNode(insn, super.copyOperation(insn, value), value);
     }
 
+    @Override
     public Value unaryOperation(AbstractInsnNode insn, Value value) throws AnalyzerException {
         verifyInstruction(insn);
         return createNode(insn, super.unaryOperation(insn, null), value);
     }
 
+    @Override
     public Value binaryOperation(AbstractInsnNode insn, Value value1, Value value2) throws AnalyzerException {
         return createNode(insn, super.binaryOperation(insn, null, null), value1, value2);
     }
 
+    @Override
     public Value ternaryOperation(AbstractInsnNode insn, Value v1, Value v2, Value v3) throws AnalyzerException {
         return createNode(insn, super.ternaryOperation(insn, null, null, null), v1, v2, v3);
     }
 
+    @Override
     @SuppressWarnings({"unchecked"})
     public Value naryOperation(AbstractInsnNode insn, List values) throws AnalyzerException {
         verifyInstruction(insn);
@@ -98,6 +105,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
                         "Rule definition methods must contain exactly one return statement");
     }
 
+    @Override
     public Value merge(Value v, Value w) {
         // we don't actually merge values but use the control flow detection to deal with conditionals
         return v;

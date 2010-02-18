@@ -16,25 +16,35 @@
 
 package org.parboiled.trees;
 
-import org.parboiled.common.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 /**
  * A simple immutable implementation of the BinaryTreeNode interface.
+ *
  * @param <N>
  */
+@SuppressWarnings({"unchecked"})
 public class ImmutableBinaryTreeNode<N extends BinaryTreeNode<N>> extends ImmutableTreeNode<N>
         implements BinaryTreeNode<N> {
 
+    private final N left;
+    private final N right;
+
+    @SuppressWarnings({"unchecked"})
     public ImmutableBinaryTreeNode(N left, N right) {
-        super(ImmutableList.of(left, right));
+        super(left == null ?
+                right == null ? ImmutableList.<N>of() : ImmutableList.of(right) :
+                right == null ? ImmutableList.of(left) : ImmutableList.of(left, right));
+        this.left = left;
+        this.right = right;
     }
 
     public N left() {
-        return getChildren().get(0);
+        return left;
     }
 
     public N right() {
-        return getChildren().get(1);
+        return right;
     }
 
 }

@@ -18,11 +18,12 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.common.Preconditions;
 import org.parboiled.common.Utils;
 import org.parboiled.matchers.Matcher;
 
 import java.util.Arrays;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Describes a path of rule matchers as they are nested within each other at a certain point during the parsing process.

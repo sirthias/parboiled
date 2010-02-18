@@ -17,8 +17,8 @@
 package org.parboiled.errorhandling;
 
 import org.parboiled.MatcherContext;
-import org.parboiled.common.Provider;
 import org.jetbrains.annotations.NotNull;
+import com.google.common.base.Supplier;
 
 /**
  * <p>A handler for parse errors that can be passed to
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ParseErrorHandler<V> {
 
-    boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider);
+    boolean matchRoot(@NotNull Supplier<MatcherContext<V>> rootContextProvider);
 
     boolean match(MatcherContext<V> context) throws Throwable;
 

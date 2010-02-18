@@ -18,11 +18,12 @@ package org.parboiled.trees;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.Function;
 import org.parboiled.common.StringUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
+
+import com.google.common.base.Function;
 
 /**
  * General utility methods for operating on directed graphs (consisting of GraphNodes).

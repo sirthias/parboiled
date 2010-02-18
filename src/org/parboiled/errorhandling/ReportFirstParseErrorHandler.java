@@ -19,13 +19,14 @@ package org.parboiled.errorhandling;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.Preconditions;
-import org.parboiled.common.Provider;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 
 /**
  * A {@link ParseErrorHandler} that reports the first parse error if the input does not conform to the rule grammar.
@@ -55,7 +56,7 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 
-    public boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider) {
+    public boolean matchRoot(@NotNull Supplier<MatcherContext<V>> rootContextProvider) {
         failedMatchers.clear();
         MatcherContext<V> rootContext = rootContextProvider.get();
         errorLocation = rootContext.getCurrentLocation();

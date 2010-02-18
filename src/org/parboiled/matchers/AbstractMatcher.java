@@ -18,8 +18,8 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
-import org.parboiled.common.ImmutableList;
 import org.parboiled.trees.ImmutableGraphNode;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Abstract base class of most regular Matchers.

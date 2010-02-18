@@ -24,9 +24,10 @@ package org.parboiled.asm;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.MethodNode;
-import org.parboiled.common.Preconditions;
 
 import java.util.List;
+
+import com.google.common.base.Preconditions;
 
 class ParserMethod extends MethodNode {
 

@@ -18,8 +18,6 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.common.Function;
-import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
 import org.parboiled.errorhandling.ParseError;
@@ -29,6 +27,9 @@ import org.parboiled.trees.Printability;
 
 import java.util.Collection;
 import java.util.List;
+
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 
 /**
  * General utility methods for operating on parse trees.

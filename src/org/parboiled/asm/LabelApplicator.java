@@ -19,9 +19,9 @@ package org.parboiled.asm;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import org.parboiled.common.Preconditions;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.common.Utils.merge;
+import com.google.common.base.Preconditions;
 
 class LabelApplicator implements ClassTransformer, Opcodes, Types {
 

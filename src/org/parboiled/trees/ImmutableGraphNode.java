@@ -17,9 +17,10 @@
 package org.parboiled.trees;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.ImmutableList;
 
 import java.util.List;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * A simple, immutable GraphNode implementation.

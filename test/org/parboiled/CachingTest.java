@@ -16,13 +16,13 @@
 
 package org.parboiled;
 
-import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.matchers.FirstOfMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.test.AbstractTest;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+import static com.google.common.collect.ObjectArrays.concat;
 
 public class CachingTest extends AbstractTest {
 
@@ -51,7 +51,7 @@ public class CachingTest extends AbstractTest {
         }
 
         public Rule firstOf_uncached(Object rule, Object rule2, Object... moreRules) {
-            return new FirstOfMatcher(toRules(arrayOf(rule, arrayOf(rule2, moreRules)))).label("firstOf");
+            return new FirstOfMatcher(toRules(concat(rule, concat(rule2, moreRules)))).label("firstOf");
         }
 
     }

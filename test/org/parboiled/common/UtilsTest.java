@@ -17,7 +17,6 @@
 package org.parboiled.common;
 
 import org.parboiled.Node;
-import static org.parboiled.common.Utils.arrayOf;
 import static org.parboiled.common.Utils.getTypeArguments;
 import org.parboiled.support.NodeFormatter;
 import static org.testng.Assert.assertEquals;
@@ -25,12 +24,10 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 
-public class UtilsTest {
+import com.google.common.collect.ImmutableList;
+import com.google.common.base.Predicate;
 
-    @Test
-    public void testArrayOf() {
-        assertEquals(arrayOf(1, 2, 3, 4), new Integer[] {1, 2, 3, 4});
-    }
+public class UtilsTest {
 
     @SuppressWarnings({"InstantiatingObjectToGetClassObject"})
     @Test

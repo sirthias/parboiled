@@ -46,8 +46,7 @@ public class ImmutableTreeNode<T extends TreeNode<T>> extends ImmutableGraphNode
         List<T> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {
-            ImmutableTreeNode node = (ImmutableTreeNode) children.get(i);
-            if (node != null) node.parent = this;
+            ((ImmutableTreeNode) children.get(i)).parent = this;
         }
     }
 

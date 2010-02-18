@@ -16,10 +16,10 @@
 
 package org.parboiled.support;
 
-import org.parboiled.common.ImmutableList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
+import com.google.common.collect.ImmutableList;
 
 public class CharactersTest {
 

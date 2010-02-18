@@ -20,13 +20,13 @@ import org.parboiled.BaseParser;
 import org.parboiled.Node;
 import org.parboiled.Rule;
 import org.parboiled.errorhandling.RecoveringParseErrorHandler;
-import org.parboiled.common.Function;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import org.parboiled.trees.Printability;
 import static org.testng.Assert.fail;
+import com.google.common.base.Function;
 
 public abstract class AbstractTest {
 

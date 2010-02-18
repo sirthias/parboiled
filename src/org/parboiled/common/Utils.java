@@ -22,6 +22,8 @@ import org.parboiled.exceptions.ParserRuntimeException;
 import java.lang.reflect.*;
 import java.util.*;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * General utility methods.
  */
@@ -109,49 +111,6 @@ public final class Utils {
         Boolean[] result = new Boolean[array.length];
         for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
-    }
-
-    /**
-     * Joins the given arguments into one array.
-     *
-     * @param firstElement the first element
-     * @param moreElements more elements (optional)
-     * @return a new array containing all arguments.
-     */
-    @SuppressWarnings({"unchecked"})
-    public static <T> T[] arrayOf(T firstElement, @NotNull T... moreElements) {
-        Class elementType = moreElements.getClass().getComponentType();
-        T[] array = (T[]) Array.newInstance(elementType, moreElements.length + 1);
-        array[0] = firstElement;
-        System.arraycopy(moreElements, 0, array, 1, moreElements.length);
-        return array;
-    }
-
-    /**
-     * Joins the given arguments into one array.
-     *
-     * @param firstElements the first elements
-     * @param lastElement   the element to append
-     * @return a new array containing all arguments.
-     */
-    @SuppressWarnings({"unchecked"})
-    public static <T> T[] arrayOf(@NotNull T[] firstElements, T lastElement) {
-        Class elementType = firstElements.getClass().getComponentType();
-        T[] array = (T[]) Array.newInstance(elementType, firstElements.length + 1);
-        System.arraycopy(firstElements, 0, array, 0, firstElements.length);
-        array[firstElements.length] = lastElement;
-        return array;
-    }
-
-    /**
-     * Provides a null enabled equals().
-     *
-     * @param a the first object
-     * @param b the second object
-     * @return true if a and b are either both null or a.equals(b), false otherwise
-     */
-    public static boolean equals(Object a, Object b) {
-        return a == b || (a != null && a.equals(b));
     }
 
     /**

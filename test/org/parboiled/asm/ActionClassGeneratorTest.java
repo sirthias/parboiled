@@ -19,11 +19,12 @@ package org.parboiled.asm;
 import static org.parboiled.asm.AsmTestUtils.getClassDump;
 import static org.parboiled.asm.AsmUtils.getMethodByName;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import org.parboiled.common.Preconditions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.List;
+
+import com.google.common.base.Preconditions;
 
 public class ActionClassGeneratorTest {
 

@@ -18,7 +18,6 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.support.ParseTreeUtils.*;
 import org.parboiled.trees.ImmutableTreeNode;
@@ -28,6 +27,8 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.google.common.base.Predicate;
 
 public class ParseTreeUtilsTest {
 

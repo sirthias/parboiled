@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.Provider;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.InputLocation;
@@ -28,6 +27,8 @@ import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.base.Supplier;
 
 /**
  * A {@link ParseErrorHandler} that tries to recover from parse errors and is therefore capable of reporting all
@@ -76,7 +77,7 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 
-    public boolean matchRoot(@NotNull Provider<MatcherContext<V>> rootContextProvider) {
+    public boolean matchRoot(@NotNull Supplier<MatcherContext<V>> rootContextProvider) {
         rootContext = rootContextProvider.get();
         firstRecord = new RecoveryRecord<V>();
         firstRecord.errorLocation = rootContext.getCurrentLocation();

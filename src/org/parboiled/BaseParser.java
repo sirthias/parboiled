@@ -17,10 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Preconditions;
-import org.parboiled.common.Provider;
 import org.parboiled.common.Reference;
-import static org.parboiled.common.Utils.arrayOf;
 import org.parboiled.errorhandling.*;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.*;
@@ -28,6 +25,10 @@ import org.parboiled.support.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
+import static com.google.common.collect.ObjectArrays.concat;
 
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
@@ -67,7 +68,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         final Reference<MatcherContext<V>> rootContextRef = new Reference<MatcherContext<V>>();
 
         boolean matched = parseErrorHandler.matchRoot(
-                new Provider<MatcherContext<V>>() {
+                new Supplier<MatcherContext<V>>() {
                     public MatcherContext<V> get() {
                         rootContextRef.setTarget(new MatcherContext<V>(inputBuffer, startLocation, BaseParser.this,
                                 parseErrors, parseErrorHandler, rootMatcher));
@@ -208,7 +209,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule firstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
-        return firstOf(arrayOf(rule, arrayOf(rule2, moreRules)));
+        return firstOf(concat(rule, concat(rule2, moreRules)));
     }
 
     /**
@@ -267,7 +268,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
-        return sequence(arrayOf(rule, arrayOf(rule2, moreRules)));
+        return sequence(concat(rule, concat(rule2, moreRules)));
     }
 
     /**

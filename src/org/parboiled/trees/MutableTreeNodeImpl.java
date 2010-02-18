@@ -17,11 +17,12 @@
 package org.parboiled.trees;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.google.common.base.Preconditions;
 
 /**
  * A mutable tree node implementation.

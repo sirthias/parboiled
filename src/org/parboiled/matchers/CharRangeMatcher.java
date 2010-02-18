@@ -18,8 +18,8 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.common.Preconditions;
 import org.parboiled.common.StringUtils;
+import com.google.common.base.Preconditions;
 
 public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 

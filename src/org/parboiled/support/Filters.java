@@ -17,9 +17,9 @@
 package org.parboiled.support;
 
 import org.parboiled.Node;
-import org.parboiled.common.Function;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import org.parboiled.trees.Printability;
+import com.google.common.base.Function;
 
 public class Filters {
 

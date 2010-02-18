@@ -19,7 +19,7 @@ package org.parboiled.asm;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import org.parboiled.common.Preconditions;
+import com.google.common.base.Preconditions;
 
 class LeafApplicator implements ClassTransformer, Opcodes, Types {
 

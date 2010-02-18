@@ -17,8 +17,8 @@
 package org.parboiled.support;
 
 import org.parboiled.Node;
-import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
+import com.google.common.base.Predicate;
 
 public class LabelPrefixPredicate<V> implements Predicate<Node<V>> {
     private final String labelPrefix;
