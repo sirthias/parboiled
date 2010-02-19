@@ -18,7 +18,7 @@ package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
-import org.parboiled.errorhandling.BasicMatchHandler;
+import org.parboiled.matchhandlers.BasicMatchHandler;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 

@@ -18,7 +18,7 @@ package org.parboiled.test;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.errorhandling.RecoveringMatchHandler;
+import org.parboiled.matchhandlers.RecoveringMatchHandler;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;

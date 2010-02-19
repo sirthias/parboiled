@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.errorhandling;
+package org.parboiled.matchhandlers;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;

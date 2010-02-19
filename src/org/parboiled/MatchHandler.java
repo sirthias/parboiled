@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
  * <p>A handler for parse errors that can be passed to
  * {@link org.parboiled.BaseParser#parse(org.parboiled.Rule, String, MatchHandler)} in order to run custom logic
  * in the event of parse errors.</p>
- * <p>Parboiled comes with three default implementations: {@link org.parboiled.errorhandling.BasicMatchHandler},
- * {@link org.parboiled.errorhandling.ReportFirstMatchHandler} and {@link org.parboiled.errorhandling.RecoveringMatchHandler}</p>
+ * <p>Parboiled comes with three default implementations: {@link org.parboiled.matchhandlers.BasicMatchHandler},
+ * {@link org.parboiled.matchhandlers.ReportFirstMatchHandler} and {@link org.parboiled.matchhandlers.RecoveringMatchHandler}</p>
  *
  * @param <V>
  */

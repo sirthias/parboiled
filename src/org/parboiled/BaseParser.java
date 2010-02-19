@@ -18,7 +18,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
-import org.parboiled.errorhandling.*;
+import org.parboiled.matchhandlers.*;
 import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.*;

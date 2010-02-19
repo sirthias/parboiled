@@ -119,7 +119,7 @@
             -keep class org.parboiled.* { *; }
             -keep class org.parboiled.transformnsform.** { *; }
             -keep class org.parboiled.common.** { *; }
-            -keep class org.parboiled.errorhandling.** { *; }
+            -keep class org.parboiled.matchhandlers.** { *; }
             -keep class org.parboiled.errors{ *; }
             -keep class org.parboiled.matchers.** { *; }
             -keep class org.parboiled.support.** { *; }
