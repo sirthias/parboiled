@@ -27,7 +27,7 @@ import java.util.Arrays;
 
 public class UtilsTest {
 
-    @SuppressWarnings({"InstantiatingObjectToGetClassObject"})
+    @SuppressWarnings({"unchecked", "InstantiatingObjectToGetClassObject"})
     @Test
     public void testGetTypeArguments() {
         assertEquals(getTypeArguments(ArrayList.class, new ArrayList<String>() {

@@ -17,7 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.asm.ParserTransformer;
+import org.parboiled.transform.ParserTransformer;
 import static org.parboiled.common.Utils.findConstructor;
 
 import java.lang.reflect.Constructor;

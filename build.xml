@@ -117,7 +117,7 @@
             -outjars "build/parboiled-${version}.jar"
 
             -keep class org.parboiled.* { *; }
-            -keep class org.parboiled.asm.** { *; }
+            -keep class org.parboiled.transformnsform.** { *; }
             -keep class org.parboiled.common.** { *; }
             -keep class org.parboiled.errorhandling.** { *; }
             -keep class org.parboiled.exceptions.** { *; }
