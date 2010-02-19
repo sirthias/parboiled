@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
 import org.parboiled.errorhandling.ParseError;
-import org.parboiled.errorhandling.ParseErrorHandler;
 import org.parboiled.errorhandling.SimpleParseError;
 import org.parboiled.exceptions.ParserRuntimeException;
 import org.parboiled.matchers.ActionMatcher;
@@ -56,7 +55,7 @@ public class MatcherContext<V> implements Context<V> {
     private final InputBuffer inputBuffer;
     private final BaseParser<V> parser;
     private final List<ParseError> parseErrors;
-    private final ParseErrorHandler<V> parseErrorHandler;
+    private final MatchHandler<V> matchHandler;
     private final Reference<Node<V>> lastNodeRef;
     private final MatcherContext<V> parent;
     private final int level;
@@ -73,19 +72,19 @@ public class MatcherContext<V> implements Context<V> {
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
                           @NotNull BaseParser<V> parser, @NotNull List<ParseError> parseErrors,
-                          @NotNull ParseErrorHandler<V> parseErrorHandler, @NotNull Matcher<V> matcher) {
-        this(inputBuffer, parser, parseErrors, parseErrorHandler, new Reference<Node<V>>(), null, 0);
+                          @NotNull MatchHandler<V> matchHandler, @NotNull Matcher<V> matcher) {
+        this(inputBuffer, parser, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0);
         setStartLocation(startLocation);
         this.matcher = ProxyMatcher.unwrap(matcher);
     }
 
     private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
-                           @NotNull List<ParseError> parseErrors, @NotNull ParseErrorHandler<V> parseErrorHandler,
+                           @NotNull List<ParseError> parseErrors, @NotNull MatchHandler<V> matchHandler,
                            @NotNull Reference<Node<V>> lastNodeRef, MatcherContext<V> parent, int level) {
         this.inputBuffer = inputBuffer;
         this.parser = parser;
         this.parseErrors = parseErrors;
-        this.parseErrorHandler = parseErrorHandler;
+        this.matchHandler = matchHandler;
         this.lastNodeRef = lastNodeRef;
         this.parent = parent;
         this.level = level;
@@ -277,7 +276,7 @@ public class MatcherContext<V> implements Context<V> {
                 addChildNode(nodes.get(0));
                 return;
             case 2:
-                switch(subNodes.size()) {
+                switch (subNodes.size()) {
                     case 0:
                         subNodes = ImmutableList.copyOf(nodes);
                         return;
@@ -302,8 +301,8 @@ public class MatcherContext<V> implements Context<V> {
         subNodes = ImmutableList.copyOf(nodes);
     }
 
-    public ParseErrorHandler<V> getParseErrorHandler() {
-        return parseErrorHandler;
+    public MatchHandler<V> getParseErrorHandler() {
+        return matchHandler;
     }
 
     public void clearSubLeafNodeSuppression() {
@@ -317,7 +316,7 @@ public class MatcherContext<V> implements Context<V> {
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, parser, parseErrors, parseErrorHandler, lastNodeRef, this,
+            subContext = new MatcherContext<V>(inputBuffer, parser, parseErrors, matchHandler, lastNodeRef, this,
                     level + 1);
         }
 
@@ -333,7 +332,7 @@ public class MatcherContext<V> implements Context<V> {
 
     public boolean runMatcher() {
         try {
-            if (parseErrorHandler.match(this)) {
+            if (matchHandler.match(this)) {
                 if (parent != null) parent.setCurrentLocation(currentLocation);
                 matcher = null; // "retire" this context
                 return true;

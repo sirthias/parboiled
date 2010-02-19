@@ -18,6 +18,7 @@ package org.parboiled.errorhandling;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.MatchHandler;
 import org.parboiled.common.Formatter;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
@@ -29,14 +30,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 
 /**
- * A {@link ParseErrorHandler} that reports the first parse error if the input does not conform to the rule grammar.
+ * A {@link org.parboiled.MatchHandler} that reports the first parse error if the input does not conform to the rule grammar.
  * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
- * than the {@link BasicParseErrorHandler} on valid input. It is therefore the default {@link ParseErrorHandler} used by
+ * than the {@link BasicMatchHandler} on valid input. It is therefore the default {@link org.parboiled.MatchHandler} used by
  * {@link org.parboiled.BaseParser#parse(org.parboiled.Rule, String)}.
  *
  * @param <V>
  */
-public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
+public class ReportFirstMatchHandler<V> implements MatchHandler<V> {
 
     private enum State {
         Parsing, Seeking, Reporting
@@ -48,11 +49,11 @@ public class ReportFirstParseErrorHandler<V> implements ParseErrorHandler<V> {
     private InputLocation errorLocation;
     private MatcherPath<V> lastMatch;
 
-    public ReportFirstParseErrorHandler() {
+    public ReportFirstMatchHandler() {
         this(new DefaultInvalidInputErrorFormatter<V>());
     }
 
-    public ReportFirstParseErrorHandler(Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
+    public ReportFirstMatchHandler(Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;
     }
 

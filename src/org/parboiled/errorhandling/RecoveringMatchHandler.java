@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Node;
+import org.parboiled.MatchHandler;
 import org.parboiled.common.Formatter;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.TestMatcher;
@@ -31,17 +32,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link ParseErrorHandler} that tries to recover from parse errors and is therefore capable of reporting all
+ * A {@link org.parboiled.MatchHandler} that tries to recover from parse errors and is therefore capable of reporting all
  * errors found in the input. Since it needs to performs several parsing reruns in order to be able to report and
- * recover from parse errors it is considerable slower than the {@link BasicParseErrorHandler} and the
- * {@link ReportFirstParseErrorHandler} on invalid input.
+ * recover from parse errors it is considerable slower than the {@link BasicMatchHandler} and the
+ * {@link ReportFirstMatchHandler} on invalid input.
  * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
- * than the {@link BasicParseErrorHandler} on valid input. On valid input it performs about the same as the
- * {@link ReportFirstParseErrorHandler}.
+ * than the {@link BasicMatchHandler} on valid input. On valid input it performs about the same as the
+ * {@link ReportFirstMatchHandler}.
  *
  * @param <V>
  */
-public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
+public class RecoveringMatchHandler<V> implements MatchHandler<V> {
 
     private enum State {
         Parsing,
@@ -59,19 +60,19 @@ public class RecoveringParseErrorHandler<V> implements ParseErrorHandler<V> {
     private RecoveryRecord<V> firstRecord;
     private RecoveryRecord<V> currentRecord;
 
-    public RecoveringParseErrorHandler() {
+    public RecoveringMatchHandler() {
         this(new DefaultRecoveryRuleVisitorImpl<V>(), new DefaultInvalidInputErrorFormatter<V>());
     }
 
-    public RecoveringParseErrorHandler(DefaultRecoveryRuleVisitor<V> defaultRecoveryVisitor) {
+    public RecoveringMatchHandler(DefaultRecoveryRuleVisitor<V> defaultRecoveryVisitor) {
         this(defaultRecoveryVisitor, new DefaultInvalidInputErrorFormatter<V>());
     }
 
-    public RecoveringParseErrorHandler(Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
+    public RecoveringMatchHandler(Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
         this(new DefaultRecoveryRuleVisitorImpl<V>(), invalidInputErrorFormatter);
     }
 
-    public RecoveringParseErrorHandler(@NotNull DefaultRecoveryRuleVisitor<V> defaultRecoveryVisitor,
+    public RecoveringMatchHandler(@NotNull DefaultRecoveryRuleVisitor<V> defaultRecoveryVisitor,
                                        @NotNull Formatter<InvalidInputError<V>> invalidInputErrorFormatter) {
         this.defaultRecoveryVisitor = defaultRecoveryVisitor;
         this.invalidInputErrorFormatter = invalidInputErrorFormatter;

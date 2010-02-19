@@ -18,7 +18,7 @@ package org.parboiled.test;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.errorhandling.RecoveringParseErrorHandler;
+import org.parboiled.errorhandling.RecoveringMatchHandler;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
@@ -55,7 +55,7 @@ public abstract class AbstractTest {
     }
 
     public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors) {
-        ParsingResult<V> result = parser.parse(rule, input, new RecoveringParseErrorHandler<V>());
+        ParsingResult<V> result = parser.parse(rule, input, new RecoveringMatchHandler<V>());
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), expectedErrors);
         return result;
     }

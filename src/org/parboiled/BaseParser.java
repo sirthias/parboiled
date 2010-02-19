@@ -47,7 +47,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        return parse(rule, input, new ReportFirstParseErrorHandler<V>());
+        return parse(rule, input, new ReportFirstMatchHandler<V>());
     }
 
     /**
@@ -56,23 +56,23 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @param rule              the rule
      * @param input             the input string
-     * @param parseErrorHandler the ParseErrorHandler to use
+     * @param matchHandler the ParseErrorHandler to use
      * @return the ParsingResult for the run
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input,
-                                  @NotNull final ParseErrorHandler<V> parseErrorHandler) {
+                                  @NotNull final MatchHandler<V> matchHandler) {
         final InputBuffer inputBuffer = new InputBuffer(input);
         final InputLocation startLocation = new InputLocation(inputBuffer);
         final List<ParseError> parseErrors = new ArrayList<ParseError>();
         final Matcher<V> rootMatcher = (Matcher<V>) toRule(rule);
         final Reference<MatcherContext<V>> rootContextRef = new Reference<MatcherContext<V>>();
 
-        boolean matched = parseErrorHandler.matchRoot(
+        boolean matched = matchHandler.matchRoot(
                 new Supplier<MatcherContext<V>>() {
                     public MatcherContext<V> get() {
                         rootContextRef.setTarget(new MatcherContext<V>(inputBuffer, startLocation, BaseParser.this,
-                                parseErrors, parseErrorHandler, rootMatcher));
+                                parseErrors, matchHandler, rootMatcher));
                         return rootContextRef.getTarget();
                     }
                 }

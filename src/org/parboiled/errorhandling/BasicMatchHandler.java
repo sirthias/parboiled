@@ -17,22 +17,25 @@
 package org.parboiled.errorhandling;
 
 import org.parboiled.MatcherContext;
+import org.parboiled.MatchHandler;
 import org.jetbrains.annotations.NotNull;
 import com.google.common.base.Supplier;
 
 /**
- * <p>A handler for parse errors that can be passed to
- * {@link org.parboiled.BaseParser#parse(org.parboiled.Rule, String, ParseErrorHandler)} in order to run custom logic
- * in the event of parse errors.</p>
- * <p>Parboiled comes with three default implementations: {@link BasicParseErrorHandler},
- * {@link ReportFirstParseErrorHandler} and {@link RecoveringParseErrorHandler}</p>
+ * The most trivial implementation of the {@link MatchHandler} interface.
+ * It does not report any parse errors nor recover from them. Therefore it never causes the parser to perform more
+ * than one parsing run and is the faster way to determine whether a given input conforms to the rule grammar.
  *
  * @param <V>
  */
-public interface ParseErrorHandler<V> {
+public class BasicMatchHandler<V> implements MatchHandler<V> {
 
-    boolean matchRoot(@NotNull Supplier<MatcherContext<V>> rootContextProvider);
+    public boolean matchRoot(@NotNull Supplier<MatcherContext<V>> rootContextProvider) {
+        return rootContextProvider.get().runMatcher();
+    }
 
-    boolean match(MatcherContext<V> context) throws Throwable;
+    public boolean match(MatcherContext<V> context) throws Throwable {
+        return context.getMatcher().match(context);
+    }
 
 }
