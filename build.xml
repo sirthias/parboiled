@@ -106,32 +106,23 @@
             <zipfileset src="lib/asm/asm-all-3.2.jar"/>
             <zipfileset src="lib/google-collect/google-collect-1.0.jar"
                         excludes="com/google/common/collect/package-info.class"/>
-            <rule pattern="org.objectweb.**" result="org.parboiled.internal.@1"/>
-            <rule pattern="com.google.common.**" result="org.parboiled.internal.google-collect.@1"/>
+            <rule pattern="org.objectweb.asm.**" result="org.parboiled.asm.@1"/>
+            <rule pattern="com.google.common.**" result="org.parboiled.google.@1"/>
         </jarjar>
         <proguard>
             -libraryjars "${java.home}/lib/rt.jar"
-            -libraryjars lib/annotations.jar
-            -libraryjars lib/google-collect/jsr305.jar
+            -libraryjars "lib/annotations.jar"
+            -libraryjars "lib/google-collect/jsr305.jar"
             -injars "build/parboiled-${version}.full.jar"
             -outjars "build/parboiled-${version}.jar"
 
-            -keep class org.parboiled.* { *; }
-            -keep class org.parboiled.transformnsform.** { *; }
-            -keep class org.parboiled.common.** { *; }
-            -keep class org.parboiled.matchhandlers.** { *; }
-            -keep class org.parboiled.errors{ *; }
-            -keep class org.parboiled.matchers.** { *; }
-            -keep class org.parboiled.support.** { *; }
-            -keep class org.parboiled.trees.** { *; }
-            -keep class org.parboiled.internal.asm.* { *; }
-            -keep class org.parboiled.internal.asm.tree.** { *; }
-            -keep class org.parboiled.internal.google-collect.base.Predicate
+            -keep public class !org.parboiled.asm.**, !org.parboiled.google.**, org.parboiled.** { public protected *; }
+            -keep class org.parboiled.google.base.Predicate { *; } 
+
             -keepclassmembers class java.lang.ClassLoader { java.lang.Class findLoadedClass(java.lang.String); }
-            -keepclassmembers class org.parboiled.internal.google-collect.base.FinalizableReference { void
-            finalizeReferent(); }
-            -keepclassmembers class org.parboiled.internal.google-collect.base.internal.Finalizer {
-            java.lang.ref.ReferenceQueue startFinalizer(java.lang.Class, java.lang.Object); }
+            -keepclassmembers class org.parboiled.google.base.FinalizableReference { void finalizeReferent(); }
+            -keepclassmembers class org.parboiled.google.base.internal.Finalizer { java.lang.ref.ReferenceQueue startFinalizer(java.lang.Class, java.lang.Object); }
+            -keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); }
 
             -dontoptimize
             -dontobfuscate
@@ -141,7 +132,7 @@
     <target name="testjar" depends="compile.tests, jar" description="Run all tests against the library jar">
         <testng verbose="2" parallel="true" suitename="All Tests" outputdir="test-output" haltonfailure="true">
             <classfileset dir="build/tests" includes="**/*Test.class">
-                <exclude name="org/parboiled/asm/**"/>
+                <exclude name="org/parboiled/transform/**"/>
                 <exclude name="org/parboiled/support/ParseTreeUtilsTest.class"/>
             </classfileset>
             <classpath location="build/parboiled-${version}.jar"/>
