@@ -38,7 +38,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        char c = context.getCurrentLocation().currentChar;
+        char c = context.getCurrentLocation().getChar();
         if (c < cLow || c > cHigh) return false;
 
         context.advanceInputLocation();

@@ -36,10 +36,10 @@ import java.util.List;
  * A {@link org.parboiled.MatchHandler} that tries to recover from parse errors and is therefore capable of reporting all
  * errors found in the input. Since it needs to performs several parsing reruns in order to be able to report and
  * recover from parse errors it is considerable slower than the {@link BasicMatchHandler} and the
- * {@link ReportFirstMatchHandler} on invalid input.
+ * {@link ReportingMatchHandler} on invalid input.
  * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
  * than the {@link BasicMatchHandler} on valid input. On valid input it performs about the same as the
- * {@link ReportFirstMatchHandler}.
+ * {@link ReportingMatchHandler}.
  *
  * @param <V>
  */
@@ -222,7 +222,7 @@ public class RecoveringMatchHandler<V> implements MatchHandler<V> {
     }
 
     public void seekTo(State targetState) {
-        if (firstRecord.errorLocation.index == 0) {
+        if (firstRecord.errorLocation.getIndex() == 0) {
             state = targetState;
         } else if (targetState == State.Reporting) {
             state = State.SeekingToReport;
@@ -255,7 +255,7 @@ public class RecoveringMatchHandler<V> implements MatchHandler<V> {
         }
 
         public void advanceErrorLocation(InputLocation currentLocation) {
-            if (errorLocation.index < currentLocation.index) {
+            if (errorLocation.getIndex() < currentLocation.getIndex()) {
                 errorLocation = currentLocation;
             }
         }

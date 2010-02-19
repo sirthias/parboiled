@@ -205,27 +205,5 @@ public interface Context<V> {
     @NotNull
     BaseParser<V> getParser();
 
-    /**
-     * Injects the given char as a virtual input text at the current input location.
-     * The injected char is temporarily "visible" to matchers running underneath this context.
-     * Should the matcher at this context level fail the injection is lost. If the matcher succeeds the parent
-     * level will see the injection as well, however if the parent level context then does not succeed with matching
-     * its matcher the injection will be lost. (And so on, you see where this is going...)
-     *
-     * @param virtualInputChar the character to ibject
-     */
-    void injectVirtualInput(char virtualInputChar);
-
-    /**
-     * Injects the given string as a virtual input text at the current input location.
-     * The injected string is temporarily "visible" to matchers running underneath this context.
-     * Should the matcher at this context level fail the injection is lost. If the matcher succeeds the parent
-     * level will see the injection as well, however if the parent level context then does not succeed with matching
-     * its matcher the injection will be lost. (And so on, you see where this is going...)
-     *
-     * @param virtualInputText the string to inject
-     */
-    void injectVirtualInput(String virtualInputText);
-
 }
 

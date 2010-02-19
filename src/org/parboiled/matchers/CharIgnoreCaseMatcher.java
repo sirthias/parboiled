@@ -41,7 +41,7 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        char c = context.getCurrentLocation().currentChar;
+        char c = context.getCurrentLocation().getChar();
         if (c != charLow && c != charUp) return false;
         context.advanceInputLocation();
         context.createNode();

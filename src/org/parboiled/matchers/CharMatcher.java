@@ -40,7 +40,7 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (context.getCurrentLocation().currentChar != character) return false;
+        if (context.getCurrentLocation().getChar() != character) return false;
         context.advanceInputLocation();
         context.createNode();
         return true;

@@ -89,7 +89,7 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
         // sequences are the only rules we use resynchronization on
         // however, we only resync if the sequence qualifies as a resynchronization sequence
         return isResynchronizationSequence(matcher) ?
-                context.getParser().resynchronize(context, errorLocation.index) : null;
+                context.getParser().resynchronize(context, errorLocation.getIndex()) : null;
     }
 
     public Rule visit(TestMatcher<V> matcher) {
@@ -107,7 +107,7 @@ public class DefaultRecoveryRuleVisitorImpl<V> implements DefaultRecoveryRuleVis
     // ****************** PRIVATE ***********************
 
     public Rule defaultSingleCharRecovery(Matcher<V> matcher, boolean alsoAllowEmptyMatchRecovery) {
-        if (context.getCurrentLocation().index == errorLocation.index &&
+        if (context.getCurrentLocation().getIndex() == errorLocation.getIndex() &&
                 getParentMatcher() instanceof SequenceMatcher) {
             if (alsoAllowEmptyMatchRecovery) {
                 Matcher<V> labelMatcher = ErrorUtils.findProperLabelMatcher(context.getPath(), lastMatch);

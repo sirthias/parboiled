@@ -16,26 +16,27 @@
 
 package org.parboiled.matchhandlers;
 
-import org.parboiled.MatcherContext;
-import org.parboiled.MatchHandler;
-import org.jetbrains.annotations.NotNull;
 import com.google.common.base.Supplier;
+import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatchHandler;
+import org.parboiled.MatcherContext;
 
-/**
- * The most trivial implementation of the {@link MatchHandler} interface.
- * It does not report any parse errors nor recover from them. Therefore it never causes the parser to perform more
- * than one parsing run and is the faster way to determine whether a given input conforms to the rule grammar.
- *
- * @param <V>
- */
-public class BasicMatchHandler<V> implements MatchHandler<V> {
+public abstract class DelegatingMatchHandler<V> implements MatchHandler<V> {
 
-    public boolean matchRoot(@NotNull Supplier<MatcherContext<V>> rootContextSupplier) {
-        return rootContextSupplier.get().runMatcher();
+    private MatchHandler<V> currentHandler;
+
+    public MatchHandler<V> getCurrentHandler() {
+        return currentHandler;
+    }
+
+    public boolean matchRoot(@NotNull MatchHandler<V> handler,
+                             @NotNull Supplier<MatcherContext<V>> rootContextSupplier) {
+        currentHandler = handler;
+        return currentHandler.matchRoot(rootContextSupplier);
     }
 
     public boolean match(MatcherContext<V> context) throws Throwable {
-        return context.getMatcher().match(context);
+        return currentHandler.match(context);
     }
 
 }

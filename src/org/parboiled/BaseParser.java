@@ -16,21 +16,22 @@
 
 package org.parboiled;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
+import static com.google.common.collect.ObjectArrays.concat;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
-import org.parboiled.matchhandlers.*;
-import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.errors.ParseError;
+import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
+import org.parboiled.matchhandlers.FollowMatchersVisitor;
+import org.parboiled.matchhandlers.ReportingMatchHandler;
+import org.parboiled.matchhandlers.StarterCharsVisitor;
 import org.parboiled.support.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
-import static com.google.common.collect.ObjectArrays.concat;
-import com.google.common.collect.ImmutableList;
 
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
@@ -48,15 +49,15 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"unchecked"})
     public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        return parse(rule, input, new ReportFirstMatchHandler<V>());
+        return parse(rule, input, new ReportingMatchHandler<V>());
     }
 
     /**
      * Runs the given parser rule against the given input string using the given ParseErrorHandler during the
      * parsing run.
      *
-     * @param rule              the rule
-     * @param input             the input string
+     * @param rule         the rule
+     * @param input        the input string
      * @param matchHandler the ParseErrorHandler to use
      * @return the ParsingResult for the run
      */
@@ -80,7 +81,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         );
 
         return new ParsingResult<V>(matched, rootContextRef.getTarget().getNode(), parseErrors, inputBuffer,
-                rootContextRef.getTarget().getCurrentLocation().row + 1);
+                rootContextRef.getTarget().getCurrentLocation().getRow() + 1);
     }
 
     ////////////////////////////////// RULE CREATION ///////////////////////////////////
@@ -496,7 +497,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
                                                 // if we are still before the error location we definitily gobble
                                                 new NamedAction("testBeforeErrorLocation") {
                                                     public boolean run(Context context) {
-                                                        return context.getCurrentLocation().index < errorLocationIndex;
+                                                        return context.getCurrentLocation()
+                                                                .getIndex() < errorLocationIndex;
                                                     }
                                                 },
                                                 testNot(charSet(getStarterCharsOfFollowers(failedMatcherContext)))

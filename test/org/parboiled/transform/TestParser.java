@@ -100,7 +100,7 @@ class TestParser extends BaseParser<Integer> {
                         sequence(
                                 ch('b').label("b"),
                                 optional('c'),
-                                UP(DOWN(contextActions.action2(NODE("b").getEndLocation().row + 26))),
+                                UP(DOWN(contextActions.action2(NODE("b").getEndLocation().getRow() + 26))),
                                 UP(SET(actions.return5()))
                         ).label("specialSeq")
                 ),

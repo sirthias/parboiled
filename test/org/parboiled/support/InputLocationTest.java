@@ -16,31 +16,71 @@
 
 package org.parboiled.support;
 
-import org.testng.annotations.Test;
-import static org.testng.Assert.assertEquals;
 import org.parboiled.Parboiled;
+import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Test;
 
 public class InputLocationTest {
 
     @Test
-    public void testInputLocation() {
+    public void testBasics() {
         InputBuffer buf = new InputBuffer("abcdefgh");
-
         InputLocation loc = new InputLocation(buf);
 
         assertEquals(readToEnd(buf, loc), "abcdefgh");
         assertEquals(readToEnd(buf, loc.advance(buf).advance(buf)), "cdefgh");
-        assertEquals(loc.advance(buf).lookAhead(buf, 0), 'b');
-        assertEquals(loc.advance(buf).lookAhead(buf, 1), 'c');
-        assertEquals(loc.advance(buf).lookAhead(buf, 20), Parboiled.EOI);
-        assertEquals(readToEnd(buf, loc.advance(buf).insertVirtualInput('X')), "Xbcdefgh");
-        assertEquals(readToEnd(buf, loc.insertVirtualInput("XYZ")), "XYZabcdefgh");
+
+        loc.advance(buf).insert('X');
+        assertEquals(readToEnd(buf, loc), "aXbcdefgh");
+        loc.advance(buf).advance(buf).advance(buf).advance(buf).insert('Y');
+        assertEquals(readToEnd(buf, loc), "aXbcYdefgh");
+    }
+
+    @Test
+    public void testRemovalAndInsertion() {
+        InputBuffer buf = new InputBuffer("abcdefgh");
+        InputLocation loc = new InputLocation(buf);
+
+        String original = "" +
+                "#0(0,0)'a'\n" +
+                "#1(0,1)'b'\n" +
+                "#2(0,2)'c'\n" +
+                "#3(0,3)'d'\n" +
+                "#4(0,4)'e'\n" +
+                "#5(0,5)'f'\n" +
+                "#6(0,6)'g'\n" +
+                "#7(0,7)'h'\n";
+
+        assertEquals(getStream(buf, loc), original);
+
+        InputLocation cursor = loc.advance(buf).advance(buf);
+        InputLocation saved = cursor.remove(buf);
+        assertEquals(getStream(buf, loc), "" +
+                "#0(0,0)'a'\n" +
+                "#1(0,1)'b'\n" +
+                "#3(0,3)'d'\n" +
+                "#4(0,4)'e'\n" +
+                "#5(0,5)'f'\n" +
+                "#6(0,6)'g'\n" +
+                "#7(0,7)'h'\n");
+
+        cursor.insert(saved);
+        assertEquals(getStream(buf, loc), original);
     }
 
     private String readToEnd(InputBuffer inputBuffer, InputLocation location) {
         StringBuilder sb = new StringBuilder();
-        while(location.currentChar != Parboiled.EOI) {
-            sb.append(location.currentChar);
+        while (location.getChar() != Parboiled.EOI) {
+            sb.append(location.getChar());
+            location = location.advance(inputBuffer);
+        }
+        return sb.toString();
+    }
+
+    private String getStream(InputBuffer inputBuffer, InputLocation location) {
+        StringBuilder sb = new StringBuilder();
+        while (location.getChar() != Parboiled.EOI) {
+            sb.append(location).append('\n');
             location = location.advance(inputBuffer);
         }
         return sb.toString();

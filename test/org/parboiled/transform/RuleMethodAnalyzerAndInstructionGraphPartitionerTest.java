@@ -66,7 +66,7 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
         testMethodAnalysis("booleanExpressionActionRule", 3547608743L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("complexActionsRule", 66132171L, true);
+        testMethodAnalysis("complexActionsRule", 3194993502L, true);
         // renderToGraphViz(dotSource);
     }
 

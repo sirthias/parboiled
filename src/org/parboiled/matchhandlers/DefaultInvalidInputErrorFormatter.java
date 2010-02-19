@@ -32,7 +32,7 @@ public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidIn
         if (error == null) return "";
 
         return String.format("Invalid input '%s', expected %s",
-                StringUtils.escape(String.valueOf(error.getErrorLocation().currentChar)),
+                StringUtils.escape(String.valueOf(error.getErrorLocation().getChar())),
                 getExpectedString(error)
         );
     }

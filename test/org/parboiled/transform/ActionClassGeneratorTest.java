@@ -254,7 +254,7 @@ public class ActionClassGeneratorTest {
                 "    LDC \"b\"\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.NODE (Ljava/lang/String;)Lorg/parboiled/Node;\n" +
                 "    INVOKEINTERFACE org/parboiled/Node.getEndLocation ()Lorg/parboiled/support/InputLocation;\n" +
-                "    GETFIELD org/parboiled/support/InputLocation.row : I\n" +
+                "    INVOKEVIRTUAL org/parboiled/support/InputLocation.getRow ()I\n" +
                 "    BIPUSH 26\n" +
                 "    IADD\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/ContextActions.action2 (I)Z\n" +

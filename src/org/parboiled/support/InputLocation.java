@@ -21,14 +21,14 @@ import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
 
 /**
- * (Almost) immutable value container identifying a certain position in an InputBuffer.
+ * Value container identifying a certain position in an InputBuffer.
  */
 public class InputLocation {
-    public final int index;
-    public final int row;
-    public final int column;
-    public final char currentChar;
-    public InputLocation next;
+    private int index;
+    private int row;
+    private int column;
+    private char character;
+    private InputLocation next;
 
     public InputLocation(@NotNull InputBuffer inputBuffer) {
         this(inputBuffer, 0, 0, 0);
@@ -38,18 +38,41 @@ public class InputLocation {
         this(index, row, column, inputBuffer.charAt(index));
     }
 
-    private InputLocation(int index, int row, int column, char currentChar) {
+    private InputLocation(int index, int row, int column, char character) {
         this.index = index;
         this.row = row;
         this.column = column;
-        this.currentChar = currentChar;
+        this.character = character;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public char getChar() {
+        return character;
+    }
+
+    /**
+     * Returns the input location after this one in the given InputBuffer.
+     * If this is already the input location at EOI the method return this instance.
+     *
+     * @param inputBuffer the input buffer
+     * @return the following input location or this if already at EOI
+     */
     public InputLocation advance(@NotNull InputBuffer inputBuffer) {
         if (next != null) {
             return next;
         }
-        switch (currentChar) {
+        switch (character) {
             case '\n':
                 return next = new InputLocation(inputBuffer, index + 1, row + 1, 0);
             case Parboiled.EOI:
@@ -59,29 +82,64 @@ public class InputLocation {
         }
     }
 
-    public char lookAhead(@NotNull InputBuffer inputBuffer, int delta) {
-        return inputBuffer.charAt(index + delta);
-    }
-
     @Override
     public String toString() {
-        return String.format("#%s(%s,%s)'%s'", index, row, column, StringUtils.escape(currentChar));
+        return String.format("#%s(%s,%s)'%s'", index, row, column, StringUtils.escape(character));
     }
 
-    public InputLocation insertVirtualInput(char virtualChar) {
-        InputLocation virtualLocation = new InputLocation(index, row, column, virtualChar);
-        virtualLocation.next = this;
-        return virtualLocation;
+    private void copyContentFrom(InputLocation location) {
+        this.index = location.index;
+        this.row = location.row;
+        this.column = location.column;
+        this.character = location.character;
     }
 
-    public InputLocation insertVirtualInput(String virtualText) {
-        InputLocation virtualLocation = this;
-        if (!StringUtils.isEmpty(virtualText)) {
-            for (int i = virtualText.length() - 1; i >= 0; i--) {
-                virtualLocation = virtualLocation.insertVirtualInput(virtualText.charAt(i));
-            }
+    /**
+     * Removes the character represented by this input location from the input stream without changing the underlying
+     * input buffer. If this input location represents EOI the method does nothing.
+     * The method return an InputLocation object that serves as a container for the removed data. It can be used with
+     * {@link #insert(InputLocation)} to reverse the removal.
+     *
+     * @param inputBuffer the underlying InputBuffer
+     * @return an InputLocation containing the removed data
+     */
+    @NotNull
+    public InputLocation remove(@NotNull InputBuffer inputBuffer) {
+        if (next == null) {
+            advance(inputBuffer);
         }
-        return virtualLocation;
+        if (next == this) {
+            return this;
+        }
+        InputLocation saved = new InputLocation(index, row, column, character);
+        copyContentFrom(next);
+        this.next = next.next;
+        return saved;
+    }
+
+    /**
+     * Reverses the effect of a previous call to {@link #remove(InputBuffer)}.
+     *
+     * @param savedLocation the result of a previous call to {@link #remove(InputBuffer)}
+     */
+    public void insert(InputLocation savedLocation) {
+        InputLocation nextLocation = new InputLocation(index, row, column, character);
+        nextLocation.next = next;
+        this.next = nextLocation;
+        copyContentFrom(savedLocation);
+    }
+
+    /**
+     * Inserts a virtual character into the input stream without changing the underlying InputBuffer.
+     * The insertion can be reversed with a call to {@link #remove(InputBuffer)}.
+     *
+     * @param character the char to insert
+     */
+    public void insert(char character) {
+        InputLocation nextLocation = new InputLocation(index, row, column, this.character);
+        nextLocation.next = this.next;
+        this.next = nextLocation;
+        this.character = character;
     }
 
 }

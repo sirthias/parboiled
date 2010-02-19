@@ -334,7 +334,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      */
     public Character NEXT_CHAR() {
         check();
-        return context.getCurrentLocation().currentChar;
+        return context.getCurrentLocation().getChar();
     }
 
     /**

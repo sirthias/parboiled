@@ -27,7 +27,7 @@ import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
-public class ReportFirstParseErrorHandlerTest extends AbstractTest {
+public class ReportFirstErrorMatchHandlerTest extends AbstractTest {
 
     private final String[] inputs = new String[] {
             "X1+2",

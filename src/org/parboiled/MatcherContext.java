@@ -192,14 +192,6 @@ public class MatcherContext<V> implements Context<V> {
         return parser;
     }
 
-    public void injectVirtualInput(char virtualInputChar) {
-        currentLocation = currentLocation.insertVirtualInput(virtualInputChar);
-    }
-
-    public void injectVirtualInput(String virtualInputText) {
-        currentLocation = currentLocation.insertVirtualInput(virtualInputText);
-    }
-
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setCurrentLocation(InputLocation currentLocation) {

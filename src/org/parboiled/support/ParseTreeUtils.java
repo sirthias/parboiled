@@ -19,9 +19,9 @@ package org.parboiled.support;
 import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.errors.ParseError;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
+import org.parboiled.errors.ParseError;
 import org.parboiled.trees.Filter;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
@@ -251,7 +251,8 @@ public class ParseTreeUtils {
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
     public static String getNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
-        return node != null ? inputBuffer.extract(node.getStartLocation().index, node.getEndLocation().index) : null;
+        return node != null ?
+                inputBuffer.extract(node.getStartLocation().getIndex(), node.getEndLocation().getIndex()) : null;
     }
 
     /**
@@ -262,8 +263,8 @@ public class ParseTreeUtils {
      * @return null if node is null or did not match at least one character otherwise the first matched input char
      */
     public static Character getNodeChar(Node<?> node, InputBuffer inputBuffer) {
-        return node != null && node.getEndLocation().index > node.getStartLocation().index ?
-                inputBuffer.charAt(node.getStartLocation().index) : null;
+        return node != null && node.getEndLocation().getIndex() > node.getStartLocation().getIndex() ?
+                inputBuffer.charAt(node.getStartLocation().getIndex()) : null;
     }
 
     /**
@@ -300,14 +301,14 @@ public class ParseTreeUtils {
     public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
         InputLocation location = error.getErrorLocation();
         StringBuilder sb = new StringBuilder(error.getErrorMessage());
-        sb.append(String.format(" (line %s, pos %s):", location.row + 1, location.column + 1));
+        sb.append(String.format(" (line %s, pos %s):", location.getRow() + 1, location.getColumn() + 1));
         sb.append('\n');
 
-        String line = StringUtils.getLine(inputBuffer.getBuffer(), location.row);
+        String line = StringUtils.getLine(inputBuffer.getBuffer(), location.getRow());
         sb.append(line);
         sb.append('\n');
 
-        for (int i = 0; i < location.column; i++) sb.append(' ');
+        for (int i = 0; i < location.getColumn(); i++) sb.append(' ');
         sb.append("^\n");
 
         return sb.toString();
