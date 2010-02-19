@@ -21,6 +21,7 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.CharactersMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
+import org.parboiled.errors.InvalidInputError;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.errorhandling.ParseError;
+import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.InputBuffer;
 import org.parboiled.support.InputLocation;

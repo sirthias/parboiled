@@ -16,7 +16,7 @@
 
 package org.parboiled.support;
 
-import org.parboiled.exceptions.GrammarException;
+import org.parboiled.errors.GrammarException;
 
 public class Checks {
 

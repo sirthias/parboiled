@@ -19,6 +19,7 @@ package org.parboiled.errorhandling;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.MatchHandler;
+import org.parboiled.errors.InvalidInputError;
 import org.parboiled.common.Formatter;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;

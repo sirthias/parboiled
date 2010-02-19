@@ -21,9 +21,9 @@ import org.parboiled.Action;
 import org.parboiled.ContextAware;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.errorhandling.ActionError;
-import org.parboiled.exceptions.ActionException;
-import org.parboiled.exceptions.GrammarException;
+import org.parboiled.errors.ActionError;
+import org.parboiled.errors.ActionException;
+import org.parboiled.errors.GrammarException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

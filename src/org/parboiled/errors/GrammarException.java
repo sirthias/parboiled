@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.exceptions;
+package org.parboiled.errors;
 
 /**
  * Exception thrown by parboiled if a problem with the integrity of the grammar rules has been detected.

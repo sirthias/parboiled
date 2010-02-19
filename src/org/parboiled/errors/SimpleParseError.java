@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-package org.parboiled.errorhandling;
+package org.parboiled.errors;
 
 import org.parboiled.support.InputLocation;
 
-public interface ParseError {
+public class SimpleParseError implements ParseError {
 
-    InputLocation getErrorLocation();
+    private final InputLocation errorLocation;
+    private final String errorMessage;
 
-    String getErrorMessage();
+    public SimpleParseError(InputLocation errorLocation, String errorMessage) {
+        this.errorLocation = errorLocation;
+        this.errorMessage = errorMessage;
+    }
+
+    public InputLocation getErrorLocation() {
+        return errorLocation;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
 }

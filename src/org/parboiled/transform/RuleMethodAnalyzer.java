@@ -25,7 +25,7 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
-import org.parboiled.exceptions.GrammarException;
+import org.parboiled.errors.GrammarException;
 import org.parboiled.support.Checks;
 
 /**

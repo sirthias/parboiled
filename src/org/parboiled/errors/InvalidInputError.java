@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.errorhandling;
+package org.parboiled.errors;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;

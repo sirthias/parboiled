@@ -34,7 +34,7 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.ContextAware;
 import static org.parboiled.transform.AsmUtils.*;
-import org.parboiled.exceptions.GrammarException;
+import org.parboiled.errors.GrammarException;
 import org.parboiled.support.Checks;
 
 import java.lang.reflect.Modifier;

@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-package org.parboiled.exceptions;
+package org.parboiled.errors;
 
 /**
- * Exception that can be thrown by parser actions to signal that an error has occurred that is to be collected
- * in the ParseErrors for the parsing run. Throwing an ActionException does not stop the parsing process.
+ * Exception that is thrown for any problem during the parsing run, that cannot be overcome automatically.
  */
-public class ActionException extends RuntimeException {
+public class ParserRuntimeException extends RuntimeException {
 
-    public ActionException() {
+    public ParserRuntimeException() {
     }
 
-    public ActionException(String message) {
+    public ParserRuntimeException(String message) {
         super(message);
     }
 
-    public ActionException(String message, Throwable cause) {
+    public ParserRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ActionException(Throwable cause, String message, Object... messageArgs) {
+    public ParserRuntimeException(String message, Object... messageArgs) {
+        super(String.format(message, messageArgs));
+    }
+
+    public ParserRuntimeException(Throwable cause, String message, Object... messageArgs) {
         super(String.format(message, messageArgs), cause);
     }
 
-    public ActionException(Throwable cause) {
+    public ParserRuntimeException(Throwable cause) {
         super(cause);
     }
 

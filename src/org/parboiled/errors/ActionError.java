@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package org.parboiled.errorhandling;
+package org.parboiled.errors;
 
 import org.parboiled.support.InputLocation;
+import org.parboiled.support.MatcherPath;
 
-public class SimpleParseError implements ParseError {
+public class ActionError<V> extends SimpleParseError {
 
-    private final InputLocation errorLocation;
-    private final String errorMessage;
+    private final MatcherPath<V> errorPath;
+    private final ActionException actionException;
 
-    public SimpleParseError(InputLocation errorLocation, String errorMessage) {
-        this.errorLocation = errorLocation;
-        this.errorMessage = errorMessage;
+    public ActionError(InputLocation errorLocation, String errorMessage, MatcherPath<V> errorPath,
+                       ActionException actionException) {
+        super(errorLocation, errorMessage);
+        this.errorPath = errorPath;
+        this.actionException = actionException;
     }
 
-    public InputLocation getErrorLocation() {
-        return errorLocation;
+    public MatcherPath<V> getErrorPath() {
+        return errorPath;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public ActionException getActionException() {
+        return actionException;
     }
 
 }

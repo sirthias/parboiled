@@ -17,7 +17,7 @@
 package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.exceptions.ParserRuntimeException;
+import org.parboiled.errors.ParserRuntimeException;
 
 import java.lang.reflect.*;
 import java.util.*;
