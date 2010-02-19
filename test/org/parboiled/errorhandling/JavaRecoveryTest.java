@@ -17,7 +17,7 @@
 package org.parboiled.errorhandling;
 
 import org.parboiled.Parboiled;
-import org.parboiled.support.Filters;
+import org.parboiled.trees.Filter;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.test.FileUtils;
@@ -53,7 +53,7 @@ public class JavaRecoveryTest extends AbstractTest {
     private void runTest(JavaParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser, parser.compilationUnit(), s[0], s[1], s[2], Filters.SkipEmptyOptionalsAndZeroOrMores);
+            testFail(parser, parser.compilationUnit(), s[0], s[1], s[2], Filter.SkipEmptyOptionalsAndZeroOrMores);
         }
     }
 

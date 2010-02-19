@@ -1,66 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="listo" default="compile">
+<project name="listo" default="compile.main">
 
     <!-- can be overridden at the command line with -Dversion= -->
     <property name="version" value="snapshot"/>
 
     <path id="compile.classpath">
-        <pathelement location="lib/asm/asm-3.2.jar"/>
-        <pathelement location="lib/asm/asm-analysis-3.2.jar"/>
-        <pathelement location="lib/asm/asm-tree-3.2.jar"/>
+        <pathelement location="lib/asm/asm-all-3.2.jar"/>
         <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
         <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
         <pathelement location="lib/annotations.jar"/>
     </path>
 
-    <path id="test.classpath">
-        <path refid="compile.classpath"/>
-        <pathelement location="build/classes"/>
-        <pathelement location="lib/asm/asm-util-3.2.jar"/>
-    </path>
-
-    <taskdef name="javacn" classname="org.parboiled.ant.Javacn">
-        <classpath>
-            <pathelement location="lib/asm/asm-3.2.jar"/>
-            <pathelement location="lib/javacn.jar"/>
-        </classpath>
-    </taskdef>
-
-    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.0.jar;"/>
+    <taskdef name="javacn" classname="org.parboiled.ant.Javacn" classpath="lib/javacn.jar;lib/asm/asm-all-3.2.jar;"/>
+    <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
+    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-issue-21.jar;"/>
+    <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar;"/>
 
     <target name="clean" description="Remove all generated files">
         <delete dir="build"/>
     </target>
 
-    <target name="compile" description="Compile main and example sources">
-        <mkdir dir="build/classes"/>
-        <javacn debug="on" destdir="build/classes" source="1.5" target="1.5" encoding="utf8">
+    <target name="compile.main" description="Compile main sources">
+        <mkdir dir="build/main"/>
+        <javacn debug="on" destdir="build/main" source="1.5" target="1.5" encoding="utf8">
             <src location="src"/>
-            <src location="examples"/>
             <classpath refid="compile.classpath"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
     </target>
 
-    <target name="compile.test" depends="compile" description="Compile test sources">
-        <mkdir dir="build/test-classes"/>
-        <javacn debug="on" destdir="build/test-classes" source="1.5" target="1.5" encoding="utf8">
-            <src location="test"/>
-            <classpath refid="test.classpath"/>
+    <target name="compile.examples" depends="compile.main" description="Compile example sources">
+        <mkdir dir="build/examples"/>
+        <javacn debug="on" destdir="build/examples" source="1.5" target="1.5" encoding="utf8">
+            <src location="examples"/>
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/main"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
-        <copy toDir="build/test-classes">
+    </target>
+
+    <target name="compile.tests" depends="compile.examples" description="Compile test sources">
+        <mkdir dir="build/tests"/>
+        <javacn debug="on" destdir="build/tests" source="1.5" target="1.5" encoding="utf8">
+            <src location="test"/>
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
+            <compilerarg line="-Xlint:all -Xlint:-serial"/>
+        </javacn>
+        <copy toDir="build/tests">
             <fileset dir="test" includes="res/**"/>
         </copy>
     </target>
 
-    <target name="test" depends="compile.test" description="Run all tests">
-        <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
-
+    <target name="test" depends="compile.tests" description="Run all tests">
         <testng parallel="true" suitename="All Tests" outputdir="test-output" haltonfailure="true">
-            <classfileset dir="build/test-classes" includes="**/*Test.class"/>
-            <classpath refid="test.classpath"/>
-            <classpath location="build/test-classes"/>
+            <classfileset dir="build/tests" includes="**/*Test.class"/>
+            <classpath refid="compile.classpath"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
+            <classpath location="build/tests"/>
         </testng>
     </target>
 
@@ -79,10 +78,9 @@
     </target>
 
     <target name="manifest">
-        <mkdir dir="build/META-INF"/>
-        <copy file="LICENSE" todir="build/META-INF"/>
-        <copy file="NOTICE" todir="build/META-INF"/>
-        <manifest file="build/META-INF/MANIFEST.MF">
+        <copy file="LICENSE" todir="build/manifest/META-INF"/>
+        <copy file="NOTICE" todir="build/manifest/META-INF"/>
+        <manifest file="build/manifest/META-INF/MANIFEST.MF">
             <attribute name="Built-By" value="${user.name}"/>
             <attribute name="Specification-Title" value="parboiled"/>
             <attribute name="Specification-Version" value="${version}"/>
@@ -101,27 +99,68 @@
         </manifest>
     </target>
 
-    <target name="jar" depends="compile, manifest" description="Build main library JAR">
-        <jarjar destfile="build/parboiled-${version}.jar" manifest="build/META-INF/MANIFEST.MF">
-            <fileset dir="build/classes" excludes="org/parboiled/examples/**"/>
-            <fileset dir="build" includes="META-INF/*"/>
-            <zipfileset src="lib/asm/asm-3.2.jar"/>
-            <zipfileset src="lib/asm/asm-analysis-3.2.jar"/>
-            <zipfileset src="lib/asm/asm-tree-3.2.jar"/>
+    <target name="jar" depends="compile.main, manifest" description="Build main library JAR">
+        <jarjar destfile="build/parboiled-${version}.full.jar" manifest="build/manifest/META-INF/MANIFEST.MF">
+            <fileset dir="build/main"/>
+            <fileset dir="build/manifest"/>
+            <zipfileset src="lib/asm/asm-all-3.2.jar"/>
+            <zipfileset src="lib/google-collect/google-collect-1.0.jar"
+                        excludes="com/google/common/collect/package-info.class"/>
             <rule pattern="org.objectweb.**" result="org.parboiled.internal.@1"/>
+            <rule pattern="com.google.common.**" result="org.parboiled.internal.google-collect.@1"/>
         </jarjar>
+        <proguard>
+            -libraryjars "${java.home}/lib/rt.jar"
+            -libraryjars lib/annotations.jar
+            -libraryjars lib/google-collect/jsr305.jar
+            -injars "build/parboiled-${version}.full.jar"
+            -outjars "build/parboiled-${version}.jar"
+
+            -keep class org.parboiled.* { *; }
+            -keep class org.parboiled.asm.** { *; }
+            -keep class org.parboiled.common.** { *; }
+            -keep class org.parboiled.errorhandling.** { *; }
+            -keep class org.parboiled.exceptions.** { *; }
+            -keep class org.parboiled.matchers.** { *; }
+            -keep class org.parboiled.support.** { *; }
+            -keep class org.parboiled.trees.** { *; }
+            -keep class org.parboiled.internal.asm.* { *; }
+            -keep class org.parboiled.internal.asm.tree.** { *; }
+            -keep class org.parboiled.internal.google-collect.base.Predicate
+            -keepclassmembers class java.lang.ClassLoader { java.lang.Class findLoadedClass(java.lang.String); }
+            -keepclassmembers class org.parboiled.internal.google-collect.base.FinalizableReference { void
+            finalizeReferent(); }
+            -keepclassmembers class org.parboiled.internal.google-collect.base.internal.Finalizer {
+            java.lang.ref.ReferenceQueue startFinalizer(java.lang.Class, java.lang.Object); }
+
+            -dontoptimize
+            -dontobfuscate
+        </proguard>
+    </target>
+
+    <target name="testjar" depends="compile.tests, jar" description="Run all tests against the library jar">
+        <testng verbose="2" parallel="true" suitename="All Tests" outputdir="test-output" haltonfailure="true">
+            <classfileset dir="build/tests" includes="**/*Test.class">
+                <exclude name="org/parboiled/asm/**"/>
+                <exclude name="org/parboiled/support/ParseTreeUtilsTest.class"/>
+            </classfileset>
+            <classpath location="build/parboiled-${version}.jar"/>
+            <classpath location="build/examples"/>
+            <classpath location="build/tests"/>
+            <classpath location="lib/asm/asm-util-3.2.jar"/>
+        </testng>
     </target>
 
     <target name="jar.source" depends="manifest" description="Create a JAR with main sources">
         <zip destfile="build/parboiled-${version}-src.jar">
             <fileset dir="src"/>
-            <fileset dir="build" includes="META-INF/*"/>
+            <fileset dir="build/manifest"/>
         </zip>
     </target>
 
-    <target name="jar.examples" depends="compile" description="Creates JARs for examples">
+    <target name="jar.examples" depends="compile.examples" description="Creates JARs for examples">
         <jar destfile="build/parboiled-${version}-examples.jar">
-            <fileset dir="build/classes" includes="org/parboiled/examples/**"/>
+            <fileset dir="build/examples"/>
         </jar>
         <zip destfile="build/parboiled-${version}-examples-src.jar">
             <fileset dir="examples"/>
@@ -138,52 +177,59 @@
             description="Compiles, tests and jars everything">
     </target>
 
-    <target name="run-example-abc" depends="compile" description="Run the Abc example">
+    <target name="run-example-abc" depends="compile.examples" description="Run the Abc example">
         <java classname="org.parboiled.examples.abc.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 
-    <target name="run-example-calc" depends="compile" description="Run the Calculator example">
+    <target name="run-example-calc" depends="compile.examples" description="Run the Calculator example">
         <java classname="org.parboiled.examples.calculator.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 
-    <target name="run-example-calc2" depends="compile" description="Run the Calculator2 example">
+    <target name="run-example-calc2" depends="compile.examples" description="Run the Calculator2 example">
         <java classname="org.parboiled.examples.calculator2.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 
-    <target name="run-example-calc3" depends="compile" description="Run the Calculator3 example">
+    <target name="run-example-calc3" depends="compile.examples" description="Run the Calculator3 example">
         <java classname="org.parboiled.examples.calculator3.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 
-    <target name="run-example-rpn" depends="compile" description="Run the RPN example">
+    <target name="run-example-rpn" depends="compile.examples" description="Run the RPN example">
         <java classname="org.parboiled.examples.rpn.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 
-    <target name="run-example-time" depends="compile" description="Run the Time example">
+    <target name="run-example-time" depends="compile.examples" description="Run the Time example">
         <java classname="org.parboiled.examples.time.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 
-    <target name="run-example-java" depends="compile" description="Run the Java example">
+    <target name="run-example-java" depends="compile.examples" description="Run the Java example">
         <java classname="org.parboiled.examples.java.Main" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath location="build/classes"/>
+            <classpath location="build/main"/>
+            <classpath location="build/examples"/>
         </java>
     </target>
 

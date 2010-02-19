@@ -22,7 +22,6 @@ import org.parboiled.test.AbstractTest;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
-import static com.google.common.collect.ObjectArrays.concat;
 
 public class CachingTest extends AbstractTest {
 
@@ -50,8 +49,9 @@ public class CachingTest extends AbstractTest {
             return charRange('0', '9');
         }
 
-        public Rule firstOf_uncached(Object rule, Object rule2, Object... moreRules) {
-            return new FirstOfMatcher(toRules(concat(rule, concat(rule2, moreRules)))).label("firstOf");
+        public Rule firstOf_uncached(Object... rules) {
+            
+            return new FirstOfMatcher(toRules(rules)).label("firstOf");
         }
 
     }

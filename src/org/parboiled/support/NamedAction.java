@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.support;
+
+import org.parboiled.Action;
 
 public abstract class NamedAction<V> implements Action<V> {
 

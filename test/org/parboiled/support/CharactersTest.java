@@ -19,7 +19,8 @@ package org.parboiled.support;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
-import com.google.common.collect.ImmutableList;
+
+import java.util.Arrays;
 
 public class CharactersTest {
 
@@ -44,8 +45,8 @@ public class CharactersTest {
         assertEquals(Characters.NONE.remove(Characters.ALL), Characters.NONE);
         assertEquals(Characters.ALL.remove(Characters.NONE), Characters.ALL);
 
-        assertEquals(Characters.ALL.remove(Characters.of('A','B')).toString(), "![B,A]");
-        assertEquals(Characters.ALL.remove(Characters.allBut('A','B')).toString(), "[A,B]");
+        assertEquals(Characters.ALL.remove(Characters.of('A', 'B')).toString(), "![B,A]");
+        assertEquals(Characters.ALL.remove(Characters.allBut('A', 'B')).toString(), "[A,B]");
 
         assertEquals(Characters.of('A', 'B').add(Characters.of('B', 'C')), Characters.of('A', 'B', 'C'));
         assertEquals(Characters.allBut('A', 'B').add(Characters.of('B', 'C')), Characters.allBut('A'));
@@ -60,7 +61,7 @@ public class CharactersTest {
 
     @Test
     public void testGetRepresentative() {
-        for (Characters characters : ImmutableList.of(
+        for (Characters characters : Arrays.asList(
                 Characters.ALL,
                 Characters.of('A', 'B'),
                 Characters.allBut('A', 'B'),

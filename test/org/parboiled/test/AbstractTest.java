@@ -17,16 +17,14 @@
 package org.parboiled.test;
 
 import org.parboiled.BaseParser;
-import org.parboiled.Node;
 import org.parboiled.Rule;
 import org.parboiled.errorhandling.RecoveringParseErrorHandler;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import org.parboiled.trees.Printability;
+import org.parboiled.trees.Filter;
 import static org.testng.Assert.fail;
-import com.google.common.base.Function;
 
 public abstract class AbstractTest {
 
@@ -50,7 +48,7 @@ public abstract class AbstractTest {
     }
 
     public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors,
-                                         String expectedTree, Function<Node, Printability> filter) {
+                                         String expectedTree, Filter filter) {
         ParsingResult<V> result = testFail(parser, rule, input, expectedErrors);
         assertEqualsMultiline(printNodeTree(result, filter), expectedTree);
         return result;

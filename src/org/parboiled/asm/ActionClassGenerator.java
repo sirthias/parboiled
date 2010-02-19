@@ -48,18 +48,22 @@ class ActionClassGenerator implements Opcodes, Types {
         this.actionType = Type.getObjectType(classNode.name + "$" + actionSimpleName);
     }
 
-    public synchronized Class<?> defineActionClass() {
+    @SuppressWarnings({"SynchronizationOnLocalVariableOrMethodParameter"})
+    public Class<?> defineActionClass() {
         String actionClassName = actionType.getClassName();
         ClassLoader classLoader = classNode.parentClass.getClassLoader();
 
         moveActionExpressionsInstructions();
 
-        Class<?> actionClass = findLoadedClass(actionClassName, classLoader);
-        if (actionClass == null) {
-            generateActionClassCode();
-            actionClass = loadClass(actionType.getClassName(), actionClassCode, classNode.parentClass.getClassLoader());
+        synchronized (classLoader) {
+            Class<?> actionClass = findLoadedClass(actionClassName, classLoader);
+            if (actionClass == null) {
+                generateActionClassCode();
+                actionClass = loadClass(actionType.getClassName(), actionClassCode,
+                        classNode.parentClass.getClassLoader());
+            }
+            return actionClass;
         }
-        return actionClass;
     }
 
     public byte[] generateActionClassCode() {

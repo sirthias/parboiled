@@ -24,17 +24,19 @@ public class ParserTransformer {
 
     private ParserTransformer() {}
 
-    public static synchronized Class<?> transformParser(@NotNull Class<?> parserClass) throws Exception {
-        // first check whether we did not already create and load the extension of the given parser class
-        Class<?> extendedClass = findLoadedClass(
-                getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
-        );
-        if (extendedClass != null) return extendedClass;
+    public static Class<?> transformParser(@NotNull Class<?> parserClass) throws Exception {
+        synchronized (parserClass.getClassLoader()) {
+            // first check whether we did not already create and load the extension of the given parser class
+            Class<?> extendedClass = findLoadedClass(
+                    getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
+            );
+            if (extendedClass != null) return extendedClass;
 
-        // not loaded yet, so create
-        ClassTransformer transformer = createTransformer();
-        ParserClassNode classNode = transformer.transform(new ParserClassNode(parserClass));
-        return classNode.extendedClass;
+            // not loaded yet, so create
+            ClassTransformer transformer = createTransformer();
+            ParserClassNode classNode = transformer.transform(new ParserClassNode(parserClass));
+            return classNode.extendedClass;
+        }
     }
 
     static ClassNodeInitializer createTransformer() {

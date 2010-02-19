@@ -18,7 +18,7 @@ package org.parboiled.examples.rpn;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
-import org.parboiled.support.Filters;
+import org.parboiled.trees.Filter;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
@@ -38,7 +38,7 @@ public class Main {
 
             ParsingResult<Node> result = parser.parse(parser.operation(), input);
 
-            System.out.println(ParseTreeUtils.printNodeTree(result, Filters.SkipEmptyOptionalsAndZeroOrMores));
+            System.out.println(ParseTreeUtils.printNodeTree(result, Filter.SkipEmptyOptionalsAndZeroOrMores));
 
             List<BigDecimal> output = result.parseTreeRoot.getValue().getResult();
             if (!result.matched) {

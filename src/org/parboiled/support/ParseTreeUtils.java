@@ -16,20 +16,18 @@
 
 package org.parboiled.support;
 
+import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
 import org.parboiled.errorhandling.ParseError;
+import org.parboiled.trees.Filter;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
-import org.parboiled.trees.Printability;
 
 import java.util.Collection;
 import java.util.List;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 
 /**
  * General utility methods for operating on parse trees.
@@ -288,8 +286,7 @@ public class ParseTreeUtils {
      * @return a new String
      */
     @SuppressWarnings({"unchecked"})
-    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult,
-                                           Function<Node, Printability> filter) {
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult, Filter filter) {
         return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
     }
 

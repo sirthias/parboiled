@@ -22,6 +22,7 @@
 
 package org.parboiled.asm;
 
+import com.google.common.base.Preconditions;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -38,8 +39,6 @@ import org.parboiled.support.Checks;
 
 import java.lang.reflect.Modifier;
 import java.util.*;
-
-import com.google.common.base.Preconditions;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
@@ -100,7 +99,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
     @Override
     public void returnOperation(AbstractInsnNode insn, Value value, Value expected) throws AnalyzerException {
         Preconditions.checkState(insn.getOpcode() == Opcodes.ARETURN); // we return a Rule which is a reference type
-        Checks.ensure(insn.getNext().getType() == AbstractInsnNode.LABEL && insn.getNext().getNext() == null,
+        Checks.ensure(insn.getNext() == null ||
+                insn.getNext().getType() == AbstractInsnNode.LABEL && insn.getNext().getNext() == null,
                 "Illegal parser rule definition '" + method.name + "':\n" +
                         "Rule definition methods must contain exactly one return statement");
     }
@@ -136,12 +136,13 @@ class RuleMethodInterpreter extends BasicInterpreter {
             if (!succ.predecessors.contains(node)) succ.predecessors.add(node);
         }
 
-        // set the finishing label
+        // set the finishing label, if existing
         int lastIndex = instructionGraphNodes.length - 1;
         AbstractInsnNode lastInstruction = method.instructions.get(lastIndex);
-        Preconditions.checkState(instructionGraphNodes[lastIndex] == null);
-        Preconditions.checkState(lastInstruction.getType() == AbstractInsnNode.LABEL);
-        createNode(lastInstruction, null);
+        if (instructionGraphNodes[lastIndex] == null) {
+            Preconditions.checkState(lastInstruction.getType() == AbstractInsnNode.LABEL);
+            createNode(lastInstruction, null);
+        }
     }
 
     private InstructionGraphNode createNode(AbstractInsnNode insn, Value resultValue, Value... prevNodes) {

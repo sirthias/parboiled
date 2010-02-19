@@ -23,9 +23,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.base.Predicate;
+import java.util.Arrays;
 
 public class UtilsTest {
 
@@ -33,15 +31,15 @@ public class UtilsTest {
     @Test
     public void testGetTypeArguments() {
         assertEquals(getTypeArguments(ArrayList.class, new ArrayList<String>() {
-        }.getClass()), ImmutableList.of(String.class));
+        }.getClass()), Arrays.asList(String.class));
 
-        assertEquals(getTypeArguments(Predicate.class, new Predicate<Integer>() {
-            public boolean apply(Integer i) {
-                return true;
+        assertEquals(getTypeArguments(Formatter.class, new Formatter<Integer>() {
+            public String format(Integer object) {
+                return null;
             }
-        }.getClass()), ImmutableList.of(Integer.class));
+        }.getClass()), Arrays.asList(Integer.class));
 
-        assertEquals(getTypeArguments(Formatter.class, NodeFormatter.class), ImmutableList.of(Node.class));
+        assertEquals(getTypeArguments(Formatter.class, NodeFormatter.class), Arrays.asList(Node.class));
     }
 
 }

@@ -23,8 +23,6 @@ import org.parboiled.common.StringUtils;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.google.common.base.Function;
-
 /**
  * General utility methods for operating on directed graphs (consisting of GraphNodes).
  */
@@ -117,14 +115,14 @@ public class GraphUtils {
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter,
-                                                            Function<? super T, Printability> filter) {
+                                                            Filter<T> filter) {
         return node == null ? "" : printTree(node, formatter, "", new StringBuilder(), filter).toString();
     }
 
     // private recursion helper
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
                                                                     String indent, StringBuilder sb,
-                                                                    Function<? super T, Printability> filter) {
+                                                                    Filter<T> filter) {
         Printability printability = filter != null ? filter.apply(node) : Printability.PrintAndDescend;
         if (printability == Printability.PrintAndDescend || printability == Printability.Print) {
             String line = StringUtils.escape(formatter.format(node));

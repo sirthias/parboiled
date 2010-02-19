@@ -18,9 +18,9 @@ package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
+import org.parboiled.trees.Filter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;
-import org.parboiled.support.Filters;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.FileUtils;
@@ -40,11 +40,11 @@ public class JavaTest {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +
                     "\n--- ParseTree ---\n" +
-                    printNodeTree(parsingResult, Filters.SkipEmptyOptionalsAndZeroOrMores)
+                    printNodeTree(parsingResult, Filter.SkipEmptyOptionalsAndZeroOrMores)
             );
         }
         assertEqualsMultiline(
-                printNodeTree(parsingResult, Filters.SkipEmptyOptionalsAndZeroOrMores),
+                printNodeTree(parsingResult, Filter.SkipEmptyOptionalsAndZeroOrMores),
                 FileUtils.readAllTextFromResource("res/SimpleJavaTestParseTree.test")
         );
     }
