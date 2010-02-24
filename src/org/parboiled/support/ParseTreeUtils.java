@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
-import org.parboiled.errors.ParseError;
 import org.parboiled.trees.Filter;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
@@ -289,45 +288,6 @@ public class ParseTreeUtils {
     @SuppressWarnings({"unchecked"})
     public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult, Filter filter) {
         return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
-    }
-
-    /**
-     * Pretty prints the given parse error showing its location in the given input buffer.
-     *
-     * @param error       the parse error
-     * @param inputBuffer the input buffer
-     * @return the pretty print text
-     */
-    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
-        InputLocation location = error.getErrorLocation();
-        StringBuilder sb = new StringBuilder(error.getErrorMessage());
-        sb.append(String.format(" (line %s, pos %s):", location.getRow() + 1, location.getColumn() + 1));
-        sb.append('\n');
-
-        String line = StringUtils.getLine(inputBuffer.getBuffer(), location.getRow());
-        sb.append(line);
-        sb.append('\n');
-
-        for (int i = 0; i < location.getColumn(); i++) sb.append(' ');
-        sb.append("^\n");
-
-        return sb.toString();
-    }
-
-    /**
-     * Pretty prints the given parse errors showing their location in the given input buffer.
-     *
-     * @param errors      the parse errors
-     * @param inputBuffer the input buffer
-     * @return the pretty print text
-     */
-    public static String printParseErrors(@NotNull List<ParseError> errors, @NotNull InputBuffer inputBuffer) {
-        StringBuilder sb = new StringBuilder();
-        for (ParseError error : errors) {
-            if (sb.length() > 0) sb.append("---\n");
-            sb.append(printParseError(error, inputBuffer));
-        }
-        return sb.toString();
     }
 
 }

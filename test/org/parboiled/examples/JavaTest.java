@@ -18,6 +18,7 @@ package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
+import org.parboiled.runners.RecoveringParseRunner;
 import org.parboiled.trees.Filter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;
@@ -35,7 +36,7 @@ public class JavaTest {
         String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTest.java");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.compilationUnit();
-        ParsingResult<Object> parsingResult = parser.parse(compilationUnit, testSource);
+        ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +

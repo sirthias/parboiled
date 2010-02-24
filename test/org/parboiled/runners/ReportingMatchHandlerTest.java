@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchhandlers;
+package org.parboiled.runners;
 
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import org.parboiled.examples.calculator.CalculatorParser;
 import org.parboiled.examples.java.JavaParser;
-import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
-public class ReportFirstErrorMatchHandlerTest extends AbstractTest {
+public class ReportingMatchHandlerTest extends AbstractTest {
 
     private final String[] inputs = new String[] {
             "X1+2",
@@ -65,12 +65,12 @@ public class ReportFirstErrorMatchHandlerTest extends AbstractTest {
             "Invalid input ')', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 8):\n1+2*3-4)-5\n       ^\n"
     };
 
-    //@Test
+    @Test
     public void testSimpleReporting() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         Rule rule = parser.inputLine();
         for (int i = 0; i < inputs.length; i++) {
-            ParsingResult<Integer> result = parser.parse(rule, inputs[i]);
+            ParsingResult<Integer> result = ReportingParseRunner.run(rule, inputs[i]);
             assertEquals(result.parseErrors.size(), 1);
             assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), errorMessages[i]);
         }
@@ -89,7 +89,7 @@ public class ReportFirstErrorMatchHandlerTest extends AbstractTest {
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.compilationUnit();
-        ParsingResult<Object> result = parser.parse(rule, sourceWithErrors);
+        ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
                 "Invalid input ';', expected spacing, expression or ')' (line 5, pos 32):\n" +
@@ -97,7 +97,7 @@ public class ReportFirstErrorMatchHandlerTest extends AbstractTest {
                 "                               ^\n");
     }
 
-    //@Test
+    @Test
     public void testJavaError2() {
         String sourceWithErrors = "package org.parboiled.examples;\n" +
                 "public class JavaTestSource {\n" +
@@ -110,7 +110,7 @@ public class ReportFirstErrorMatchHandlerTest extends AbstractTest {
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.compilationUnit();
-        ParsingResult<Object> result = parser.parse(rule, sourceWithErrors);
+        ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
                 "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", dim, '=', ',' or ';' (line 5, pos 22):\n" +

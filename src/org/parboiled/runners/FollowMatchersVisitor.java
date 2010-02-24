@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchhandlers;
+package org.parboiled.runners;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;

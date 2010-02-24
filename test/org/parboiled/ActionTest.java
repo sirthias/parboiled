@@ -77,14 +77,14 @@ public class ActionTest extends AbstractTest {
     @Test
     public void test() {
         ActionTestParser parser = Parboiled.createParser(ActionTestParser.class);
-        test(parser, parser.number(), "123", "" +
+        test(parser.number(), "123", "" +
                 "[number, {248}] '123'\n" +
                 "    [oneOrMore] '123'\n" +
                 "        [digit] '1'\n" +
                 "        [digit] '2'\n" +
                 "        [digit] '3'\n");
 
-        test(parser, parser.a(), "abc", "" +
+        test(parser.a(), "abc", "" +
                 "[a] 'abc'\n" +
                 "    ['a'] 'a'\n" +
                 "    [b] 'bc'\n" +

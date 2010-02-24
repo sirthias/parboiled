@@ -4,12 +4,11 @@ Invalid input 'X', expected inputLine (line 1, pos 1):
 X1+2
 ^
 ===
-[inputLine, {3}] 'X1+2'
-    [expression, {3}] 'X1+2'
-        [term, {1}] 'X1'
-            [factor, {1}] 'X1'
-                [number, {1}] 'X1'
-                    [ILLEGAL] 'X'
+[inputLine, {3}] '1+2'
+    [expression, {3}] '1+2'
+        [term, {1}] '1'
+            [factor, {1}] '1'
+                [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
         [zeroOrMore, {2}] '+2'
@@ -26,12 +25,26 @@ xyz1+2
 ===
 Invalid input 'x', expected inputLine (line 1, pos 1):
 xyz1+2
-^
+^^^
 ===
-[inputLine] 'xyz1+2'
-    [ILLEGAL] 'xyz1+2'
+[inputLine, {3}] '1+2'
+    [expression, {3}] '1+2'
+        [term, {1}] '1'
+            [factor, {1}] '1'
+                [number, {1}] '1'
+                    [oneOrMore] '1'
+            [zeroOrMore]
+        [zeroOrMore, {2}] '+2'
+            [sequence, {2}] '+2'
+                [[+,-]] '+'
+                [term, {2}] '2'
+                    [factor, {2}] '2'
+                        [number, {2}] '2'
+                            [oneOrMore] '2'
+                    [zeroOrMore]
+    [EOI]
 ###
-x1+*2
+>>>x1+*2
 ===
 Invalid input 'x', expected inputLine (line 1, pos 1):
 x1+*2

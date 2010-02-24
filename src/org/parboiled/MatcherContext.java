@@ -20,15 +20,17 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
+import static org.parboiled.errors.ErrorUtils.printParseError;
 import org.parboiled.errors.ParseError;
-import org.parboiled.errors.SimpleParseError;
 import org.parboiled.errors.ParserRuntimeException;
+import org.parboiled.errors.SimpleParseError;
 import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.*;
-import static org.parboiled.support.ParseTreeUtils.*;
+import static org.parboiled.support.ParseTreeUtils.findNode;
+import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 import java.util.List;
 
@@ -53,13 +55,12 @@ import java.util.List;
 public class MatcherContext<V> implements Context<V> {
 
     private final InputBuffer inputBuffer;
-    private final BaseParser<V> parser;
     private final List<ParseError> parseErrors;
     private final MatchHandler<V> matchHandler;
     private final Reference<Node<V>> lastNodeRef;
     private final MatcherContext<V> parent;
-    private final int level;
 
+    private final int level;
     private MatcherContext<V> subContext;
     private InputLocation startLocation;
     private InputLocation currentLocation;
@@ -71,18 +72,17 @@ public class MatcherContext<V> implements Context<V> {
     private boolean belowLeafLevel;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
-                          @NotNull BaseParser<V> parser, @NotNull List<ParseError> parseErrors,
-                          @NotNull MatchHandler<V> matchHandler, @NotNull Matcher<V> matcher) {
-        this(inputBuffer, parser, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0);
+                          @NotNull List<ParseError> parseErrors, @NotNull MatchHandler<V> matchHandler,
+                          @NotNull Matcher<V> matcher) {
+        this(inputBuffer, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0);
         setStartLocation(startLocation);
         this.matcher = ProxyMatcher.unwrap(matcher);
     }
 
-    private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull BaseParser<V> parser,
-                           @NotNull List<ParseError> parseErrors, @NotNull MatchHandler<V> matchHandler,
-                           @NotNull Reference<Node<V>> lastNodeRef, MatcherContext<V> parent, int level) {
+    private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
+                           @NotNull MatchHandler<V> matchHandler, @NotNull Reference<Node<V>> lastNodeRef,
+                           MatcherContext<V> parent, int level) {
         this.inputBuffer = inputBuffer;
-        this.parser = parser;
         this.parseErrors = parseErrors;
         this.matchHandler = matchHandler;
         this.lastNodeRef = lastNodeRef;
@@ -187,11 +187,6 @@ public class MatcherContext<V> implements Context<V> {
         return belowLeafLevel;
     }
 
-    @NotNull
-    public BaseParser<V> getParser() {
-        return parser;
-    }
-
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setCurrentLocation(InputLocation currentLocation) {
@@ -293,10 +288,6 @@ public class MatcherContext<V> implements Context<V> {
         subNodes = ImmutableList.copyOf(nodes);
     }
 
-    public MatchHandler<V> getParseErrorHandler() {
-        return matchHandler;
-    }
-
     public void clearSubLeafNodeSuppression() {
         MatcherContext<V> context = this;
         while (context != null && context.belowLeafLevel) {
@@ -308,8 +299,7 @@ public class MatcherContext<V> implements Context<V> {
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // we need to introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, parser, parseErrors, matchHandler, lastNodeRef, this,
-                    level + 1);
+            subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this, level + 1);
         }
 
         // normally we just reuse the existing subContext instance

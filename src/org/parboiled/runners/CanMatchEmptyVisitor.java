@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchhandlers;
+package org.parboiled.runners;
 
 import org.parboiled.matchers.*;
 import org.parboiled.support.Checks;

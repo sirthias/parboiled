@@ -23,8 +23,9 @@
 package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
-import org.parboiled.examples.sparql.SparqlParser;
+import org.parboiled.runners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.examples.sparql.SparqlParser;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -60,7 +61,7 @@ public class SparqlTest {
     public void test() throws Exception {
         int failures = 0;
         for (TextInfo textInfo : getTextInfos()) {
-            ParsingResult<Object> result = parser.parse(parser.query(), textInfo.text);
+            ParsingResult<Object> result = RecoveringParseRunner.run(parser.query(), textInfo.text);
 
             boolean passed = result.hasErrors() == (textInfo.result == Result.FAIL);
             if (!passed) {

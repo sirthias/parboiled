@@ -17,19 +17,25 @@
 package org.parboiled.errors;
 
 import org.parboiled.support.InputLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class SimpleParseError implements ParseError {
 
     private final InputLocation errorLocation;
     private final String errorMessage;
 
-    public SimpleParseError(InputLocation errorLocation, String errorMessage) {
+    public SimpleParseError(@NotNull InputLocation errorLocation, String errorMessage) {
         this.errorLocation = errorLocation;
         this.errorMessage = errorMessage;
     }
 
+    @NotNull
     public InputLocation getErrorLocation() {
         return errorLocation;
+    }
+
+    public int getErrorCharCount() {
+        return 1;
     }
 
     public String getErrorMessage() {

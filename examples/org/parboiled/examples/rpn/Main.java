@@ -18,9 +18,10 @@ package org.parboiled.examples.rpn;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
-import org.parboiled.trees.Filter;
+import org.parboiled.runners.RecoveringParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.trees.Filter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,13 +31,13 @@ public class Main {
 
     public static void main(String[] args) {
         RpnParser parser = Parboiled.createParser(RpnParser.class);
-        
+
         while (true) {
             System.out.print("Enter an RPN expression, separate operands by a blank (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Node> result = parser.parse(parser.operation(), input);
+            ParsingResult<Node> result = RecoveringParseRunner.run(parser.operation(), input);
 
             System.out.println(ParseTreeUtils.printNodeTree(result, Filter.SkipEmptyOptionalsAndZeroOrMores));
 

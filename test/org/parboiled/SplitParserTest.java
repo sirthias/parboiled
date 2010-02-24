@@ -50,7 +50,7 @@ public class SplitParserTest extends AbstractTest {
     @Test
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
-        test(parser, parser.clause(), "1+5", "" +
+        test(parser.clause(), "1+5", "" +
                 "[clause] '1+5'\n" +
                 "    [digit] '1'\n" +
                 "    [operator] '+'\n" +

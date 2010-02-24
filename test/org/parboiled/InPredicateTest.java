@@ -61,7 +61,7 @@ public class InPredicateTest extends AbstractTest {
     @Test
     public void test() {
         ActionTestParser parser = Parboiled.createParser(ActionTestParser.class);
-        test(parser, parser.number(), "565", "" +
+        test(parser.number(), "565", "" +
                 "[number] '565'\n" +
                 "    [digit] '5'\n" +
                 "        [0..9] '5'\n" +

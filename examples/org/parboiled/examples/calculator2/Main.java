@@ -17,9 +17,10 @@
 package org.parboiled.examples.calculator2;
 
 import org.parboiled.Parboiled;
+import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.support.ParsingResult;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.ToStringFormatter;
-import org.parboiled.support.ParsingResult;
 import static org.parboiled.trees.GraphUtils.printTree;
 
 import java.util.Scanner;
@@ -34,7 +35,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<CalcNode> result = parser.parse(parser.inputLine(), input);
+            ParsingResult<CalcNode> result = RecoveringParseRunner.run(parser.inputLine(), input);
 
             CalcNode astRoot = result.parseTreeRoot.getValue();
             System.out.println(input + " = " + astRoot.getValue() + '\n');

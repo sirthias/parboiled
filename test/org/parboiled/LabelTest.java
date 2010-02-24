@@ -84,7 +84,7 @@ public class LabelTest extends AbstractTest {
         // verify that there is each only one digit matcher, '+' matcher and '-' matcher
         assertEquals(countAllDistinct((Matcher) rule), 9);
 
-        test(parser, rule, "123-54+9", "" +
+        test(rule, "123-54+9", "" +
                 "[aOpB] '123-54+9'\n" +
                 "    [a] '123'\n" +
                 "        [digit] '1'\n" +
@@ -106,7 +106,7 @@ public class LabelTest extends AbstractTest {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);
         Rule rule = parser.recursiveLabel();
 
-        test(parser, rule, "bbaaaa", "" +
+        test(rule, "bbaaaa", "" +
                 "[recursiveLabel] 'bbaaa'\n" +
                 "    [sequence] 'bbaaa'\n" +
                 "        ['b'] 'b'\n" +

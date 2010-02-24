@@ -20,6 +20,7 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import org.parboiled.test.AbstractTest;
+import org.parboiled.runners.RecoveringParseRunner;
 
 public class NextCharTest extends AbstractTest {
 
@@ -34,8 +35,8 @@ public class NextCharTest extends AbstractTest {
     @Test
     public void test() {
         NextCharTestParser parser = Parboiled.createParser(NextCharTestParser.class);
-        assertFalse(parser.parse(parser.clause(), "a").hasErrors());
-        assertTrue(parser.parse(parser.clause(), "b").hasErrors());
+        assertFalse(RecoveringParseRunner.run(parser.clause(), "a").hasErrors());
+        assertTrue(RecoveringParseRunner.run(parser.clause(), "b").hasErrors());
     }
 
 }

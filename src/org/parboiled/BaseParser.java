@@ -17,21 +17,11 @@
 package org.parboiled;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableList;
 import static com.google.common.collect.ObjectArrays.concat;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Reference;
-import org.parboiled.errors.ParseError;
 import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
-import org.parboiled.matchhandlers.FollowMatchersVisitor;
-import org.parboiled.matchhandlers.ReportingMatchHandler;
-import org.parboiled.matchhandlers.StarterCharsVisitor;
 import org.parboiled.support.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
@@ -39,52 +29,6 @@ import java.util.List;
  * @param <V> The type of the value field of the parse tree nodes created by this parser.
  */
 public abstract class BaseParser<V> extends BaseActions<V> {
-
-    /**
-     * Runs the given parser rule against the given input string.
-     *
-     * @param rule  the rule
-     * @param input the input string
-     * @return the ParsingResult for the run
-     */
-    @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input) {
-        return parse(rule, input, new ReportingMatchHandler<V>());
-    }
-
-    /**
-     * Runs the given parser rule against the given input string using the given ParseErrorHandler during the
-     * parsing run.
-     *
-     * @param rule         the rule
-     * @param input        the input string
-     * @param matchHandler the ParseErrorHandler to use
-     * @return the ParsingResult for the run
-     */
-    @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> parse(Rule rule, @NotNull String input,
-                                  @NotNull final MatchHandler<V> matchHandler) {
-        final InputBuffer inputBuffer = new InputBuffer(input);
-        final InputLocation startLocation = new InputLocation(inputBuffer);
-        final List<ParseError> parseErrors = new ArrayList<ParseError>();
-        final Matcher<V> rootMatcher = (Matcher<V>) toRule(rule);
-        final Reference<MatcherContext<V>> rootContextRef = new Reference<MatcherContext<V>>();
-
-        boolean matched = matchHandler.matchRoot(
-                new Supplier<MatcherContext<V>>() {
-                    public MatcherContext<V> get() {
-                        rootContextRef.setTarget(new MatcherContext<V>(inputBuffer, startLocation, BaseParser.this,
-                                parseErrors, matchHandler, rootMatcher));
-                        return rootContextRef.getTarget();
-                    }
-                }
-        );
-
-        return new ParsingResult<V>(matched, rootContextRef.getTarget().getNode(), parseErrors, inputBuffer,
-                rootContextRef.getTarget().getCurrentLocation().getRow() + 1);
-    }
-
-    ////////////////////////////////// RULE CREATION ///////////////////////////////////
 
     /**
      * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
@@ -441,84 +385,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof Action) return new ActionMatcher<V>((Action<V>) obj);
 
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
-    }
-
-    ///************************* RECOVERY RULES ***************************///
-
-    @Label
-    public Rule skipCharRecovery(@NotNull Matcher<V> failedMatcher) {
-        return sequence(
-                any().label(Parboiled.ILLEGAL), // match one illegal character
-                failedMatcher  // retry the failed matcher
-        ).withoutNode();
-    }
-
-    @Label
-    public Rule emptyMatchRecovery(@NotNull Context<V> failedMatcherContext) {
-        return sequence(
-                // if the current char is a legal follower starter char of the failed matcher
-                test(charSet(getStarterCharsOfFollowers(failedMatcherContext))),
-
-                // we match empty
-                empty().label(failedMatcherContext.getMatcher().getLabel())
-        ).withoutNode();
-    }
-
-    @Label
-    public Rule singleCharRecovery(@NotNull Context<V> failedMatcherContext) {
-        return firstOf(
-                skipCharRecovery(failedMatcherContext.getMatcher()),
-                emptyMatchRecovery(failedMatcherContext)
-        ).withoutNode();
-    }
-
-    @Label
-    public Rule resynchronize(@NotNull final Context<V> failedMatcherContext, final int errorLocationIndex) {
-        // we wrap the resynchronization sequence with an optional rule in order to be able to name it properly
-        // which simplifies debugging (the optional rule does not itself create a node)
-        return optional(
-
-                // recovery rules create nodes that will become sub nodes of the failed rules parent,
-                // this sequence becomes the replacement for the failed sequence we need to resynchronize on
-                sequence(
-                        // because there might already be nodes that have been matched in the failed sequence
-                        // before the parse error occurred we need to move over these nodes to this mock sequence
-                        new NamedAction<V>("includeAlreadyMatchedNodes") {
-                            public boolean run(Context<V> context) {
-                                ((MatcherContext<V>) context).addChildNodes(failedMatcherContext.getSubNodes());
-                                ((MatcherContext<V>) failedMatcherContext).setSubNodes(ImmutableList.<Node<V>>of());
-                                return true;
-                            }
-                        },
-                        // gooble up all illegal input up until a legal follower
-                        zeroOrMore(
-                                sequence(
-                                        firstOf(
-                                                // if we are still before the error location we definitily gobble
-                                                new NamedAction("testBeforeErrorLocation") {
-                                                    public boolean run(Context context) {
-                                                        return context.getCurrentLocation()
-                                                                .getIndex() < errorLocationIndex;
-                                                    }
-                                                },
-                                                testNot(charSet(getStarterCharsOfFollowers(failedMatcherContext)))
-                                        ),
-                                        any()
-                                )
-                        ).asLeaf().label(Parboiled.ILLEGAL)
-                ).label(failedMatcherContext.getMatcher().getLabel())
-        ).withoutNode();
-    }
-
-    private Characters getStarterCharsOfFollowers(Context<V> failedMatcherContext) {
-        StarterCharsVisitor<V> starterCharsVisitor = new StarterCharsVisitor<V>();
-        FollowMatchersVisitor<V> followMatchersVisitor = new FollowMatchersVisitor<V>();
-        MatcherContext<V> context = (MatcherContext<V>) failedMatcherContext;
-        Characters starterChars = Characters.NONE;
-        for (Matcher<V> followMatcher : followMatchersVisitor.getFollowMatchers(context)) {
-            starterChars = starterChars.add(followMatcher.accept(starterCharsVisitor));
-        }
-        return starterChars;
     }
 
 }

@@ -26,7 +26,7 @@ public class CalculatorTest extends AbstractTest {
     @Test
     public void test() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
-        test(parser, parser.inputLine(), "1+5", "" +
+        test(parser.inputLine(), "1+5", "" +
                 "[inputLine, {6}] '1+5'\n" +
                 "    [expression, {6}] '1+5'\n" +
                 "        [term, {1}] '1'\n" +

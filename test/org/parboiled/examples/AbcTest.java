@@ -26,7 +26,7 @@ public class AbcTest extends AbstractTest {
     @Test
     public void test() {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
-        test(parser, parser.S(), "aabbcc", "" +
+        test(parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
                 "    [oneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
@@ -44,7 +44,7 @@ public class AbcTest extends AbstractTest {
     @Test
     public void testFail() {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
-        testFail(parser, parser.S(), "aabbbcc", "" +
+        testFail(parser.S(), "aabbbcc", "" +
                 "Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
                 "aabbbcc\n" +
                 "    ^\n" +

@@ -196,14 +196,5 @@ public interface Context<V> {
      */
     boolean isBelowLeafLevel();
 
-    /**
-     * Returns the parser instance whose {@link BaseParser#parse(Rule, String, MatchHandler)}
-     * method is currently running.
-     *
-     * @return the parser instance
-     */
-    @NotNull
-    BaseParser<V> getParser();
-
 }
 

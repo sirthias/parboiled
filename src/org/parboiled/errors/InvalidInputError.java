@@ -16,33 +16,34 @@
 
 package org.parboiled.errors;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Formatter;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 
 import java.util.List;
 
-public class InvalidInputError<V> implements ParseError {
+public class InvalidInputError<V> extends SimpleParseError {
 
-    private final InputLocation errorLocation;
     private final MatcherPath<V> lastMatch;
     private final List<MatcherPath<V>> failedMatchers;
-    private final Formatter<InvalidInputError<V>> formatter;
-    private String errorMessage;
+    private int errorCharCount = 1;
 
     public InvalidInputError(@NotNull InputLocation errorLocation, MatcherPath<V> lastMatch,
-                             @NotNull List<MatcherPath<V>> failedMatchers,
-                             @NotNull Formatter<InvalidInputError<V>> formatter) {
-        this.errorLocation = errorLocation;
+                             @NotNull List<MatcherPath<V>> failedMatchers, String errorMessage) {
+        super(errorLocation, errorMessage);
         this.lastMatch = lastMatch;
         this.failedMatchers = failedMatchers;
-        this.formatter = formatter;
     }
 
-    @NotNull
-    public InputLocation getErrorLocation() {
-        return errorLocation;
+    @Override
+    public int getErrorCharCount() {
+        return errorCharCount;
+    }
+
+    public void setErrorCharCount(int errorCharCount) {
+        Preconditions.checkArgument(errorCharCount > 0);
+        this.errorCharCount = errorCharCount;
     }
 
     public MatcherPath<V> getLastMatch() {
@@ -52,13 +53,6 @@ public class InvalidInputError<V> implements ParseError {
     @NotNull
     public List<MatcherPath<V>> getFailedMatchers() {
         return failedMatchers;
-    }
-
-    public String getErrorMessage() {
-        if (errorMessage == null) {
-            errorMessage = formatter.format(this);
-        }
-        return errorMessage;
     }
 
 }

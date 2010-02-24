@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchhandlers;
+package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
-import org.parboiled.Context;
-import org.parboiled.Rule;
-import org.parboiled.matchers.MatcherVisitor;
-import org.parboiled.support.MatcherPath;
-import org.parboiled.support.InputLocation;
+import org.parboiled.support.ParsingResult;
 
-public interface DefaultRecoveryRuleVisitor<V> extends MatcherVisitor<V, Rule> {
+public interface ParseRunner<V> {
 
-    void setContext(@NotNull Context<V> context);
+    ParsingResult<V> run();
 
-    void setLastMatch(MatcherPath<V> lastMatch);
-
-    void setErrorLocation(InputLocation errorLocation);
 }

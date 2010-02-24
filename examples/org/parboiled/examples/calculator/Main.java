@@ -17,6 +17,7 @@
 package org.parboiled.examples.calculator;
 
 import org.parboiled.Parboiled;
+import org.parboiled.runners.RecoveringParseRunner;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;
@@ -33,7 +34,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Integer> result = parser.parse(parser.inputLine(), input);
+            ParsingResult<Integer> result = RecoveringParseRunner.run(parser.inputLine(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');

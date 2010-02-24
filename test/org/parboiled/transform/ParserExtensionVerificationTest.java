@@ -29,7 +29,7 @@ public class ParserExtensionVerificationTest extends AbstractTest {
     public void verifyParserExtension() throws Exception {
         TestParser parser = createAndVerifyTestParser();
         Rule rule = parser.noActionRule();
-        test(parser, rule, "abcb", "" +
+        test(rule, "abcb", "" +
                 "[noActionRule] 'abcb'\n" +
                 "    ['a'] 'a'\n" +
                 "    [bsAndCs] 'bcb'\n" +

@@ -16,11 +16,10 @@
 
 package org.parboiled.test;
 
-import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.matchhandlers.RecoveringMatchHandler;
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
+import org.parboiled.runners.RecoveringParseRunner;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import static org.parboiled.support.ParseTreeUtils.printParseErrors;
 import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import org.parboiled.trees.Filter;
@@ -28,8 +27,8 @@ import static org.testng.Assert.fail;
 
 public abstract class AbstractTest {
 
-    public <V> ParsingResult<V> test(BaseParser<V> parser, Rule rule, String input, String expectedTree) {
-        ParsingResult<V> result = parser.parse(rule, input);
+    public <V> ParsingResult<V> test(Rule rule, String input, String expectedTree) {
+        ParsingResult<V> result = RecoveringParseRunner.run(rule, input);
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     printParseErrors(result.parseErrors, result.inputBuffer) +
@@ -42,20 +41,20 @@ public abstract class AbstractTest {
         return result;
     }
 
-    public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors,
+    public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
                                          String expectedTree) {
-        return testFail(parser, rule, input, expectedErrors, expectedTree, null);
+        return testFail(rule, input, expectedErrors, expectedTree, null);
     }
 
-    public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors,
+    public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
                                          String expectedTree, Filter filter) {
-        ParsingResult<V> result = testFail(parser, rule, input, expectedErrors);
+        ParsingResult<V> result = testFail(rule, input, expectedErrors);
         assertEqualsMultiline(printNodeTree(result, filter), expectedTree);
         return result;
     }
 
-    public <V> ParsingResult<V> testFail(BaseParser<V> parser, Rule rule, String input, String expectedErrors) {
-        ParsingResult<V> result = parser.parse(rule, input, new RecoveringMatchHandler<V>());
+    public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors) {
+        ParsingResult<V> result = RecoveringParseRunner.run(rule, input);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), expectedErrors);
         return result;
     }

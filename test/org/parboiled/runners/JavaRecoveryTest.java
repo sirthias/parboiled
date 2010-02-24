@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchhandlers;
+package org.parboiled.runners;
 
 import org.parboiled.Parboiled;
 import org.parboiled.trees.Filter;
@@ -53,7 +53,7 @@ public class JavaRecoveryTest extends AbstractTest {
     private void runTest(JavaParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser, parser.compilationUnit(), s[0], s[1], s[2], Filter.SkipEmptyOptionalsAndZeroOrMores);
+            testFail(parser.compilationUnit(), s[0], s[1], s[2], Filter.SkipEmptyOptionalsAndZeroOrMores);
         }
     }
 

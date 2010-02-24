@@ -17,10 +17,14 @@
 package org.parboiled.errors;
 
 import org.parboiled.support.InputLocation;
+import org.jetbrains.annotations.NotNull;
 
 public interface ParseError {
 
+    @NotNull
     InputLocation getErrorLocation();
+
+    int getErrorCharCount();
 
     String getErrorMessage();
 

@@ -33,7 +33,7 @@ public class RecursionTest extends AbstractTest {
     @Test
     public void testRecursion() {
         RecursionParser parser = Parboiled.createParser(RecursionParser.class);
-        test(parser, parser.lotsOfAs(), "AaA", "" +
+        test(parser.lotsOfAs(), "AaA", "" +
                 "[lotsOfAs] 'AaA'\n" +
                 "    ['a/A'] 'A'\n" +
                 "    [optional] 'aA'\n" +

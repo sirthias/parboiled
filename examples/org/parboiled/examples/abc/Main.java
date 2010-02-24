@@ -18,6 +18,7 @@ package org.parboiled.examples.abc;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
+import org.parboiled.runners.RecoveringParseRunner;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;
 
@@ -27,13 +28,13 @@ public class Main {
 
     public static void main(String[] args) {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
-        
+
         while (true) {
             System.out.print("Enter an a^n b^n c^n expression (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<?> result = parser.parse(parser.S(), input);
+            ParsingResult<?> result = RecoveringParseRunner.run(parser.S(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println(printNodeTree(result) + '\n');
