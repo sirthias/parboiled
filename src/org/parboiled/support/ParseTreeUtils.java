@@ -40,7 +40,6 @@ public class ParseTreeUtils {
      * <p>The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
      * relative to the given parent node. If there are several nodes that match the given path the method
      * returns the first one unless the respective path segments has the special prefix "last:". In this case the
-     * method will return the last matching node.</p>
      * <p><b>Example:</b> "per/last:so/fix" will return the first node, whose label starts with "fix" under the last
      * node, whose label starts with "so" under the first node, whose label starts with "per".</p>
      * If parent is null or no node is found the method returns null.
@@ -250,8 +249,17 @@ public class ParseTreeUtils {
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
     public static String getNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
-        return node != null ?
-                inputBuffer.extract(node.getStartLocation().getIndex(), node.getEndLocation().getIndex()) : null;
+        if (node == null) return null;
+        if (!node.hasError()) {
+            return inputBuffer.extract(node.getStartLocation().getIndex(), node.getEndLocation().getIndex());
+        }
+        // if the node has a parse error we cannot simpy cut a string out of the underlying input buffer, since we
+        // would also include illegal characters, so we need to build it bottom up
+        StringBuilder sb = new StringBuilder();
+        for (Node<?> child : node.getChildren()) {
+            sb.append(getNodeText(child, inputBuffer));
+        }
+        return sb.toString();
     }
 
     /**

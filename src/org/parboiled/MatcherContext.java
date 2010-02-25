@@ -68,6 +68,7 @@ public class MatcherContext<V> implements Context<V> {
     private Node<V> node;
     private List<Node<V>> subNodes = ImmutableList.of();
     private V nodeValue;
+    private boolean hasError;
     private int intTag;
     private boolean belowLeafLevel;
 
@@ -75,7 +76,8 @@ public class MatcherContext<V> implements Context<V> {
                           @NotNull List<ParseError> parseErrors, @NotNull MatchHandler<V> matchHandler,
                           @NotNull Matcher<V> matcher) {
         this(inputBuffer, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0);
-        setStartLocation(startLocation);
+        this.startLocation = startLocation;
+        this.currentLocation = startLocation;
         this.matcher = ProxyMatcher.unwrap(matcher);
     }
 
@@ -189,12 +191,12 @@ public class MatcherContext<V> implements Context<V> {
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
-    public void setCurrentLocation(InputLocation currentLocation) {
-        this.currentLocation = currentLocation;
+    public void setStartLocation(InputLocation startLocation) {
+        this.startLocation = startLocation;
     }
 
-    public void setStartLocation(InputLocation location) {
-        startLocation = currentLocation = location;
+    public void setCurrentLocation(InputLocation currentLocation) {
+        this.currentLocation = currentLocation;
     }
 
     public void advanceInputLocation() {
@@ -213,6 +215,16 @@ public class MatcherContext<V> implements Context<V> {
         this.intTag = intTag;
     }
 
+    public void markError() {
+        hasError = true;
+        if (parent != null) parent.markError();
+    }
+
+    public void clearBelowLeafLevelMarker() {
+        belowLeafLevel = false;
+        if (parent != null) parent.clearBelowLeafLevelMarker();
+    }
+
     public void createNode() {
         if (belowLeafLevel || matcher instanceof TestMatcher) {
             return;
@@ -221,7 +233,7 @@ public class MatcherContext<V> implements Context<V> {
             if (parent != null) parent.addChildNodes(subNodes);
             return;
         }
-        node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue());
+        node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue(), hasError);
         if (parent != null) parent.addChildNode(node);
         lastNodeRef.setTarget(node);
     }
@@ -304,11 +316,13 @@ public class MatcherContext<V> implements Context<V> {
 
         // normally we just reuse the existing subContext instance
         subContext.matcher = ProxyMatcher.unwrap(matcher);
-        subContext.setStartLocation(currentLocation);
+        subContext.startLocation = currentLocation;
+        subContext.currentLocation = currentLocation;
         subContext.node = null;
         subContext.subNodes = ImmutableList.of();
         subContext.nodeValue = null;
         subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
+        subContext.hasError = false;
         return subContext;
     }
 

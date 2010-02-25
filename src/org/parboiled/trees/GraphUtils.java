@@ -18,7 +18,6 @@ package org.parboiled.trees;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.StringUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -125,7 +124,7 @@ public class GraphUtils {
                                                                     Filter<T> filter) {
         Printability printability = filter != null ? filter.apply(node) : Printability.PrintAndDescend;
         if (printability == Printability.PrintAndDescend || printability == Printability.Print) {
-            String line = StringUtils.escape(formatter.format(node));
+            String line = formatter.format(node);
             if (line != null) {
                 sb.append(indent).append(line).append("\n");
                 indent += "    ";

@@ -93,14 +93,15 @@ public class InputLocation {
     }
 
     @NotNull
-    public InputLocation removeAfter() {
-        Preconditions.checkState(next != null, "removeAfter() should not be called on a fringe location");
+    public InputLocation removeNext() {
+        Preconditions.checkState(next != null && next.next != null,
+                "removeNext() should not be called on a fringe location or its immediate predecessor");
         InputLocation oldNext = next;
         next = next.next;
         return oldNext;
     }
 
-    public void insertAfter(@NotNull InputLocation nextLocation) {
+    public void insertNext(@NotNull InputLocation nextLocation) {
         nextLocation.next = next;
         next = nextLocation;
     }
@@ -110,9 +111,9 @@ public class InputLocation {
      *
      * @param character the char to insert
      */
-    public void insertAfter(char character) {
-        Preconditions.checkState(next != null, "insertAfter(char) should not be called on a fringe location");
-        insertAfter(next.insertBefore(character));
+    public void insertNext(char character) {
+        Preconditions.checkState(next != null, "insertNext(char) should not be called on a fringe location");
+        insertNext(next.insertBefore(character));
     }
 
     public InputLocation insertBefore(char character) {

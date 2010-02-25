@@ -59,6 +59,10 @@ public class ParseTreeUtilsTest {
             throw new UnsupportedOperationException();
         }
 
+        public boolean hasError() {
+            return false;
+        }
+
         @Override
         public String toString() {
             return label;

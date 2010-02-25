@@ -72,7 +72,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
             return false;
         }
 
-        public boolean match(MatcherContext<V> context) throws Throwable {
+        public boolean match(MatcherContext<V> context) {
             if (inner.match(context)) {
                 if (errorLocation.getIndex() < context.getCurrentLocation().getIndex()) {
                     errorLocation = context.getCurrentLocation();

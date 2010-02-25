@@ -20,6 +20,6 @@ public interface MatchHandler<V> {
 
     boolean matchRoot(MatcherContext<V> rootContext);
 
-    boolean match(MatcherContext<V> context) throws Throwable;
+    boolean match(MatcherContext<V> context);
 
 }

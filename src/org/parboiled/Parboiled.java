@@ -28,7 +28,6 @@ import java.lang.reflect.Constructor;
 public class Parboiled {
 
     public static final char EOI = '\uFFFF';
-    public static final String ILLEGAL = "ILLEGAL";
 
     protected Parboiled() {}
 

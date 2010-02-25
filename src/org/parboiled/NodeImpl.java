@@ -19,11 +19,13 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputLocation;
 import org.parboiled.trees.ImmutableTreeNode;
+import org.parboiled.common.StringUtils;
 
 import java.util.List;
 
 /**
  * An immutable implementation of the Node interface.
+ *
  * @param <V>
  */
 class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
@@ -32,14 +34,16 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     private final InputLocation startLocation;
     private final InputLocation endLocation;
     private final V value;
+    private final boolean hasError;
 
     public NodeImpl(String label, List<Node<V>> children, @NotNull InputLocation startLocation,
-                    @NotNull InputLocation endLocation, V value) {
+                    @NotNull InputLocation endLocation, V value, boolean hasError) {
         super(children);
         this.label = label;
         this.startLocation = startLocation;
         this.endLocation = endLocation;
         this.value = value;
+        this.hasError = hasError;
     }
 
     public String getLabel() {
@@ -60,6 +64,10 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
         return value;
     }
 
+    public boolean hasError() {
+        return hasError;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -69,7 +77,8 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
             sb.append(", {").append(value).append('}');
         }
         sb.append(']');
-        return sb.toString();
+        if (hasError) sb.append('E'); 
+        return StringUtils.escape(sb.toString());
     }
 
 }

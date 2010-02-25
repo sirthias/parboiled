@@ -27,10 +27,12 @@ import org.parboiled.support.Characters;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
+import com.google.common.base.Preconditions;
 
 public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
-    public static final char ANY = '\uFFFE';
+    public static final char SKIP = '\uFDED';
+    public static final char ANY = '\uFDEE';
     public static final char RESYNC = '\uFDEF';
 
     private InputLocation errorLocation;
@@ -58,19 +60,21 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     protected boolean attemptRecordingMatch() {
-        MatchHandler<V> innerHandler = errorLocation != null ? new Handler<V>(
-                currentError) : new BasicParseRunner.Handler<V>();
-        RecordingParseRunner.Handler<V> handler = new RecordingParseRunner.Handler<V>(innerHandler);
+        RecordingParseRunner.Handler<V> handler = new RecordingParseRunner.Handler<V>(getInnerHandler());
         boolean matched = runRootContext(handler);
         errorLocation = handler.getErrorLocation();
         return matched;
     }
 
     private void performErrorReportingRun() {
-        ReportingParseRunner.Handler<V> handler =
-                new ReportingParseRunner.Handler<V>(errorLocation, new Handler<V>(currentError));
+        ReportingParseRunner.Handler<V> handler = new ReportingParseRunner.Handler<V>(errorLocation, getInnerHandler());
         runRootContext(handler);
         currentError = handler.getParseError();
+    }
+
+    private MatchHandler<V> getInnerHandler() {
+        return errorLocation != null && errorLocation.getIndex() > 0 ?
+                new Handler<V>(currentError) : new BasicParseRunner.Handler<V>();
     }
 
     private boolean fixError(InputLocation fixLocation) {
@@ -81,6 +85,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         }
 
         InputLocation preFixLocation = findPreviousLocation(fixLocation);
+        fixLocation.advance(inputBuffer); // fetch the next input char, so the removal operation works
 
         if (tryFixBySingleCharDeletion(preFixLocation)) return true;
         InputLocation nextErrorAfterDeletion = errorLocation;
@@ -94,13 +99,13 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         // test which fix option performs best and go for it
         if (nextErrorAfterDeletion.getIndex() >=
                 Math.max(nextErrorAfterInsertion.getIndex(), nextErrorAfterResync.getIndex())) {
-            preFixLocation.removeAfter();
+            preFixLocation.removeNext();
             errorLocation = nextErrorAfterDeletion;
         } else if (nextErrorAfterInsertion.getIndex() >= nextErrorAfterResync.getIndex()) {
-            preFixLocation.insertAfter(ANY);
+            preFixLocation.insertNext(ANY);
             errorLocation = nextErrorAfterInsertion;
         } else {
-            preFixLocation.insertAfter(RESYNC);
+            preFixLocation.insertNext(RESYNC);
             errorLocation = nextErrorAfterResync;
         }
         return true;
@@ -127,27 +132,29 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     private boolean tryFixBySingleCharDeletion(@NotNull InputLocation preFixLocation) {
-        InputLocation saved = preFixLocation.removeAfter();
+        preFixLocation.insertNext(SKIP);
+        InputLocation saved = preFixLocation.getNext().removeNext();
         boolean nowErrorFree = attemptRecordingMatch();
         if (!nowErrorFree) {
-            preFixLocation.insertAfter(saved); // undo remove
+            preFixLocation.removeNext();
+            preFixLocation.insertNext(saved);
         }
         return nowErrorFree;
     }
 
     private boolean tryFixBySingleCharInsertion(@NotNull InputLocation preFixLocation, char character) {
-        preFixLocation.insertAfter(character);
+        preFixLocation.insertNext(character);
         boolean nowErrorFree = attemptRecordingMatch();
         if (!nowErrorFree) {
-            preFixLocation.removeAfter(); // undo char insertion
+            preFixLocation.removeNext();
         }
         return nowErrorFree;
     }
 
     public static class Handler<V> implements MatchHandler<V> {
-        private InputLocation lastMatchLoc;
-        private MatcherPath<V> lastMatchPath;
         private final InvalidInputError<V> currentError;
+        private InputLocation fringeLocation;
+        private MatcherPath<V> lastMatchPath;
 
         public Handler(InvalidInputError<V> currentError) {
             this.currentError = currentError;
@@ -158,109 +165,90 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         }
 
         @SuppressWarnings({"SimplifiableIfStatement"})
-        public boolean match(MatcherContext<V> context) throws Throwable {
-            if (context.getMatcher().match(context)) {
-                if (lastMatchLoc == null || lastMatchLoc.getIndex() < context.getCurrentLocation().getIndex()) {
-                    lastMatchLoc = context.getCurrentLocation();
+        public boolean match(MatcherContext<V> context) {
+            Matcher<V> matcher = context.getMatcher();
+            if (matcher instanceof CharMatcher || matcher instanceof CharRangeMatcher ||
+                    matcher instanceof CharactersMatcher || matcher instanceof CharIgnoreCaseMatcher) {
+                switch (context.getCurrentLocation().getChar()) {
+                    case ANY:
+                        if (!matchAny(context)) return false;
+                        break;
+
+                    case SKIP:
+                        if (!skipLocation(context)) return false;
+                        break;
+
+                    default:
+                        if (!matcher.match(context)) return false;
+                        break;
+                }
+                if (fringeLocation == null || fringeLocation.getIndex() < context.getCurrentLocation().getIndex()) {
+                    fringeLocation = context.getCurrentLocation();
                     lastMatchPath = context.getPath();
                 }
                 return true;
             }
-            char currentChar = context.getCurrentLocation().getChar();
-            if (currentChar == ANY || currentChar == RESYNC) {
-                RecoveryVisitor<V> recoveryVisitor = new RecoveryVisitor<V>(context, lastMatchLoc, lastMatchPath);
-                boolean recovered = context.getMatcher().accept(recoveryVisitor);
-                if (recoveryVisitor.resyncCharCount > 1 &&
-                        currentError.getErrorLocation().getIndex() == lastMatchLoc.getIndex() + 1) {
-                    currentError.setErrorCharCount(recoveryVisitor.resyncCharCount);
-                }
-                return recovered;
-            }
-            return false;
-        }
 
-    }
-
-    private static class RecoveryVisitor<V> extends DefaultMatcherVisitor<V, Boolean> {
-        private final MatcherContext<V> context;
-        private final InputLocation lastMatchLoc;
-        private final MatcherPath<V> lastMatchPath;
-        public int resyncCharCount;
-
-        public RecoveryVisitor(@NotNull MatcherContext<V> context, @NotNull InputLocation lastMatchLoc,
-                               @NotNull MatcherPath<V> lastMatchPath) {
-            this.context = context;
-            this.lastMatchLoc = lastMatchLoc;
-            this.lastMatchPath = lastMatchPath;
-        }
-
-        @Override
-        public Boolean visit(CharactersMatcher<V> matcher) {
-            return visitSingleCharMatcher();
-        }
-
-        @Override
-        public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
-            return visitSingleCharMatcher();
-        }
-
-        @Override
-        public Boolean visit(CharMatcher<V> matcher) {
-            return visitSingleCharMatcher();
-        }
-
-        @Override
-        public Boolean visit(CharRangeMatcher<V> matcher) {
-            return visitSingleCharMatcher();
-        }
-
-        private boolean visitSingleCharMatcher() {
-            if (context.getCurrentLocation().getChar() == ANY) {
-                context.advanceInputLocation();
-                context.createNode();
+            if (matcher.match(context)) {
                 return true;
             }
-            return false;
+
+            // if we didn't match we might have to resynchronize, however we only resynchronize
+            // if we are at a RESYNC location and the matcher is a SequenceMatchers that has already
+            // matched at least one character and that is a parent of the last match
+            return fringeLocation.getChar() == RESYNC &&
+                    matcher instanceof SequenceMatcher &&
+                    context.getCurrentLocation() != context.getStartLocation() &&
+                    context.getPath().isPrefixOf(lastMatchPath) &&
+                    resynchronize(context);
         }
 
-        @Override
-        public Boolean visit(SequenceMatcher<V> matcher) {
-            return isResynchronizationSequence() && resynchronize();
-        }
-
-        @Override
-        public Boolean defaultValue(AbstractMatcher<V> matcher) {
-            return false;
-        }
-
-        @SuppressWarnings({"RedundantIfStatement"})
-        private boolean isResynchronizationSequence() {
-            // don't resync if we are not currently at a RESYNC marker
-            if (lastMatchLoc.getChar() != RESYNC) return false;
-
-            // don't resync if the sequence has not already matched something
-            if (context.getCurrentLocation() == context.getStartLocation()) return false;
-
-            // don't resync if we are not a parent sequence of the last match
-            if (!context.getPath().isPrefixOf(lastMatchPath)) return false;
-
+        private boolean matchAny(MatcherContext<V> context) {
+            // Characters followerChars = getStarterCharsOfFollowers(context);
+            context.advanceInputLocation();
+            context.markError();
+            context.createNode();
             return true;
         }
 
-        private boolean resynchronize() {
+        private boolean skipLocation(MatcherContext<V> context) {
+            InputLocation preSkipLocation = context.getCurrentLocation();
+            while (context.getCurrentLocation().getChar() == SKIP) {
+                context.advanceInputLocation();
+            }
+            if (!context.getSubContext(new TestMatcher<V>((Rule) context.getMatcher())).runMatcher()) {
+                // if we wouldn't succeed with the match do not swallow the SKIP char
+                context.setCurrentLocation(preSkipLocation);
+                return false;
+            }
+            context.setStartLocation(context.getCurrentLocation());
+            context.clearBelowLeafLevelMarker();
+            if (context.getParent() != null) context.getParent().markError();
+            Preconditions.checkState(context.getMatcher().match(context));
+            return true;
+        }
+
+        private boolean resynchronize(MatcherContext<V> context) {
+            context.markError();
+
             // create a node for the failed sequence, taking ownership of all sub nodes created so far
             context.createNode();
 
             // skip over all characters that are not legal followers of the failed sequence
-            Characters followerChars = getStarterCharsOfFollowers();
+            int resyncCharCount = 0;
+            Characters followerChars = getStarterCharsOfFollowers(context);
             while (!followerChars.contains(context.getCurrentLocation().getChar())) {
                 context.advanceInputLocation();
                 resyncCharCount++;
             }
+            if (currentError.getErrorLocation() == fringeLocation && resyncCharCount > 1) {
+                currentError.setErrorCharCount(resyncCharCount);
+            }
+
             return true;
         }
 
-        private Characters getStarterCharsOfFollowers() {
+        private Characters getStarterCharsOfFollowers(MatcherContext<V> context) {
             StarterCharsVisitor<V> starterCharsVisitor = new StarterCharsVisitor<V>();
             FollowMatchersVisitor<V> followMatchersVisitor = new FollowMatchersVisitor<V>();
             Characters starterChars = Characters.NONE;

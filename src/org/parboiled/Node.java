@@ -57,4 +57,6 @@ public interface Node<V> extends TreeNode<Node<V>> {
      */
     V getValue();
 
+    boolean hasError();
+
 }

@@ -44,7 +44,7 @@ xyz1+2
                     [zeroOrMore]
     [EOI]
 ###
->>>x1+*2
+x1+*2
 ===
 Invalid input 'x', expected inputLine (line 1, pos 1):
 x1+*2
@@ -54,22 +54,21 @@ Invalid input '*', expected term (line 1, pos 4):
 x1+*2
    ^
 ===
-[inputLine, {3}] 'x1+*2'
-    [expression, {3}] 'x1+*2'
-        [term, {1}] 'x1'
-            [factor, {1}] 'x1'
-                [number, {1}] 'x1'
-                    [ILLEGAL] 'x'
+[inputLine, {3}]E '1+2'
+    [expression, {3}]E '1+2'
+        [term, {1}] '1'
+            [factor, {1}] '1'
+                [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {2}] '+*2'
-            [sequence, {2}] '+*2'
+        [zeroOrMore, {2}]E '+2'
+            [sequence, {2}]E '+2'
                 [[+,-]] '+'
-                [term, {2}] '*2'
-                    [factor, {2}] '*2'
-                        [number, {2}] '*2'
-                            [ILLEGAL] '*'
-                            [oneOrMore] '2'
+                [term, {2}]E '2'
+                    [factor, {2}]E '2'
+                        [number, {2}]E '2'
+                            [oneOrMore]E '2'
+                                [digit] '2'
                     [zeroOrMore]
     [EOI]
 ###
@@ -79,16 +78,15 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 2):
 1X+2
  ^
 ===
-[inputLine, {3}] '1X+2'
-    [expression, {3}] '1X+2'
+[inputLine, {3}]E '1+2'
+    [expression, {3}]E '1+2'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {2}] 'X+2'
-            [sequence, {2}] 'X+2'
-                [ILLEGAL] 'X'
+        [zeroOrMore, {2}]E '+2'
+            [sequence, {2}]E '+2'
                 [[+,-]] '+'
                 [term, {2}] '2'
                     [factor, {2}] '2'
@@ -103,21 +101,21 @@ Invalid input 'X', expected term (line 1, pos 3):
 1+X2
   ^
 ===
-[inputLine, {3}] '1+X2'
-    [expression, {3}] '1+X2'
+[inputLine, {3}]E '1+2'
+    [expression, {3}]E '1+2'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {2}] '+X2'
-            [sequence, {2}] '+X2'
+        [zeroOrMore, {2}]E '+2'
+            [sequence, {2}]E '+2'
                 [[+,-]] '+'
-                [term, {2}] 'X2'
-                    [factor, {2}] 'X2'
-                        [number, {2}] 'X2'
-                            [ILLEGAL] 'X'
-                            [oneOrMore] '2'
+                [term, {2}]E '2'
+                    [factor, {2}]E '2'
+                        [number, {2}]E '2'
+                            [oneOrMore]E '2'
+                                [digit] '2'
                     [zeroOrMore]
     [EOI]
 ###
@@ -127,7 +125,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
 1+2X
    ^
 ===
-[inputLine, {3}] '1+2X'
+[inputLine, {3}]E '1+2'
     [expression, {3}] '1+2'
         [term, {1}] '1'
             [factor, {1}] '1'
@@ -142,7 +140,6 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
                         [number, {2}] '2'
                             [oneOrMore] '2'
                     [zeroOrMore]
-    [ILLEGAL] 'X'
     [EOI]
 ###
 1+2X*(3-4)-5
@@ -151,23 +148,22 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
 1+2X*(3-4)-5
    ^
 ===
-[inputLine, {-6}] '1+2X*(3-4)-5'
-    [expression, {-6}] '1+2X*(3-4)-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2X*(3-4)-5'
-            [sequence, {-2}] '+2X*(3-4)'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
+            [sequence, {-2}]E '+2*(3-4)'
                 [[+,-]] '+'
-                [term, {-2}] '2X*(3-4)'
+                [term, {-2}]E '2*(3-4)'
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
-                    [zeroOrMore, {-1}] 'X*(3-4)'
-                        [sequence, {-1}] 'X*(3-4)'
-                            [ILLEGAL] 'X'
+                    [zeroOrMore, {-1}]E '*(3-4)'
+                        [sequence, {-1}]E '*(3-4)'
                             [[*,/]] '*'
                             [factor, {-1}] '(3-4)'
                                 [parens, {-1}] '(3-4)'
@@ -202,26 +198,25 @@ Invalid input 'X', expected factor (line 1, pos 5):
 1+2*X(3-4)-5
     ^
 ===
-[inputLine, {-6}] '1+2*X(3-4)-5'
-    [expression, {-6}] '1+2*X(3-4)-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*X(3-4)-5'
-            [sequence, {-2}] '+2*X(3-4)'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
+            [sequence, {-2}]E '+2*(3-4)'
                 [[+,-]] '+'
-                [term, {-2}] '2*X(3-4)'
+                [term, {-2}]E '2*(3-4)'
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*X(3-4)'
-                        [sequence, {-1}] '*X(3-4)'
+                    [zeroOrMore, {-1}]E '*(3-4)'
+                        [sequence, {-1}]E '*(3-4)'
                             [[*,/]] '*'
-                            [factor, {-1}] 'X(3-4)'
-                                [parens, {-1}] 'X(3-4)'
-                                    [ILLEGAL] 'X'
+                            [factor, {-1}]E '(3-4)'
+                                [parens, {-1}]E '(3-4)'
                                     ['('] '('
                                     [expression, {-1}] '3-4'
                                         [term, {3}] '3'
@@ -253,32 +248,32 @@ Invalid input 'X', expected expression (line 1, pos 6):
 1+2*(X3-4)-5
      ^
 ===
-[inputLine, {-6}] '1+2*(X3-4)-5'
-    [expression, {-6}] '1+2*(X3-4)-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(X3-4)-5'
-            [sequence, {-2}] '+2*(X3-4)'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
+            [sequence, {-2}]E '+2*(3-4)'
                 [[+,-]] '+'
-                [term, {-2}] '2*(X3-4)'
+                [term, {-2}]E '2*(3-4)'
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(X3-4)'
-                        [sequence, {-1}] '*(X3-4)'
+                    [zeroOrMore, {-1}]E '*(3-4)'
+                        [sequence, {-1}]E '*(3-4)'
                             [[*,/]] '*'
-                            [factor, {-1}] '(X3-4)'
-                                [parens, {-1}] '(X3-4)'
+                            [factor, {-1}]E '(3-4)'
+                                [parens, {-1}]E '(3-4)'
                                     ['('] '('
-                                    [expression, {-1}] 'X3-4'
-                                        [term, {3}] 'X3'
-                                            [factor, {3}] 'X3'
-                                                [number, {3}] 'X3'
-                                                    [ILLEGAL] 'X'
-                                                    [oneOrMore] '3'
+                                    [expression, {-1}]E '3-4'
+                                        [term, {3}]E '3'
+                                            [factor, {3}]E '3'
+                                                [number, {3}]E '3'
+                                                    [oneOrMore]E '3'
+                                                        [digit] '3'
                                             [zeroOrMore]
                                         [zeroOrMore, {4}] '-4'
                                             [sequence, {4}] '-4'
@@ -304,35 +299,34 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
 1+2*(3X-4)-5
       ^
 ===
-[inputLine, {-6}] '1+2*(3X-4)-5'
-    [expression, {-6}] '1+2*(3X-4)-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(3X-4)-5'
-            [sequence, {-2}] '+2*(3X-4)'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
+            [sequence, {-2}]E '+2*(3-4)'
                 [[+,-]] '+'
-                [term, {-2}] '2*(3X-4)'
+                [term, {-2}]E '2*(3-4)'
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(3X-4)'
-                        [sequence, {-1}] '*(3X-4)'
+                    [zeroOrMore, {-1}]E '*(3-4)'
+                        [sequence, {-1}]E '*(3-4)'
                             [[*,/]] '*'
-                            [factor, {-1}] '(3X-4)'
-                                [parens, {-1}] '(3X-4)'
+                            [factor, {-1}]E '(3-4)'
+                                [parens, {-1}]E '(3-4)'
                                     ['('] '('
-                                    [expression, {-1}] '3X-4'
+                                    [expression, {-1}]E '3-4'
                                         [term, {3}] '3'
                                             [factor, {3}] '3'
                                                 [number, {3}] '3'
                                                     [oneOrMore] '3'
                                             [zeroOrMore]
-                                        [zeroOrMore, {4}] 'X-4'
-                                            [sequence, {4}] 'X-4'
-                                                [ILLEGAL] 'X'
+                                        [zeroOrMore, {4}]E '-4'
+                                            [sequence, {4}]E '-4'
                                                 [[+,-]] '-'
                                                 [term, {4}] '4'
                                                     [factor, {4}] '4'
@@ -355,40 +349,40 @@ Invalid input 'X', expected term (line 1, pos 8):
 1+2*(3-X4)-5
        ^
 ===
-[inputLine, {-6}] '1+2*(3-X4)-5'
-    [expression, {-6}] '1+2*(3-X4)-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(3-X4)-5'
-            [sequence, {-2}] '+2*(3-X4)'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
+            [sequence, {-2}]E '+2*(3-4)'
                 [[+,-]] '+'
-                [term, {-2}] '2*(3-X4)'
+                [term, {-2}]E '2*(3-4)'
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(3-X4)'
-                        [sequence, {-1}] '*(3-X4)'
+                    [zeroOrMore, {-1}]E '*(3-4)'
+                        [sequence, {-1}]E '*(3-4)'
                             [[*,/]] '*'
-                            [factor, {-1}] '(3-X4)'
-                                [parens, {-1}] '(3-X4)'
+                            [factor, {-1}]E '(3-4)'
+                                [parens, {-1}]E '(3-4)'
                                     ['('] '('
-                                    [expression, {-1}] '3-X4'
+                                    [expression, {-1}]E '3-4'
                                         [term, {3}] '3'
                                             [factor, {3}] '3'
                                                 [number, {3}] '3'
                                                     [oneOrMore] '3'
                                             [zeroOrMore]
-                                        [zeroOrMore, {4}] '-X4'
-                                            [sequence, {4}] '-X4'
+                                        [zeroOrMore, {4}]E '-4'
+                                            [sequence, {4}]E '-4'
                                                 [[+,-]] '-'
-                                                [term, {4}] 'X4'
-                                                    [factor, {4}] 'X4'
-                                                        [number, {4}] 'X4'
-                                                            [ILLEGAL] 'X'
-                                                            [oneOrMore] '4'
+                                                [term, {4}]E '4'
+                                                    [factor, {4}]E '4'
+                                                        [number, {4}]E '4'
+                                                            [oneOrMore]E '4'
+                                                                [digit] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
             [sequence, {5}] '-5'
@@ -406,25 +400,25 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 1+2*(3-4X)-5
         ^
 ===
-[inputLine, {-6}] '1+2*(3-4X)-5'
-    [expression, {-6}] '1+2*(3-4X)-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(3-4X)-5'
-            [sequence, {-2}] '+2*(3-4X)'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
+            [sequence, {-2}]E '+2*(3-4)'
                 [[+,-]] '+'
-                [term, {-2}] '2*(3-4X)'
+                [term, {-2}]E '2*(3-4)'
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(3-4X)'
-                        [sequence, {-1}] '*(3-4X)'
+                    [zeroOrMore, {-1}]E '*(3-4)'
+                        [sequence, {-1}]E '*(3-4)'
                             [[*,/]] '*'
-                            [factor, {-1}] '(3-4X)'
-                                [parens, {-1}] '(3-4X)'
+                            [factor, {-1}]E '(3-4)'
+                                [parens, {-1}]E '(3-4)'
                                     ['('] '('
                                     [expression, {-1}] '3-4'
                                         [term, {3}] '3'
@@ -440,7 +434,6 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
                                                         [number, {4}] '4'
                                                             [oneOrMore] '4'
                                                     [zeroOrMore]
-                                    [ILLEGAL] 'X'
                                     [')'] ')'
             [sequence, {5}] '-5'
                 [[+,-]] '-'
@@ -457,14 +450,14 @@ Invalid input 'X', expected '*', '/', '+', '-' or EOI (line 1, pos 10):
 1+2*(3-4)X-5
          ^
 ===
-[inputLine, {-6}] '1+2*(3-4)X-5'
-    [expression, {-6}] '1+2*(3-4)X-5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(3-4)X-5'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
             [sequence, {-2}] '+2*(3-4)'
                 [[+,-]] '+'
                 [term, {-2}] '2*(3-4)'
@@ -492,8 +485,7 @@ Invalid input 'X', expected '*', '/', '+', '-' or EOI (line 1, pos 10):
                                                             [oneOrMore] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
-            [sequence, {5}] 'X-5'
-                [ILLEGAL] 'X'
+            [sequence, {5}]E '-5'
                 [[+,-]] '-'
                 [term, {5}] '5'
                     [factor, {5}] '5'
@@ -508,14 +500,14 @@ Invalid input 'X', expected term (line 1, pos 11):
 1+2*(3-4)-X5
           ^
 ===
-[inputLine, {-6}] '1+2*(3-4)-X5'
-    [expression, {-6}] '1+2*(3-4)-X5'
+[inputLine, {-6}]E '1+2*(3-4)-5'
+    [expression, {-6}]E '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
             [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(3-4)-X5'
+        [zeroOrMore, {5}]E '+2*(3-4)-5'
             [sequence, {-2}] '+2*(3-4)'
                 [[+,-]] '+'
                 [term, {-2}] '2*(3-4)'
@@ -543,13 +535,13 @@ Invalid input 'X', expected term (line 1, pos 11):
                                                             [oneOrMore] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
-            [sequence, {5}] '-X5'
+            [sequence, {5}]E '-5'
                 [[+,-]] '-'
-                [term, {5}] 'X5'
-                    [factor, {5}] 'X5'
-                        [number, {5}] 'X5'
-                            [ILLEGAL] 'X'
-                            [oneOrMore] '5'
+                [term, {5}]E '5'
+                    [factor, {5}]E '5'
+                        [number, {5}]E '5'
+                            [oneOrMore]E '5'
+                                [digit] '5'
                     [zeroOrMore]
     [EOI]
 ###
@@ -559,7 +551,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 12):
 1+2*(3-4)-5X
            ^
 ===
-[inputLine, {-6}] '1+2*(3-4)-5X'
+[inputLine, {-6}]E '1+2*(3-4)-5'
     [expression, {-6}] '1+2*(3-4)-5'
         [term, {1}] '1'
             [factor, {1}] '1'
@@ -601,10 +593,9 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 12):
                         [number, {5}] '5'
                             [oneOrMore] '5'
                     [zeroOrMore]
-    [ILLEGAL] 'X'
     [EOI]
 ###
-1+2*(3-4-5
+>>>1+2*(3-4-5
 ===
 Invalid input 'EOI', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 11):
 1+2*(3-4-5

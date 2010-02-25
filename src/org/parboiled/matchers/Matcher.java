@@ -46,9 +46,8 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      *
      * @param context the MatcherContext
      * @return true if the match was successful
-     * @throws Throwable the throwable
      */
-    boolean match(@NotNull MatcherContext<V> context) throws Throwable;
+    boolean match(@NotNull MatcherContext<V> context);
 
     /**
      * Returns the recovery matcher assigned to this matcher, or null if none has been assigned.

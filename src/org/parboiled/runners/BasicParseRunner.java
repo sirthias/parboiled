@@ -78,11 +78,11 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
 
     public static final class Handler<V> implements MatchHandler<V> {
 
-        public final boolean matchRoot(MatcherContext<V> rootContext) {
+        public boolean matchRoot(MatcherContext<V> rootContext) {
             return rootContext.runMatcher();
         }
 
-        public final boolean match(MatcherContext<V> context) throws Throwable {
+        public boolean match(MatcherContext<V> context) {
             return context.getMatcher().match(context);
         }
 

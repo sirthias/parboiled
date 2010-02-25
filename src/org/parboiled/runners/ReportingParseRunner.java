@@ -87,7 +87,7 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
             return false;
         }
 
-        public boolean match(MatcherContext<V> context) throws Throwable {
+        public boolean match(MatcherContext<V> context) {
             boolean matched = inner.match(context);
             if (context.getCurrentLocation() == errorLocation) {
                 if (matched && seeking) {

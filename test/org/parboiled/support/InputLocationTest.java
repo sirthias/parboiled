@@ -30,9 +30,9 @@ public class InputLocationTest {
         assertEquals(readToEnd(buf, loc), "abcdefgh");
         assertEquals(readToEnd(buf, loc.advance(buf).advance(buf)), "cdefgh");
 
-        loc.advance(buf).insertAfter('X');
+        loc.advance(buf).insertNext('X');
         assertEquals(readToEnd(buf, loc), "abXcdefgh");
-        loc.advance(buf).advance(buf).advance(buf).advance(buf).insertAfter('Y');
+        loc.advance(buf).advance(buf).advance(buf).advance(buf).insertNext('Y');
         assertEquals(readToEnd(buf, loc), "abXcdYefgh");
     }
 
@@ -54,7 +54,7 @@ public class InputLocationTest {
         assertEquals(getStream(buf, loc), original);
 
         InputLocation cursor = loc.advance(buf).advance(buf);
-        InputLocation saved = cursor.removeAfter();
+        InputLocation saved = cursor.removeNext();
         assertEquals(getStream(buf, loc), "" +
                 "#0(0,0)'a'\n" +
                 "#1(0,1)'b'\n" +
@@ -64,7 +64,7 @@ public class InputLocationTest {
                 "#6(0,6)'g'\n" +
                 "#7(0,7)'h'\n");
 
-        cursor.insertAfter(saved);
+        cursor.insertNext(saved);
         assertEquals(getStream(buf, loc), original);
     }
 

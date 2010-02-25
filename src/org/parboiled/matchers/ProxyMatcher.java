@@ -44,7 +44,7 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.getChildren();
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) throws Throwable {
+    public boolean match(@NotNull MatcherContext<V> context) {
         apply();
         return target.match(context);
     }
