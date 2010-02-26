@@ -43,7 +43,9 @@ public final class StringUtils {
         StringBuilder sb = new StringBuilder();
         char[] chars = string.toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            sb.append(chars[i] == '\r' && i + 1 < chars.length && chars[i + 1] == '\n' ? "\\n" : escape(chars[i]));
+            if (i == chars.length-1 || chars[i] != '\r' || chars[i + 1] != '\n') {
+                sb.append(escape(chars[i]));
+            }
         }
         return sb.toString();
     }
