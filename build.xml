@@ -11,7 +11,8 @@
         <pathelement location="lib/annotations.jar"/>
     </path>
 
-    <taskdef name="javacn" classname="org.parboiled.ant.Javacn" classpath="lib/javacn-1.0.1.jar;lib/asm/asm-all-3.2.jar;"/>
+    <taskdef name="javacn" classname="org.parboiled.ant.Javacn"
+             classpath="lib/javacn-1.0.1.jar;lib/asm/asm-all-3.2.jar;"/>
     <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
     <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-issue-21.jar;"/>
     <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar;"/>
@@ -109,19 +110,47 @@
             <rule pattern="org.objectweb.asm.**" result="org.parboiled.asm.@1"/>
             <rule pattern="com.google.common.**" result="org.parboiled.google.@1"/>
         </jarjar>
+
+        <!-- default Java 1.5 runtime JARs, change if you have a special setup -->
+
+        <!-- WINDOWS -->
+        <condition property="jdk.lib.1.5" value="${java.home}/lib/rt.jar">
+            <os family="windows"/>
+        </condition>
+
+        <!-- OSX -->
+        <condition property="jdk.lib.1.5"
+                   value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/classes.jar">
+            <and>
+                <os family="mac"/>
+                <os family="unix"/>
+            </and>
+        </condition>
+
+        <!-- UNIX -->
+        <condition property="jdk.lib.1.5" value="${java.home}/lib/rt.jar">
+            <and>
+                <not>
+                    <os family="mac"/>
+                </not>
+                <os family="unix"/>
+            </and>
+        </condition>
+        
         <proguard>
-            -libraryjars "${java.home}/lib/rt.jar"
+            -libraryjars "${jdk.lib.1.5}"
             -libraryjars "lib/annotations.jar"
             -libraryjars "lib/google-collect/jsr305.jar"
             -injars "build/parboiled-${version}.full.jar"
             -outjars "build/parboiled-${version}.jar"
 
             -keep public class !org.parboiled.asm.**, !org.parboiled.google.**, org.parboiled.** { public protected *; }
-            -keep class org.parboiled.google.base.Predicate { *; } 
+            -keep class org.parboiled.google.base.Predicate { *; }
 
             -keepclassmembers class java.lang.ClassLoader { java.lang.Class findLoadedClass(java.lang.String); }
             -keepclassmembers class org.parboiled.google.base.FinalizableReference { void finalizeReferent(); }
-            -keepclassmembers class org.parboiled.google.base.internal.Finalizer { java.lang.ref.ReferenceQueue startFinalizer(java.lang.Class, java.lang.Object); }
+            -keepclassmembers class org.parboiled.google.base.internal.Finalizer { java.lang.ref.ReferenceQueue
+            startFinalizer(java.lang.Class, java.lang.Object); }
             -keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); }
 
             -dontoptimize
