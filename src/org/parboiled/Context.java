@@ -93,14 +93,6 @@ public interface Context<V> {
     String getNodeText(Node<?> node);
 
     /**
-     * Returns the first input character matched by the given node.
-     *
-     * @param node the node
-     * @return null if node is null or did not match at least one character otherwise the first matched input char
-     */
-    Character getNodeChar(Node<?> node);
-
-    /**
      * Returns the MatcherPath of the currently running matcher.
      *
      * @return the path
@@ -180,7 +172,7 @@ public interface Context<V> {
      * @return the parse tree subnodes already created in the current context scope
      */
     @NotNull
-    List<Node<V>>getSubNodes();
+    List<Node<V>> getSubNodes();
 
     /**
      * Returns true if the current rule is running somewhere underneath a test/testNot rule.
@@ -195,6 +187,13 @@ public interface Context<V> {
      * @return true if the current context is running below a context with a matcher marked @Leaf
      */
     boolean isBelowLeafLevel();
+
+    /**
+     * Returns true if this context or any sub node recorded a parse error.
+     *
+     * @return true if this context or any sub node recorded a parse error
+     */
+    boolean hasError();
 
 }
 

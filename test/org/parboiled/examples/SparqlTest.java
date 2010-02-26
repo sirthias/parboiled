@@ -23,7 +23,7 @@
 package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.examples.sparql.SparqlParser;
 import org.testng.Assert;

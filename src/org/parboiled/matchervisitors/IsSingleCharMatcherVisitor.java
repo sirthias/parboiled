@@ -14,78 +14,67 @@
  * limitations under the License.
  */
 
-package org.parboiled.runners;
+package org.parboiled.matchervisitors;
 
 import org.parboiled.matchers.*;
-import org.parboiled.support.Checks;
 
 /**
- * Determines whether a matcher can legally succeed with an empty match.
+ * Determines whether a matcher is a basic single character matcher.
  *
  * @param <V>
  */
-public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
+public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean> {
 
     public Boolean visit(ActionMatcher<V> matcher) {
-        return true;
+        return false;
     }
 
     public Boolean visit(CharactersMatcher<V> matcher) {
-        return false;
-    }
-
-    public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
-        return false;
-    }
-
-    public Boolean visit(CharMatcher<V> matcher) {
-        return false;
-    }
-
-    public Boolean visit(CharRangeMatcher<V> matcher) {
-        return false;
-    }
-
-    public Boolean visit(EmptyMatcher<V> matcher) {
         return true;
     }
 
+    public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
+        return true;
+    }
+
+    public Boolean visit(CharMatcher<V> matcher) {
+        return true;
+    }
+
+    public Boolean visit(CharRangeMatcher<V> matcher) {
+        return true;
+    }
+
+    public Boolean visit(EmptyMatcher<V> matcher) {
+        return false;
+    }
+
     public Boolean visit(FirstOfMatcher<V> matcher) {
-        for (Matcher<V> child : matcher.getChildren()) {
-            if (child.accept(this)) return true;
-        }
         return false;
     }
 
     public Boolean visit(OneOrMoreMatcher<V> matcher) {
-        Checks.ensure(!matcher.subMatcher.accept(this),
-                "Rule '%s' must not allow empty matches as sub-rule of an OneOrMore-rule", matcher.subMatcher);
         return false;
     }
 
     public Boolean visit(OptionalMatcher<V> matcher) {
-        return true;
+        return false;
     }
 
     public Boolean visit(SequenceMatcher<V> matcher) {
-        for (Matcher<V> child : matcher.getChildren()) {
-            if (!child.accept(this)) return false;
-        }
-        return true;
+        return false;
     }
 
     public Boolean visit(TestMatcher<V> matcher) {
-        return true;
+        return false;
     }
 
     public Boolean visit(TestNotMatcher<V> matcher) {
-        return true;
+        return false;
     }
 
     public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
-        Checks.ensure(!matcher.subMatcher.accept(this),
-                "Rule '%s' must not allow empty matches as sub-rule of an ZeroOrMore-rule", matcher.subMatcher);
-        return true;
+        return false;
     }
 
 }

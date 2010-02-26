@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 import org.parboiled.examples.time.TimeParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 
 public class TimeTest extends AbstractTest {
 

@@ -23,6 +23,7 @@ import org.parboiled.matchers.*;
 import org.parboiled.support.InputBuffer;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
+import org.parboiled.matchervisitors.DefaultMatcherVisitor;
 
 import java.util.List;
 

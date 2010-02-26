@@ -17,8 +17,8 @@
 package org.parboiled.test;
 
 import org.parboiled.Rule;
+import org.parboiled.RecoveringParseRunner;
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
-import org.parboiled.runners.RecoveringParseRunner;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;

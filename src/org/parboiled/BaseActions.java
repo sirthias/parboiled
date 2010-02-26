@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.StringUtils;
 import org.parboiled.support.Checks;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
@@ -251,8 +252,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the action parameter
      */
     public Character CHAR(Node<V> node) {
-        check();
-        return context.getNodeChar(node);
+        String text = TEXT(node);
+        return StringUtils.isEmpty(text) ? null : text.charAt(0);
     }
 
     /**
@@ -276,7 +277,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
         check();
         List<Character> values = new ArrayList<Character>();
         for (Node<V> node : nodes) {
-            values.add(context.getNodeChar(node));
+            values.add(CHAR(node));
         }
         return values;
     }
@@ -352,6 +353,16 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     public boolean IN_PREDICATE() {
         check();
         return context.inPredicate();
+    }
+
+    /**
+     * Returns true if neither the current rule, nor any sub rule has not recorded a parse error.
+     *
+     * @return true if neither the current rule, nor any sub rule has not recorded a parse error
+     */
+    public boolean NO_ERROR() {
+        check();
+        return !context.hasError();
     }
 
     private void check() {

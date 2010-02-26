@@ -17,7 +17,7 @@
 package org.parboiled.examples.calculator3;
 
 import org.parboiled.Parboiled;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.ToStringFormatter;

@@ -18,7 +18,7 @@ package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 import org.parboiled.trees.Filter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;

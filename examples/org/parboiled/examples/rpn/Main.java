@@ -18,7 +18,7 @@ package org.parboiled.examples.rpn;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.trees.Filter;

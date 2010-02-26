@@ -18,7 +18,9 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.matchervisitors.MatcherVisitor;
 import org.parboiled.support.Characters;
+import com.google.common.base.Preconditions;
 
 /**
  * A Matcher matching a single character out of a {@link org.parboiled.support.Characters} set
@@ -30,6 +32,7 @@ public class CharactersMatcher<V> extends AbstractMatcher<V> {
     public final Characters characters;
 
     public CharactersMatcher(@NotNull Characters characters) {
+        Preconditions.checkArgument(!characters.equals(Characters.NONE));
         this.characters = characters;
     }
 

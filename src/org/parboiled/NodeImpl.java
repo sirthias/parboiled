@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputLocation;
 import org.parboiled.trees.ImmutableTreeNode;
 import org.parboiled.common.StringUtils;
+import org.parboiled.matchers.Matcher;
 
 import java.util.List;
 
@@ -30,24 +31,29 @@ import java.util.List;
  */
 class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
 
-    private final String label;
+    private final Matcher<V> matcher;
     private final InputLocation startLocation;
     private final InputLocation endLocation;
     private final V value;
     private final boolean hasError;
 
-    public NodeImpl(String label, List<Node<V>> children, @NotNull InputLocation startLocation,
+    public NodeImpl(@NotNull Matcher<V> matcher, List<Node<V>> children, @NotNull InputLocation startLocation,
                     @NotNull InputLocation endLocation, V value, boolean hasError) {
         super(children);
-        this.label = label;
+        this.matcher = matcher;
         this.startLocation = startLocation;
         this.endLocation = endLocation;
         this.value = value;
         this.hasError = hasError;
     }
 
+    @NotNull
+    public Matcher<V> getMatcher() {
+        return matcher;
+    }
+
     public String getLabel() {
-        return label;
+        return matcher.getLabel();
     }
 
     @NotNull
@@ -72,7 +78,7 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
-        sb.append(label);
+        sb.append(getLabel());
         if (value != null) {
             sb.append(", {").append(value).append('}');
         }

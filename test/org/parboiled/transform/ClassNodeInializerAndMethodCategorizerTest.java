@@ -40,7 +40,7 @@ public class ClassNodeInializerAndMethodCategorizerTest {
         assertEqualsMultiline(join(classNode.cachedMethods),
                 "ch,charIgnoreCase,charRange,charSet,charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,test,testNot,zeroOrMore");
         assertEqualsMultiline(join(classNode.labelMethods),
-                "firstOf,oneOrMore,optional,sequence,skipCharRecovery,emptyMatchRecovery,singleCharRecovery,resynchronize");
+                "firstOf,oneOrMore,optional,sequence");
         assertEqualsMultiline(join(classNode.leafMethods),
                 "string,stringIgnoreCase");
     }

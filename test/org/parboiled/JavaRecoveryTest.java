@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.runners;
+package org.parboiled;
 
-import org.parboiled.Parboiled;
-import org.parboiled.trees.Filter;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.test.FileUtils;
+import org.parboiled.trees.Filter;
 import org.testng.annotations.Test;
 
 public class JavaRecoveryTest extends AbstractTest {

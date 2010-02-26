@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.parboiled.runners;
+package org.parboiled;
 
-import org.parboiled.Parboiled;
-import org.parboiled.Rule;
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import org.parboiled.examples.calculator.CalculatorParser;
 import org.parboiled.examples.java.JavaParser;
@@ -27,7 +25,7 @@ import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
-public class ReportingMatchHandlerTest extends AbstractTest {
+public class ReportingParseRunnerTest extends AbstractTest {
 
     private final String[] inputs = new String[] {
             "X1+2",

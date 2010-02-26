@@ -19,6 +19,7 @@ package org.parboiled.support;
 import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
 import org.parboiled.trees.Filter;
@@ -242,36 +243,40 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Returns the input text matched by the given node.
+     * Returns the input text matched by the given node, with error correction.
      *
      * @param node        the node
      * @param inputBuffer the underlying inputBuffer
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    public static String getNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
+    public static <V> String getNodeText(Node<V> node, @NotNull InputBuffer inputBuffer) {
         if (node == null) return null;
         if (!node.hasError()) {
-            return inputBuffer.extract(node.getStartLocation().getIndex(), node.getEndLocation().getIndex());
+            return getRawNodeText(node, inputBuffer);
         }
         // if the node has a parse error we cannot simpy cut a string out of the underlying input buffer, since we
         // would also include illegal characters, so we need to build it bottom up
-        StringBuilder sb = new StringBuilder();
-        for (Node<?> child : node.getChildren()) {
-            sb.append(getNodeText(child, inputBuffer));
+        if (node.getMatcher().accept(new IsSingleCharMatcherVisitor<V>())) {
+            return String.valueOf(node.getStartLocation().getChar());
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (Node<V> child : node.getChildren()) {
+                sb.append(getNodeText(child, inputBuffer));
+            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     /**
-     * Returns the first input character matched by the given node.
+     * Returns the raw input text matched by the given node, without error correction.
      *
      * @param node        the node
      * @param inputBuffer the underlying inputBuffer
-     * @return null if node is null or did not match at least one character otherwise the first matched input char
+     * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    public static Character getNodeChar(Node<?> node, InputBuffer inputBuffer) {
-        return node != null && node.getEndLocation().getIndex() > node.getStartLocation().getIndex() ?
-                inputBuffer.charAt(node.getStartLocation().getIndex()) : null;
+    public static <V> String getRawNodeText(Node<V> node, @NotNull InputBuffer inputBuffer) {
+        return node == null ? null :
+                inputBuffer.extract(node.getStartLocation().getIndex(), node.getEndLocation().getIndex());
     }
 
     /**

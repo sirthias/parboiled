@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.runners;
+package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.MatchHandler;
-import org.parboiled.MatcherContext;
-import org.parboiled.Rule;
 import org.parboiled.errors.InvalidInputError;
+import org.parboiled.matchers.TestNotMatcher;
+import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
@@ -56,6 +55,7 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
     }
 
     public static class Handler<V> implements MatchHandler<V> {
+        private final IsSingleCharMatcherVisitor<V> isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor<V>();
         private final InputLocation errorLocation;
         private final MatchHandler<V> inner;
         private final List<MatcherPath<V>> failedMatchers = new ArrayList<MatcherPath<V>>();
@@ -94,11 +94,17 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
                     lastMatch = context.getPath();
                     seeking = false;
                 }
-                if (!matched && !seeking) {
+                if (!matched && !seeking && context.getMatcher().accept(isSingleCharMatcherVisitor) &&
+                        notTestNot(context)) {
                     failedMatchers.add(context.getPath());
                 }
             }
             return matched;
+        }
+
+        private boolean notTestNot(MatcherContext<V> context) {
+            return !(context.getMatcher() instanceof TestNotMatcher) &&
+                    (context.getParent() == null || notTestNot(context.getParent()));
         }
 
     }

@@ -16,11 +16,10 @@
 
 package org.parboiled;
 
-import org.testng.annotations.Test;
+import org.parboiled.test.AbstractTest;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import org.parboiled.test.AbstractTest;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.testng.annotations.Test;
 
 public class NextCharTest extends AbstractTest {
 

@@ -28,12 +28,14 @@ import java.lang.reflect.Constructor;
 public class Parboiled {
 
     public static final char EOI = '\uFFFF';
+    public static final char DEL_ERROR = '\uFDEF';
+    public static final char INS_ERROR = '\uFDEE';
+    public static final char RESYNC = '\uFDED';
 
     protected Parboiled() {}
 
     /**
-     * Creates a parser object whose rule creation methods can then be used with the
-     * {@link BaseParser#parse(Rule, String, ParseRunner)} method.
+     * Creates a parser object whose rule creation methods can then be used with a {@link ParseRunner} implementation.
      * Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
      * Also your parser class has to be derived from BaseParser. If you want to use a non-default constructor you also

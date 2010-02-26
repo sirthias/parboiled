@@ -18,6 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.matchervisitors.MatcherVisitor;
 import org.parboiled.common.StringUtils;
 
 /**

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchers;
+package org.parboiled.matchervisitors;
+
+import org.parboiled.matchers.*;
 
 public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
 

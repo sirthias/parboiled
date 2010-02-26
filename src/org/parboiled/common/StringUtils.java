@@ -32,7 +32,7 @@ public final class StringUtils {
     private StringUtils() {}
 
     /**
-     * Replaces carriage returns, newlines, tabs, formfeeds and {@link Parboiled#EOI}
+     * Replaces carriage returns, newlines, tabs, formfeeds and the special chars defined in {@link Parboiled}
      * with their respective escape sequences.
      *
      * @param string the string
@@ -65,6 +65,12 @@ public final class StringUtils {
                 return "\\t";
             case '\f':
                 return "\\f";
+            case Parboiled.DEL_ERROR:
+                return "DEL_ERROR";
+            case Parboiled.INS_ERROR:
+                return "INS_ERROR";
+            case Parboiled.RESYNC:
+                return "RESYNC";
             case Parboiled.EOI:
                 return "EOI";
             default:

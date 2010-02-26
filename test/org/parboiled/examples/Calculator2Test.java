@@ -18,7 +18,7 @@ package org.parboiled.examples;
 
 import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.examples.calculator2.CalcNode;
 import org.parboiled.examples.calculator2.CalculatorParser;

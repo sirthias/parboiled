@@ -16,11 +16,10 @@
 
 package org.parboiled;
 
+import org.parboiled.support.ParsingResult;
+import org.parboiled.test.AbstractTest;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
-import org.parboiled.test.AbstractTest;
-import org.parboiled.support.ParsingResult;
-import org.parboiled.runners.RecoveringParseRunner;
 
 public class IndentDedentTest extends AbstractTest {
 

@@ -134,10 +134,6 @@ public class MatcherContext<V> implements Context<V> {
         return ParseTreeUtils.getNodeText(node, inputBuffer);
     }
 
-    public Character getNodeChar(Node<?> node) {
-        return ParseTreeUtils.getNodeChar(node, inputBuffer);
-    }
-
     @NotNull
     public MatcherPath<V> getPath() {
         return new MatcherPath<V>(this);
@@ -189,6 +185,10 @@ public class MatcherContext<V> implements Context<V> {
         return belowLeafLevel;
     }
 
+    public boolean hasError() {
+        return hasError;
+    }
+
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setStartLocation(InputLocation startLocation) {
@@ -233,7 +233,7 @@ public class MatcherContext<V> implements Context<V> {
             if (parent != null) parent.addChildNodes(subNodes);
             return;
         }
-        node = new NodeImpl<V>(matcher.getLabel(), subNodes, startLocation, currentLocation, getTreeValue(), hasError);
+        node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, getTreeValue(), hasError);
         if (parent != null) parent.addChildNode(node);
         lastNodeRef.setTarget(node);
     }

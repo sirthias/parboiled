@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.support.ParseTreeUtils.*;
 import org.parboiled.trees.ImmutableTreeNode;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Predicate;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class ParseTreeUtilsTest {
 
@@ -39,6 +41,11 @@ public class ParseTreeUtilsTest {
         private TestNode(String label, TestNode... children) {
             super(Arrays.<Node<String>>asList(children));
             this.label = label;
+        }
+
+        @NotNull
+        public Matcher<String> getMatcher() {
+            throw new NotImplementedException();
         }
 
         public String getLabel() {

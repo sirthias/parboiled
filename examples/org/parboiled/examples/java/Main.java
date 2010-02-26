@@ -18,8 +18,8 @@ package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
+import org.parboiled.BasicParseRunner;
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
-import org.parboiled.runners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import java.io.*;

@@ -17,7 +17,7 @@
 package org.parboiled.examples.calculator;
 
 import org.parboiled.Parboiled;
-import org.parboiled.runners.RecoveringParseRunner;
+import org.parboiled.RecoveringParseRunner;
 import org.parboiled.common.StringUtils;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;

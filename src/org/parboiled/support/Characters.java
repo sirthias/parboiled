@@ -168,8 +168,8 @@ public class Characters {
     private Characters addToChars(char c) {
         if (indexOf(chars, c) != -1) return this;
         char[] newChars = new char[chars.length + 1];
-        System.arraycopy(chars, 0, newChars, 1, chars.length);
-        newChars[0] = c;
+        System.arraycopy(chars, 0, newChars, 0, chars.length);
+        newChars[chars.length] = c;
         return new Characters(subtractive, newChars);
     }
 
