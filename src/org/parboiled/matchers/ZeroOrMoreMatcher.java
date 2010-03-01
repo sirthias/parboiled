@@ -19,13 +19,13 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.support.Checks;
+import org.parboiled.errors.GrammarException;
 import org.parboiled.support.InputLocation;
 
 /**
- * A Matcher that repeatedly tries its sub matcher against the input. Always succeeds.
+ * A {@link Matcher} that repeatedly tries its sub matcher against the input. Always succeeds.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> {
 
@@ -41,7 +41,8 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> {
         while (context.getSubContext(subMatcher).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
-                Checks.fail("The inner rule of ZeroOrMore rule '%s' must not allow empty matches", context.getPath());
+                throw new GrammarException("The inner rule of ZeroOrMore rule '%s' must not allow empty matches",
+                        context.getPath());
             }
             lastLocation = currentLocation;
         }

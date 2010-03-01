@@ -22,8 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parser methods returning Rule objects. Instructs parboiled to automatically label the
- * created rules with the given label or the method name (if no value is given).
+ * Annotation to be used on parser methods returning {@link org.parboiled.Rule}s.
+ * Instructs parboiled to automatically label the created rules with the given label or the method name
+ * (if no explicit annotation value is given).
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

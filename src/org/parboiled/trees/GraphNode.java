@@ -22,9 +22,9 @@ import java.util.List;
 
 /**
  * A node in a directed graph (that may have cycles).
- * The children list may include null entries as well as multiple entries referencing the same child.
+ * The children list must not contain null entries.
  *
- * @param <T> the actual implementation type.
+ * @param <T> the actual implementation type of this graph node
  */
 public interface GraphNode<T extends GraphNode<T>> {
 

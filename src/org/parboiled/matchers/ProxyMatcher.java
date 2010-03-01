@@ -24,10 +24,11 @@ import org.parboiled.Rule;
 import java.util.List;
 
 /**
- * A Matcher that delegates all Rule and Matcher interface methods to another Matcher.
- * It can also hold a label and lazily apply it to the underlying matcher once it is available.
+ * A {@link Matcher} that delegates all {@link Rule} and {@link Matcher} interface methods to another {@link Matcher}.
+ * It can also hold a label, a leaf marker and a withoutNode marker and lazily apply these to the
+ * underlying {@link Matcher} once it is available.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
 
@@ -35,7 +36,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
     private String label;
     private boolean leaf;
     private boolean withoutNode;
-    private Rule recoveryRule;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
@@ -63,11 +63,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.isWithoutNode();
     }
 
-    public Matcher<V> getRecoveryMatcher() {
-        apply();
-        return target.getRecoveryMatcher();
-    }
-
     public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
         apply();
         return target.accept(visitor);
@@ -85,7 +80,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         if (label != null) label(label);
         if (leaf) asLeaf();
         if (withoutNode) withoutNode();
-        if (recoveryRule != null) recoveredBy(recoveryRule);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -128,30 +122,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Rule recoveredBy(Rule recoveryRule) {
-        if (target == null) {
-            // if we have no target yet we need to save the recovery rule and "apply" it later
-            if (this.recoveryRule == null) {
-                this.recoveryRule = recoveryRule;
-                return this;
-            }
-
-            // this proxy matcher is already waiting for its recoveryLabel application opportunity,
-            // so we need to create another proxy level
-            ProxyMatcher<V> anotherProxy = createClone();
-            anotherProxy.recoveryRule = recoveryRule;
-            anotherProxy.arm(this);
-            return anotherProxy;
-        }
-
-        // we already have a target to which we can directly apply the recoveryRule
-        Rule inner = (Rule) unwrap(target);
-        target = (Matcher<V>) inner.recoveredBy(recoveryRule); // might change the instance so update it
-        this.recoveryRule = null;
-        return (Rule) target;
-    }
-
-    @SuppressWarnings({"unchecked"})
     public Rule withoutNode() {
         if (target == null) {
             // if we have no target yet we need to save the pull up marker and "apply" it later
@@ -166,10 +136,22 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return (Rule) target;
     }
 
+    /**
+     * Supplies this ProxyMatcher with its underlying delegate.
+     *
+     * @param target the Matcher to delegate to
+     */
     public void arm(Matcher<V> target) {
         this.target = target;
     }
 
+    /**
+     * Retrieves the innermost Matcher that is not a ProxyMatcher.
+     *
+     * @param matcher the matcher to unwrap
+     * @param <V>     the type of the value field of a parse tree node
+     * @return the given instance if it is not a ProxyMatcher, otherwise the innermost non-proxy Matcher
+     */
     @SuppressWarnings({"unchecked"})
     public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
         if (matcher instanceof ProxyMatcher) {

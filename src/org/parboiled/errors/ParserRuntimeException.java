@@ -17,7 +17,7 @@
 package org.parboiled.errors;
 
 /**
- * Exception that is thrown for any problem during the parsing run, that cannot be overcome automatically.
+ * Exception that is thrown for any problem during the parsing run that cannot be overcome automatically.
  */
 public class ParserRuntimeException extends RuntimeException {
 

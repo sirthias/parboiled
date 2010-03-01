@@ -20,6 +20,11 @@ import com.google.common.base.Function;
 import org.parboiled.Node;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 
+/**
+ * Utility interface defining a few commonly used parse tree node filters.
+ *
+ * @param <T> the type of {@link GraphNode} this Filter is operating on
+ */
 public interface Filter<T extends GraphNode<T>> extends Function<T, Printability> {
 
     static final Filter<Node<Object>> SkipEmptyOptionalsAndZeroOrMores = new Filter<Node<Object>>() {

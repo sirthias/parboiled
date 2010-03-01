@@ -17,10 +17,7 @@
 package org.parboiled.support;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
 
 public class CharactersTest {
 
@@ -57,18 +54,6 @@ public class CharactersTest {
         assertEquals(Characters.allBut('A', 'B').remove(Characters.of('B', 'C')), Characters.allBut('A', 'B', 'C'));
         assertEquals(Characters.of('A', 'B').remove(Characters.allBut('B', 'C')), Characters.of('B'));
         assertEquals(Characters.allBut('A', 'B').remove(Characters.allBut('B', 'C')), Characters.of('C'));
-    }
-
-    @Test
-    public void testGetRepresentative() {
-        for (Characters characters : Arrays.asList(
-                Characters.ALL,
-                Characters.of('A', 'B'),
-                Characters.allBut('A', 'B'),
-                Characters.of('x')
-        )) {
-            assertTrue(characters.contains(characters.getRepresentative()));
-        }
     }
 
 }

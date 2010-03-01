@@ -18,8 +18,18 @@ package org.parboiled;
 
 import org.parboiled.support.ParsingResult;
 
+/**
+ * A ParseRunner performs the actual parsing run of a given parser rule on a given input text.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
 public interface ParseRunner<V> {
 
+    /**
+     * Performs the actual parse and creates a corresponding ParsingResult instance.
+     *
+     * @return the ParsingResult for the run
+     */
     ParsingResult<V> run();
 
 }

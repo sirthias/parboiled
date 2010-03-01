@@ -17,10 +17,10 @@
 package org.parboiled.support;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
-import org.parboiled.common.Utils;
 import org.parboiled.trees.Filter;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * General utility methods for operating on parse trees.
  */
-public class ParseTreeUtils {
+public final class ParseTreeUtils {
 
     private ParseTreeUtils() {}
 
@@ -40,6 +40,7 @@ public class ParseTreeUtils {
      * <p>The path is a '/' separated list of node label prefixes describing the ancestor chain of the node to look for
      * relative to the given parent node. If there are several nodes that match the given path the method
      * returns the first one unless the respective path segments has the special prefix "last:". In this case the
+     * last matching node is returned.
      * <p><b>Example:</b> "per/last:so/fix" will return the first node, whose label starts with "fix" under the last
      * node, whose label starts with "so" under the first node, whose label starts with "per".</p>
      * If parent is null or no node is found the method returns null.
@@ -68,7 +69,7 @@ public class ParseTreeUtils {
             Iterable<Node<V>> iterable = parents;
             if (prefix.startsWith("last:")) {
                 prefix = prefix.substring(5);
-                iterable = Utils.reverse(parents);
+                iterable = Iterables.reverse(parents);
             }
             for (Node<V> child : iterable) {
                 if (StringUtils.startsWith(child.getLabel(), prefix)) {
@@ -112,12 +113,7 @@ public class ParseTreeUtils {
         if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
-            Iterable<Node<V>> iterable = parents;
-            if (prefix.startsWith("last:")) {
-                prefix = prefix.substring(5);
-                iterable = Utils.reverse(parents);
-            }
-            for (Node<V> child : iterable) {
+            for (Node<V> child : parents) {
                 if (StringUtils.startsWith(child.getLabel(), prefix)) {
                     if (separatorIndex == -1) {
                         collection.add(child);
@@ -196,7 +192,7 @@ public class ParseTreeUtils {
      */
     public static <V> Node<V> findLastNode(List<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
         if (parents != null && !parents.isEmpty()) {
-            for (Node<V> child : Utils.reverse(parents)) {
+            for (Node<V> child : Iterables.reverse(parents)) {
                 Node<V> found = findLastNode(child, predicate);
                 if (found != null) return found;
             }
@@ -279,7 +275,7 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Creates a readable string represenation of the parse tree in thee given ParsingResult object.
+     * Creates a readable string represenation of the parse tree in the given {@link ParsingResult} object.
      *
      * @param parsingResult the parsing result containing the parse tree
      * @return a new String
@@ -289,9 +285,9 @@ public class ParseTreeUtils {
     }
 
     /**
-     * Creates a readable string represenation of the parse tree in thee given ParsingResult object.
+     * Creates a readable string represenation of the parse tree in thee given {@link ParsingResult} object.
      * If a non-null filter function is given its result is used to determine whether a particular node is
-     * print and/or its subtree printed.
+     * printed and/or its subtree printed.
      *
      * @param parsingResult the parsing result containing the parse tree
      * @param filter        optional node filter selecting the nodes to print and/or descend into for tree printing

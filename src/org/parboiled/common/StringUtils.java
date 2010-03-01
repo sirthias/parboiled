@@ -16,7 +16,6 @@
 
 package org.parboiled.common;
 
-import org.parboiled.Parboiled;
 import org.parboiled.support.Characters;
 
 import java.io.CharArrayReader;
@@ -33,7 +32,7 @@ public final class StringUtils {
     private StringUtils() {}
 
     /**
-     * Replaces carriage returns, newlines, tabs, formfeeds and the special chars defined in {@link Parboiled}
+     * Replaces carriage returns, newlines, tabs, formfeeds and the special chars defined in {@link Characters}
      * with their respective escape sequences.
      *
      * @param string the string
@@ -44,7 +43,7 @@ public final class StringUtils {
         StringBuilder sb = new StringBuilder();
         char[] chars = string.toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            if (i == chars.length-1 || chars[i] != '\r' || chars[i + 1] != '\n') {
+            if (i == chars.length - 1 || chars[i] != '\r' || chars[i + 1] != '\n') {
                 sb.append(escape(chars[i]));
             }
         }
@@ -52,7 +51,7 @@ public final class StringUtils {
     }
 
     /**
-     * Replaces carriage returns, newlines, tabs, formfeeds and {@link Characters#EOI}
+     * Replaces carriage returns, newlines, tabs, formfeeds and the special chars defined in {@link Characters}
      * with their respective escape sequences.
      *
      * @param c the character to escape

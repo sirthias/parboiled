@@ -21,6 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.StringUtils;
 
+/**
+ * A {@link Matcher} matching a single character out of a given range of characters.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
 public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 
     public final char cLow;

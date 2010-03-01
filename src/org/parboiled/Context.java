@@ -77,7 +77,7 @@ public interface Context<V> {
     InputLocation getCurrentLocation();
 
     /**
-     * Returns the list of parse errors so far generated during the entire parsing run.
+     * Returns the list of parse errors for the entire parsing run.
      *
      * @return the list of parse errors
      */
@@ -85,15 +85,15 @@ public interface Context<V> {
     List<ParseError> getParseErrors();
 
     /**
-     * Returns the input text matched by the given node.
+     * Returns the input text matched by the given node, with error correction.
      *
      * @param node the node
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    String getNodeText(Node<?> node);
+    String getNodeText(Node<V> node);
 
     /**
-     * Returns the MatcherPath of the currently running matcher.
+     * Returns the {@link MatcherPath} to the currently running matcher.
      *
      * @return the path
      */
@@ -137,7 +137,7 @@ public interface Context<V> {
 
     /**
      * Returns the last node created during this parsing run. The last node is independent from the current context
-     * scope, i.e. all context along the context chain would return the same object at any given point in the
+     * scope, i.e. all contexts along the context chain would return the same object at any given point in the
      * parsing process.
      *
      * @return the last node created during this parsing run.
@@ -168,6 +168,7 @@ public interface Context<V> {
 
     /**
      * Returns the parse tree subnodes already created in the current context scope.
+     * Note that the returned list is immutable.
      *
      * @return the parse tree subnodes already created in the current context scope
      */

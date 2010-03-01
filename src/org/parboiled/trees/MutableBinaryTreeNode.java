@@ -17,25 +17,26 @@
 package org.parboiled.trees;
 
 /**
- * A MutableTreeNode specialization also satisfying the BinaryTreeNode interface and providing mutability methods.
+ * A {@link MutableTreeNode} specialization also satisfying the {@link BinaryTreeNode} interface
+ * and providing mutability methods.
  *
- * @param <N> the actual implementation type of this tree node
+ * @param <T> the actual implementation type of this MutableBinaryTreeNode
  */
-public interface MutableBinaryTreeNode<N extends MutableBinaryTreeNode<N>>
-        extends BinaryTreeNode<N>, MutableTreeNode<N> {
+public interface MutableBinaryTreeNode<T extends MutableBinaryTreeNode<T>>
+        extends BinaryTreeNode<T>, MutableTreeNode<T> {
 
     /**
      * Sets the left child node to the given node.
      *
      * @param node the node to set as left child
      */
-    void setLeft(N node);
+    void setLeft(T node);
 
     /**
      * Sets the right child node to the given node.
      *
      * @param node the node to set as right child
      */
-    void setRight(N node);
+    void setRight(T node);
 
 }

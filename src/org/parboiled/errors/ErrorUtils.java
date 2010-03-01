@@ -20,15 +20,29 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
+import org.parboiled.support.DefaultMatcherVisitor;
 import org.parboiled.support.InputBuffer;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
-import org.parboiled.support.DefaultMatcherVisitor;
 
 import java.util.List;
 
-public class ErrorUtils {
+/**
+ * General utility methods regarding parse errors.
+ */
+public final class ErrorUtils {
 
+    private ErrorUtils() {}
+
+    /**
+     * Finds the Matcher in the given failedMatcherPath whose label is best for presentation in "expected" strings
+     * of parse error messages, given the provided lastMatchPath.
+     *
+     * @param failedMatcherPath the path to the failed matcher
+     * @param lastMatchPath     the path of the last match
+     * @param <V> the type of the value field of a parse tree node
+     * @return the matcher whose label is best for presentation in "expected" strings
+     */
     public static <V> Matcher<V> findProperLabelMatcher(@NotNull MatcherPath<V> failedMatcherPath,
                                                         MatcherPath<V> lastMatchPath) {
         int commonPrefixLength = failedMatcherPath.getCommonPrefixLength(lastMatchPath);
@@ -95,9 +109,8 @@ public class ErrorUtils {
      * @param inputBuffer the input buffer
      * @return the pretty print text
      */
-    @SuppressWarnings({"unchecked"})
-    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
-        return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter());
+    public static <V> String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
+        return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter<V>());
     }
 
     /**

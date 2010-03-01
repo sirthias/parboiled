@@ -69,9 +69,7 @@
         <javadoc destdir="build/javadoc" windowtitle="parboiled ${version} API">
             <packageset dir="src" defaultexcludes="yes">
                 <include name="org/parboiled/**"/>
-                <exclude name="org/parboiled/asm/**"/>
-                <exclude name="org/parboiled/matchers/**"/>
-                <exclude name="org/parboiled/MatcherContext*"/>
+                <exclude name="org/parboiled/transform/**"/>
             </packageset>
             <classpath refid="compile.classpath"/>
             <link href="http://java.sun.com/javase/6/docs/api"/>

@@ -22,22 +22,48 @@ import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.SequenceMatcher;
 import org.parboiled.matchers.TestMatcher;
-import org.parboiled.support.GetAStarterCharVisitor;
-import org.parboiled.support.IsSingleCharMatcherVisitor;
-import org.parboiled.support.IsStarterCharVisitor;
 import org.parboiled.support.*;
 
 import java.util.List;
 
+/**
+ * A {@link ParseRunner} implementation that is able to recover from {@link InvalidInputError}s in the input and therefore
+ * report more than just the first {@link InvalidInputError} if the input does not conform to the rule grammar.
+ * Error recovery is done by attempting to either delete an error character or insert a potentially missing character,
+ * whereby this implementation is able to determine itself which of these options is the best strategy.
+ * If the parse error cannot be overcome by either deleting or inserting one character a resynchronization rule is
+ * determined and the parsing process resynchronized, so that parsing can still continue.
+ * In this way the RecoveringParseRunner is able to completely parse most input texts. Only if the parser cannot even
+ * start matching the root rule will it return an unmatched {@link ParsingResult}.
+ * If the input is error free this {@link ParseRunner} implementation will only perform one parsing run.
+ * However, if there are {@link InvalidInputError}s in the input potentially many more runs are performed to properly
+ * report all errors and test the various recovery strategies.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
 public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     private InputLocation errorLocation;
     private InvalidInputError<V> currentError;
 
+    /**
+     * Create a new RecoveringParseRunner instance with the given rule and input text and returns the result of
+     * its {@link #run()} method invocation.
+     *
+     * @param rule  the parser rule to run
+     * @param input the input text to run on
+     * @return the ParsingResult for the parsing run
+     */
     public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
         return new RecoveringParseRunner<V>(rule, input).run();
     }
 
+    /**
+     * Creates a new RecoveringParseRunner instance for the given rule and input text.
+     *
+     * @param rule  the parser rule
+     * @param input the input text
+     */
     public RecoveringParseRunner(@NotNull Rule rule, @NotNull String input) {
         super(rule, input);
     }
@@ -62,18 +88,18 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         return matched;
     }
 
-    private void performErrorReportingRun() {
+    protected void performErrorReportingRun() {
         ReportingParseRunner.Handler<V> handler = new ReportingParseRunner.Handler<V>(errorLocation, getInnerHandler());
         runRootContext(handler);
         currentError = handler.getParseError();
     }
 
-    private MatchHandler<V> getInnerHandler() {
+    protected MatchHandler<V> getInnerHandler() {
         return errorLocation != null && errorLocation.getIndex() > 0 ?
                 new Handler<V>(currentError) : new BasicParseRunner.Handler<V>();
     }
 
-    private boolean fixError(InputLocation fixLocation) {
+    protected boolean fixError(InputLocation fixLocation) {
         if (errorLocation.getIndex() == 0) {
             if (!fixIllegalStarterChars()) return false;
             attemptRecordingMatch();
@@ -101,6 +127,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
                 preFixLocation.getNext().removeNext();
                 errorLocation = nextErrorAfterDeletion;
             } else {
+                // we need to insert the characters in reverse order, since we insert twice on the same location
                 preFixLocation.insertNext(bestInsertionCharacter);
                 preFixLocation.insertNext(Characters.INS_ERROR);
                 errorLocation = nextErrorAfterBestInsertion;
@@ -108,7 +135,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         } else {
             // we can't fix the error with a single char fix, so fall back to resynchronization
             preFixLocation.insertNext(Characters.RESYNC);
-            attemptRecordingMatch();
+            attemptRecordingMatch(); // find the next parse error
         }
         return true;
     }
@@ -127,7 +154,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         return true;
     }
 
-    private InputLocation findPreviousLocation(InputLocation fixLocation) {
+    protected InputLocation findPreviousLocation(InputLocation fixLocation) {
         InputLocation location = startLocation;
         while (location != null && location.getNext() != fixLocation) {
             location = location.getNext();
@@ -135,7 +162,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         return location;
     }
 
-    private boolean tryFixBySingleCharDeletion(@NotNull InputLocation preFixLocation) {
+    protected boolean tryFixBySingleCharDeletion(@NotNull InputLocation preFixLocation) {
         preFixLocation.insertNext(Characters.DEL_ERROR);
         InputLocation saved = preFixLocation.getNext().removeNext();
         boolean nowErrorFree = attemptRecordingMatch();
@@ -147,7 +174,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     @SuppressWarnings({"ConstantConditions"})
-    private Character findBestSingleCharInsertion(@NotNull InputLocation preFixLocation) {
+    protected Character findBestSingleCharInsertion(@NotNull InputLocation preFixLocation) {
         GetAStarterCharVisitor<V> getAStarterCharVisitor = new GetAStarterCharVisitor<V>();
         InputLocation bestNextErrorLocation = startLocation; // initialize with the "worst" next error location
         Character bestChar = null;
@@ -173,12 +200,25 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         return bestChar;
     }
 
+    /**
+     * A {@link MatchHandler} implementation that recognized the three special error recovery characters
+     * {@link Characters#DEL_ERROR}, {@link Characters#INS_ERROR} and {@link Characters#RESYNC} to overcome
+     * {@link InvalidInputError}s at the respective {@link InputLocation}s.
+     *
+     * @param <V> the type of the value field of a parse tree node
+     */
     public static class Handler<V> implements MatchHandler<V> {
         private final IsSingleCharMatcherVisitor<V> isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor<V>();
         private final InvalidInputError<V> currentError;
         private InputLocation fringeLocation;
         private MatcherPath<V> lastMatchPath;
 
+        /**
+         * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its errorCharCount
+         * to the correct number if the error corresponds to an error that can only be overcome by resynchronizing.
+         *
+         * @param currentError an optional InvalidInputError whose errorCharCount to set during resyncing
+         */
         public Handler(InvalidInputError<V> currentError) {
             this.currentError = currentError;
         }
@@ -213,7 +253,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
                     resynchronize(context);
         }
 
-        private void updateFringeLocation(MatcherContext<V> context) {
+        protected void updateFringeLocation(MatcherContext<V> context) {
             if (fringeLocation == null ||
                     fringeLocation.getIndex() < context.getCurrentLocation().getIndex()) {
                 fringeLocation = context.getCurrentLocation();
@@ -221,12 +261,12 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
         }
 
-        private boolean isErrorLocation(MatcherContext<V> context) {
+        protected boolean isErrorLocation(MatcherContext<V> context) {
             char c = context.getCurrentLocation().getChar();
             return c == Characters.DEL_ERROR || c == Characters.INS_ERROR;
         }
 
-        private boolean willMatchError(MatcherContext<V> context) {
+        protected boolean willMatchError(MatcherContext<V> context) {
             InputLocation preSkipLocation = context.getCurrentLocation();
             while (isErrorLocation(context)) {
                 context.advanceInputLocation();
@@ -246,7 +286,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             return true;
         }
 
-        private boolean resynchronize(MatcherContext<V> context) {
+        protected boolean resynchronize(MatcherContext<V> context) {
             context.clearBelowLeafLevelMarker();
             context.markError();
 
@@ -258,14 +298,15 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             List<Matcher<V>> followMatchers = new FollowMatchersVisitor<V>().getFollowMatchers(context);
             int resyncCharCount = gobbleIllegalCharacters(context, followMatchers);
 
-            if (currentError.getErrorLocation().getIndex() == fringeLocation.getIndex() && resyncCharCount > 1) {
+            if (currentError != null &&
+                    currentError.getErrorLocation().getIndex() == fringeLocation.getIndex() && resyncCharCount > 1) {
                 currentError.setErrorCharCount(resyncCharCount);
             }
 
             return true;
         }
 
-        private int gobbleIllegalCharacters(MatcherContext<V> context, List<Matcher<V>> followMatchers) {
+        protected int gobbleIllegalCharacters(MatcherContext<V> context, List<Matcher<V>> followMatchers) {
             int count = 0;
             while_loop:
             while (true) {

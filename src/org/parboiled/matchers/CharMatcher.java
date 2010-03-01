@@ -21,9 +21,9 @@ import org.parboiled.MatcherContext;
 import org.parboiled.common.StringUtils;
 
 /**
- * A Matcher matching a single character.
+ * A {@link Matcher} matching a single given character.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class CharMatcher<V> extends AbstractMatcher<V> {
 

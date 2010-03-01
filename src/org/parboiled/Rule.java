@@ -40,14 +40,6 @@ public interface Rule {
     Rule asLeaf();
 
     /**
-     * Assigns the given rule as parse error recovery rule to this rule.
-     *
-     * @param recoveryRule the rule to execute as parse error recovery rule
-     * @return this Rule
-     */
-    Rule recoveredBy(Rule recoveryRule);
-
-    /**
      * Marks this rule as not creating its own parse tree node.
      * Instead all nodes created by sub rules are "pulled up" to become direct children of this rules parent rule.
      *

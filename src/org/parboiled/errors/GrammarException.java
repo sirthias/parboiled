@@ -32,6 +32,10 @@ public class GrammarException extends RuntimeException {
         super(message, cause);
     }
 
+    public GrammarException(String message, Object... messageArgs) {
+        super(String.format(message, messageArgs));
+    }
+
     public GrammarException(Throwable cause, String message, Object... messageArgs) {
         super(String.format(message, messageArgs), cause);
     }

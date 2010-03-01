@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 
 /**
- * A Matcher matching a single character case independently.
+ * A {@link Matcher} matching a single character case-independently.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
 

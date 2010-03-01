@@ -17,40 +17,41 @@
 package org.parboiled.trees;
 
 /**
- * A simple MutableBinaryTreeNode implementation based on the MutableTreeNodeImpl.
- * @param <N>
+ * A simple {@link MutableBinaryTreeNode} implementation based on the {@link MutableTreeNodeImpl}.
+ *
+ * @param <T> the actual implementation type of this MutableBinaryTreeNodeImpl
  */
-public class MutableBinaryTreeNodeImpl<N extends MutableBinaryTreeNode<N>> extends MutableTreeNodeImpl<N>
-        implements BinaryTreeNode<N> {
+public class MutableBinaryTreeNodeImpl<T extends MutableBinaryTreeNode<T>> extends MutableTreeNodeImpl<T>
+        implements BinaryTreeNode<T> {
 
     public MutableBinaryTreeNodeImpl() {
         super.addChild(0, null); // left
         super.addChild(1, null); // right
     }
 
-    public N left() {
+    public T left() {
         return getChildren().get(0);
     }
 
-    public void setLeft(N node) {
+    public void setLeft(T node) {
         setChild(0, node);
     }
 
-    public N right() {
+    public T right() {
         return getChildren().get(1);
     }
 
-    public void setRight(N node) {
+    public void setRight(T node) {
         setChild(1, node);
     }
 
     @Override
-    public void addChild(int index, N child) {
+    public void addChild(int index, T child) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public N removeChild(int index) {
+    public T removeChild(int index) {
         throw new UnsupportedOperationException();
     }
 

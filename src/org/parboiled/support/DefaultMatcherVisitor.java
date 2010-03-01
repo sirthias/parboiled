@@ -18,6 +18,12 @@ package org.parboiled.support;
 
 import org.parboiled.matchers.*;
 
+/**
+ * A basic {@link MatcherVisitor} implementation that delegates all visiting methods to one default value method.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ * @param <R> the return value of this visitor
+ */
 public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
 
     public R visit(ActionMatcher<V> matcher) {
@@ -72,6 +78,12 @@ public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
         return defaultValue(matcher);
     }
 
+    /**
+     * Returns the default value for all visiting methods that have not been overridden.
+     *
+     * @param matcher the matcher
+     * @return the return value (null by default)
+     */
     @SuppressWarnings({"UnusedDeclaration"})
     public R defaultValue(AbstractMatcher<V> matcher) {
         return null;

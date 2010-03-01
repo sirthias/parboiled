@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Matcher that not actually matches input but rather resolves an ActionParameter in the current rule context.
+ * A {@link Matcher} that not actually matches input but runs a given parser {@link Action}.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public class ActionMatcher<V> extends AbstractMatcher<V> {
 
@@ -40,6 +42,10 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     @SuppressWarnings({"unchecked"})
     public ActionMatcher(@NotNull Action<V> action) {
         this.action = action;
+
+        if (action instanceof ContextAware) {
+            contextAwares.add((ContextAware<V>) action);
+        }
 
         // in order to make anonymous inner classes and other member classes work seamlessly
         // we collect the synthetic references to the outer parent classes and inform them of

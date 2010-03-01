@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 
 /**
- * A Matcher that always successfully matches nothing.
+ * A {@link Matcher} that always successfully matches nothing.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class EmptyMatcher<V> extends AbstractMatcher<V> {
 

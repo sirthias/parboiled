@@ -56,7 +56,7 @@ public class InputBuffer {
     }
 
     /**
-     * Returns the character at the given index. If the index is invalid the method returns Chars.EOI.
+     * Returns the character at the given index. If the index is invalid the method returns {@link Characters#EOI}.
      *
      * @param index the index
      * @return the character at the given index or Chars.EOI.
@@ -66,12 +66,12 @@ public class InputBuffer {
     }
 
     /**
-     * Constructs a new String object from all character between the given indices.
+     * Constructs a new {@link String} from all character between the given indices.
      * Invalid indices are automatically adjusted to their respective boundary.
      *
      * @param start the start index (inclusively)
      * @param end   the end index (exclusively)
-     * @return a new String object (non-interned)
+     * @return a new String (non-interned)
      */
     @NotNull
     public String extract(int start, int end) {

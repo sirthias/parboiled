@@ -16,15 +16,18 @@
 
 package org.parboiled.errors;
 
-import org.parboiled.support.InputLocation;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.InputLocation;
 
-public class SimpleParseError implements ParseError {
+/**
+ * A basic {@link ParseError} implementation for a one-char parse error with an optional error message.
+ */
+public class BasicParseError implements ParseError {
 
     private final InputLocation errorLocation;
     private final String errorMessage;
 
-    public SimpleParseError(@NotNull InputLocation errorLocation, String errorMessage) {
+    public BasicParseError(@NotNull InputLocation errorLocation, String errorMessage) {
         this.errorLocation = errorLocation;
         this.errorMessage = errorMessage;
     }

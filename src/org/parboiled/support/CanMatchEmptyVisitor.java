@@ -19,9 +19,9 @@ package org.parboiled.support;
 import org.parboiled.matchers.*;
 
 /**
- * Determines whether a matcher can legally succeed with an empty match.
+ * A {@link MatcherVisitor} determining whether a matcher can legally succeed with an empty match.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
 

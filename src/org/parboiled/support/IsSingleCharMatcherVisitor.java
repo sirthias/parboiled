@@ -19,9 +19,9 @@ package org.parboiled.support;
 import org.parboiled.matchers.*;
 
 /**
- * Determines whether a matcher is a basic single character matcher.
+ * A {@link MatcherVisitor} determining whether a matcher is a basic single character matcher.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean> {
 

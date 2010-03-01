@@ -23,6 +23,9 @@ import org.parboiled.trees.GraphNode;
 /**
  * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual
  * rule type specific matching logic.
+ * Since it extends the {@link GraphNode} interface it can have sub matchers.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public interface Matcher<V> extends GraphNode<Matcher<V>> {
 
@@ -48,13 +51,6 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
      * @return true if the match was successful
      */
     boolean match(@NotNull MatcherContext<V> context);
-
-    /**
-     * Returns the recovery matcher assigned to this matcher, or null if none has been assigned.
-     *
-     * @return the recovery matcher
-     */
-    Matcher<V> getRecoveryMatcher();
 
     /**
      * Accepts the given matcher visitor.

@@ -22,9 +22,9 @@ import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 
 /**
- * A Matcher matching a single character out of a {@link org.parboiled.support.Characters} set
+ * A {@link Matcher} matching a single character out of a given {@link org.parboiled.support.Characters} set.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class CharactersMatcher<V> extends AbstractMatcher<V> {
 

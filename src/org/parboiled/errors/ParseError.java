@@ -16,16 +16,34 @@
 
 package org.parboiled.errors;
 
-import org.parboiled.support.InputLocation;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.InputLocation;
 
+/**
+ * Common interface of all parboiled parse error implementations.
+ */
 public interface ParseError {
 
+    /**
+     * Gets the (start) location of the parse error in the underlying input buffer.
+     *
+     * @return the input location where the parse error occurred
+     */
     @NotNull
     InputLocation getErrorLocation();
 
+    /**
+     * Returns the number of characters that are "covered" by this parse error instance.
+     *
+     * @return the number of characters that are "covered" by this parse error instance
+     */
     int getErrorCharCount();
 
+    /**
+     * An optional error message.
+     *
+     * @return an optional error message.
+     */
     String getErrorMessage();
 
 }

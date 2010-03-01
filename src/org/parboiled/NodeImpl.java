@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * An immutable implementation of the Node interface.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
 

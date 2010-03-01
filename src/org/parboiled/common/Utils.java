@@ -187,38 +187,6 @@ public final class Utils {
     }
 
     /**
-     * Adapts a list to an iterable with reversed iteration order. It's especially useful in foreach-style loops:
-     * <pre>
-     * List<String> mylist = ...
-     * for (String str : Iterables.reverse(mylist)) {
-     *   ...
-     * } </pre>
-     *
-     * @param list the list to reverse
-     * @return an iterable with the same elements as the list, in reverse.
-     */
-    public static <T> Iterable<T> reverse(@NotNull final List<T> list) {
-        return new Iterable<T>() {
-            public Iterator<T> iterator() {
-                final ListIterator<T> listIterator = list.listIterator(list.size());
-                return new Iterator<T>() {
-                    public boolean hasNext() {
-                        return listIterator.hasPrevious();
-                    }
-
-                    public T next() {
-                        return listIterator.previous();
-                    }
-
-                    public void remove() {
-                        listIterator.remove();
-                    }
-                };
-            }
-        };
-    }
-
-    /**
      * Gets the actual type arguments that are used in a given implementation of a given generic base class or interface.
      * (Based on code copyright 2007 by Ian Robertson).
      *

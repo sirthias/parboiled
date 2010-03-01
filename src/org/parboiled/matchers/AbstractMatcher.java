@@ -16,18 +16,19 @@
 
 package org.parboiled.matchers;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.trees.ImmutableGraphNode;
-import com.google.common.collect.ImmutableList;
 
 /**
- * Abstract base class of most regular Matchers.
+ * Abstract base class of most regular {@link Matcher}s.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
 
     private String label;
-    private Matcher<V> recoveryMatcher;
     private boolean locked;
     private boolean leaf;
     private boolean withoutNode;
@@ -83,10 +84,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return getLabel();
     }
 
-    public Matcher<V> getRecoveryMatcher() {
-        return recoveryMatcher;
-    }
-
     @SuppressWarnings({"unchecked"})
     public AbstractMatcher<V> label(@NotNull String label) {
         if (label.equals(this.label)) return this;
@@ -100,14 +97,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         if (isLeaf()) return this;
         AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
         matcher.leaf = true;
-        return matcher;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public Rule recoveredBy(Rule recoveryRule) {
-        if (recoveryRule == this.recoveryMatcher) return this;
-        AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
-        matcher.recoveryMatcher = (Matcher<V>) recoveryRule;
         return matcher;
     }
 

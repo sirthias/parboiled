@@ -18,28 +18,36 @@ package org.parboiled.support;
 
 import org.parboiled.errors.GrammarException;
 
-public class Checks {
+/**
+ * Utility methods for grammar integrity checks.
+ */
+public final class Checks {
 
     private Checks() {}
 
+    /**
+     * Throws a GrammarException if the given condition is not met.
+     *
+     * @param condition          the condition
+     * @param errorMessageFormat the error message format
+     * @param errorMessageArgs   the error message arguments
+     */
     public static void ensure(boolean condition, String errorMessageFormat, Object... errorMessageArgs) {
         if (!condition) {
-            fail(errorMessageFormat, errorMessageArgs);
+            throw new GrammarException(errorMessageFormat, errorMessageArgs);
         }
     }
 
+    /**
+     * Throws a GrammarException if the given condition is not met.
+     *
+     * @param condition    the condition
+     * @param errorMessage the error message
+     */
     public static void ensure(boolean condition, String errorMessage) {
         if (!condition) {
-            fail(errorMessage);
+            throw new GrammarException(errorMessage);
         }
-    }
-
-    public static void fail(String errorMessage) {
-        throw new GrammarException(errorMessage);
-    }
-
-    public static void fail(String errorMessageFormat, Object... errorMessageArgs) {
-        throw new GrammarException(String.format(errorMessageFormat, errorMessageArgs));
     }
 
 }

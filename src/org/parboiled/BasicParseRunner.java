@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The most trivial implementation of the {@link org.parboiled.ParseRunner} interface.
- * It does not report any parse errors nor recover from them. Therefore it never causes the parser to perform more
- * than one parsing run and is the faster way to determine whether a given input conforms to the rule grammar.
+ * The most basic of all {@link ParseRunner}s. It runs a rule against a given input text and builds a corresponding
+ * {@link ParsingResult} instance. However, it does not report any parse errors nor recover from them. Instead it
+ * simply marks the ParsingResult as "unmatched" if the input is not valid with regard to the rule grammar.
+ * It never causes the parser to perform more than one parsing run and is the fastest way to determine
+ * whether a given input conforms to the rule grammar.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class BasicParseRunner<V> implements ParseRunner<V> {
 
@@ -42,10 +44,24 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     protected MatcherContext<V> rootContext;
     protected boolean matched;
 
+    /**
+     * Create a new BasicParseRunner instance with the given rule and input text and returns the result of
+     * its {@link #run()} method invocation.
+     *
+     * @param rule  the parser rule to run
+     * @param input the input text to run on
+     * @return the ParsingResult for the parsing run
+     */
     public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
         return new BasicParseRunner<V>(rule, input).run();
     }
 
+    /**
+     * Creates a new BasicParseRunner instance for the given rule and input text.
+     *
+     * @param rule  the parser rule
+     * @param input the input text
+     */
     @SuppressWarnings({"unchecked"})
     public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
         this.rootMatcher = (Matcher<V>) rule;
@@ -75,6 +91,12 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
         rootContext = new MatcherContext<V>(inputBuffer, startLocation, parseErrors, matchHandler, rootMatcher);
     }
 
+    /**
+     * The most trivial {@link MatchHandler} implementation.
+     * Simply delegates to the given Context for performing the match, without any additional logic.
+     *
+     * @param <V> the type of the value field of a parse tree node
+     */
     public static final class Handler<V> implements MatchHandler<V> {
 
         public boolean matchRoot(MatcherContext<V> rootContext) {

@@ -23,7 +23,7 @@ import org.parboiled.common.StringUtils;
 import static org.parboiled.errors.ErrorUtils.printParseError;
 import org.parboiled.errors.ParseError;
 import org.parboiled.errors.ParserRuntimeException;
-import org.parboiled.errors.SimpleParseError;
+import org.parboiled.errors.BasicParseError;
 import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
@@ -37,18 +37,21 @@ import java.util.List;
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
  * <p>The parsing process works as following:</br>
- * After the rule tree (which is in fact a directed and potentially even cyclic graph of Matcher instances) has been
- * created a root MatcherContext is instantiated for the root rule (Matcher).
+ * After the rule tree (which is in fact a directed and potentially even cyclic graph of {@link Matcher} instances)
+ * has been created a root MatcherContext is instantiated for the root rule (Matcher).
  * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
- * <p>The MatcherContext essentially calls {@link Matcher#match(MatcherContext)} passing itself to the Matcher
- * which executes its logic, potentially calling sub matchers. For each sub matcher the matcher calls
- * {@link #runMatcher()} on its Context, which creates a sub context of the
- * current MatcherContext and runs the given sub matcher in it.</p>
+ * <p>The MatcherContext delegates to a given {@link MatchHandler} to call {@link Matcher#match(MatcherContext)},
+ * passing itself to the Matcher which executes its logic, potentially calling sub matchers.
+ * For each sub matcher the matcher creates/initializes a sub context with {@link #getSubContext(org.parboiled.matchers.Matcher)}
+ * and then calls {@link #runMatcher()} on it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
- * instances serve as a kind of companion objects to the matchers, providing them with support for building the
+ * instances serve as companion objects to the matchers, providing them with support for building the
  * parse tree nodes, keeping track of input locations and error recovery.</p>
  * <p>At each point during the parsing process the matchers and action expressions have access to the current
  * MatcherContext and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p>
+ * <p>For performance reasons sub context instances are reused instead of being recreated. If a MatcherContext instance
+ * returns null on a {@link #getMatcher()} call it has been retired (is invalid) and is waiting to be reinitialized
+ * with a new Matcher by its parent</p>
  *
  * @param <V> the node value type
  */
@@ -59,8 +62,8 @@ public class MatcherContext<V> implements Context<V> {
     private final MatchHandler<V> matchHandler;
     private final Reference<Node<V>> lastNodeRef;
     private final MatcherContext<V> parent;
-
     private final int level;
+
     private MatcherContext<V> subContext;
     private InputLocation startLocation;
     private InputLocation currentLocation;
@@ -130,7 +133,7 @@ public class MatcherContext<V> implements Context<V> {
         return currentLocation;
     }
 
-    public String getNodeText(Node<?> node) {
+    public String getNodeText(Node<V> node) {
         return ParseTreeUtils.getNodeText(node, inputBuffer);
     }
 
@@ -339,7 +342,7 @@ public class MatcherContext<V> implements Context<V> {
             throw e; // don't wrap, just bubble up
         } catch (Throwable e) {
             throw new ParserRuntimeException(e,
-                    printParseError(new SimpleParseError(currentLocation,
+                    printParseError(new BasicParseError(currentLocation,
                             StringUtils.escape(String.format("Error while parsing %s '%s' at input position",
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer));
         }

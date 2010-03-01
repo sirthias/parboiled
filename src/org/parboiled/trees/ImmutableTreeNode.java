@@ -19,8 +19,10 @@ package org.parboiled.trees;
 import java.util.List;
 
 /**
- * An ImmutableGraphNode specialization representing a tree node with a parent field linking back to the nodes
+ * An {@link ImmutableGraphNode} specialization representing a tree node with a parent field linking back to the nodes
  * (only) parent.
+ *
+ * @param <T> the actual implementation type of this ImmutableTreeNode
  */
 public class ImmutableTreeNode<T extends TreeNode<T>> extends ImmutableGraphNode<T> implements TreeNode<T> {
 

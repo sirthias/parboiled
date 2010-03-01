@@ -20,22 +20,39 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 
-public class ActionError<V> extends SimpleParseError {
+/**
+ * A {@link ParseError} wrapping an ActionException.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
+public class ActionError<V> extends BasicParseError {
 
     private final MatcherPath<V> errorPath;
     private final ActionException actionException;
 
     public ActionError(@NotNull InputLocation errorLocation, String errorMessage,
-                       MatcherPath<V> errorPath, ActionException actionException) {
+                       @NotNull MatcherPath<V> errorPath, @NotNull ActionException actionException) {
         super(errorLocation, errorMessage);
         this.errorPath = errorPath;
         this.actionException = actionException;
     }
 
+    /**
+     * Gets the path to the matcher that caused this error.
+     *
+     * @return the MatcherPath
+     */
+    @NotNull
     public MatcherPath<V> getErrorPath() {
         return errorPath;
     }
 
+    /**
+     * Gets the wrapped ActionException.
+     *
+     * @return the wrapped ActionException
+     */
+    @NotNull
     public ActionException getActionException() {
         return actionException;
     }

@@ -16,6 +16,7 @@
 
 package org.parboiled.support;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.common.Utils;
@@ -23,10 +24,10 @@ import org.parboiled.matchers.Matcher;
 
 import java.util.Arrays;
 
-import com.google.common.base.Preconditions;
-
 /**
- * Describes a path of rule matchers as they are nested within each other at a certain point during the parsing process.
+ * Holds a snapshot of the current {@link Matcher} stack at a certain point during the parsing process.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public class MatcherPath<V> {
 
@@ -46,7 +47,7 @@ public class MatcherPath<V> {
     }
 
     /**
-     * @return the length of this path
+     * @return the length of this path, i.e. the number of matchers contained in it
      */
     public int length() {
         return matchers.length;
@@ -62,17 +63,6 @@ public class MatcherPath<V> {
     public Matcher<V> get(int i) {
         Preconditions.checkElementIndex(i, matchers.length);
         return matchers[i];
-    }
-
-    /**
-     * Returns the matcher along the path starting with the root matcher.
-     * The last matcher in the returned list is the "deepest" matcher.
-     *
-     * @return the matchers
-     */
-    @SuppressWarnings({"unchecked"})
-    public Matcher<V>[] getMatchers() {
-        return matchers;
     }
 
     /**
@@ -121,18 +111,11 @@ public class MatcherPath<V> {
     }
 
     /**
-     * Appends the given matcher in a new instance.
+     * Determines whether this path is a prefix of the given other path.
      *
-     * @param matcher the matcher to append
-     * @return a new MatcherPath
+     * @param other the other path
+     * @return true if this path is a prefix of the given other path
      */
-    public MatcherPath<V> append(@NotNull Matcher<V> matcher) {
-        MatcherPath<V> newPath = new MatcherPath<V>(length() + 1);
-        System.arraycopy(matchers, 0, newPath.matchers, 0, length());
-        newPath.matchers[length()] = matcher;
-        return newPath;
-    }
-
     public boolean isPrefixOf(MatcherPath<V> other) {
         return getCommonPrefixLength(other) == length();
     }

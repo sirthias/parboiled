@@ -17,23 +17,23 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.transform.ParserTransformer;
 import static org.parboiled.common.Utils.findConstructor;
+import org.parboiled.transform.ParserTransformer;
 
 import java.lang.reflect.Constructor;
 
 /**
- * Main class providing the high-level entrypoints into the parboiled library.
+ * Main class providing the high-level entrypoint into the parboiled library.
  */
 public class Parboiled {
 
     protected Parboiled() {}
 
     /**
-     * Creates a parser object whose rule creation methods can then be used with a {@link ParseRunner} implementation.
+     * Creates a parser object whose rule creation methods can then be used with one of the {@link ParseRunner} implementations.
      * Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
-     * Also your parser class has to be derived from BaseParser. If you want to use a non-default constructor you also
+     * Also your parser class has to be derived from {@link BaseParser}. If you want to use a non-default constructor you also
      * have to provide its arguments to this method.
      *
      * @param parserClass     the type of the parser to create

@@ -19,8 +19,8 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
-import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.InputLocation;
+import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 
@@ -28,18 +28,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link org.parboiled.ParseRunner} that reports the first parse error if the input does not conform to the rule grammar.
+ * A {@link ParseRunner} implementation that properly reports the first {@link InvalidInputError} if the input
+ * does not conform to the rule grammar.
  * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
  * than the {@link BasicParseRunner} on valid input.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class ReportingParseRunner<V> extends BasicParseRunner<V> {
 
+    /**
+     * Create a new ReportingParseRunner instance with the given rule and input text and returns the result of
+     * its {@link #run()} method invocation.
+     *
+     * @param rule  the parser rule to run
+     * @param input the input text to run on
+     * @return the ParsingResult for the parsing run
+     */
     public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
         return new ReportingParseRunner<V>(rule, input).run();
     }
 
+    /**
+     * Creates a new ReportingParseRunner instance for the given rule and input text.
+     *
+     * @param rule  the parser rule
+     * @param input the input text
+     */
     public ReportingParseRunner(@NotNull Rule rule, @NotNull String input) {
         super(rule, input);
     }
@@ -54,6 +69,12 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
         return runRootContext(new Handler<V>(handler.getErrorLocation()));
     }
 
+    /**
+     * A {@link MatchHandler} implementation that reports the {@link InvalidInputError} at a given {@link InputLocation}.
+     * For the actual matching this handler relies on another, inner {@link MatchHandler} instance it delegates to.
+     *
+     * @param <V> the type of the value field of a parse tree node
+     */
     public static class Handler<V> implements MatchHandler<V> {
         private final IsSingleCharMatcherVisitor<V> isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor<V>();
         private final InputLocation errorLocation;
@@ -63,16 +84,34 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
         private InvalidInputError<V> parseError;
         private boolean seeking;
 
+        /**
+         * Create a new handler that can report the {@link InvalidInputError} at the given {@link InputLocation}.
+         * It relies on a new {@link BasicParseRunner.Handler} instance for the actual matching.
+         *
+         * @param errorLocation the InputLocation of the error to be reported
+         */
         public Handler(@NotNull InputLocation errorLocation) {
             this(errorLocation, new BasicParseRunner.Handler<V>());
         }
 
+        /**
+         * Create a new handler that can report the {@link InvalidInputError} at the given {@link InputLocation}.
+         * It relies on the given {@link MatchHandler} instance for the actual matching.
+         *
+         * @param errorLocation the InputLocation of the error to be reported
+         * @param inner         the inner MatchHandler to use
+         */
         public Handler(@NotNull InputLocation errorLocation,
                        @NotNull MatchHandler<V> inner) {
             this.errorLocation = errorLocation;
             this.inner = inner;
         }
 
+        /**
+         * Returns the {@link InvalidInputError} instance that was created during the reporting run.
+         *
+         * @return the InvalidInputError
+         */
         public InvalidInputError<V> getParseError() {
             return parseError;
         }

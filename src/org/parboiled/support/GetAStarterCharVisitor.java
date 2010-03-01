@@ -23,6 +23,12 @@ import org.parboiled.matchers.CharactersMatcher;
 
 import java.util.Random;
 
+/**
+ * Returns the first character a given matcher can start a match with.
+ * For all complex matchers, i.e. the ones not always matching just one character, the visitor returns null.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
 public class GetAStarterCharVisitor<V> extends DefaultMatcherVisitor<V, Character> {
 
     @Override

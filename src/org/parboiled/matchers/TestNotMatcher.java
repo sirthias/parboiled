@@ -23,10 +23,10 @@ import org.parboiled.errors.GrammarException;
 import org.parboiled.support.InputLocation;
 
 /**
- * A special Matcher not actually matching any input but rather trying its sub matcher against the current input
+ * A special {@link Matcher} not actually matching any input but rather trying its sub matcher against the current input
  * position. Succeeds if the sub matcher would fail.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class TestNotMatcher<V> extends AbstractMatcher<V> {
 

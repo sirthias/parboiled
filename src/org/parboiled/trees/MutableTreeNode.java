@@ -17,13 +17,13 @@
 package org.parboiled.trees;
 
 /**
- * A tree node specialiation that allow for mutability of the tree structure.
+ * A {@link TreeNode} specialiation that allow for mutability of the tree structure.
  * The three defined methods are all expected to properly uphold the trees "linking back" contract, where children
  * have their parent fields point to the node actually holding them in their children list at all times.
  * The three defined methods are the basic ones required, other convenience methods (like a simple addChild(child)
- * without index) are defined as static methods of the TreeUtils class.
+ * without index) are defined as static methods of the {@link TreeUtils} class.
  *
- * @param <T> the actual implementation type of this tree node
+ * @param <T> the actual implementation type of this TreeNode
  */
 public interface MutableTreeNode<T extends MutableTreeNode<T>> extends TreeNode<T> {
 
@@ -46,6 +46,12 @@ public interface MutableTreeNode<T extends MutableTreeNode<T>> extends TreeNode<
      */
     void setChild(int index, T child);
 
+    /**
+     * Removes the child with the given index.
+     *
+     * @param index the index of the child to remove.
+     * @return the removed child
+     */
     T removeChild(int index);
 
 }

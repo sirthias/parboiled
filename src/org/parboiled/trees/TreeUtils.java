@@ -16,28 +16,48 @@
 
 package org.parboiled.trees;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * General utility methods for operating on tree, i.e. graphs consisting of {@link TreeNode}s.
+ */
 public class TreeUtils {
 
     private TreeUtils() {}
 
+    /**
+     * Returns the root of the tree the given node is part of.
+     *
+     * @param node the node to get the root of
+     * @return the root or null if the given node is null
+     */
     public static <T extends TreeNode<T>> T getRoot(T node) {
         if (node == null) return null;
         if (node.getParent() != null) return getRoot(node.getParent());
         return node;
     }
 
-    public static <T extends MutableTreeNode<T>> void addChild(T parent, T child) {
-        if (parent != null) {
-            parent.addChild(parent.getChildren().size(), child);
-        }
+    /**
+     * Adds a new child node to a given MutableTreeNode parent.
+     *
+     * @param parent the parent node
+     * @param child  the child node to add
+     */
+    public static <T extends MutableTreeNode<T>> void addChild(@NotNull T parent, T child) {
+        parent.addChild(parent.getChildren().size(), child);
     }
 
-    public static <T extends MutableTreeNode<T>> void removeChild(T parent, @NotNull T child) {
-        if (parent != null) {
-            parent.removeChild(parent.getChildren().indexOf(child));
-        }
+    /**
+     * Removes the given child from the given parent node.
+     *
+     * @param parent the parent node
+     * @param child  the child node
+     */
+    public static <T extends MutableTreeNode<T>> void removeChild(@NotNull T parent, T child) {
+        int index = parent.getChildren().indexOf(child);
+        Preconditions.checkElementIndex(index, parent.getChildren().size());
+        parent.removeChild(index);
     }
 
     /**

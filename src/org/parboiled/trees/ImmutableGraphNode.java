@@ -23,9 +23,9 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 /**
- * A simple, immutable GraphNode implementation.
+ * A simple, immutable {@link GraphNode} implementation.
  *
- * @param <T>
+ * @param <T> the actual implementation type of this ImmutableGraphNode
  */
 public class ImmutableGraphNode<T extends GraphNode<T>> implements GraphNode<T> {
 

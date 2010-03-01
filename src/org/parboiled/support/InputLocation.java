@@ -21,7 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 
 /**
- * Value container identifying a certain position in an InputBuffer.
+ * (Almost) immutable descriptor for a certain position in an {@link InputBuffer}.
+ * The InputLocations corresponding to one input text form a simple linked list.
  */
 public class InputLocation {
     private final int index;
@@ -45,28 +46,46 @@ public class InputLocation {
         this.character = character;
     }
 
+    /**
+     * @return the index of this location in the underlying {@link InputBuffer}
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * @return the row number of this location, starting at 0
+     */
     public int getRow() {
         return row;
     }
 
+    /**
+     * @return the column number of this location, starting at 0
+     */
     public int getColumn() {
         return column;
     }
 
+    /**
+     * @return the input character at this location
+     */
     public char getChar() {
         return character;
     }
 
+    /**
+     * Returns the next input location if it has already been fetched, or null if this location is the last location
+     * in the underlying {@link InputBuffer} that was looked at during the current parsing run.
+     *
+     * @return the next input location or null
+     */
     public InputLocation getNext() {
         return next;
     }
 
     /**
-     * Returns the input location after this one in the given InputBuffer.
+     * Fetches and returns the input location after this one in the given {@link InputBuffer}.
      * If this is already the input location at EOI the method return this instance.
      *
      * @param inputBuffer the input buffer
@@ -91,6 +110,13 @@ public class InputLocation {
         return String.format("#%s(%s,%s)'%s'", index, row, column, StringUtils.escape(character));
     }
 
+    /**
+     * "Cuts out" and returns the next input location from the chain of InputLocations.
+     * Neither this nor the next InputLocation must be the last InputLocation in the chain.
+     * This operation does not change the underlying {@link InputBuffer}.
+     *
+     * @return the InputLocation that was cut out.
+     */
     @NotNull
     public InputLocation removeNext() {
         Preconditions.checkState(next != null && next.next != null,
@@ -100,25 +126,29 @@ public class InputLocation {
         return oldNext;
     }
 
+    /**
+     * Inserts the given InputLocation as the next input location into the chain.
+     * Useful for reversing a previous {@link #removeNext()} operation.
+     * This operation does not change the underlying {@link InputBuffer}.
+     *
+     * @param nextLocation the location to insert.
+     */
     public void insertNext(@NotNull InputLocation nextLocation) {
         nextLocation.next = next;
         next = nextLocation;
     }
 
     /**
-     * Inserts a virtual character into the input stream without changing the underlying InputBuffer.
+     * Inserts a virtual character into the input stream without changing the underlying {@link InputBuffer}.
+     * This instance must not be the last InputLocation fetched so far.
      *
      * @param character the char to insert
      */
     public void insertNext(char character) {
         Preconditions.checkState(next != null, "insertNext(char) should not be called on a fringe location");
-        insertNext(next.insertBefore(character));
-    }
-
-    public InputLocation insertBefore(char character) {
-        InputLocation predecessor = new InputLocation(index, row, column, character);
-        predecessor.next = this;
-        return predecessor;
+        InputLocation predecessor = new InputLocation(next.index, next.row, next.column, character);
+        predecessor.next = next;
+        insertNext(predecessor);
     }
 
 }

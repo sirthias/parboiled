@@ -25,13 +25,20 @@ import org.parboiled.support.MatcherPath;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A {@link Formatter} for {@link InvalidInputError}s that automatically creates the correct "expected" text
+ * for the error.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
 public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidInputError<V>> {
 
     public String format(InvalidInputError<V> error) {
         if (error == null) return "";
 
-        return String.format("Invalid input '%s', expected %s",
+        return String.format("Invalid input '%s%s', expected %s",
                 StringUtils.escape(String.valueOf(error.getErrorLocation().getChar())),
+                error.getErrorCharCount() > 1 ? "..." : "",
                 getExpectedString(error)
         );
     }

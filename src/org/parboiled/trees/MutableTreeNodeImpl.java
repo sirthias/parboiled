@@ -25,7 +25,9 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 
 /**
- * A mutable tree node implementation.
+ * A base implementation of the {@link MutableTreeNode}.
+ *
+ * @param <T> the actual implementation type of this MutableTreeNodeImpl
  */
 public class MutableTreeNodeImpl<T extends MutableTreeNode<T>> implements MutableTreeNode<T> {
 

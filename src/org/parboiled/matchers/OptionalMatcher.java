@@ -21,9 +21,9 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
 /**
- * A Matcher that tries its sub matcher once against the input and always succeeds.
+ * A {@link Matcher} that tries its sub matcher once against the input and always succeeds.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class OptionalMatcher<V> extends AbstractMatcher<V> {
 

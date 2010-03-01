@@ -23,7 +23,7 @@ X1+2
 ###
 xyz1+2
 ===
-Invalid input 'x', expected inputLine (line 1, pos 1):
+Invalid input 'x...', expected inputLine (line 1, pos 1):
 xyz1+2
 ^^^
 ===
@@ -904,7 +904,7 @@ Invalid input 'EOI', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 14):
 ###
 (2*ab4-7
 ===
-Invalid input 'a', expected factor (line 1, pos 4):
+Invalid input 'a...', expected factor (line 1, pos 4):
 (2*ab4-7
    ^^^
 ---
@@ -949,7 +949,7 @@ Invalid input '*', expected term (line 1, pos 5):
 (2++*(5-1xy)y+1
     ^
 ---
-Invalid input 'x', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 10):
+Invalid input 'x...', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 10):
 (2++*(5-1xy)y+1
          ^^
 ---

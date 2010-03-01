@@ -19,9 +19,9 @@ package org.parboiled.support;
 import org.parboiled.matchers.*;
 
 /**
- * A MatcherVisitor that determines whether a matcher can start a match with a given char.
+ * A {@link MatcherVisitor} determining whether a matcher can start a match with a given char.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
 

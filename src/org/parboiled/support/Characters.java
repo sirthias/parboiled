@@ -20,21 +20,46 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 
 import java.util.Arrays;
-import java.util.Random;
 
 /**
- * An immutable, set-like aggregation of (relatively few) characters that allows for an inverted semantic (all chars
- * except these few).
+ * An immutable, set-like aggregation of (relatively few) characters that allows for an inverted semantic
+ * ("all chars except these few").
  */
 public class Characters {
 
     private static final char[] NO_CHARS = new char[0];
+
+    /**
+     * The empty Characters set
+     */
     public static final Characters NONE = new Characters(false, NO_CHARS);
+
+    /**
+     * The Characters set including all character.
+     */
     public static final Characters ALL = new Characters(true, NO_CHARS);
 
+    /**
+     * The End-of-Input character.
+     */
     public static final char EOI = '\uFFFF';
+
+    /**
+     * Special character used during error recovery. Signals that an illegal input character was skipped at this
+     * input location.
+     */
     public static final char DEL_ERROR = '\uFDEF';
+
+    /**
+     * Special character used during error recovery. Signals that the character at the following input location
+     * was expected but not present in the input buffer.
+     */
     public static final char INS_ERROR = '\uFDEE';
+
+    /**
+     * Special character used during error recovery. Signals that a rule resynchronization had to be performed
+     * at the current input location.
+     */
     public static final char RESYNC = '\uFDED';
 
     // if the set is subtractive its semantics change from "includes all characters in the set" to
@@ -65,7 +90,7 @@ public class Characters {
     }
 
     /**
-     * Adds the given character to the set. If c is Chars.ANY all characters except Chars.EMPTY will be added.
+     * Adds the given character to the set.
      *
      * @param c the character to add
      * @return a new Characters object
@@ -76,7 +101,7 @@ public class Characters {
     }
 
     /**
-     * Removes the given character to the set. If c is Chars.ANY all characters except Chars.EMPTY will be removed.
+     * Removes the given character from the set.
      *
      * @param c the character to remove
      * @return a new Characters object
@@ -87,8 +112,7 @@ public class Characters {
     }
 
     /**
-     * Checks whether this instance contains the given character.
-     * If c is Chars.ANY the method will only return true if all non-EOI and non-EMPTY characters are actually included.
+     * Determines whether this instance contains the given character.
      *
      * @param c the character to check for
      * @return true if this instance contains c
@@ -234,7 +258,7 @@ public class Characters {
     }
 
     /**
-     * Creates a new Characters instance containing only the given char or.
+     * Creates a new Characters instance containing only the given char.
      *
      * @param c the char
      * @return a new Characters object
@@ -299,21 +323,4 @@ public class Characters {
         return StringUtils.isEmpty(chars) ? Characters.ALL : new Characters(true, chars.toCharArray());
     }
 
-    /**
-     * Finds a character that is in the set and returns it. Guaranteed to succeed unless the set is empty,
-     * in which case this method returns null.
-     *
-     * @return a character that is in this set
-     */
-    public Character getRepresentative() {
-        if (equals(Characters.NONE)) return null;
-        if (isSubtractive()) {
-            Random random = new Random();
-            while (true) {
-                char c = (char) random.nextInt(Character.MIN_SUPPLEMENTARY_CODE_POINT);
-                if (contains(c)) return c;
-            }
-        }
-        return chars[0];
-    }
 }

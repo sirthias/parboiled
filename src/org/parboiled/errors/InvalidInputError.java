@@ -23,7 +23,13 @@ import org.parboiled.support.MatcherPath;
 
 import java.util.List;
 
-public class InvalidInputError<V> extends SimpleParseError {
+/**
+ * A {@link ParseError} describing one or more input characters that are illegal with regard to the underlying
+ * language grammar.
+ *
+ * @param <V>
+ */
+public class InvalidInputError<V> extends BasicParseError {
 
     private final MatcherPath<V> lastMatch;
     private final List<MatcherPath<V>> failedMatchers;
@@ -41,15 +47,30 @@ public class InvalidInputError<V> extends SimpleParseError {
         return errorCharCount;
     }
 
+    /**
+     * Sets the number of characters covered by this error. Must be > 0.
+     *
+     * @param errorCharCount the number of chars (> 0)
+     */
     public void setErrorCharCount(int errorCharCount) {
         Preconditions.checkArgument(errorCharCount > 0);
         this.errorCharCount = errorCharCount;
     }
 
+    /**
+     * Gets the path to the matcher that matched the character immediately before the parse error location.
+     *
+     * @return the MatcherPatch
+     */
     public MatcherPath<V> getLastMatch() {
         return lastMatch;
     }
 
+    /**
+     * Gets the list of paths to the single character matchers that failed at the error location of this error.
+     *
+     * @return the list of paths to the single character matchers that failed at the error location of this error
+     */
     @NotNull
     public List<MatcherPath<V>> getFailedMatchers() {
         return failedMatchers;

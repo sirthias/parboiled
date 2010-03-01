@@ -23,9 +23,9 @@ import org.parboiled.Rule;
 import java.util.List;
 
 /**
- * A Matcher trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
+ * A {@link Matcher} trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
  *
- * @param <V>
+ * @param <V> the type of the value field of a parse tree node
  */
 public class FirstOfMatcher<V> extends AbstractMatcher<V> {
 

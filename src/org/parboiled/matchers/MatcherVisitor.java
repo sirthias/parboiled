@@ -16,6 +16,13 @@
 
 package org.parboiled.matchers;
 
+/**
+ * The interface to be implemented by all visitors of {@link Matcher}s.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ * @param <R> the return value of this visitor
+ * @see <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor Pattern on Wikipedia</a>
+ */
 public interface MatcherVisitor<V, R> {
 
     R visit(ActionMatcher<V> matcher);

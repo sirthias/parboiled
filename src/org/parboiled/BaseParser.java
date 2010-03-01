@@ -24,9 +24,9 @@ import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
 /**
- * Base class for custom parsers. Defines basic methods for rule and action parameter creation.
+ * Base class of all parboiled parsers. Defines the basic rule creation methods.
  *
- * @param <V> The type of the value field of the parse tree nodes created by this parser.
+ * @param <V> the type of the value field of the parse tree nodes created by this parser
  */
 public abstract class BaseParser<V> extends BaseActions<V> {
 
@@ -46,7 +46,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Explicitly creates a rule matching the given character ignoring the case.
+     * Explicitly creates a rule matching the given character case-independently.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -55,8 +55,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule charIgnoreCase(char c) {
-        return Character.isLowerCase(c) != Character.isUpperCase(c) ?
-                new CharIgnoreCaseMatcher(c) : ch(c);
+        return Character.isLowerCase(c) == Character.isUpperCase(c) ? ch(c) : new CharIgnoreCaseMatcher(c);
     }
 
     /**
@@ -74,7 +73,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Creates a new rule that matches the first of the given characters.
+     * Creates a new rule that matches any of the characters in the given string.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -84,12 +83,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule charSet(@NotNull String characters) {
         Preconditions.checkArgument(characters.length() > 0);
-        if (characters.length() == 1) return ch(characters.charAt(0)); // optimize one-char sets
-        return charSet(Characters.of(characters));
+        return characters.length() == 1 ? ch(characters.charAt(0)) : charSet(Characters.of(characters));
     }
 
     /**
-     * Creates a new rule that matches the first of the given characters.
+     * Creates a new rule that matches any of the given characters.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -98,10 +96,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule charSet(@NotNull Characters characters) {
-        if (!characters.isSubtractive() && characters.getChars().length == 1) {
-            return ch(characters.getChars()[0]); // optimize one-char sets
-        }
-        return new CharactersMatcher<V>(characters);
+        return !characters.isSubtractive() && characters.getChars().length == 1 ?
+                ch(characters.getChars()[0]) : new CharactersMatcher<V>(characters);
     }
 
     /**
@@ -272,8 +268,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label
     public Rule zeroOrMore(Object rule) {
-        return new ZeroOrMoreMatcher(toRule(rule)).label("zeroOrMore");
+        return new ZeroOrMoreMatcher(toRule(rule));
     }
 
     /**

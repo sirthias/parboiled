@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * General utility methods for operating on directed graphs (consisting of GraphNodes).
+ * General utility methods for operating on directed graphs (consisting of {@link GraphNode}s).
  */
-public class GraphUtils {
+public final class GraphUtils {
 
     private GraphUtils() {}
 

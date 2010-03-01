@@ -16,12 +16,15 @@
 
 package org.parboiled.support;
 
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 
 /**
  * A simple Formatter<Node<V> that provides String representation for parse tree nodes.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public class NodeFormatter<V> implements Formatter<Node<V>> {
 
@@ -29,9 +32,10 @@ public class NodeFormatter<V> implements Formatter<Node<V>> {
 
     /**
      * Creates a new NodeFormatter.
+     *
      * @param inputBuffer the input buffer underlying the parse tree whose nodes are to be formatted.
      */
-    public NodeFormatter(InputBuffer inputBuffer) {
+    public NodeFormatter(@NotNull InputBuffer inputBuffer) {
         this.inputBuffer = inputBuffer;
     }
 

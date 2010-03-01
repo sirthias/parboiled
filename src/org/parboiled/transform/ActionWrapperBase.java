@@ -28,7 +28,8 @@ import org.parboiled.support.Checks;
 
 /**
  * Base class of generated action classes wrapping action expressions.
- * @param <V>
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
 public abstract class ActionWrapperBase<V> implements Action<V> {
 

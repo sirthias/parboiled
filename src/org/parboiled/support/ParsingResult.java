@@ -23,12 +23,12 @@ import org.parboiled.errors.ParseError;
 import java.util.List;
 
 /**
- * A simple container for encapsulating the result of a parsing run.
+ * A simple container encapsulating the result of a parsing run.
  */
 public class ParsingResult<V> {
 
     /**
-     * Indicated whether the input was successfully parsed.
+     * Indicates whether the input was successfully parsed.
      */
     public final boolean matched;
 
@@ -40,15 +40,17 @@ public class ParsingResult<V> {
     /**
      * The list of parse errors created during the parsing run.
      */
+    @NotNull
     public final List<ParseError> parseErrors;
 
     /**
      * The underlying input buffer.
      */
+    @NotNull
     public final InputBuffer inputBuffer;
 
     /**
-     * The total number of rows in the parsed input text;
+     * The total number of rows in the parsed input text
      */
     public final int totalRows;
 

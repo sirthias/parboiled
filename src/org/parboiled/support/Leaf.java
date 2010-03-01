@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parser methods returning Rule objects. Instructs parboiled to automatically mark
- * the created rules as leaf rules.
+ * Annotation to be used on parser methods returning {@link org.parboiled.Rule}s.
+ * Instructs parboiled to automatically mark the created rules as leaf rules.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
