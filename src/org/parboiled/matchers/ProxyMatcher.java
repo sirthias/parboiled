@@ -16,14 +16,12 @@
 
 package org.parboiled.matchers;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.matchervisitors.MatcherVisitor;
 
 import java.util.List;
-
-import com.google.common.base.Preconditions;
 
 /**
  * A Matcher that delegates all Rule and Matcher interface methods to another Matcher.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchervisitors;
+package org.parboiled.support;
 
 import org.parboiled.matchers.*;
 

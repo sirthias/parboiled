@@ -18,7 +18,6 @@ package org.parboiled.support;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
 
 /**
@@ -80,7 +79,7 @@ public class InputLocation {
         switch (character) {
             case '\n':
                 return next = new InputLocation(inputBuffer, index + 1, row + 1, 0);
-            case Parboiled.EOI:
+            case Characters.EOI:
                 return next = this;
             default:
                 return next = new InputLocation(inputBuffer, index + 1, row, column + 1);

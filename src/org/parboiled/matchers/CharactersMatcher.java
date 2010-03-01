@@ -16,11 +16,10 @@
 
 package org.parboiled.matchers;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.matchervisitors.MatcherVisitor;
 import org.parboiled.support.Characters;
-import com.google.common.base.Preconditions;
 
 /**
  * A Matcher matching a single character out of a {@link org.parboiled.support.Characters} set

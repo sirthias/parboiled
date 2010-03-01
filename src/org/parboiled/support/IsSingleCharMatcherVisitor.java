@@ -14,42 +14,35 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchervisitors;
+package org.parboiled.support;
 
 import org.parboiled.matchers.*;
 
 /**
- * A MatcherVisitor that determines whether a matcher can start a match with a given char.
+ * Determines whether a matcher is a basic single character matcher.
  *
  * @param <V>
  */
-public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
-
-    private final CanMatchEmptyVisitor<V> canMatchEmptyVisitor = new CanMatchEmptyVisitor<V>();
-    private final char starterChar;
-
-    public IsStarterCharVisitor(char starterChar) {
-        this.starterChar = starterChar;
-    }
+public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean> {
 
     public Boolean visit(ActionMatcher<V> matcher) {
         return false;
     }
 
     public Boolean visit(CharactersMatcher<V> matcher) {
-        return matcher.characters.contains(starterChar);
+        return true;
     }
 
     public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
-        return matcher.charLow == starterChar || matcher.charUp == starterChar;
+        return true;
     }
 
     public Boolean visit(CharMatcher<V> matcher) {
-        return matcher.character == starterChar;
+        return true;
     }
 
     public Boolean visit(CharRangeMatcher<V> matcher) {
-        return matcher.cLow <= starterChar && starterChar <= matcher.cHigh;
+        return true;
     }
 
     public Boolean visit(EmptyMatcher<V> matcher) {
@@ -57,30 +50,23 @@ public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
     }
 
     public Boolean visit(FirstOfMatcher<V> matcher) {
-        for (Matcher<V> child : matcher.getChildren()) {
-            if (child.accept(this)) return true;
-        }
         return false;
     }
 
     public Boolean visit(OneOrMoreMatcher<V> matcher) {
-        return matcher.subMatcher.accept(this);
+        return false;
     }
 
     public Boolean visit(OptionalMatcher<V> matcher) {
-        return matcher.subMatcher.accept(this);
+        return false;
     }
 
     public Boolean visit(SequenceMatcher<V> matcher) {
-        for (Matcher<V> child : matcher.getChildren()) {
-            if (child.accept(this)) return true;
-            if (!child.accept(canMatchEmptyVisitor)) break;
-        }
         return false;
     }
 
     public Boolean visit(TestMatcher<V> matcher) {
-        return matcher.subMatcher.accept(this);
+        return false;
     }
 
     public Boolean visit(TestNotMatcher<V> matcher) {
@@ -88,7 +74,7 @@ public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
     }
 
     public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
-        return matcher.subMatcher.accept(this);
+        return false;
     }
 
 }

@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.matchervisitors.MatcherVisitor;
 
 /**
  * A Matcher that always successfully matches nothing.

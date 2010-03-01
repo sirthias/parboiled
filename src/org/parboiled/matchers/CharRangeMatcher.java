@@ -16,11 +16,10 @@
 
 package org.parboiled.matchers;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.matchervisitors.MatcherVisitor;
 import org.parboiled.common.StringUtils;
-import com.google.common.base.Preconditions;
 
 public class CharRangeMatcher<V> extends AbstractMatcher<V> {
 

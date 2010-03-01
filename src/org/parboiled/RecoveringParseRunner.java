@@ -22,13 +22,10 @@ import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.SequenceMatcher;
 import org.parboiled.matchers.TestMatcher;
-import org.parboiled.matchervisitors.FollowMatchersVisitor;
-import org.parboiled.matchervisitors.GetAStarterCharVisitor;
-import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
-import org.parboiled.matchervisitors.IsStarterCharVisitor;
-import org.parboiled.support.InputLocation;
-import org.parboiled.support.MatcherPath;
-import org.parboiled.support.ParsingResult;
+import org.parboiled.support.GetAStarterCharVisitor;
+import org.parboiled.support.IsSingleCharMatcherVisitor;
+import org.parboiled.support.IsStarterCharVisitor;
+import org.parboiled.support.*;
 
 import java.util.List;
 
@@ -100,17 +97,17 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         if (nextErrorAfterBestSingleCharFix > fixLocation.getIndex()) {
             // we are able to overcome the error with a single char fix, so apply the best one found
             if (nextErrorAfterDeletion.getIndex() >= nextErrorAfterBestInsertion.getIndex()) {
-                preFixLocation.insertNext(Parboiled.DEL_ERROR);
+                preFixLocation.insertNext(Characters.DEL_ERROR);
                 preFixLocation.getNext().removeNext();
                 errorLocation = nextErrorAfterDeletion;
             } else {
                 preFixLocation.insertNext(bestInsertionCharacter);
-                preFixLocation.insertNext(Parboiled.INS_ERROR);
+                preFixLocation.insertNext(Characters.INS_ERROR);
                 errorLocation = nextErrorAfterBestInsertion;
             }
         } else {
             // we can't fix the error with a single char fix, so fall back to resynchronization
-            preFixLocation.insertNext(Parboiled.RESYNC);
+            preFixLocation.insertNext(Characters.RESYNC);
             attemptRecordingMatch();
         }
         return true;
@@ -119,7 +116,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     // skip over all illegal chars that we cannot start a root match with
     protected boolean fixIllegalStarterChars() {
         int count = 0;
-        while (errorLocation.getChar() != Parboiled.EOI &&
+        while (errorLocation.getChar() != Characters.EOI &&
                 !rootMatcher.accept(new IsStarterCharVisitor<V>(errorLocation.getChar()))) {
             errorLocation = errorLocation.advance(inputBuffer);
             count++;
@@ -139,7 +136,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     private boolean tryFixBySingleCharDeletion(@NotNull InputLocation preFixLocation) {
-        preFixLocation.insertNext(Parboiled.DEL_ERROR);
+        preFixLocation.insertNext(Characters.DEL_ERROR);
         InputLocation saved = preFixLocation.getNext().removeNext();
         boolean nowErrorFree = attemptRecordingMatch();
         if (!nowErrorFree) {
@@ -157,11 +154,11 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         for (MatcherPath<V> failedMatcherPath : currentError.getFailedMatchers()) {
             Character starterChar = failedMatcherPath.getHead().accept(getAStarterCharVisitor);
             Preconditions.checkState(starterChar != null); // we should only have single character matchers
-            if (starterChar == Parboiled.EOI) {
+            if (starterChar == Characters.EOI) {
                 continue; // we should never conjure up an EOI character (that would be cheating :)
             }
             preFixLocation.insertNext(starterChar);
-            preFixLocation.insertNext(Parboiled.INS_ERROR);
+            preFixLocation.insertNext(Characters.INS_ERROR);
             if (attemptRecordingMatch()) {
                 return null; // success, exit immediately
             }
@@ -209,7 +206,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             // if we didn't match we might have to resynchronize, however we only resynchronize
             // if we are at a RESYNC location and the matcher is a SequenceMatchers that has already
             // matched at least one character and that is a parent of the last match
-            return fringeLocation != null && fringeLocation.getChar() == Parboiled.RESYNC &&
+            return fringeLocation != null && fringeLocation.getChar() == Characters.RESYNC &&
                     matcher instanceof SequenceMatcher &&
                     context.getCurrentLocation() != context.getStartLocation() &&
                     context.getPath().isPrefixOf(lastMatchPath) &&
@@ -226,7 +223,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
         private boolean isErrorLocation(MatcherContext<V> context) {
             char c = context.getCurrentLocation().getChar();
-            return c == Parboiled.DEL_ERROR || c == Parboiled.INS_ERROR;
+            return c == Characters.DEL_ERROR || c == Characters.INS_ERROR;
         }
 
         private boolean willMatchError(MatcherContext<V> context) {
@@ -241,7 +238,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
             context.setStartLocation(context.getCurrentLocation());
             context.clearBelowLeafLevelMarker();
-            if (preSkipLocation.getChar() == Parboiled.INS_ERROR) {
+            if (preSkipLocation.getChar() == Characters.INS_ERROR) {
                 context.markError();
             } else {
                 if (context.getParent() != null) context.getParent().markError();
@@ -273,7 +270,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             while_loop:
             while (true) {
                 char currentChar = context.getCurrentLocation().getChar();
-                if (currentChar == Parboiled.EOI) break;
+                if (currentChar == Characters.EOI) break;
                 for (Matcher<V> followMatcher : followMatchers) {
                     if (followMatcher.accept(new IsStarterCharVisitor<V>(currentChar))) {
                         break while_loop;

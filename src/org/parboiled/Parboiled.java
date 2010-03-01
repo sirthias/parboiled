@@ -27,11 +27,6 @@ import java.lang.reflect.Constructor;
  */
 public class Parboiled {
 
-    public static final char EOI = '\uFFFF';
-    public static final char DEL_ERROR = '\uFDEF';
-    public static final char INS_ERROR = '\uFDEE';
-    public static final char RESYNC = '\uFDED';
-
     protected Parboiled() {}
 
     /**

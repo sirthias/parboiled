@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchervisitors;
+package org.parboiled.support;
 
 import org.parboiled.matchers.CharIgnoreCaseMatcher;
 import org.parboiled.matchers.CharMatcher;
 import org.parboiled.matchers.CharRangeMatcher;
 import org.parboiled.matchers.CharactersMatcher;
-import org.parboiled.support.Characters;
 
 import java.util.Random;
 

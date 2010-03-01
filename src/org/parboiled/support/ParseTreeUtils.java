@@ -19,7 +19,6 @@ package org.parboiled.support;
 import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
 import org.parboiled.common.StringUtils;
 import org.parboiled.common.Utils;
 import org.parboiled.trees.Filter;

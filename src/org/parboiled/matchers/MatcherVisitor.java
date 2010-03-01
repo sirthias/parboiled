@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchervisitors;
-
-import org.parboiled.matchers.*;
+package org.parboiled.matchers;
 
 public interface MatcherVisitor<V, R> {
 

@@ -32,6 +32,11 @@ public class Characters {
     public static final Characters NONE = new Characters(false, NO_CHARS);
     public static final Characters ALL = new Characters(true, NO_CHARS);
 
+    public static final char EOI = '\uFFFF';
+    public static final char DEL_ERROR = '\uFDEF';
+    public static final char INS_ERROR = '\uFDEE';
+    public static final char RESYNC = '\uFDED';
+
     // if the set is subtractive its semantics change from "includes all characters in the set" to
     // "includes all characters not in the set"
     private final boolean subtractive;

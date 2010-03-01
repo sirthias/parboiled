@@ -283,16 +283,16 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @KeepAsIs
     public Rule eoi() {
-        return ch(Parboiled.EOI).label("EOI");
+        return ch(Characters.EOI).label("EOI");
     }
 
     /**
-     * Matches any character except {@link org.parboiled.Parboiled#EOI}.
+     * Matches any character except {@link Characters#EOI}.
      *
      * @return a new rule
      */
     public Rule any() {
-        return new CharactersMatcher<V>(Characters.allBut(Parboiled.EOI)).label("ANY");
+        return new CharactersMatcher<V>(Characters.allBut(Characters.EOI)).label("ANY");
     }
 
     /**

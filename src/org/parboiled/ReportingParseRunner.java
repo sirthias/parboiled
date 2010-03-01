@@ -19,7 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
-import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
+import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;

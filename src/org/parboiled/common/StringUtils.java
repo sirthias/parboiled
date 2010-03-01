@@ -17,6 +17,7 @@
 package org.parboiled.common;
 
 import org.parboiled.Parboiled;
+import org.parboiled.support.Characters;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public final class StringUtils {
     }
 
     /**
-     * Replaces carriage returns, newlines, tabs, formfeeds and {@link Parboiled#EOI}
+     * Replaces carriage returns, newlines, tabs, formfeeds and {@link Characters#EOI}
      * with their respective escape sequences.
      *
      * @param c the character to escape
@@ -67,13 +68,13 @@ public final class StringUtils {
                 return "\\t";
             case '\f':
                 return "\\f";
-            case Parboiled.DEL_ERROR:
+            case Characters.DEL_ERROR:
                 return "DEL_ERROR";
-            case Parboiled.INS_ERROR:
+            case Characters.INS_ERROR:
                 return "INS_ERROR";
-            case Parboiled.RESYNC:
+            case Characters.RESYNC:
                 return "RESYNC";
-            case Parboiled.EOI:
+            case Characters.EOI:
                 return "EOI";
             default:
                 return String.valueOf(c);

@@ -16,7 +16,6 @@
 
 package org.parboiled.support;
 
-import org.parboiled.Parboiled;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
@@ -70,7 +69,7 @@ public class InputLocationTest {
 
     private String readToEnd(InputBuffer inputBuffer, InputLocation location) {
         StringBuilder sb = new StringBuilder();
-        while (location.getChar() != Parboiled.EOI) {
+        while (location.getChar() != Characters.EOI) {
             sb.append(location.getChar());
             location = location.advance(inputBuffer);
         }
@@ -79,7 +78,7 @@ public class InputLocationTest {
 
     private String getStream(InputBuffer inputBuffer, InputLocation location) {
         StringBuilder sb = new StringBuilder();
-        while (location.getChar() != Parboiled.EOI) {
+        while (location.getChar() != Characters.EOI) {
             sb.append(location).append('\n');
             location = location.advance(inputBuffer);
         }
