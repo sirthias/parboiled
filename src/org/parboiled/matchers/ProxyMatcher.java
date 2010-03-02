@@ -25,8 +25,7 @@ import java.util.List;
 
 /**
  * A {@link Matcher} that delegates all {@link Rule} and {@link Matcher} interface methods to another {@link Matcher}.
- * It can also hold a label, a leaf marker and a withoutNode marker and lazily apply these to the
- * underlying {@link Matcher} once it is available.
+ * It can also hold a label and a leaf marker and lazily apply these to the underlying {@link Matcher} once it is available.
  *
  * @param <V> the type of the value field of a parse tree node
  */
@@ -35,7 +34,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
     private Matcher<V> target;
     private String label;
     private boolean leaf;
-    private boolean withoutNode;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
@@ -58,11 +56,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.isLeaf();
     }
 
-    public boolean isWithoutNode() {
-        apply();
-        return target.isWithoutNode();
-    }
-
     public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
         apply();
         return target.accept(visitor);
@@ -79,7 +72,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         Preconditions.checkState(target != null);
         if (label != null) label(label);
         if (leaf) asLeaf();
-        if (withoutNode) withoutNode();
     }
 
     @SuppressWarnings({"unchecked"})
@@ -118,21 +110,6 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         Rule inner = (Rule) unwrap(target);
         target = (Matcher<V>) inner.asLeaf(); // since leaf marking might change the instance we have to update it
         leaf = false;
-        return (Rule) target;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public Rule withoutNode() {
-        if (target == null) {
-            // if we have no target yet we need to save the pull up marker and "apply" it later
-            withoutNode = true;
-            return this;
-        }
-
-        // we already have a target to which we can directly apply the marker
-        Rule inner = (Rule) unwrap(target);
-        target = (Matcher<V>) inner.withoutNode(); // might change the instance so update it
-        withoutNode = false;
         return (Rule) target;
     }
 

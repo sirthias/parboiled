@@ -19,7 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.errors.GrammarException;
 import org.parboiled.support.InputLocation;
 
 /**
@@ -40,12 +39,6 @@ public class TestNotMatcher<V> extends AbstractMatcher<V> {
     @Override
     public String getLabel() {
         return hasLabel() ? super.getLabel() : "!(" + subMatcher + ")";
-    }
-
-    @Override
-    public Rule withoutNode() {
-        throw new GrammarException("testNot rules cannot be marked as withoutNode-rules, " +
-                "they never create parse tree nodes");
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

@@ -40,11 +40,6 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
     boolean isLeaf();
 
     /**
-     * @return true if this matcher has been marked as a "without node" matcher
-     */
-    boolean isWithoutNode();
-
-    /**
      * Tries a match on the given MatcherContext.
      *
      * @param context the MatcherContext

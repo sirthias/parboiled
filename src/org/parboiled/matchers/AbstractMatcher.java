@@ -31,7 +31,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     private String label;
     private boolean locked;
     private boolean leaf;
-    private boolean withoutNode;
 
     protected AbstractMatcher() {
         this(new Rule[0]);
@@ -71,10 +70,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return leaf;
     }
 
-    public boolean isWithoutNode() {
-        return withoutNode;
-    }
-
     public boolean hasLabel() {
         return label != null;
     }
@@ -97,14 +92,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         if (isLeaf()) return this;
         AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
         matcher.leaf = true;
-        return matcher;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public Rule withoutNode() {
-        if (isWithoutNode()) return this;
-        AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
-        matcher.withoutNode = true;
         return matcher;
     }
 

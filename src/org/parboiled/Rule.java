@@ -39,12 +39,4 @@ public interface Rule {
      */
     Rule asLeaf();
 
-    /**
-     * Marks this rule as not creating its own parse tree node.
-     * Instead all nodes created by sub rules are "pulled up" to become direct children of this rules parent rule.
-     *
-     * @return this Rule
-     */
-    Rule withoutNode();
-
 }

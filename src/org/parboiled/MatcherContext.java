@@ -232,10 +232,6 @@ public class MatcherContext<V> implements Context<V> {
         if (belowLeafLevel || matcher instanceof TestMatcher) {
             return;
         }
-        if (matcher.isWithoutNode()) {
-            if (parent != null) parent.addChildNodes(subNodes);
-            return;
-        }
         node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, getTreeValue(), hasError);
         if (parent != null) parent.addChildNode(node);
         lastNodeRef.setTarget(node);
