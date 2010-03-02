@@ -1,5 +1,6 @@
 org.parboiled
 org.parboiled.common
-org.parboiled.exceptions
+org.parboiled.errors
+org.parboiled.matchers
 org.parboiled.support
 org.parboiled.trees
