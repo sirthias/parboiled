@@ -1,3 +1,15 @@
+Version 0.9.5.0 (2010-03-02)
+----------------------------
+- Major update of basic matching architecture (some breaking changes) 
+- Removed BaseParser.parse(...), introduced ParseRunner interface with 4 standard implementations
+- Implemented a completely new and much improved parse error reporting and recovery logic
+- Removed all, now obsolete, rule enforcement constructs like enforcedSequence(...)
+- Replaced a number of utility classes (like ImmutableList) with implementations from Google Collections
+- Added Proguard-based build step to perform unused class/member removal for more flexible use of external libraries
+- Smaller performance optimization (ca. 10% faster parsing of error free input over version 0.9.2.0)
+- Corrected and improved API documentation
+- Many smaller bug fixes, refactorings and other improvements
+
 Version 0.9.2.0 (2010-02-02)
 ----------------------------
 - Added @Leaf annotation for marking rules as "creating parse tree leaf nodes"
