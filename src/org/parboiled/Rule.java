@@ -32,7 +32,6 @@ public interface Rule {
     /**
      * Marks this rule as a leaf rule. The parse tree nodes created by this rule will be leaf nodes in the parse tree,
      * i.e. sub rules will not create parse tree nodes.
-     * Additionally this rule and all sub rules are not allowed to contain parser actions.
      * Leaf rules can be parsed significantly faster than ordinary, parse tree node creating rules.
      *
      * @return this Rule
