@@ -16,9 +16,9 @@
 
 package org.parboiled.examples.calculator3;
 
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.jetbrains.annotations.NotNull;
 
 public class CalculatorParser extends BaseParser<CalcNode> {
 
@@ -110,11 +110,11 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     }
 
     public Rule whiteSpace() {
-        return zeroOrMore(firstOf(ch(' '), ch('\t'), ch('\f'), newline()));
+        return zeroOrMore(firstOf(charSet(" \t\f"), newline()));
     }
 
     public Rule newline() {
-        return firstOf(string("\r\n"), ch('\r'), ch('\n'));
+        return firstOf(string("\r\n"), charSet("\r\n"));
     }
 
     @Override
