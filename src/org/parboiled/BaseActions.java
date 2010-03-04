@@ -362,20 +362,20 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Returns true if neither the current rule, nor any sub rule has not recorded a parse error.
+     * Determines whether the current rule or a sub rule has recorded a parse error.
      * Useful for example for making sure actions are not run on erroneous input:
      * <code>
      * return sequence(
      * ...,
-     * NO_ERROR() && actions.doSomething()
+     * !HAS_ERROR() && actions.doSomething()
      * );
      * </code>
      *
-     * @return true if neither the current rule, nor any sub rule has not recorded a parse error
+     * @return true if either the current rule or a sub rule has recorded a parse error
      */
-    public boolean NO_ERROR() {
+    public boolean HAS_ERROR() {
         check();
-        return !context.hasError();
+        return context.hasError();
     }
 
     private void check() {
