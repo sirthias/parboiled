@@ -25,6 +25,7 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
@@ -33,8 +34,16 @@ import org.objectweb.asm.tree.VarInsnNode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.io.InputStream;
+import java.io.IOException;
 
 class AsmUtils {
+
+    public static ClassReader createClassReader(Class<?> clazz) throws IOException {
+        String classFilename = clazz.getName().replace('.', '/') + ".class";
+        InputStream inputStream = clazz.getClassLoader().getResourceAsStream(classFilename);
+        return new ClassReader(inputStream);
+    }
 
     public static String getExtendedParserClassName(String parserClassName) {
         return parserClassName + "$$parboiled";

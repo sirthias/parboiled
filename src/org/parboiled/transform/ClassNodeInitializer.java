@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.*;
 import org.parboiled.support.Checks;
 import static org.parboiled.transform.AsmUtils.getExtendedParserClassName;
+import static org.parboiled.transform.AsmUtils.createClassReader;
 
 /**
  * Initializes the basic ParserClassNode fields and collects all methods into the ParserClassNode.allMethods list.
@@ -52,7 +53,7 @@ class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
             classNode.superTypes.add(ownerType);
 
             // extract methods from super type
-            ClassReader classReader = new ClassReader(ownerType.getClassName());
+            ClassReader classReader = createClassReader(ownerClass);
             classReader.accept(this, ClassReader.SKIP_FRAMES);
 
             ownerClass = ownerClass.getSuperclass();
