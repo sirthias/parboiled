@@ -1,6 +1,7 @@
 //******************************************************************************
 //
 //  Copyright (c) 2010 Radu Vlasov
+//  Adapted in 2010 by Mathias Doenitz
 //  The author gives unlimited permission to copy and distribute
 //  this file, with or without modifications, as long as this notice
 //  is preserved, and any changes are properly documented.
@@ -31,11 +32,12 @@
 
 package org.parboiled.examples.pegtranslator;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.common.StringUtils;
 
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,13 +52,21 @@ import java.util.regex.Pattern;
 
 // TODO: split output Rule-s in >1 lines and indent properly for easy reading
 public class PegTranslator extends BaseParser<Object> {
-    //************
-    //  Globals
-    //************
 
-    static final String outClassName = "Parser_ChangeMyName";
-    static final String outFileName = "C:/cygwin/tmp/" + outClassName + ".java";
-    static final String EOL = "\r\n";
+    private final String packageName;
+    private final String className;
+    private final StringBuilder out = new StringBuilder();
+
+    public PegTranslator(@NotNull String fullyQualifiedClassName) {
+        int ix = fullyQualifiedClassName.lastIndexOf('.');
+        Preconditions.checkArgument(ix > 0);
+        packageName = fullyQualifiedClassName.substring(0, ix);
+        className = fullyQualifiedClassName.substring(ix + 1);
+    }
+
+    public String getSource() {
+        return out.toString();
+    }
 
     //************
     //   Parser
@@ -66,18 +76,12 @@ public class PegTranslator extends BaseParser<Object> {
     // -------------------
 
     public Rule Grammar() {
-        return firstOf(
-                sequence(
-                        open(),
-                        startClass(),
-                        Spacing(),
-                        outComment(),
-                        oneOrMore(Definition()),
-                        EndOfFile(),
-                        endClass(),
-                        close(true)
-                ),
-                close(false)
+        return sequence(
+                startClass(),
+                Spacing(),
+                oneOrMore(Definition()),
+                eoi(),
+                endClass()
         );
     }
 
@@ -87,6 +91,7 @@ public class PegTranslator extends BaseParser<Object> {
     public Rule Definition() {
         return sequence(
                 Identifier(),
+                outComment(),
                 startMethod(theMostRecentSpacedTrimmedTerminal),
                 LEFTARROW(),
                 Expression(),
@@ -296,7 +301,7 @@ public class PegTranslator extends BaseParser<Object> {
     public Rule DOT() { return sequence(ch('.'), Spacing(), outAny()); }
 
     public Rule Spacing() {
-        return sequence(resetComment(), zeroOrMore(firstOf(Space(), Comment())));
+        return zeroOrMore(firstOf(Space(), Comment()));
     }
 
     // TODO: empty lines around and in between comment lines get lost
@@ -316,10 +321,6 @@ public class PegTranslator extends BaseParser<Object> {
 
     public Rule EndOfLine() {
         return firstOf(string("\r\n"), ch('\n'), ch('\r'));
-    }
-
-    public Rule EndOfFile() {
-        return testNot(any());
     }
 
     //***********
@@ -454,39 +455,44 @@ public class PegTranslator extends BaseParser<Object> {
     //************
 
     boolean startClass() {
-        out("package ChangeMyName;" + EOL);
-        out(EOL);
-        out("import org.parboiled.BaseParser;" + EOL);
-        out("import org.parboiled.Rule;" + EOL);
-        out(EOL);
-        out(EOL);
-        out(" public class " + outClassName + " extends BaseParser <Object>" + EOL);
-        out("//~~~~~~~~~~~" + EOL);
-        out("{" + EOL);
+        outLn("package " + packageName + ';');
+        outLn("import org.parboiled.BaseParser;");
+        outLn("import org.parboiled.Rule;");
+        outLn();
+        outLn();
+        outLn("public class " + className + " extends BaseParser<Object> {");
         return true;
     }
 
     boolean endClass() {
-        out("}" + EOL);
+        outLn("}");
         return true;
     }
 
     boolean startMethod(String methodName) {
-        out(EOL + "   public Rule " + methodName + " () {");
-        out(EOL + "      return ");
+        outLn("    public Rule " + methodName + " () {");
+        out("        return ");
         return true;
     }
 
     boolean endMethod() {
-        out(EOL + "      ;");
-        out(EOL + "   }");
-        out(EOL);
+        outLn(";");
+        outLn("    }");
+        outLn();
         return true;
+    }
+
+    boolean outLn() {
+        return out(StringUtils.NL);
+    }
+
+    boolean outLn(String str) {
+        return out(str + StringUtils.NL);
     }
 
     boolean out(String str) {
         if (stack.size() == 0) {
-            outFile.print(str);
+            out.append(str);
         } else {
             stack.lastElement().stringBuilder.append(str);
         }
@@ -507,7 +513,7 @@ public class PegTranslator extends BaseParser<Object> {
         // ASSERT
         if (!(str.startsWith("'") && str.endsWith("'") ||
                 str.startsWith("\"") && str.endsWith("\""))) {
-        // TODO: keep this in sync with Literal()
+            // TODO: keep this in sync with Literal()
             throw new RuntimeException("literal not quoted: [" + str + "]");
         }
 
@@ -561,7 +567,6 @@ public class PegTranslator extends BaseParser<Object> {
                 sb.append("ch ('").append(escapeChar(mat.group(4))).append("')");
             }
 
-            if (mat.end(0) == str.length()) ;
             endWasHit = true;
         }
         // end while (mat.find ())
@@ -585,7 +590,11 @@ public class PegTranslator extends BaseParser<Object> {
     }
 
     boolean outComment() {
-        return theMostRecentComment.length() == 0 || out(theMostRecentComment.toString());
+        if (theMostRecentComment.length() > 0) {
+            out(theMostRecentComment.toString());
+            theMostRecentComment.delete(0, theMostRecentComment.length());
+        }
+        return true;
     }
 
     boolean outAny() {
@@ -594,35 +603,6 @@ public class PegTranslator extends BaseParser<Object> {
 
     boolean outComma() {
         return out(", ");
-    }
-
-    //**********
-    //   File
-    //**********
-
-    PrintStream outFile = null;
-
-    boolean open() {
-        try {
-            outFile = new PrintStream(outFileName);
-        }
-        catch (FileNotFoundException fnfEx) {
-            fnfEx.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    boolean close(boolean ret) {
-        // ASSERT
-        if (stack.size() != 0) {
-            throw new RuntimeException("stack not empty");
-        }
-
-        outFile.close();
-
-        return ret;
     }
 
     //************
@@ -637,13 +617,8 @@ public class PegTranslator extends BaseParser<Object> {
         return true;
     }
 
-    boolean resetComment() {
-        theMostRecentComment.delete(0, theMostRecentComment.length());
-        return true;
-    }
-
     boolean addComment(String str) {
-        theMostRecentComment.append("   //").append(str.replaceFirst("\\s+$", "")).append(EOL);
+        theMostRecentComment.append("   //").append(str.replaceFirst("\\s+$", "")).append(StringUtils.NL);
         return true;
     }
 

@@ -29,6 +29,8 @@ import java.util.Iterator;
  */
 public final class StringUtils {
 
+    public static final String NL = System.getProperty("line.separator");
+
     private StringUtils() {}
 
     /**
@@ -222,6 +224,7 @@ public final class StringUtils {
 
     // Empty checks
     //-----------------------------------------------------------------------
+
     /**
      * <p>Checks if a String is empty ("") or null.</p>
      * <p/>
