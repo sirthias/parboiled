@@ -23,18 +23,22 @@ import org.parboiled.transform.ParserTransformer;
 import java.lang.reflect.Constructor;
 
 /**
- * Main class providing the high-level entrypoint into the parboiled library.
+ * Main class providing the high-level entry point into the parboiled library.
  */
 public class Parboiled {
 
     protected Parboiled() {}
 
     /**
-     * Creates a parser object whose rule creation methods can then be used with one of the {@link ParseRunner} implementations.
-     * Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
+     * <p>Creates a parser object whose rule creation methods can then be used with one of the {@link ParseRunner} implementations.</p>
+     * <p>Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
      * Also your parser class has to be derived from {@link BaseParser}. If you want to use a non-default constructor you also
-     * have to provide its arguments to this method.
+     * have to provide its arguments to this method.</p>
+     * <p>Performing the rule analysis and extending the parser class is an expensive process (time-wise) and can
+     * take up to several hundred milliseconds for large grammars. However, this cost is only incurred once per
+     * parser class and class loader. Subsequent calls to this method are therefore fast once the initial extension
+     * has been performed.</p>
      *
      * @param parserClass     the type of the parser to create
      * @param constructorArgs optional arguments to the parser class constructor

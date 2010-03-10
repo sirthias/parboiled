@@ -16,22 +16,23 @@
 
 package org.parboiled.examples;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import org.testng.annotations.Test;
-import org.parboiled.examples.time.TimeParser;
-import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
 import org.parboiled.RecoveringParseRunner;
+import org.parboiled.examples.time.TimeParser;
+import org.testng.annotations.Test;
 
-public class TimeTest extends AbstractTest {
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+public class TimeTest {
 
     @Test
     public void test() {
         TimeParser parser = Parboiled.createParser(TimeParser.class);
         assertEquals(RecoveringParseRunner.run(parser.time(), "12:00").parseTreeRoot.getValue(), "12 h, 0 min, 0 s");
         assertEquals(RecoveringParseRunner.run(parser.time(), "9:01").parseTreeRoot.getValue(), "9 h, 1 min, 0 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "02:34:56").parseTreeRoot.getValue(), "2 h, 34 min, 56 s");
+        assertEquals(RecoveringParseRunner.run(parser.time(), "02:34:56").parseTreeRoot.getValue(),
+                "2 h, 34 min, 56 s");
         assertEquals(RecoveringParseRunner.run(parser.time(), "1").parseTreeRoot.getValue(), "1 h, 0 min, 0 s");
         assertEquals(RecoveringParseRunner.run(parser.time(), "12").parseTreeRoot.getValue(), "12 h, 0 min, 0 s");
         assertEquals(RecoveringParseRunner.run(parser.time(), "123").parseTreeRoot.getValue(), "1 h, 23 min, 0 s");
