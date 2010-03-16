@@ -17,11 +17,12 @@
 package org.parboiled;
 
 import com.google.common.base.Preconditions;
-import static com.google.common.collect.ObjectArrays.concat;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
+
+import static com.google.common.collect.ObjectArrays.concat;
 
 /**
  * Base class of all parboiled parsers. Defines the basic rule creation methods.
@@ -80,10 +81,22 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param characters the characters
      * @return a new rule
      */
-    @Cached
     public Rule charSet(@NotNull String characters) {
-        Preconditions.checkArgument(characters.length() > 0);
-        return characters.length() == 1 ? ch(characters.charAt(0)) : charSet(Characters.of(characters));
+        return charSet(characters.toCharArray());
+    }
+
+    /**
+     * Creates a new rule that matches any of the characters in the given char array.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters
+     * @return a new rule
+     */
+    @Cached
+    public Rule charSet(@NotNull char... characters) {
+        Preconditions.checkArgument(characters.length > 0);
+        return characters.length == 1 ? ch(characters[0]) : charSet(Characters.of(characters));
     }
 
     /**
@@ -110,15 +123,31 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string to match
      * @return a new rule
      */
+    public Rule string(@NotNull String string) {
+        return string(string.toCharArray());
+    }
+
+    /**
+     * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
+     * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
+     * e.g. because you redefined it, you can also use this wrapper.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters of the string to match
+     * @return a new rule
+     */
     @Cached
     @Leaf
-    public Rule string(@NotNull String string) {
-        if (string.length() == 1) return ch(string.charAt(0)); // optimize one-char strings
-        Rule[] matchers = new Rule[string.length()];
-        for (int i = 0; i < string.length(); i++) {
-            matchers[i] = ch(string.charAt(i));
+    public Rule string(char... characters) {
+        if (characters.length == 1) return ch(characters[0]); // optimize one-char strings
+        Rule[] matchers = new Rule[characters.length];
+        for (int i = 0; i < characters.length; i++) {
+            matchers[i] = ch(characters[i]);
         }
-        return sequence(matchers).label('"' + string + '"');
+        return sequence(matchers).label(
+                new StringBuilder(characters.length + 2).append('"').append(characters).append('"').toString()
+        );
     }
 
     /**
@@ -129,15 +158,29 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string to match
      * @return a new rule
      */
+    public Rule stringIgnoreCase(@NotNull String string) {
+        return stringIgnoreCase(string.toCharArray());
+    }
+
+    /**
+     * Explicitly creates a rule matching the given string in a case-independent fashion.
+     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters of the string to match
+     * @return a new rule
+     */
     @Cached
     @Leaf
-    public Rule stringIgnoreCase(@NotNull String string) {
-        if (string.length() == 1) return charIgnoreCase(string.charAt(0)); // optimize one-char strings
-        Rule[] matchers = new Rule[string.length()];
-        for (int i = 0; i < string.length(); i++) {
-            matchers[i] = charIgnoreCase(string.charAt(i));
+    public Rule stringIgnoreCase(char... characters) {
+        if (characters.length == 1) return charIgnoreCase(characters[0]); // optimize one-char strings
+        Rule[] matchers = new Rule[characters.length];
+        for (int i = 0; i < characters.length; i++) {
+            matchers[i] = charIgnoreCase(characters[i]);
         }
-        return sequence(matchers).label('"' + string + '"');
+        return sequence(matchers).label(
+                new StringBuilder(characters.length + 2).append('"').append(characters).append('"').toString()
+        );
     }
 
     /**
