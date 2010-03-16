@@ -26,13 +26,14 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import static org.parboiled.transform.AsmUtils.getFieldByName;
-import static org.parboiled.common.Utils.toObjectArray;
-import static org.parboiled.common.Utils.merge;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.parboiled.common.Utils.merge;
+import static org.parboiled.common.Utils.toObjectArray;
+import static org.parboiled.transform.AsmUtils.getFieldByName;
 
 class CachingGenerator implements ClassTransformer, Opcodes, Types {
 
@@ -359,7 +360,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
         private void unroll(Object[] params, List<Object> list) {
             for (Object param : params) {
                 if (param != null && param.getClass().isArray()) {
-                    switch (Type.getType(param.getClass()).getSort()) {
+                    switch (Type.getType(param.getClass().getComponentType()).getSort()) {
                         case Type.BOOLEAN:
                             unroll(toObjectArray((boolean[]) param), list);
                             continue;
