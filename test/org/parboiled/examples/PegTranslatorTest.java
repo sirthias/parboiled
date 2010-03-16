@@ -32,7 +32,7 @@ public class PegTranslatorTest {
         PegTranslator pegTranslator = Parboiled.createParser(PegTranslator.class, "org.parboiled.examples.PegParser");
         String pegGrammar = FileUtils.readAllTextFromResource("res/PegGrammar.test");
 
-        // make sure we able to translate
+        // make sure we are able to translate
         assertTrue(ReportingParseRunner.run(pegTranslator.Grammar(), pegGrammar).matched);
 
         // make sure we translated correctly

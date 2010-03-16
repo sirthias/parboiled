@@ -1,3 +1,10 @@
+Version 0.9.5.1 (2010-03-16)
+----------------------------
+- Fixed classLoader issue triggering an java.io.IOException(Class not found) exception in some environments
+- Added org.parboiled.examples.pegtranslator.PegTranslator example, thanks to Radu Vlasov for the contribution
+- Replaced BaseActions.NO_ERROR() with the inversed BaseActions.HAS_ERROR()
+- Small Javadoc improvements and other cosmetic changes
+
 Version 0.9.5.0 (2010-03-02)
 ----------------------------
 - Major update of basic matching architecture (some breaking changes) 
