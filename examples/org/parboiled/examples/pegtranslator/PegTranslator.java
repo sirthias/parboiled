@@ -32,7 +32,6 @@
 
 package org.parboiled.examples.pegtranslator;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
@@ -59,7 +58,7 @@ public class PegTranslator extends BaseParser<Object> {
 
     public PegTranslator(@NotNull String fullyQualifiedClassName) {
         int ix = fullyQualifiedClassName.lastIndexOf('.');
-        Preconditions.checkArgument(ix > 0);
+        if (ix <= 0) throw new IllegalArgumentException();
         packageName = fullyQualifiedClassName.substring(0, ix);
         className = fullyQualifiedClassName.substring(ix + 1);
     }
@@ -280,25 +279,45 @@ public class PegTranslator extends BaseParser<Object> {
     //    it's just their presence that affects the parsing process
     //    SO: there is no need to add any Spacing-related logic for them
     //        like done for Identifier, Literal, Class
-    public Rule LEFTARROW() { return sequence(string("<-"), Spacing()); }
+    public Rule LEFTARROW() {
+        return sequence(string("<-"), Spacing());
+    }
 
-    public Rule SLASH() { return sequence(ch('/'), Spacing()); }
+    public Rule SLASH() {
+        return sequence(ch('/'), Spacing());
+    }
 
-    public Rule AND() { return sequence(ch('&'), Spacing()); }
+    public Rule AND() {
+        return sequence(ch('&'), Spacing());
+    }
 
-    public Rule NOT() { return sequence(ch('!'), Spacing()); }
+    public Rule NOT() {
+        return sequence(ch('!'), Spacing());
+    }
 
-    public Rule QUESTION() { return sequence(ch('?'), Spacing()); }
+    public Rule QUESTION() {
+        return sequence(ch('?'), Spacing());
+    }
 
-    public Rule STAR() { return sequence(ch('*'), Spacing()); }
+    public Rule STAR() {
+        return sequence(ch('*'), Spacing());
+    }
 
-    public Rule PLUS() { return sequence(ch('+'), Spacing()); }
+    public Rule PLUS() {
+        return sequence(ch('+'), Spacing());
+    }
 
-    public Rule OPEN() { return sequence(ch('('), Spacing()); }
+    public Rule OPEN() {
+        return sequence(ch('('), Spacing());
+    }
 
-    public Rule CLOSE() { return sequence(ch(')'), Spacing()); }
+    public Rule CLOSE() {
+        return sequence(ch(')'), Spacing());
+    }
 
-    public Rule DOT() { return sequence(ch('.'), Spacing(), outAny()); }
+    public Rule DOT() {
+        return sequence(ch('.'), Spacing(), outAny());
+    }
 
     public Rule Spacing() {
         return zeroOrMore(firstOf(Space(), Comment()));
@@ -342,9 +361,13 @@ public class PegTranslator extends BaseParser<Object> {
             this.n = 0;
         }
 
-        void incr() { n++; }
+        void incr() {
+            n++;
+        }
 
-        void set(int n) { this.n = n; }
+        void set(int n) {
+            this.n = n;
+        }
 
         void end() {
             String bodyStr = stringBuilder.toString();
@@ -355,7 +378,9 @@ public class PegTranslator extends BaseParser<Object> {
                         out("firstOf (");
                         out(bodyStr);
                         out(")");
-                    } else { out(bodyStr); }
+                    } else {
+                        out(bodyStr);
+                    }
                     break;
 
                 case SEQUENCE:
@@ -363,7 +388,11 @@ public class PegTranslator extends BaseParser<Object> {
                         out("sequence (");
                         out(bodyStr);
                         out(")");
-                    } else if (n == 1) { out(bodyStr); } else { out("empty ()"); }
+                    } else if (n == 1) {
+                        out(bodyStr);
+                    } else {
+                        out("empty ()");
+                    }
                     break;
 
                 case PREFIX:
@@ -377,7 +406,9 @@ public class PegTranslator extends BaseParser<Object> {
                         out(bodyStr);
                         out(")");
                     }    // NOT
-                    else { out(bodyStr); }    // no prefix
+                    else {
+                        out(bodyStr);
+                    }    // no prefix
                     break;
 
                 case SUFFIX:
@@ -396,7 +427,9 @@ public class PegTranslator extends BaseParser<Object> {
                         out(bodyStr);
                         out(")");
                     }    // +
-                    else { out(bodyStr); }    // no prefix
+                    else {
+                        out(bodyStr);
+                    }    // no prefix
                     break;
 
                 case SEQUENCE_ELEMENT:
@@ -412,7 +445,9 @@ public class PegTranslator extends BaseParser<Object> {
                     if (parentSequence.n > 0) {
                         out(", ");
                         out(bodyStr);
-                    } else { out(bodyStr); }
+                    } else {
+                        out(bodyStr);
+                    }
                     break;
             }
             // end switch

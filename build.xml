@@ -191,7 +191,7 @@
         </zip>
     </target>
 
-    <target name="dist" depends="clean, test, jar, jar.source, jar.javadoc"
+    <target name="dist" depends="clean, test, testjar, jar.source, jar.javadoc"
             description="Compiles, tests and jars everything">
     </target>
 
