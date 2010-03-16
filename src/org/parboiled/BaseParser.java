@@ -393,7 +393,19 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule
      */
     protected Rule fromStringLiteral(@NotNull String string) {
-        return string(string);
+        return fromCharArray(string.toCharArray());
+    }
+
+    /**
+     * Used internally to convert the given char array to a parser rule.
+     * You can override this method, e.g. for specifying a sequence that automatically matches all trailing
+     * whitespace after the characters.
+     *
+     * @param array the char array
+     * @return the rule
+     */
+    protected Rule fromCharArray(@NotNull char[] array) {
+        return string(array);
     }
 
     /**
@@ -422,6 +434,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof Rule) return (Rule) obj;
         if (obj instanceof Character) return fromCharLiteral((Character) obj);
         if (obj instanceof String) return fromStringLiteral((String) obj);
+        if (obj instanceof char[]) return fromCharArray((char[]) obj);
         if (obj instanceof Action) return new ActionMatcher<V>((Action<V>) obj);
 
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
