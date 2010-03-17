@@ -24,9 +24,10 @@ package org.parboiled.transform;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
+import org.parboiled.support.Checks;
+
 import static org.parboiled.transform.AsmUtils.findLoadedClass;
 import static org.parboiled.transform.AsmUtils.loadClass;
-import org.parboiled.support.Checks;
 
 class ActionClassGenerator implements Opcodes, Types {
 
@@ -185,7 +186,9 @@ class ActionClassGenerator implements Opcodes, Types {
         newInstructions.insertBefore(node.instruction, new VarInsnNode(ALOAD, 0));
         newInstructions.insertBefore(node.instruction,
                 new MethodInsnNode(INVOKEVIRTUAL, ACTION_WRAPPER_BASE_TYPE.getInternalName(),
-                        "UP".equals(contextSwitchType) ? "DOWN" : "UP", "()V")
+                        contextSwitchType.startsWith("UP") ?
+                                contextSwitchType.replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP"),
+                        "()V")
         );
         newInstructions.remove(node.instruction);
 

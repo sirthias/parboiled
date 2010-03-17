@@ -17,10 +17,10 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputLocation;
-import org.parboiled.trees.ImmutableTreeNode;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.InputLocation;
+import org.parboiled.trees.ImmutableTreeNode;
 
 import java.util.List;
 

@@ -18,19 +18,20 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Value;
-import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
-import static org.parboiled.transform.AsmUtils.getMethodByName;
 import org.parboiled.test.FileUtils;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import static org.parboiled.test.TestUtils.computeCRC;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.parboiled.test.TestUtils.computeCRC;
+import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
+import static org.parboiled.transform.AsmUtils.getMethodByName;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 @SuppressWarnings({"FieldCanBeLocal"})
 public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
@@ -60,7 +61,7 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
         testMethodAnalysis("simpleActionRule", 2056891149L, true);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("upSetActionRule", 3858994042L, true);
+        testMethodAnalysis("upSetActionRule", 383151074L, true);
         // renderToGraphViz(dotSource);
 
         testMethodAnalysis("booleanExpressionActionRule", 3547608743L, true);
@@ -127,6 +128,7 @@ public class RuleMethodAnalyzerAndInstructionGraphPartitionerTest {
         return sb.toString();
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void renderToGraphViz(String dotSource) throws Exception {
         String command = "C:\\Program Files\\Graphviz2.26\\bin\\dot.exe -Tpng";
         String output = "C:\\3\\graph.png";

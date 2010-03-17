@@ -16,11 +16,10 @@
 
 package org.parboiled.trees;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * A simple, immutable {@link GraphNode} implementation.

@@ -358,6 +358,42 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
+     * Changes the context scope of all arguments to the parent scope two levels up.
+     * Equivalent to UP(UP(...))
+     *
+     * @param argument the arguments to change to context for
+     * @return the result of the argument
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T UP2(T argument) {
+        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
+     * Changes the context scope of all arguments to parent scope three levels up.
+     * Equivalent to UP(UP(UP(...)))
+     *
+     * @param argument the arguments to change to context for
+     * @return the result of the argument
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T UP3(T argument) {
+        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
+     * Changes the context scope of all arguments to parent scope three levels up.
+     * Equivalent to UP(UP(UP(UP(...))))
+     *
+     * @param argument the arguments to change to context for
+     * @return the result of the argument
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T UP4(T argument) {
+        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
      * Changes the context scope of all arguments to the current sub scope. This will only work if this call is
      * at some level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always at
      * the bottom of the context chain.
@@ -367,7 +403,49 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public final <T> T DOWN(T argument) {
-        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
+     * Changes the context scope of all arguments to the sub scope two levels down. This will only work if this call is
+     * at some level wrapped with {@link #UP(Object)} calls, since the default scope is always at
+     * the bottom of the context chain.
+     * Equivalent to DOWN(DOWN(...))
+     *
+     * @param argument the arguments to change to context for
+     * @return the result of the argument
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T DOWN2(T argument) {
+        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
+     * Changes the context scope of all arguments to the sub scope three levels down. This will only work if this call is
+     * at some level wrapped with {@link #UP(Object)} calls, since the default scope is always at
+     * the bottom of the context chain.
+     * Equivalent to DOWN(DOWN(DOWN(...)))
+     *
+     * @param argument the arguments to change to context for
+     * @return the result of the argument
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T DOWN3(T argument) {
+        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
+     * Changes the context scope of all arguments to the sub scope four levels down. This will only work if this call is
+     * at some level wrapped with {@link #UP(Object)} calls, since the default scope is always at
+     * the bottom of the context chain.
+     * Equivalent to DOWN(DOWN(DOWN(DOWN(...))))
+     *
+     * @param argument the arguments to change to context for
+     * @return the result of the argument
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T DOWN4(T argument) {
+        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
     }
 
     ///************************* HELPER METHODS ***************************///

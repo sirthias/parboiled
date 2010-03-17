@@ -31,6 +31,7 @@ import org.parboiled.support.Checks;
  *
  * @param <V> the type of the value field of a parse tree node
  */
+@SuppressWarnings({"UnusedDeclaration"})
 public abstract class ActionWrapperBase<V> implements Action<V> {
 
     protected Context<V> context;
@@ -40,11 +41,47 @@ public abstract class ActionWrapperBase<V> implements Action<V> {
         Checks.ensure(parentContext != null, "Illegal UP() call, already at root level");
         this.context = parentContext;
     }
+    
+    protected final void UP2() {
+        UP();
+        UP();
+    }
+    
+    protected final void UP3() {
+        UP();
+        UP();
+        UP();
+    }
+    
+    protected final void UP4() {
+        UP();
+        UP();
+        UP();
+        UP();
+    }
 
     protected final void DOWN() {
         Context<V> subContext = context.getSubContext();
         Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
         this.context = subContext;
+    }
+    
+    protected final void DOWN2() {
+        DOWN();
+        DOWN();
+    }
+    
+    protected final void DOWN3() {
+        DOWN();
+        DOWN();
+        DOWN();
+    }
+    
+    protected final void DOWN4() {
+        DOWN();
+        DOWN();
+        DOWN();
+        DOWN();
     }
 
     @Override

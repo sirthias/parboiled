@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
  *
  * @param <T> the actual implementation type of this ImmutableBinaryTreeNode
  */
-@SuppressWarnings({"unchecked"})
 public class ImmutableBinaryTreeNode<T extends BinaryTreeNode<T>> extends ImmutableTreeNode<T>
         implements BinaryTreeNode<T> {
 

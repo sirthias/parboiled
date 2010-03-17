@@ -120,9 +120,7 @@ public class ActionClassGeneratorTest {
                 "    ALOAD 1\n" +
                 "    PUTFIELD org/parboiled/transform/ActionWrapperBase.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/ActionWrapperBase.UP ()V\n" +
-                "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/ActionWrapperBase.UP ()V\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/ActionWrapperBase.UP2 ()V\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser$$parboiled$upSetActionRule_Action1.this$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
@@ -137,9 +135,7 @@ public class ActionClassGeneratorTest {
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.SET (Ljava/lang/Object;)Z\n" +
                 "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/ActionWrapperBase.DOWN ()V\n" +
-                "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/ActionWrapperBase.DOWN ()V\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/ActionWrapperBase.DOWN2 ()V\n" +
                 "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
                 "    IRETURN\n" +
                 "   L1\n" +

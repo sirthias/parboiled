@@ -35,6 +35,7 @@ class SimpleActions {
 
 class ContextActions extends BaseActions<Integer> {
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public int action1() {
         return 5;
     }
@@ -44,6 +45,7 @@ class ContextActions extends BaseActions<Integer> {
     }
 }
 
+@SuppressWarnings({"UnusedDeclaration"})
 class TestParser extends BaseParser<Integer> {
     protected final SimpleActions actions = new SimpleActions();
     protected final ContextActions contextActions = new ContextActions();
@@ -73,7 +75,7 @@ class TestParser extends BaseParser<Integer> {
                 oneOrMore(
                         sequence(
                                 'b',
-                                UP(UP(SET(actions.return5()))),
+                                UP2(SET(actions.return5())),
                                 optional('c')
                         )
                 )

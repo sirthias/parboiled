@@ -33,12 +33,13 @@ import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.ContextAware;
-import static org.parboiled.transform.AsmUtils.*;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.support.Checks;
 
 import java.lang.reflect.Modifier;
 import java.util.*;
+
+import static org.parboiled.transform.AsmUtils.*;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
@@ -174,7 +175,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private boolean isContextSwitch(AbstractInsnNode insn) {
         if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
             MethodInsnNode mi = (MethodInsnNode) insn;
-            return ("UP".equals(mi.name) || "DOWN".equals(mi.name)) &&
+            return "UP$UP2$UP3$UP4$DOWN$DOWN2$DOWN3$DOWN4".contains(mi.name) &&
                     CONTEXT_SWITCH_DESCRIPTOR.equals(mi.desc) && isOwnerMethod(mi);
         }
         return false;
