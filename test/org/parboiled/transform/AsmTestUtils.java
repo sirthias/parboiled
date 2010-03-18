@@ -30,10 +30,11 @@ import org.objectweb.asm.util.CheckMethodAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 
 public class AsmTestUtils {
 
@@ -58,8 +59,11 @@ public class AsmTestUtils {
         traceMethodVisitor.print(printWriter);
         printWriter.flush();
         String[] lines = stringWriter.toString().split("\n");
+        int lineNr = 0;
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = String.format("%2d %s", i, lines[i]);
+            if (!lines[i].startsWith("  @")) {
+                lines[i] = String.format("%2d %s", lineNr++, lines[i]);
+            }
         }
         return new StringBuilder()
                 .append("Method '").append(methodNode.name).append("':\n")

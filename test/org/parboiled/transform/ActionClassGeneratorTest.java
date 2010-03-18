@@ -16,30 +16,30 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.transform.AsmTestUtils.getClassDump;
-import static org.parboiled.transform.AsmUtils.getMethodByName;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import com.google.common.base.Preconditions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
-import com.google.common.base.Preconditions;
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.parboiled.transform.AsmTestUtils.getClassDump;
+import static org.parboiled.transform.AsmUtils.getMethodByName;
 
 public class ActionClassGeneratorTest {
 
     private final ParserClassNode classNode = new ParserClassNode(TestParser.class);
-    private final List<ParserMethod> ruleMethods = classNode.ruleMethods;
+    private final List<RuleMethod> ruleMethods = classNode.ruleMethods;
 
     @BeforeClass
     private void setup() throws Exception {
-        new ClassNodeInitializer(
+        /*new ClassNodeInitializer(
                 new MethodCategorizer(
-                        new RuleMethodAnalyzer(
-                                new RuleMethodInstructionGraphPartitioner(null)
+                        new InstructionGraphCreator(
+                                new InstructionGraphPartitioner(null)
                         )
                 )
-        ).transform(classNode);
+        ).transform(classNode);*/
     }
 
     @Test
@@ -365,7 +365,7 @@ public class ActionClassGeneratorTest {
 
     @SuppressWarnings({"ConstantConditions"})
     private void testActionClassGeneration(String methodName, int actionNr, String expectedTrace) throws Exception {
-        ParserMethod info = getMethodByName(ruleMethods, methodName);
+        RuleMethod info = getMethodByName(ruleMethods, methodName);
         Preconditions.checkState(info != null, "Method '" + methodName + "' not found");
 
         int actionNumber = 0;

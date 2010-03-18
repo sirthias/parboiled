@@ -16,12 +16,11 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.common.Utils.merge;
-import com.google.common.base.Preconditions;
 
 class LabelApplicator implements ClassTransformer, Opcodes, Types {
 
@@ -33,15 +32,17 @@ class LabelApplicator implements ClassTransformer, Opcodes, Types {
 
     @SuppressWarnings("unchecked")
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (ParserMethod method : merge(classNode.ruleMethods, classNode.labelMethods)) {
-            createLabellingCode(method);
+        for (RuleMethod method : classNode.ruleMethods) {
+            if (method.isToBeLabelled()) {
+                createLabellingCode(method);
+            }
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void createLabellingCode(ParserMethod method) {
+    private void createLabellingCode(RuleMethod method) {
         InsnList instructions = method.instructions;
         AbstractInsnNode current = instructions.getFirst();
 
@@ -64,7 +65,7 @@ class LabelApplicator implements ClassTransformer, Opcodes, Types {
         // stack: <rule>
     }
 
-    public String getLabelText(ParserMethod method) {
+    public String getLabelText(RuleMethod method) {
         if (method.visibleAnnotations != null) {
             for (Object annotationObj : method.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;

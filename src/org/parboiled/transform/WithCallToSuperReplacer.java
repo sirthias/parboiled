@@ -21,10 +21,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
-import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
-import static org.parboiled.common.Utils.merge;
 
-import java.util.Set;
+import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 
 /**
  * Replaces the method code of so all methods except the action containing rule methods with simple calls to super.
@@ -39,12 +37,8 @@ class WithCallToSuperReplacer implements ClassTransformer, Opcodes {
 
     @SuppressWarnings("unchecked")
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        Set<ParserMethod> methods = merge(classNode.cachedMethods, classNode.labelMethods, classNode.leafMethods);
-        for (ParserMethod method : methods) {
-            replaceWithCallToSuper(classNode, method);
-        }
-        for (ParserMethod method : classNode.ruleMethods) {
-            if (!method.hasActions()) {
+        for (RuleMethod method : classNode.ruleMethods) {
+            if (!method.isToBeRewritten()) {
                 replaceWithCallToSuper(classNode, method);
             }
         }
@@ -52,7 +46,7 @@ class WithCallToSuperReplacer implements ClassTransformer, Opcodes {
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
-    private void replaceWithCallToSuper(ParserClassNode classNode, ParserMethod method) {
+    private void replaceWithCallToSuper(ParserClassNode classNode, RuleMethod method) {
         // replace all method code with a simple call to the super method
         method.instructions.clear();
         method.instructions.add(new VarInsnNode(ALOAD, 0));
@@ -60,7 +54,7 @@ class WithCallToSuperReplacer implements ClassTransformer, Opcodes {
         method.instructions.add(new MethodInsnNode(INVOKESPECIAL,
                 classNode.getParentType().getInternalName(), method.name, method.desc));
         method.instructions.add(new InsnNode(ARETURN));
-        
+
         method.localVariables.clear();
     }
 

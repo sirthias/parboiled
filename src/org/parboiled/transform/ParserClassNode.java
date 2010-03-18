@@ -25,6 +25,8 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,8 @@ class ParserClassNode extends ClassNode {
     public final Type parentType;
     public final List<Type> superTypes = new ArrayList<Type>();
 
-    public final List<ParserMethod> allMethods = new ArrayList<ParserMethod>();
-    public final List<ParserMethod> constructors = new ArrayList<ParserMethod>();
-    public final List<ParserMethod> ruleMethods = new ArrayList<ParserMethod>(); // no-arg, Rule returning methods
-    public final List<ParserMethod> cachedMethods = new ArrayList<ParserMethod>(); // @Cached, Rule returning methods
-    public final List<ParserMethod> labelMethods = new ArrayList<ParserMethod>(); // @Label, Rule returning methods
-    public final List<ParserMethod> leafMethods = new ArrayList<ParserMethod>(); // @Leaf, Rule returning methods
+    public final List<MethodNode> constructors = new ArrayList<MethodNode>();
+    public final List<RuleMethod> ruleMethods = new ArrayList<RuleMethod>();
 
     public final List<ActionClassGenerator> actionClassGenerators = new ArrayList<ActionClassGenerator>();
     public byte[] classCode;
@@ -57,6 +55,14 @@ class ParserClassNode extends ClassNode {
 
     public String getDescriptor() {
         return 'L' + name + ';';
+    }
+
+    public boolean isOwnerOf(MethodInsnNode methodInsn) {
+        if (name.equals(methodInsn.owner)) return true;
+        for (Type ownerType : superTypes) {
+            if (ownerType.getInternalName().equals(methodInsn.owner)) return true;
+        }
+        return false;
     }
 
 }

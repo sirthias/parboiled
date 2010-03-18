@@ -32,35 +32,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Partitions the instructions graphs of the ParserClassNode.ruleMethods into their InstructionSubSets
+ * Partitions the instructions graphs of a RuleMethod into its InstructionSubSets
  */
-class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
+class InstructionGraphPartitioner implements MethodTransformer {
 
-    private final ClassTransformer nextTransformer;
+    private final MethodTransformer next;
 
-    public RuleMethodInstructionGraphPartitioner(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
+    public InstructionGraphPartitioner(MethodTransformer next) {
+        this.next = next;
     }
 
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (ParserMethod method : classNode.ruleMethods) {
-            if (hasActions(method)) {
-                List<InstructionSubSet> subSets = partitionInstructionGraph(method);
-                method.setInstructionSubSets(subSets);
-            }
-        }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    private boolean hasActions(ParserMethod method) {
-        for (InstructionGraphNode node : method.getInstructionGraphNodes()) {
-            if (node.isAction) return true;
-        }
-        return false;
-    }
-
-    private List<InstructionSubSet> partitionInstructionGraph(@NotNull ParserMethod method) {
+    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         InstructionGraphNode[] graphNodes = method.getInstructionGraphNodes();
         DisjointIndexSet indexSet = new DisjointIndexSet(graphNodes.length);
         boolean[] actionMarkers = new boolean[graphNodes.length];
@@ -102,7 +84,10 @@ class RuleMethodInstructionGraphPartitioner implements ClassTransformer {
 
             instructionSubSets.add(subSet);
         }
-        return instructionSubSets;
+
+        method.setInstructionSubSets(instructionSubSets);
+
+        if (next != null) next.transform(classNode, method);
     }
 
 }

@@ -23,15 +23,21 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.EmptyVisitor;
+import org.objectweb.asm.tree.MethodNode;
 import org.parboiled.support.Checks;
-import static org.parboiled.transform.AsmUtils.getExtendedParserClassName;
+
 import static org.parboiled.transform.AsmUtils.createClassReader;
+import static org.parboiled.transform.AsmUtils.getExtendedParserClassName;
 
 /**
  * Initializes the basic ParserClassNode fields and collects all methods into the ParserClassNode.allMethods list.
  */
-class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
+class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opcodes, Types {
 
     private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
@@ -62,6 +68,7 @@ class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
+    @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if (ownerClass == classNode.parentClass) {
             Checks.ensure((access & ACC_FINAL) == 0, "Your parser class '" + name + "' must not be final.");
@@ -76,41 +83,44 @@ class ClassNodeInitializer implements ClassVisitor, ClassTransformer, Opcodes {
         }
     }
 
+    @Override
     public void visitSource(String source, String debug) {
         classNode.visitSource(null, null);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        if ("<init>".equals(name)) {
+            // do not add constructors from super classes or private constructors
+            if (ownerClass != classNode.parentClass || (access & ACC_PRIVATE) > 0) {
+                return null;
+            }
+            MethodNode constructor = new MethodNode(access, name, desc, signature, exceptions);
+            classNode.constructors.add(constructor);
+            return constructor; // return the newly created method in order to have it "filled" with the method code
+        }
+
+        // do not add methods not returning Rules
+        if (!Type.getReturnType(desc).equals(RULE_TYPE)) {
+            return null;
+        }
+
         // check, whether we do not already have a method with that name and descriptor
         // if we do we only keep the one we already have since that is the one furthest down in the overriding chain
-        for (ParserMethod method : classNode.allMethods) {
+        for (RuleMethod method : classNode.ruleMethods) {
             if (method.name.equals(name) && method.desc.equals(desc)) return null;
         }
 
-        // ok, its a new method, collect it
-        ParserMethod method = new ParserMethod(ownerClass, access, name, desc, signature, exceptions);
-        classNode.allMethods.add(method);
+        // ok, its a new Rule method, collect it
+        RuleMethod method = new RuleMethod(ownerClass, access, name, desc, signature, exceptions);
+        classNode.ruleMethods.add(method);
         return method; // return the newly created method in order to have it "filled" with the supers code
     }
 
+    @Override
     public void visitEnd() {
         classNode.visitEnd();
     }
 
-    //********************* unused ClassVisitor members *****************************
-
-    public void visitOuterClass(String owner, String name, String desc) {}
-
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        return null;
-    }
-
-    public void visitAttribute(Attribute attr) {}
-
-    public void visitInnerClass(String name, String outerName, String innerName, int access) {}
-
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        return null;
-    }
 }

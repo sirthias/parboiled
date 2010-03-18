@@ -43,7 +43,7 @@ public class ParserExtensionVerificationTest extends AbstractTest {
     }
 
     public TestParser createAndVerifyTestParser() throws Exception {
-        ClassTransformer transformer = ParserTransformer.createTransformer();
+        ClassTransformer transformer = ParserTransformer.createClassTransformer();
         ParserClassNode classNode = transformer.transform(new ParserClassNode(TestParser.class));
 
         verifyIntegrity(classNode.name, classNode.classCode);

@@ -16,13 +16,12 @@
 
 package org.parboiled.common;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParserRuntimeException;
 
 import java.lang.reflect.*;
 import java.util.*;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * General utility methods.
@@ -125,6 +124,7 @@ public final class Utils {
 
     // Subarrays
     //-----------------------------------------------------------------------
+
     /**
      * <p>Produces a new array containing the elements between
      * the start and end indices.</p>
@@ -169,21 +169,6 @@ public final class Utils {
         Object[] subarray = (Object[]) Array.newInstance(type, newSize);
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
         return subarray;
-    }
-
-    /**
-     * Merges the given collections into one set.
-     *
-     * @param collections the collections to merge
-     * @param <T>         the type parameter
-     * @return the set containing all elements of the given collections exactly once
-     */
-    public static <T> Set<T> merge(Collection<T>... collections) {
-        Set<T> set = new HashSet<T>();
-        for (Collection<T> collection : collections) {
-            set.addAll(collection);
-        }
-        return set;
     }
 
     /**

@@ -32,7 +32,7 @@ import static org.parboiled.transform.AsmUtils.loadClass;
 class ActionClassGenerator implements Opcodes, Types {
 
     public final ParserClassNode classNode;
-    public final ParserMethod method;
+    public final RuleMethod method;
     public final InstructionSubSet subSet;
     public final String actionSimpleName;
     public final Type actionType;
@@ -40,7 +40,7 @@ class ActionClassGenerator implements Opcodes, Types {
 
     private byte[] actionClassCode;
 
-    public ActionClassGenerator(ParserClassNode classNode, ParserMethod method, InstructionSubSet subSet,
+    public ActionClassGenerator(ParserClassNode classNode, RuleMethod method, InstructionSubSet subSet,
                                 int actionNumber) {
         this.classNode = classNode;
         this.method = method;

@@ -19,7 +19,6 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import com.google.common.base.Preconditions;
 
 class LeafApplicator implements ClassTransformer, Opcodes, Types {
 
@@ -30,15 +29,17 @@ class LeafApplicator implements ClassTransformer, Opcodes, Types {
     }
 
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (ParserMethod method : classNode.leafMethods) {
-            createLeafMarkingCode(method);
+        for (RuleMethod method : classNode.ruleMethods) {
+            if (method.isToBeLeafed()) {
+                createLeafMarkingCode(method);
+            }
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void createLeafMarkingCode(ParserMethod method) {
+    private void createLeafMarkingCode(RuleMethod method) {
         InsnList instructions = method.instructions;
         AbstractInsnNode current = instructions.getFirst();
 
@@ -57,19 +58,6 @@ class LeafApplicator implements ClassTransformer, Opcodes, Types {
         // stack: <rule>
         instructions.insertBefore(current, isNullLabel);
         // stack: <rule>
-    }
-
-    public String getLabelText(ParserMethod method) {
-        if (method.visibleAnnotations != null) {
-            for (Object annotationObj : method.visibleAnnotations) {
-                AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(LABEL_TYPE.getDescriptor()) && annotation.values != null) {
-                    Preconditions.checkState("label".equals(annotation.values.get(0)));
-                    return (String) annotation.values.get(1);
-                }
-            }
-        }
-        return method.name;
     }
 
 }

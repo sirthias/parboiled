@@ -22,14 +22,15 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
-import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 import org.parboiled.support.Checks;
+
+import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 
 /**
  * Adds one constructor for each of the ParserClassNode.constructors,
  * which simply delegates to the respective super constructor.
  */
-class ConstructorGenerator implements ClassTransformer, Opcodes {
+class ConstructorGenerator implements ClassTransformer, Opcodes, Types {
 
     private final ClassTransformer nextTransformer;
 

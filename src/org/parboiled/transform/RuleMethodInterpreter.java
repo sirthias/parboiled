@@ -32,25 +32,23 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
-import org.parboiled.ContextAware;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.support.Checks;
 
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static org.parboiled.transform.AsmUtils.*;
+import static org.parboiled.transform.AsmUtils.getOwnerField;
+import static org.parboiled.transform.AsmUtils.getOwnerMethod;
 
 class RuleMethodInterpreter extends BasicInterpreter {
 
-    private static final String CONTEXT_SWITCH_DESCRIPTOR = "(Ljava/lang/Object;)Ljava/lang/Object;";
-
     private final ParserClassNode classNode;
-    private final ParserMethod method;
+    private final RuleMethod method;
     private final List<int[]> additionalEdges = new ArrayList<int[]>();
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
 
-    public RuleMethodInterpreter(ParserClassNode classNode, ParserMethod method) {
+    public RuleMethodInterpreter(ParserClassNode classNode, RuleMethod method) {
         this.classNode = classNode;
         this.method = method;
     }
@@ -149,16 +147,8 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private InstructionGraphNode createNode(AbstractInsnNode insn, Value resultValue, Value... prevNodes) {
         int index = method.instructions.indexOf(insn);
         BasicValue resultBasicValue = getBasicValue(resultValue);
-        InstructionGraphNode node = new InstructionGraphNode(
-                insn,
-                index,
-                resultBasicValue,
-                Arrays.asList(prevNodes),
-                isAction(resultBasicValue),
-                isContextSwitch(insn),
-                isCallOnContextAware(insn),
-                isRuleCreation(insn)
-        );
+        InstructionGraphNode node =
+                new InstructionGraphNode(classNode, insn, index, resultBasicValue, Arrays.asList(prevNodes));
         method.getInstructionGraphNodes()[index] = node;
         return node;
     }
@@ -166,46 +156,6 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private BasicValue getBasicValue(Value resultValue) {
         return resultValue == null || resultValue instanceof BasicValue ?
                 (BasicValue) resultValue : ((InstructionGraphNode) resultValue).basicValue;
-    }
-
-    private boolean isAction(BasicValue resultBasicValue) {
-        return resultBasicValue != null && resultBasicValue.getType().equals(Types.BOOLEAN_TYPE);
-    }
-
-    private boolean isContextSwitch(AbstractInsnNode insn) {
-        if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
-            MethodInsnNode mi = (MethodInsnNode) insn;
-            return "UP$UP2$UP3$UP4$DOWN$DOWN2$DOWN3$DOWN4".contains(mi.name) &&
-                    CONTEXT_SWITCH_DESCRIPTOR.equals(mi.desc) && isOwnerMethod(mi);
-        }
-        return false;
-    }
-
-    private boolean isCallOnContextAware(AbstractInsnNode insn) {
-        if (insn instanceof MethodInsnNode) {
-            MethodInsnNode methodInsn = (MethodInsnNode) insn;
-            if (methodInsn.getOpcode() == INVOKEVIRTUAL || methodInsn.getOpcode() == INVOKEINTERFACE) {
-                return isOwnerMethod(methodInsn) ||
-                        ContextAware.class.isAssignableFrom(getClassForInternalName(methodInsn.owner));
-            }
-        }
-        return false;
-    }
-
-    private boolean isRuleCreation(AbstractInsnNode insn) {
-        if (insn instanceof MethodInsnNode) {
-            MethodInsnNode methodInsn = (MethodInsnNode) insn;
-            return Type.getReturnType(methodInsn.desc).equals(Types.RULE_TYPE);
-        }
-        return false;
-    }
-
-    private boolean isOwnerMethod(MethodInsnNode methodInsn) {
-        if (classNode.name.equals(methodInsn.owner)) return true;
-        for (Type ownerType : classNode.superTypes) {
-            if (ownerType.getInternalName().equals(methodInsn.owner)) return true;
-        }
-        return false;
     }
 
     private void verifyInstruction(AbstractInsnNode insn) {

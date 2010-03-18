@@ -22,12 +22,17 @@
 
 package org.parboiled.transform;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
+import org.parboiled.ContextAware;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.parboiled.transform.AsmUtils.*;
 
 class InstructionGraphNode implements Value {
 
@@ -36,20 +41,19 @@ class InstructionGraphNode implements Value {
     public final BasicValue basicValue;
     public final List<Value> predecessors = new ArrayList<Value>();
     public final boolean isAction;
+    public final boolean isRuleCreation;
     public final boolean isContextSwitch;
     public final boolean isCallOnContextAware;
-    public final boolean isRuleCreation;
 
-    public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex, BasicValue resultValue,
-                                List<Value> predecessors, boolean isAction, boolean contextSwitch,
-                                boolean callOnContextAware, boolean ruleCreation) {
+    public InstructionGraphNode(ParserClassNode classNode, AbstractInsnNode instruction, int instructionIndex,
+                                BasicValue resultValue, List<Value> predecessors) {
         this.instruction = instruction;
         this.instructionIndex = instructionIndex;
         this.basicValue = resultValue;
-        this.isAction = isAction;
-        isContextSwitch = contextSwitch;
-        isCallOnContextAware = callOnContextAware;
-        isRuleCreation = ruleCreation;
+        this.isAction = isCallToBooleanValueOfZ(instruction);
+        this.isRuleCreation = isRuleCreation(instruction);
+        this.isContextSwitch = isContextSwitch(classNode);
+        this.isCallOnContextAware = isCallOnContextAware(classNode);
         this.predecessors.addAll(predecessors);
     }
 
@@ -68,6 +72,26 @@ class InstructionGraphNode implements Value {
             }
         }
         return earliestPred;
+    }
+
+    private boolean isContextSwitch(ParserClassNode classNode) {
+        if (instruction.getType() == AbstractInsnNode.METHOD_INSN) {
+            MethodInsnNode mi = (MethodInsnNode) instruction;
+            return "UP$UP2$UP3$UP4$DOWN$DOWN2$DOWN3$DOWN4".contains(mi.name) &&
+                    "(Ljava/lang/Object;)Ljava/lang/Object;".equals(mi.desc) && classNode.isOwnerOf(mi);
+        }
+        return false;
+    }
+
+    private boolean isCallOnContextAware(ParserClassNode classNode) {
+        if (instruction instanceof MethodInsnNode) {
+            MethodInsnNode methodInsn = (MethodInsnNode) instruction;
+            if (methodInsn.getOpcode() == Opcodes.INVOKEVIRTUAL || methodInsn.getOpcode() == Opcodes.INVOKEINTERFACE) {
+                return classNode.isOwnerOf(methodInsn) ||
+                        ContextAware.class.isAssignableFrom(getClassForInternalName(methodInsn.owner));
+            }
+        }
+        return false;
     }
 
 }

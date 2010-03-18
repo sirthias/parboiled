@@ -23,19 +23,16 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.io.InputStream;
-import java.io.IOException;
 
 class AsmUtils {
 
@@ -216,6 +213,39 @@ class AsmUtils {
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    public static boolean hasAnnotation(@NotNull MethodNode method, @NotNull Type annotationType) {
+        return hasAnnotation(method, annotationType.getDescriptor());
+    }
+
+    public static boolean hasAnnotation(@NotNull MethodNode method, @NotNull String annotationTypeDesc) {
+        if (method.visibleAnnotations != null) {
+            for (Object annotationObj : method.visibleAnnotations) {
+                AnnotationNode annotation = (AnnotationNode) annotationObj;
+                if (annotation.desc.equals(annotationTypeDesc)) return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCallToBooleanValueOfZ(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return isBooleanValueOfZ(mi.owner, mi.name, mi.desc);
+    }
+
+    public static boolean isBooleanValueOfZ(String owner, String name, String desc) {
+        return "java/lang/Boolean".equals(owner) && "valueOf".equals(name) &&
+                "(Z)Ljava/lang/Boolean;".equals(desc);
+    }
+
+    public static boolean isRuleCreation(AbstractInsnNode insn) {
+        if (insn instanceof MethodInsnNode) {
+            MethodInsnNode methodInsn = (MethodInsnNode) insn;
+            return Type.getReturnType(methodInsn.desc).equals(Types.RULE_TYPE);
+        }
+        return false;
     }
 
 }

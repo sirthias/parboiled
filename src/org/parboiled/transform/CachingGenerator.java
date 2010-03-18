@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.parboiled.common.Utils.merge;
 import static org.parboiled.common.Utils.toObjectArray;
 import static org.parboiled.transform.AsmUtils.getFieldByName;
 
@@ -39,7 +38,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
 
     private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
-    private ParserMethod method;
+    private RuleMethod method;
     private InsnList instructions;
     private AbstractInsnNode current;
     private String cacheFieldName;
@@ -52,15 +51,17 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
     public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
         this.classNode = classNode;
 
-        for (ParserMethod method : merge(classNode.ruleMethods, classNode.cachedMethods)) {
-            createCachingCode(method);
+        for (RuleMethod method : classNode.ruleMethods) {
+            if (method.isToBeLeafed()) {
+                createCachingCode(method);
+            }
         }
 
         return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @SuppressWarnings({"unchecked"})
-    private void createCachingCode(ParserMethod method) {
+    private void createCachingCode(RuleMethod method) {
         this.method = method;
         this.instructions = method.instructions;
         this.current = instructions.getFirst();

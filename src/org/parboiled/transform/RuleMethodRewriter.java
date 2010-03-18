@@ -28,27 +28,12 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 /**
- * Transforms the ParserClassNode.ruleMethods by replacing all action expressions with calls to respective
- * action classes (which are generated using the ActionClassGenerator).
+ * Transforms a RuleMethod by replacing all action expressions with calls to respective
+ * action classes, which are generated using the ActionClassGenerator.
  */
-class RuleMethodTransformer implements ClassTransformer, Opcodes {
+class RuleMethodRewriter implements MethodTransformer, Opcodes {
 
-    private final ClassTransformer nextTransformer;
-
-    public RuleMethodTransformer(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
-    }
-
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (ParserMethod method : classNode.ruleMethods) {
-            if (method.hasActions()) {
-                transformRuleMethodContainingActions(classNode, method);
-            }
-        }
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    private void transformRuleMethodContainingActions(ParserClassNode classNode, ParserMethod method) {
+    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         int actionNr = 1;
         for (InstructionSubSet subSet : method.getInstructionSubSets()) {
             if (subSet.isActionSet) {
@@ -63,7 +48,7 @@ class RuleMethodTransformer implements ClassTransformer, Opcodes {
         method.localVariables.clear();
     }
 
-    private void insertActionClassCreation(ParserClassNode classNode, ParserMethod method,
+    private void insertActionClassCreation(ParserClassNode classNode, RuleMethod method,
                                            InstructionSubSet subSet, Type actionType) {
         InsnList methodInstructions = method.instructions;
         AbstractInsnNode firstAfterAction = method.getInstructionGraphNodes()[subSet.lastIndex + 1].instruction;

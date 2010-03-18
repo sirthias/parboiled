@@ -24,34 +24,19 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Analyzer;
-import org.objectweb.asm.tree.analysis.AnalyzerException;
-import org.parboiled.errors.GrammarException;
-import org.parboiled.support.Checks;
 
 /**
- * Analyzes the ParserClassNode.ruleMethods and constructs their instructions graphs
+ * Constructs the instructions graph of a RuleMethod.
  */
-class RuleMethodAnalyzer implements ClassTransformer {
+class InstructionGraphCreator implements MethodTransformer {
 
-    private final ClassTransformer nextTransformer;
+    private final MethodTransformer next;
 
-    public RuleMethodAnalyzer(ClassTransformer classTransformer) {
-        this.nextTransformer = classTransformer;
+    public InstructionGraphCreator(MethodTransformer next) {
+        this.next = next;
     }
 
-    @SuppressWarnings({"unchecked"})
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (ParserMethod ruleMethod : classNode.ruleMethods) {
-            analyzeRuleMethod(classNode, ruleMethod);
-        }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    private void analyzeRuleMethod(ParserClassNode classNode, final ParserMethod method) throws AnalyzerException {
-        Checks.ensure(method.maxLocals == 1, "Parser rule method '%s()' contains local variables, " +
-                "which are not allowed in rule defining methods", method.name);
-
+    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         final RuleMethodInterpreter interpreter = new RuleMethodInterpreter(classNode, method);
 
         new Analyzer(interpreter) {
@@ -62,13 +47,14 @@ class RuleMethodAnalyzer implements ClassTransformer {
 
             @Override
             protected boolean newControlFlowExceptionEdge(int insn, int successor) {
-                throw new GrammarException(
-                        "Illegal parser rule definition '" + method.name +
-                                "':\ntry/catch or try/final constructs are not allowed in a rule definition method");
+                interpreter.newControlFlowEdge(insn, successor);
+                return true;
             }
         }.analyze(classNode.name, method);
 
         interpreter.finish();
+
+        if (next != null) next.transform(classNode, method);
     }
 
 }

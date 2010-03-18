@@ -19,6 +19,9 @@ package org.parboiled.transform;
 import org.parboiled.BaseActions;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.support.KeepAsIs;
+import org.parboiled.support.Label;
+import org.parboiled.support.Leaf;
 
 class SimpleActions {
     public char lastTest;
@@ -69,6 +72,7 @@ class TestParser extends BaseParser<Integer> {
         );
     }
 
+    @Leaf
     public Rule upSetActionRule() {
         return sequence(
                 'a',
@@ -82,7 +86,8 @@ class TestParser extends BaseParser<Integer> {
         );
     }
 
-    public Rule booleanExpressionActionRule() {
+    @Label
+    public Rule booleanExpressionActionRule(char c) {
         return sequence(
                 'a',
                 oneOrMore(
@@ -91,7 +96,7 @@ class TestParser extends BaseParser<Integer> {
                                 optional('c')
                         )
                 ),
-                !IN_PREDICATE() && LAST_CHAR() == 'b'
+                !IN_PREDICATE() && LAST_CHAR() == c
         );
     }
 
@@ -108,6 +113,11 @@ class TestParser extends BaseParser<Integer> {
                 ),
                 SET()
         );
+    }
+
+    @KeepAsIs
+    public Rule keepAsIsRule() {
+        return empty();
     }
 
 }

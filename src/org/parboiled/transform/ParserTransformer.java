@@ -17,6 +17,7 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
+
 import static org.parboiled.transform.AsmUtils.findLoadedClass;
 import static org.parboiled.transform.AsmUtils.getExtendedParserClassName;
 
@@ -33,32 +34,36 @@ public class ParserTransformer {
             if (extendedClass != null) return extendedClass;
 
             // not loaded yet, so create
-            ClassTransformer transformer = createTransformer();
+            ClassTransformer transformer = createClassTransformer();
             ParserClassNode classNode = transformer.transform(new ParserClassNode(parserClass));
             return classNode.extendedClass;
         }
     }
 
-    static ClassNodeInitializer createTransformer() {
+    static ClassTransformer createClassTransformer() {
         return new ClassNodeInitializer(
-                new MethodCategorizer(
-                        new LineNumberRemover(
-                                new RuleMethodAnalyzer(
-                                        new RuleMethodInstructionGraphPartitioner(
-                                                new RuleMethodTransformer(
-                                                        new ConstructorGenerator(
-                                                                new WithCallToSuperReplacer(
-                                                                        new LabelApplicator(
-                                                                                new LeafApplicator(
-                                                                                        new CachingGenerator(
-                                                                                                new ParserClassDefiner()
-                                                                                        )
-                                                                                )
-                                                                        )
-                                                                )
+                new ActionMethodRewritingTransformer(createActionMethodTransformer(),
+                        new ConstructorGenerator(
+                                new WithCallToSuperReplacer(
+                                        new LabelApplicator(
+                                                new LeafApplicator(
+                                                        new CachingGenerator(
+                                                                new ParserClassDefiner()
                                                         )
                                                 )
                                         )
+                                )
+                        )
+                )
+        );
+    }
+
+    static MethodTransformer createActionMethodTransformer() {
+        return new LineNumberRemover(
+                new ReturnInstructionUnifier(
+                        new InstructionGraphCreator(
+                                new InstructionGraphPartitioner(
+                                        new RuleMethodRewriter()
                                 )
                         )
                 )

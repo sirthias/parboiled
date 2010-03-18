@@ -20,25 +20,17 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 /**
- * Removes all LineNumer "instructions" from the methods that are going to be affected by the rewriting.
+ * Removes all LineNumber "instructions" from a RuleMethod.
  */
-class LineNumberRemover implements ClassTransformer {
+class LineNumberRemover implements MethodTransformer {
 
-    private final ClassTransformer nextTransformer;
+    private final MethodTransformer next;
 
-    public LineNumberRemover(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
+    public LineNumberRemover(MethodTransformer next) {
+        this.next = next;
     }
 
-    @SuppressWarnings("unchecked")
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (Object method : classNode.methods) {
-            removeLineNumbers((ParserMethod) method);
-        }
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    private void removeLineNumbers(ParserMethod method) {
+    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         AbstractInsnNode current = method.instructions.getFirst();
         while (current != null) {
             AbstractInsnNode next = current.getNext();
@@ -47,6 +39,8 @@ class LineNumberRemover implements ClassTransformer {
             }
             current = next;
         }
+
+        if (next != null) next.transform(classNode, method);
     }
 
 }

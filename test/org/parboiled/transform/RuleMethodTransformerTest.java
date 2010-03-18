@@ -16,28 +16,29 @@
 
 package org.parboiled.transform;
 
+import org.testng.annotations.Test;
+
 import static org.parboiled.transform.AsmTestUtils.assertTraceDumpEquality;
 import static org.parboiled.transform.AsmUtils.getMethodByName;
-import org.testng.annotations.Test;
 
 public class RuleMethodTransformerTest {
 
     @Test
     public void testRuleMethodTransformation() throws Exception {
         ParserClassNode classNode = new ParserClassNode(TestParser.class);
-        new ClassNodeInitializer(
+        /*new ClassNodeInitializer(
                 new MethodCategorizer(
                         new LineNumberRemover(
-                                new RuleMethodAnalyzer(
-                                        new RuleMethodInstructionGraphPartitioner(
-                                                new RuleMethodTransformer(
+                                new InstructionGraphCreator(
+                                        new InstructionGraphPartitioner(
+                                                new RuleMethodRewriter(
                                                         new WithCallToSuperReplacer(null)
                                                 )
                                         )
                                 )
                         )
                 )
-        ).transform(classNode);
+        ).transform(classNode);*/
 
         assertTraceDumpEquality(getMethodByName(classNode.ruleMethods, "noActionRule"), "" +
                 "    ALOAD 0\n" +
