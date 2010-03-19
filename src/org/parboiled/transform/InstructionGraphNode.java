@@ -77,7 +77,7 @@ class InstructionGraphNode implements Value {
     private boolean isContextSwitch(ParserClassNode classNode) {
         if (instruction.getType() == AbstractInsnNode.METHOD_INSN) {
             MethodInsnNode mi = (MethodInsnNode) instruction;
-            return "UP$UP2$UP3$UP4$DOWN$DOWN2$DOWN3$DOWN4".contains(mi.name) &&
+            return "UP/UP2/UP3/UP4/UP5/UP6/DOWN/DOWN2/DOWN3/DOWN4/DOWN5/DOWN6".contains(mi.name) &&
                     "(Ljava/lang/Object;)Ljava/lang/Object;".equals(mi.desc) && classNode.isOwnerOf(mi);
         }
         return false;

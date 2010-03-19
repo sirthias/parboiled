@@ -60,6 +60,23 @@ public abstract class ActionWrapperBase<V> implements Action<V> {
         UP();
     }
 
+    protected final void UP5() {
+        UP();
+        UP();
+        UP();
+        UP();
+        UP();
+    }
+
+    protected final void UP6() {
+        UP();
+        UP();
+        UP();
+        UP();
+        UP();
+        UP();
+    }
+
     protected final void DOWN() {
         Context<V> subContext = context.getSubContext();
         Checks.ensure(subContext != null, "Illegal DOWN() call, already at leaf level");
@@ -78,6 +95,23 @@ public abstract class ActionWrapperBase<V> implements Action<V> {
     }
     
     protected final void DOWN4() {
+        DOWN();
+        DOWN();
+        DOWN();
+        DOWN();
+    }
+
+    protected final void DOWN5() {
+        DOWN();
+        DOWN();
+        DOWN();
+        DOWN();
+        DOWN();
+    }
+
+    protected final void DOWN6() {
+        DOWN();
+        DOWN();
         DOWN();
         DOWN();
         DOWN();

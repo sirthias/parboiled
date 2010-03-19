@@ -347,105 +347,177 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     ///************************* "MAGIC" METHODS ***************************///
 
     /**
-     * Changes the context scope of all arguments to the current parent scope.
+     * Changes the context scope of the wrapped expression to the current parent scope.
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP(T argument) {
+    public final <T> T UP(T expression) {
         throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
     }
 
     /**
-     * Changes the context scope of all arguments to the parent scope two levels up.
+     * Changes the context scope of the wrapped expression to the parent scope two levels up.
      * Equivalent to UP(UP(...))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP2(T argument) {
-        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    public final <T> T UP2(T expression) {
+        return UP(expression); // will always throw an UnsupportedOperationException
     }
 
     /**
-     * Changes the context scope of all arguments to parent scope three levels up.
+     * Changes the context scope of the wrapped expression to the parent scope three levels up.
      * Equivalent to UP(UP(UP(...)))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP3(T argument) {
-        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    public final <T> T UP3(T expression) {
+        return UP(expression); // will always throw an UnsupportedOperationException
     }
 
     /**
-     * Changes the context scope of all arguments to parent scope three levels up.
+     * Changes the context scope of the wrapped expression to the parent scope four levels up.
      * Equivalent to UP(UP(UP(UP(...))))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP4(T argument) {
-        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    public final <T> T UP4(T expression) {
+        return UP(expression); // will always throw an UnsupportedOperationException
+    }
+    
+    /**
+     * Changes the context scope of the wrapped expression to the parent scope five levels up.
+     * Equivalent to UP(UP(UP(UP(UP(...)))))
+     *
+     * @param expression the expression to change the context for
+     * @return the result of the expression
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T UP5(T expression) {
+        return UP(expression); // will always throw an UnsupportedOperationException
     }
 
     /**
-     * Changes the context scope of all arguments to the current sub scope. This will only work if this call is
-     * at some level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always at
-     * the bottom of the context chain.
+     * Changes the context scope of the wrapped expression to the parent scope six levels up.
+     * Equivalent to UP(UP(UP(UP(UP(UP(...))))))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN(T argument) {
+    public final <T> T UP6(T expression) {
+        return UP(expression); // will always throw an UnsupportedOperationException
+    }
+
+    /**
+     * Changes the context scope of the wrapped expression to the current sub scope. This is only valid if this call
+     * is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always at
+     * the bottom of the context chain.
+     *
+     * @param expression the expression to change the context for
+     * @return the result of the expression
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T DOWN(T expression) {
         throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
     }
 
     /**
-     * Changes the context scope of all arguments to the sub scope two levels down. This will only work if this call is
-     * at some level wrapped with {@link #UP(Object)} calls, since the default scope is always at
-     * the bottom of the context chain.
+     * Changes the context scope of the wrapped expression to the sub scope two levels down. This is only valid if this
+     * call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always
+     * at the bottom of the context chain.
      * Equivalent to DOWN(DOWN(...))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN2(T argument) {
-        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    public final <T> T DOWN2(T expression) {
+        return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
     /**
-     * Changes the context scope of all arguments to the sub scope three levels down. This will only work if this call is
-     * at some level wrapped with {@link #UP(Object)} calls, since the default scope is always at
-     * the bottom of the context chain.
+     * Changes the context scope of the wrapped expression to the sub scope three levels down. This is only valid if
+     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
+     * always at the bottom of the context chain.
      * Equivalent to DOWN(DOWN(DOWN(...)))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN3(T argument) {
-        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    public final <T> T DOWN3(T expression) {
+        return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
     /**
-     * Changes the context scope of all arguments to the sub scope four levels down. This will only work if this call is
-     * at some level wrapped with {@link #UP(Object)} calls, since the default scope is always at
-     * the bottom of the context chain.
+     * Changes the context scope of the wrapped expression to the sub scope four levels down. This is only valid if
+     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
+     * always at the bottom of the context chain.
      * Equivalent to DOWN(DOWN(DOWN(DOWN(...))))
      *
-     * @param argument the arguments to change to context for
-     * @return the result of the argument
+     * @param expression the expression to change the context for
+     * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN4(T argument) {
-        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    public final <T> T DOWN4(T expression) {
+        return DOWN(expression); // will always throw an UnsupportedOperationException
+    }
+
+    /**
+     * Changes the context scope of the wrapped expression to the sub scope five levels down. This is only valid if
+     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
+     * always at the bottom of the context chain.
+     * Equivalent to DOWN(DOWN(DOWN(DOWN(DOWN(...)))))
+     *
+     * @param expression the expression to change the context for
+     * @return the result of the expression
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T DOWN5(T expression) {
+        return DOWN(expression); // will always throw an UnsupportedOperationException
+    }
+
+    /**
+     * Changes the context scope of the wrapped expression to the sub scope six levels down. This is only valid if
+     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
+     * always at the bottom of the context chain.
+     * Equivalent to DOWN(DOWN(DOWN(DOWN(DOWN(DOWN(...))))))
+     *
+     * @param expression the expression to change the context for
+     * @return the result of the expression
+     */
+    @SuppressWarnings({"UnusedDeclaration"})
+    public final <T> T DOWN6(T expression) {
+        return DOWN(expression); // will always throw an UnsupportedOperationException
+    }
+
+    /**
+     * Explicitly marks the wrapped expression as an action expression.
+     * parboiled transforms the wrapped expression into an {@link Action} instance during parser construction.
+     * @param expression the expression to turn into an Action
+     * @return the Action wrapping the given expression
+     */
+    public final Action ACTION(boolean expression) {
+        throw new UnsupportedOperationException("ACTION(...) calls can only be used in rule defining parser methods");
+    }
+
+    /**
+     * Explicitly marks the wrapped expression as an capture expression.
+     * parboiled transforms the wrapped expression into a {@link Capture} instance during parser construction.
+     * @param expression the expression to turn into a Capture
+     * @return the Capture wrapping the given expression
+     */
+    public final <T> Capture<T> CAPTURE(T expression) {
+        throw new UnsupportedOperationException("CAPTURE(...) calls can only be used in rule defining parser methods");
     }
 
     ///************************* HELPER METHODS ***************************///
