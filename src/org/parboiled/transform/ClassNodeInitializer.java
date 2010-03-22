@@ -23,55 +23,42 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.MethodNode;
 import org.parboiled.support.Checks;
+
+import java.io.IOException;
 
 import static org.parboiled.transform.AsmUtils.createClassReader;
 import static org.parboiled.transform.AsmUtils.getExtendedParserClassName;
 
 /**
- * Initializes the basic ParserClassNode fields and collects all methods into the ParserClassNode.allMethods list.
+ * Initializes the basic ParserClassNode fields and collects all methods.
  */
-class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opcodes, Types {
+class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
-    private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
     private Class<?> ownerClass;
+    private boolean hasExplicitActionOnlyAnnotation;
 
-    public ClassNodeInitializer(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
-    }
-
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
+    public void process(@NotNull ParserClassNode classNode) throws IOException {
         this.classNode = classNode;
 
         // walk up the parser parent class chain
         ownerClass = classNode.parentClass;
         while (!Object.class.equals(ownerClass)) {
-            Type ownerType = Type.getType(ownerClass);
-
-            // initialize classNode super types list
-            classNode.superTypes.add(ownerType);
-
-            // extract methods from super type
             ClassReader classReader = createClassReader(ownerClass);
             classReader.accept(this, ClassReader.SKIP_FRAMES);
-
             ownerClass = ownerClass.getSuperclass();
         }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if (ownerClass == classNode.parentClass) {
-            Checks.ensure((access & ACC_FINAL) == 0, "Your parser class '" + name + "' must not be final.");
+            Checks.ensure((access & ACC_PRIVATE) == 0, "Parser class '" + name + "' must not be private.");
+            Checks.ensure((access & ACC_FINAL) == 0, "Parser class '" + name + "' must not be final.");
             classNode.visit(
                     V1_5,
                     ACC_PUBLIC,
@@ -81,6 +68,16 @@ class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opc
                     null
             );
         }
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        if (EXPLICIT_ACTIONS_ONLY_DESC.equals(desc)) {
+            hasExplicitActionOnlyAnnotation = true;
+            return null;
+        }
+        // only keep visible annotations on the parser class
+        return visible && ownerClass == classNode.parentClass ? classNode.visitAnnotation(desc, true) : null;
     }
 
     @Override
@@ -101,8 +98,8 @@ class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opc
             return constructor; // return the newly created method in order to have it "filled" with the method code
         }
 
-        // do not add methods not returning Rules
-        if (!Type.getReturnType(desc).equals(RULE_TYPE)) {
+        // only add methods returning Rules
+        if (!Type.getReturnType(desc).equals(RULE)) {
             return null;
         }
 
@@ -113,7 +110,12 @@ class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opc
         }
 
         // ok, its a new Rule method, collect it
-        RuleMethod method = new RuleMethod(ownerClass, access, name, desc, signature, exceptions);
+        Checks.ensure((access & ACC_PRIVATE) == 0, "Rule method '" + name + "'must not be private.\n" +
+                        "Mark the method protected or package-private if you want to prevent public access!");
+        Checks.ensure((access & ACC_FINAL) == 0, "Rule method '" + name + "' must not be final.");
+
+        RuleMethod method =
+                new RuleMethod(ownerClass, access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation);
         classNode.ruleMethods.add(method);
         return method; // return the newly created method in order to have it "filled" with the supers code
     }
@@ -122,5 +124,4 @@ class ClassNodeInitializer extends EmptyVisitor implements ClassTransformer, Opc
     public void visitEnd() {
         classNode.visitEnd();
     }
-
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * (if no explicit annotation value is given).
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 public @interface Label {
     String value() default "";
 }

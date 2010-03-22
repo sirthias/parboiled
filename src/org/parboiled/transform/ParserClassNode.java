@@ -25,7 +25,6 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
@@ -55,14 +54,6 @@ class ParserClassNode extends ClassNode {
 
     public String getDescriptor() {
         return 'L' + name + ';';
-    }
-
-    public boolean isOwnerOf(MethodInsnNode methodInsn) {
-        if (name.equals(methodInsn.owner)) return true;
-        for (Type ownerType : superTypes) {
-            if (ownerType.getInternalName().equals(methodInsn.owner)) return true;
-        }
-        return false;
     }
 
 }

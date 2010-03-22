@@ -23,33 +23,24 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
-import org.parboiled.errors.GrammarException;
-import org.parboiled.support.Checks;
 
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.parboiled.transform.AsmUtils.getOwnerField;
-import static org.parboiled.transform.AsmUtils.getOwnerMethod;
+class RuleMethodInterpreter extends BasicInterpreter implements Types {
 
-class RuleMethodInterpreter extends BasicInterpreter {
-
-    private final ParserClassNode classNode;
     private final RuleMethod method;
-    private final List<int[]> additionalEdges = new ArrayList<int[]>();
-    private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
+    private final List<Edge> additionalEdges = Lists.newArrayList();
 
-    public RuleMethodInterpreter(ParserClassNode classNode, RuleMethod method) {
-        this.classNode = classNode;
+    public RuleMethodInterpreter(RuleMethod method) {
         this.method = method;
     }
 
@@ -74,7 +65,6 @@ class RuleMethodInterpreter extends BasicInterpreter {
 
     @Override
     public Value unaryOperation(AbstractInsnNode insn, Value value) throws AnalyzerException {
-        verifyInstruction(insn);
         return createNode(insn, super.unaryOperation(insn, null), value);
     }
 
@@ -91,17 +81,20 @@ class RuleMethodInterpreter extends BasicInterpreter {
     @Override
     @SuppressWarnings({"unchecked"})
     public Value naryOperation(AbstractInsnNode insn, List values) throws AnalyzerException {
-        verifyInstruction(insn);
         return createNode(insn, super.naryOperation(insn, null), (Value[]) values.toArray(new Value[values.size()]));
     }
 
     @Override
     public void returnOperation(AbstractInsnNode insn, Value value, Value expected) throws AnalyzerException {
-        Preconditions.checkState(insn.getOpcode() == Opcodes.ARETURN); // we return a Rule which is a reference type
-        Checks.ensure(insn.getNext() == null ||
-                insn.getNext().getType() == AbstractInsnNode.LABEL && insn.getNext().getNext() == null,
-                "Illegal parser rule definition '" + method.name + "':\n" +
-                        "Rule definition methods must contain exactly one return statement");
+        Preconditions.checkState(insn.getOpcode() == Opcodes.ARETURN);
+        Preconditions.checkState(unwrap(value).getType().equals(RULE));
+        Preconditions.checkState(unwrap(expected).getType().equals(RULE));
+        Preconditions.checkState(method.getReturnInstructionNode() == null);
+        method.setReturnInstructionNode(createNode(insn, null, value));
+    }
+
+    private InstructionGraphNode createNode(AbstractInsnNode insn, Value resultValue, Value... prevNodes) {
+        return method.setGraphNode(insn, unwrap(resultValue), Arrays.asList(prevNodes));
     }
 
     @Override
@@ -111,103 +104,45 @@ class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
-        switch (method.instructions.get(instructionIndex).getType()) {
+        AbstractInsnNode fromInsn = method.instructions.get(instructionIndex);
+        AbstractInsnNode toInsn = method.instructions.get(successorIndex);
+        switch (fromInsn.getType()) {
             case AbstractInsnNode.LABEL:
             case AbstractInsnNode.JUMP_INSN:
-                additionalEdges.add(new int[] {instructionIndex, successorIndex});
+                additionalEdges.add(new Edge(fromInsn, toInsn));
                 return;
         }
 
-        switch (method.instructions.get(successorIndex).getType()) {
+        switch (toInsn.getType()) {
             case AbstractInsnNode.JUMP_INSN:
-                additionalEdges.add(new int[] {instructionIndex, successorIndex});
+                additionalEdges.add(new Edge(fromInsn, toInsn));
         }
     }
 
     public void finish() {
         // finally add all edges so far not included
-        InstructionGraphNode[] instructionGraphNodes = method.getInstructionGraphNodes();
-        for (int[] edge : additionalEdges) {
-            InstructionGraphNode node = instructionGraphNodes[edge[0]];
-            if (node == null) node = createNode(method.instructions.get(edge[0]), null);
-            InstructionGraphNode succ = instructionGraphNodes[edge[1]];
-            if (succ == null) succ = createNode(method.instructions.get(edge[1]), null);
-            if (!succ.predecessors.contains(node)) succ.predecessors.add(node);
-        }
-
-        // set the finishing label, if existing
-        int lastIndex = instructionGraphNodes.length - 1;
-        AbstractInsnNode lastInstruction = method.instructions.get(lastIndex);
-        if (instructionGraphNodes[lastIndex] == null) {
-            Preconditions.checkState(lastInstruction.getType() == AbstractInsnNode.LABEL);
-            createNode(lastInstruction, null);
+        for (Edge edge : additionalEdges) {
+            InstructionGraphNode node = method.getGraphNode(edge.from);
+            if (node == null) node = createNode(edge.from, null);
+            InstructionGraphNode succ = method.getGraphNode(edge.to);
+            if (succ == null) succ = createNode(edge.to, null);
+            if (!succ.getPredecessors().contains(node)) succ.getPredecessors().add(node);
         }
     }
 
-    private InstructionGraphNode createNode(AbstractInsnNode insn, Value resultValue, Value... prevNodes) {
-        int index = method.instructions.indexOf(insn);
-        BasicValue resultBasicValue = getBasicValue(resultValue);
-        InstructionGraphNode node =
-                new InstructionGraphNode(classNode, insn, index, resultBasicValue, Arrays.asList(prevNodes));
-        method.getInstructionGraphNodes()[index] = node;
-        return node;
-    }
-
-    private BasicValue getBasicValue(Value resultValue) {
+    private BasicValue unwrap(Value resultValue) {
         return resultValue == null || resultValue instanceof BasicValue ?
-                (BasicValue) resultValue : ((InstructionGraphNode) resultValue).basicValue;
+                (BasicValue) resultValue : ((InstructionGraphNode) resultValue).getResultValue();
     }
 
-    private void verifyInstruction(AbstractInsnNode insn) {
-        try {
-            switch (insn.getOpcode()) {
-                case PUTFIELD:
-                case PUTSTATIC:
-                    throw new GrammarException("Writing to a field is not allowed from within a parser rule method");
+    private class Edge {
+        public final AbstractInsnNode from;
+        public final AbstractInsnNode to;
 
-                case GETFIELD:
-                case GETSTATIC:
-                    FieldInsnNode field = (FieldInsnNode) insn;
-                    Checks.ensure(isNoPrivateField(field.owner, field.name),
-                            "Accessing a private field from within a parser rule method is not allowed.\n" +
-                                    "Mark the field protected or package-private if you want to prevent public access!");
-                    break;
-
-                case INVOKEVIRTUAL:
-                case INVOKESTATIC:
-                case INVOKESPECIAL:
-                case INVOKEINTERFACE:
-                    MethodInsnNode method = (MethodInsnNode) insn;
-                    Checks.ensure("<init>".equals(method.name) ||
-                            isNoPrivateMethod(method.owner, method.name, method.desc),
-                            "Calling a private method from within a parser rule method is not allowed.\n" +
-                                    "Mark the method protected or package-private if you want to prevent public access!");
-                    break;
-            }
-        } catch (GrammarException e) {
-            throw new GrammarException(
-                    "Illegal parser rule definition '" + method.name + "':\n" + e.getMessage());
+        public Edge(AbstractInsnNode from, AbstractInsnNode to) {
+            this.from = from;
+            this.to = to;
         }
-    }
-
-    private boolean isNoPrivateField(String owner, String name) {
-        String key = owner + '#' + name;
-        Integer modifiers = memberModifiers.get(key);
-        if (modifiers == null) {
-            modifiers = getOwnerField(owner, name).getModifiers();
-            memberModifiers.put(key, modifiers);
-        }
-        return !Modifier.isPrivate(modifiers);
-    }
-
-    private boolean isNoPrivateMethod(String owner, String name, String desc) {
-        String key = owner + '#' + name + '#' + desc;
-        Integer modifiers = memberModifiers.get(key);
-        if (modifiers == null) {
-            modifiers = getOwnerMethod(owner, name, desc).getModifiers();
-            memberModifiers.put(key, modifiers);
-        }
-        return !Modifier.isPrivate(modifiers);
     }
 
 }

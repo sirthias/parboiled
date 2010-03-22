@@ -22,151 +22,137 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.parboiled.support.Checks;
+import org.objectweb.asm.tree.analysis.BasicValue;
+import org.objectweb.asm.tree.analysis.Value;
 
 import java.util.List;
 
-import static org.parboiled.transform.AsmUtils.hasAnnotation;
-import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
+import static org.parboiled.transform.AsmUtils.*;
 
 class RuleMethod extends MethodNode implements Opcodes, Types {
 
     private final Class<?> ownerClass;
+    private final List<InstructionGroup> groups = Lists.newArrayList();
+    private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
+    private boolean containsActions; // calls to BaseParser.ACTION(boolean)
+    private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
+    private boolean hasExplicitActionOnlyAnnotation;
+    private boolean hasCachedAnnotation;
+    private boolean hasLabelAnnotation;
+    private boolean hasLeafAnnotation;
+    private InstructionGraphNode returnInstructionNode;
 
-    /**
-     * Method contains action expressions and therefore needs to be rewritten.
-     */
-    private boolean toBeRewritten;
-
-    /**
-     * Method has no parameters and no @KeepAsIs annotation
-     * or is has parameters and a @Cached annotion.
-     */
-    private boolean toBeCached;
-
-    /**
-     * Method has no parameters and no @KeepAsIs annotation
-     * or is has parameters and a @Labelled annotion.
-     */
-    private boolean toBeLabelled;
-
-    /**
-     * Method has a @Leaf annotion.
-     */
-    private boolean toBeLeafed;
-
-    private InstructionGraphNode[] instructionGraphNodes;
-    private List<InstructionSubSet> instructionSubSets;
+    private List<InstructionGraphNode> graphNodes;
 
     public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature,
-                      String[] exceptions) {
+                      String[] exceptions, boolean hasExplicitActionOnlyAnnotation) {
         super(access, name, desc, signature, exceptions);
         this.ownerClass = ownerClass;
+
+        if (Type.getArgumentTypes(desc).length > 0) {
+            hasCachedAnnotation = true;
+            hasLabelAnnotation = true;
+        }
+
+        this.hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnnotation;
     }
 
     public Class<?> getOwnerClass() {
         return ownerClass;
     }
 
-    public boolean isToBeRewritten() {
-        return toBeRewritten;
+    public boolean containsImplicitActions() {
+        return containsImplicitActions;
     }
 
-    public boolean isToBeCached() {
-        return toBeCached;
+    public void setContainsImplicitActions(boolean containsImplicitActions) {
+        this.containsImplicitActions = containsImplicitActions;
     }
 
-    public boolean isToBeLabelled() {
-        return toBeLabelled;
+    public boolean containsActions() {
+        return containsActions;
     }
 
-    public boolean isToBeLeafed() {
-        return toBeLeafed;
+    public void setContainsActions(boolean containsActions) {
+        this.containsActions = containsActions;
     }
 
-    public boolean hasAccess(int access) {
-        return (this.access & access) > 0;
+    public boolean containsCaptures() {
+        return containsCaptures;
+    }
+
+    public boolean hasCachedAnnotation() {
+        return hasCachedAnnotation;
+    }
+
+    public boolean hasLabelAnnotation() {
+        return hasLabelAnnotation;
+    }
+
+    public boolean hasLeafAnnotation() {
+        return hasLeafAnnotation;
+    }
+
+    public InstructionGraphNode getReturnInstructionNode() {
+        return returnInstructionNode;
+    }
+
+    public void setReturnInstructionNode(InstructionGraphNode returnInstructionNode) {
+        this.returnInstructionNode = returnInstructionNode;
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        if (EXPLICIT_ACTIONS_ONLY_DESC.equals(desc)) {
+            hasExplicitActionOnlyAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (CACHED_DESC.equals(desc)) {
+            hasCachedAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (LEAF_DESC.equals(desc)) {
+            hasLeafAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (LABEL_DESC.equals(desc)) {
+            hasLabelAnnotation = true;
+        }
+        return visible ? super.visitAnnotation(desc, true) : null; // only keep visible annotations
     }
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-        // if the method contains a call to Boolean.valueOf(boolean) is assumed to contain an action expression
-        toBeRewritten = toBeRewritten || opcode == INVOKESTATIC && isBooleanValueOfZ(owner, name, desc);
+        if (!hasExplicitActionOnlyAnnotation && opcode == INVOKESTATIC && isBooleanValueOfZ(owner, name, desc)) {
+            containsImplicitActions = true;
+        }
+        if (opcode == INVOKEVIRTUAL && isActionRoot(owner, name)) {
+            containsActions = true;
+        }
+        if (opcode == INVOKEVIRTUAL && isCaptureRoot(owner, name)) {
+            containsCaptures = true;
+        }
         super.visitMethodInsn(opcode, owner, name, desc);
     }
 
-    @Override
-    public void visitEnd() {
-        if (Type.getArgumentTypes(desc).length > 0) {
-            ensure(!hasAnnotation(this, KEEP_AS_IS_TYPE),
-                    "@KeepAsIs annotation not allowed, only allowed on rule methods");
-            if (hasAnnotation(this, CACHED_TYPE)) {
-                ensure(!hasAccess(ACC_PRIVATE), "@Cached methods must not be private.\n" +
-                        "Mark the method protected or package-private if you want to prevent public access!");
-                ensure(!hasAccess(ACC_FINAL), "@Cached methods must not be final");
-                toBeCached = true;
-            }
-            if (hasAnnotation(this, LABEL_TYPE)) {
-                ensure(!hasAccess(ACC_PRIVATE), "@Label methods must not be private.\n" +
-                        "Mark the method protected or package-private if you want to prevent public access!");
-                ensure(!hasAccess(ACC_FINAL), "@Label methods must not be final");
-                toBeLabelled = true;
-            }
-            if (hasAnnotation(this, LEAF_TYPE)) {
-                ensure(!hasAccess(ACC_PRIVATE), "@Leaf methods must not be private.\n" +
-                        "Mark the method protected or package-private if you want to prevent public access!");
-                ensure(!hasAccess(ACC_FINAL), "@Leaf methods must not be final");
-                toBeLeafed = true;
-            }
-        } else {
-            ensure(!hasAnnotation(this, CACHED_TYPE),
-                    "@Cached annotation not allowed, rule is automatically cached");
-            if (hasAnnotation(this, KEEP_AS_IS_TYPE)) {
-                ensure(!hasAnnotation(this, LABEL_TYPE),
-                        "@Label annotation not allowed together with @KeepAsIs");
-                ensure(!hasAnnotation(this, LEAF_TYPE),
-                        "@Leaf annotation not allowed together with @KeepAsIs");
-            } else {
-                toBeCached = true;
-                toBeLabelled = true;
-                toBeLeafed = hasAnnotation(this, LEAF_TYPE);
-                ensure(!hasAccess(ACC_PRIVATE), "Rule methods must not be private.\n" +
-                        "Mark the method protected or package-private if you want to prevent public access!");
-                ensure(!hasAccess(ACC_FINAL),
-                        "Rule methods must not be final.");
-            }
+    public InstructionGraphNode getGraphNode(AbstractInsnNode insn) {
+        return graphNodes != null ? graphNodes.get(instructions.indexOf(insn)) : null;
+    }
+
+    public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
+        if (graphNodes == null) {
+            // initialize with a list of null values
+            graphNodes = Lists.newArrayList(new InstructionGraphNode[instructions.size()]);
         }
-
-        super.visitEnd();
-    }
-
-    protected void ensure(boolean condition, String errorMessage) {
-        Checks.ensure(condition, "Illegal parser rule method '" + name + "':\n" + errorMessage);
-    }
-
-    public InstructionGraphNode[] getInstructionGraphNodes() {
-        if (instructionGraphNodes == null) {
-            instructionGraphNodes = new InstructionGraphNode[instructions.size()];
-        }
-        return instructionGraphNodes;
-    }
-
-    public InstructionGraphNode getReturnNode() {
-        InstructionGraphNode node = instructionGraphNodes[instructionGraphNodes.length - 2];
-        Preconditions.checkState(node == null || node.instruction.getOpcode() == Opcodes.ARETURN);
+        int index = instructions.indexOf(insn);
+        InstructionGraphNode node = new InstructionGraphNode(insn, index, resultValue, predecessors);
+        graphNodes.set(index, node);
         return node;
     }
-
-    public List<InstructionSubSet> getInstructionSubSets() {
-        return instructionSubSets;
-    }
-
-    protected void setInstructionSubSets(List<InstructionSubSet> instructionSubSets) {
-        this.instructionSubSets = instructionSubSets;
-    }
-
 }

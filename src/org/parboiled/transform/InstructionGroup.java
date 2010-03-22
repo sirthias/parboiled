@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.transform;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.common.collect.Lists;
 
-/**
- * Annotation to be used on parser methods returning {@link org.parboiled.Rule} objects.
- * Instructs parboiled to automatically mark the created rules as leaf rules.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface Leaf {
+import java.util.List;
+
+class InstructionGroup {
+
+    public static final int RETURN = 1;
+    public static final int CAPTURE = 2;
+    public static final int ACTION = 4;
+
+    private final List<InstructionGraphNode> nodes = Lists.newArrayList();
+    private final int type;
+
+    public InstructionGroup(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public List<InstructionGraphNode> getNodes() {
+        return nodes;
+    }
+
 }

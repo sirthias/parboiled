@@ -321,7 +321,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
-    @KeepAsIs
     public Rule eoi() {
         return ch(Characters.EOI).label("EOI");
     }

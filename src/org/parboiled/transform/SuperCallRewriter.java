@@ -25,28 +25,15 @@ import org.objectweb.asm.tree.VarInsnNode;
 import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 
 /**
- * Replaces the method code of so all methods except the action containing rule methods with simple calls to super.
+ * Replaces the method code with a simple call to the super method.
  */
-class WithCallToSuperReplacer implements ClassTransformer, Opcodes {
+class SuperCallRewriter implements RuleMethodProcessor, Opcodes {
 
-    private final ClassTransformer nextTransformer;
-
-    public WithCallToSuperReplacer(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return !method.containsActions() && !method.containsCaptures();
     }
 
-    @SuppressWarnings("unchecked")
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (RuleMethod method : classNode.ruleMethods) {
-            if (!method.isToBeRewritten()) {
-                replaceWithCallToSuper(classNode, method);
-            }
-        }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    private void replaceWithCallToSuper(ParserClassNode classNode, RuleMethod method) {
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         // replace all method code with a simple call to the super method
         method.instructions.clear();
         method.instructions.add(new VarInsnNode(ALOAD, 0));

@@ -26,18 +26,16 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.analysis.Analyzer;
 
 /**
- * Constructs the instructions graph of a RuleMethod.
+ * Performs data/control flow analysis and constructs the instructions graph.
  */
-class InstructionGraphCreator implements MethodTransformer {
+class InstructionGraphCreator implements RuleMethodProcessor {
 
-    private final MethodTransformer next;
-
-    public InstructionGraphCreator(MethodTransformer next) {
-        this.next = next;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return method.containsActions() || method.containsCaptures();
     }
 
-    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        final RuleMethodInterpreter interpreter = new RuleMethodInterpreter(classNode, method);
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        final RuleMethodInterpreter interpreter = new RuleMethodInterpreter(method);
 
         new Analyzer(interpreter) {
             @Override
@@ -53,8 +51,6 @@ class InstructionGraphCreator implements MethodTransformer {
         }.analyze(classNode.name, method);
 
         interpreter.finish();
-
-        if (next != null) next.transform(classNode, method);
     }
 
 }

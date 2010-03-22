@@ -17,32 +17,38 @@
 package org.parboiled.transform;
 
 import org.objectweb.asm.Type;
-import org.parboiled.BaseParser;
-import org.parboiled.Context;
-import org.parboiled.ContextAware;
-import org.parboiled.Rule;
+import org.parboiled.*;
 import org.parboiled.matchers.AbstractMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.support.Cached;
-import org.parboiled.support.KeepAsIs;
+import org.parboiled.support.ExplicitActionsOnly;
 import org.parboiled.support.Label;
 import org.parboiled.support.Leaf;
 
 interface Types {
 
-    static final Type ABSTRACT_MATCHER_TYPE = Type.getType(AbstractMatcher.class);
-    static final Type ACTION_WRAPPER_BASE_TYPE = Type.getType(ActionWrapperBase.class);
-    static final Type BASE_PARSER_TYPE = Type.getType(BaseParser.class);
-    static final Type BOOLEAN_TYPE = Type.getType(Boolean.class);
-    static final Type CACHED_TYPE = Type.getType(Cached.class);
-    static final Type CONTEXT_AWARE_TYPE = Type.getType(ContextAware.class);
-    static final Type CONTEXT_TYPE = Type.getType(Context.class);
-    static final Type KEEP_AS_IS_TYPE = Type.getType(KeepAsIs.class);
-    static final Type LABEL_TYPE = Type.getType(Label.class);
-    static final Type LEAF_TYPE = Type.getType(Leaf.class);
-    static final Type MATCHER_TYPE = Type.getType(Matcher.class);
-    static final Type PROXY_MATCHER_TYPE = Type.getType(ProxyMatcher.class);
-    static final Type RULE_TYPE = Type.getType(Rule.class);
+    static final Type ABSTRACT_MATCHER = Type.getType(AbstractMatcher.class);
+    static final Type ACTION = Type.getType(Action.class);
+    static final Type ACTION_WRAPPER_BASE = Type.getType(ActionWrapperBase.class);
+    static final Type BASE_PARSER = Type.getType(BaseParser.class);
+    static final Type CACHED = Type.getType(Cached.class);
+    static final Type CONTEXT_AWARE = Type.getType(ContextAware.class);
+    static final Type CONTEXT = Type.getType(Context.class);
+    static final Type EXPLICIT_ACTIONS_ONLY = Type.getType(ExplicitActionsOnly.class);
+    static final Type LABEL = Type.getType(Label.class);
+    static final Type LEAF = Type.getType(Leaf.class);
+    static final Type MATCHER = Type.getType(Matcher.class);
+    static final Type PROXY_MATCHER = Type.getType(ProxyMatcher.class);
+    static final Type RULE = Type.getType(Rule.class);
 
+    static final String BASE_PARSER_DESC = BASE_PARSER.getDescriptor();
+    static final String ACTION_DESC = ACTION.getDescriptor();
+    static final String CACHED_DESC = CACHED.getDescriptor();
+    static final String CONTEXT_DESC = CONTEXT.getDescriptor();
+    static final String EXPLICIT_ACTIONS_ONLY_DESC = EXPLICIT_ACTIONS_ONLY.getDescriptor();
+    static final String LABEL_DESC = LABEL.getDescriptor();
+    static final String LEAF_DESC = LEAF.getDescriptor();
+    static final String MATCHER_DESC = MATCHER.getDescriptor();
+    static final String RULE_DESC = RULE.getDescriptor();
 }

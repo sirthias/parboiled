@@ -28,6 +28,6 @@ import java.lang.annotation.Target;
  * automatically cached and are therefore not allowed to carry this annotation.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 public @interface Cached {
 }

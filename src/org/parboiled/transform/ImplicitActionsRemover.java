@@ -17,26 +17,38 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
+import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
 
 /**
- * Removes all LineNumber "instructions".
+ * Makes all implicit action expressions in a rule method explicit.
  */
-class LineNumberRemover implements RuleMethodProcessor {
+class ImplicitActionsRemover implements RuleMethodProcessor, Types, Opcodes {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.containsActions() || method.containsCaptures();
+        return method.containsImplicitActions();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         AbstractInsnNode current = method.instructions.getFirst();
         while (current != null) {
             AbstractInsnNode next = current.getNext();
-            if (current.getType() == AbstractInsnNode.LINE) {
-                method.instructions.remove(current);
+            if (isBooleanValueOfZ(current)) {
+                method.instructions.insertBefore(current, new VarInsnNode(ALOAD, 0));
+                method.instructions.insertBefore(current, new InsnNode(SWAP));
+                method.instructions.set(current, new MethodInsnNode(INVOKEVIRTUAL,
+                        BASE_PARSER_DESC, "ACTION", "(Z)" + ACTION_DESC));
             }
             current = next;
         }
+
+        method.setContainsImplicitActions(false);
+        method.setContainsActions(true);
     }
 
 }

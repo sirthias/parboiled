@@ -22,43 +22,78 @@
 
 package org.parboiled.transform;
 
-import org.objectweb.asm.Opcodes;
+import com.google.common.collect.Lists;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
-import org.parboiled.ContextAware;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.parboiled.transform.AsmUtils.*;
-
+/**
+ * A node in the instruction dependency graph.
+ */
 class InstructionGraphNode implements Value {
 
-    public final AbstractInsnNode instruction;
-    public final int instructionIndex;
-    public final BasicValue basicValue;
-    public final List<Value> predecessors = new ArrayList<Value>();
-    public final boolean isAction;
-    public final boolean isRuleCreation;
-    public final boolean isContextSwitch;
-    public final boolean isCallOnContextAware;
+    private final AbstractInsnNode instruction;
+    private final int instructionIndex;
+    private final BasicValue resultValue;
+    private final List<Value> predecessors = Lists.newArrayList();
+    private final List<InstructionGroup> groups = Lists.newArrayList();
+    private final boolean isActionRoot;
+    private final boolean isCaptureRoot;
+    private final boolean isContextSwitch;
+    private final boolean isCallOnContextAware;
 
-    public InstructionGraphNode(ParserClassNode classNode, AbstractInsnNode instruction, int instructionIndex,
+    public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex,
                                 BasicValue resultValue, List<Value> predecessors) {
         this.instruction = instruction;
         this.instructionIndex = instructionIndex;
-        this.basicValue = resultValue;
-        this.isAction = isCallToBooleanValueOfZ(instruction);
-        this.isRuleCreation = isRuleCreation(instruction);
-        this.isContextSwitch = isContextSwitch(classNode);
-        this.isCallOnContextAware = isCallOnContextAware(classNode);
+        this.resultValue = resultValue;
+        this.isActionRoot = AsmUtils.isActionRoot(instruction);
+        this.isCaptureRoot = AsmUtils.isCaptureRoot(instruction);
+        this.isContextSwitch = AsmUtils.isContextSwitch(instruction);
+        this.isCallOnContextAware = AsmUtils.isCallOnContextAware(instruction);
         this.predecessors.addAll(predecessors);
     }
 
     public int getSize() {
-        return basicValue.getSize();
+        return resultValue.getSize();
+    }
+
+    public AbstractInsnNode getInstruction() {
+        return instruction;
+    }
+
+    public int getInstructionIndex() {
+        return instructionIndex;
+    }
+
+    public BasicValue getResultValue() {
+        return resultValue;
+    }
+
+    public List<Value> getPredecessors() {
+        return predecessors;
+    }
+
+    public List<InstructionGroup> getGroups() {
+        return groups;
+    }
+
+    public boolean isActionRoot() {
+        return isActionRoot;
+    }
+
+    public boolean isCaptureRoot() {
+        return isCaptureRoot;
+    }
+
+    public boolean isContextSwitch() {
+        return isContextSwitch;
+    }
+
+    public boolean isCallOnContextAware() {
+        return isCallOnContextAware;
     }
 
     public InstructionGraphNode getEarlierstPredecessor() {
@@ -72,26 +107,6 @@ class InstructionGraphNode implements Value {
             }
         }
         return earliestPred;
-    }
-
-    private boolean isContextSwitch(ParserClassNode classNode) {
-        if (instruction.getType() == AbstractInsnNode.METHOD_INSN) {
-            MethodInsnNode mi = (MethodInsnNode) instruction;
-            return "UP/UP2/UP3/UP4/UP5/UP6/DOWN/DOWN2/DOWN3/DOWN4/DOWN5/DOWN6".contains(mi.name) &&
-                    "(Ljava/lang/Object;)Ljava/lang/Object;".equals(mi.desc) && classNode.isOwnerOf(mi);
-        }
-        return false;
-    }
-
-    private boolean isCallOnContextAware(ParserClassNode classNode) {
-        if (instruction instanceof MethodInsnNode) {
-            MethodInsnNode methodInsn = (MethodInsnNode) instruction;
-            if (methodInsn.getOpcode() == Opcodes.INVOKEVIRTUAL || methodInsn.getOpcode() == Opcodes.INVOKEINTERFACE) {
-                return classNode.isOwnerOf(methodInsn) ||
-                        ContextAware.class.isAssignableFrom(getClassForInternalName(methodInsn.owner));
-            }
-        }
-        return false;
     }
 
 }

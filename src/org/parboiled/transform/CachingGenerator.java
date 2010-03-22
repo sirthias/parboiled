@@ -34,34 +34,23 @@ import java.util.List;
 import static org.parboiled.common.Utils.toObjectArray;
 import static org.parboiled.transform.AsmUtils.getFieldByName;
 
-class CachingGenerator implements ClassTransformer, Opcodes, Types {
+/**
+ * Wraps the method code with caching and proxying constructs.
+ */
+class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
-    private final ClassTransformer nextTransformer;
     private ParserClassNode classNode;
     private RuleMethod method;
     private InsnList instructions;
     private AbstractInsnNode current;
     private String cacheFieldName;
 
-    public CachingGenerator(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return method.hasCachedAnnotation();
     }
 
-    @SuppressWarnings("unchecked")
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         this.classNode = classNode;
-
-        for (RuleMethod method : classNode.ruleMethods) {
-            if (method.isToBeLeafed()) {
-                createCachingCode(method);
-            }
-        }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private void createCachingCode(RuleMethod method) {
         this.method = method;
         this.instructions = method.instructions;
         this.current = instructions.getFirst();
@@ -105,7 +94,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
         cacheFieldName = findUnusedCacheFieldName();
 
         // if we have no parameters we use a simple Rule field as cache, otherwise a HashMap
-        String cacheFieldDesc = paramTypes.length == 0 ? RULE_TYPE.getDescriptor() : "Ljava/util/HashMap;";
+        String cacheFieldDesc = paramTypes.length == 0 ? RULE_DESC : "Ljava/util/HashMap;";
         classNode.fields.add(new FieldNode(ACC_PRIVATE, cacheFieldName, cacheFieldDesc, null, null));
 
         // stack:
@@ -171,7 +160,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
         // stack: <hashMap> :: <mapKey>
         insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"));
         // stack: <object>
-        insert(new TypeInsnNode(CHECKCAST, RULE_TYPE.getInternalName()));
+        insert(new TypeInsnNode(CHECKCAST, RULE.getInternalName()));
         // stack: <rule>
     }
 
@@ -252,7 +241,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
 
     // <cache> = new ProxyMatcher();
     private void generateStoreNewProxyMatcher() {
-        String proxyMatcherType = PROXY_MATCHER_TYPE.getInternalName();
+        String proxyMatcherType = PROXY_MATCHER.getInternalName();
 
         // stack:
         insert(new TypeInsnNode(NEW, proxyMatcherType));
@@ -278,16 +267,16 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
         // stack: <proxyMatcher> :: <rule>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <rule> :: <rule>
-        insert(new TypeInsnNode(INSTANCEOF, ABSTRACT_MATCHER_TYPE.getInternalName()));
+        insert(new TypeInsnNode(INSTANCEOF, ABSTRACT_MATCHER.getInternalName()));
         // stack: <proxyMatcher> :: <rule> :: <0 or 1>
         LabelNode elseLabel = new LabelNode();
         insert(new JumpInsnNode(IFEQ, elseLabel));
         // stack: <proxyMatcher> :: <rule>
-        insert(new TypeInsnNode(CHECKCAST, ABSTRACT_MATCHER_TYPE.getInternalName()));
+        insert(new TypeInsnNode(CHECKCAST, ABSTRACT_MATCHER.getInternalName()));
         // stack: <proxyMatcher> :: <abstractMatcher>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, ABSTRACT_MATCHER_TYPE.getInternalName(), "lock", "()V"));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, ABSTRACT_MATCHER.getInternalName(), "lock", "()V"));
         // stack: <proxyMatcher> :: <abstractMatcher>
         insert(elseLabel);
         // stack: <proxyMatcher> :: <rule>
@@ -295,14 +284,14 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
 
     // <proxyMatcher>.arm(<rule>)
     private void generateArmProxyMatcher() {
-        String proxyMatcherType = PROXY_MATCHER_TYPE.getInternalName();
+        String proxyMatcherType = PROXY_MATCHER.getInternalName();
 
         // stack: <proxyMatcher> :: <rule>
         insert(new InsnNode(DUP_X1));
         // stack: <rule> :: <proxyMatcher> :: <rule>
-        insert(new TypeInsnNode(CHECKCAST, MATCHER_TYPE.getInternalName()));
+        insert(new TypeInsnNode(CHECKCAST, MATCHER.getInternalName()));
         // stack: <rule> :: <proxyMatcher> :: <matcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm", '(' + MATCHER_TYPE.getDescriptor() + ")V"));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm", '(' + MATCHER_DESC + ")V"));
         // stack: <rule>
     }
 
@@ -319,7 +308,7 @@ class CachingGenerator implements ClassTransformer, Opcodes, Types {
             // stack: <rule> :: <rule> :: <this>
             insert(new InsnNode(SWAP));
             // stack: <rule> :: <this> :: <rule>
-            insert(new FieldInsnNode(PUTFIELD, classNode.name, cacheFieldName, RULE_TYPE.getDescriptor()));
+            insert(new FieldInsnNode(PUTFIELD, classNode.name, cacheFieldName, RULE_DESC));
             // stack: <rule>
             return;
         }

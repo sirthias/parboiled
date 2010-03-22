@@ -16,57 +16,72 @@
 
 package org.parboiled.transform;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.ClassWriter;
 
-import static org.parboiled.transform.AsmUtils.findLoadedClass;
-import static org.parboiled.transform.AsmUtils.getExtendedParserClassName;
+import java.util.List;
+
+import static org.parboiled.transform.AsmUtils.*;
 
 public class ParserTransformer {
+
+    private static final Object lock = new Object();
 
     private ParserTransformer() {}
 
     public static Class<?> transformParser(@NotNull Class<?> parserClass) throws Exception {
-        synchronized (parserClass.getClassLoader()) {
+        synchronized (lock) {
             // first check whether we did not already create and load the extension of the given parser class
             Class<?> extendedClass = findLoadedClass(
                     getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
             );
-            if (extendedClass != null) return extendedClass;
-
-            // not loaded yet, so create
-            ClassTransformer transformer = createClassTransformer();
-            ParserClassNode classNode = transformer.transform(new ParserClassNode(parserClass));
-            return classNode.extendedClass;
+            return extendedClass != null ? extendedClass : extendParserClass(parserClass);
         }
     }
 
-    static ClassTransformer createClassTransformer() {
-        return new ClassNodeInitializer(
-                new ActionMethodRewritingTransformer(createActionMethodTransformer(),
-                        new ConstructorGenerator(
-                                new WithCallToSuperReplacer(
-                                        new LabelApplicator(
-                                                new LeafApplicator(
-                                                        new CachingGenerator(
-                                                                new ParserClassDefiner()
-                                                        )
-                                                )
-                                        )
-                                )
-                        )
-                )
+    static Class<?> extendParserClass(Class<?> parserClass) throws Exception {
+        ParserClassNode classNode = new ParserClassNode(parserClass);
+        new ClassNodeInitializer().process(classNode);
+        runMethodTransformers(classNode);
+        new ConstructorGenerator().process(classNode);
+        return defineExtendedParserClass(classNode);
+    }
+
+    private static void runMethodTransformers(ParserClassNode classNode) throws Exception {
+        List<RuleMethodProcessor> methodProcessors = createRuleMethodProcessors();
+        for (RuleMethod ruleMethod : classNode.ruleMethods) {
+            for (RuleMethodProcessor methodProcessor : methodProcessors) {
+                if (methodProcessor.appliesTo(ruleMethod)) {
+                    methodProcessor.process(classNode, ruleMethod);
+                }
+            }
+        }
+    }
+
+    static List<RuleMethodProcessor> createRuleMethodProcessors() {
+        return ImmutableList.of(
+                new ImplicitActionsRemover(),
+                new LineNumberRemover(),
+                new ReturnInstructionUnifier(),
+                new InstructionGraphCreator(),
+                new InstructionGrouper(),
+                new RuleMethodRewriter(),
+                new SuperCallRewriter(),
+                new LabellingGenerator(),
+                new LeafingGenerator(),
+                new CachingGenerator()
         );
     }
 
-    static MethodTransformer createActionMethodTransformer() {
-        return new LineNumberRemover(
-                new ReturnInstructionUnifier(
-                        new InstructionGraphCreator(
-                                new InstructionGraphPartitioner(
-                                        new RuleMethodRewriter()
-                                )
-                        )
-                )
+    private static Class<?> defineExtendedParserClass(ParserClassNode classNode) {
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(classWriter);
+        classNode.classCode = classWriter.toByteArray();
+        return loadClass(
+                classNode.name.replace('/', '.'),
+                classNode.classCode,
+                classNode.parentClass.getClassLoader()
         );
     }
 

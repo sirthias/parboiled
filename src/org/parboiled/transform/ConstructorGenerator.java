@@ -30,24 +30,15 @@ import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
  * Adds one constructor for each of the ParserClassNode.constructors,
  * which simply delegates to the respective super constructor.
  */
-class ConstructorGenerator implements ClassTransformer, Opcodes, Types {
+class ConstructorGenerator implements Opcodes, Types {
 
-    private final ClassTransformer nextTransformer;
-
-    public ConstructorGenerator(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
-    }
-
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
+    public void process(@NotNull ParserClassNode classNode) throws Exception {
         Checks.ensure(!classNode.constructors.isEmpty(),
                 "Could not extend parser class '" + classNode.getParentType().getClassName() +
                         "', no constructor visible to derived classes found");
-
         for (MethodNode constructor : classNode.constructors) {
             createConstuctor(classNode, constructor);
         }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
     }
 
     @SuppressWarnings({"unchecked"})

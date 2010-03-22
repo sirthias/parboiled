@@ -27,32 +27,43 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import org.parboiled.BaseParser;
+import org.parboiled.ContextAware;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 class AsmUtils {
 
-    public static ClassReader createClassReader(Class<?> clazz) throws IOException {
+    private static final ConcurrentMap<String, Class<?>> classForDesc = new ConcurrentHashMap<String, Class<?>>();
+
+    public static ClassReader createClassReader(@NotNull Class<?> clazz) throws IOException {
         String classFilename = clazz.getName().replace('.', '/') + ".class";
         InputStream inputStream = clazz.getClassLoader().getResourceAsStream(classFilename);
         return new ClassReader(inputStream);
     }
 
-    public static String getExtendedParserClassName(String parserClassName) {
+    public static String getExtendedParserClassName(@NotNull String parserClassName) {
         return parserClassName + "$$parboiled";
     }
 
-    public static Class<?> getClassForInternalName(@NotNull String internalName) {
-        String className = internalName.replace('/', '.');
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
+    public static Class<?> getClassForInternalName(@NotNull String classDesc) {
+        Class<?> clazz = classForDesc.get(classDesc);
+        if (clazz == null) {
+            String className = classDesc.replace('/', '.');
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
+            }
+            classForDesc.put(classDesc, clazz);
         }
+        return clazz;
     }
 
     public static Class<?> getClassForType(@NotNull Type type) {
@@ -82,8 +93,8 @@ class AsmUtils {
         throw new IllegalStateException(); // should be unreachable
     }
 
-    public static Field getOwnerField(@NotNull String ownerInternalName, @NotNull String fieldName) {
-        Class<?> clazz = getClassForInternalName(ownerInternalName);
+    public static Field getClassField(@NotNull String classInternalName, @NotNull String fieldName) {
+        Class<?> clazz = getClassForInternalName(classInternalName);
         try {
             return clazz.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
@@ -91,9 +102,9 @@ class AsmUtils {
         }
     }
 
-    public static Method getOwnerMethod(@NotNull String ownerInternalName, @NotNull String methodName,
+    public static Method getClassMethod(@NotNull String classInternalName, @NotNull String methodName,
                                         @NotNull String methodDesc) {
-        Class<?> clazz = getClassForInternalName(ownerInternalName);
+        Class<?> clazz = getClassForInternalName(classInternalName);
         Type[] types = Type.getArgumentTypes(methodDesc);
         Class<?>[] argTypes = new Class<?>[types.length];
         for (int i = 0; i < types.length; i++) {
@@ -184,7 +195,7 @@ class AsmUtils {
         return null;
     }
 
-    public static InsnList createArgumentLoaders(String methodDescriptor) {
+    public static InsnList createArgumentLoaders(@NotNull String methodDescriptor) {
         InsnList instructions = new InsnList();
         Type[] types = Type.getArgumentTypes(methodDescriptor);
         for (int i = 0; i < types.length; i++) {
@@ -193,7 +204,7 @@ class AsmUtils {
         return instructions;
     }
 
-    private static int getLoadingOpcode(Type argType) {
+    private static int getLoadingOpcode(@NotNull Type argType) {
         switch (argType.getSort()) {
             case Type.BOOLEAN:
             case Type.BYTE:
@@ -215,37 +226,64 @@ class AsmUtils {
         }
     }
 
-    public static boolean hasAnnotation(@NotNull MethodNode method, @NotNull Type annotationType) {
-        return hasAnnotation(method, annotationType.getDescriptor());
+    /**
+     * Determines whether the class with the given descriptor is assignable to the given type.
+     *
+     * @param classInternalName the class descriptor
+     * @param type      the type
+     * @return true if the class with the given descriptor is assignable to the given type
+     */
+    public static boolean isAssignableTo(@NotNull String classInternalName, @NotNull Class<?> type) {
+        return type.isAssignableFrom(getClassForInternalName(classInternalName));
     }
 
-    public static boolean hasAnnotation(@NotNull MethodNode method, @NotNull String annotationTypeDesc) {
-        if (method.visibleAnnotations != null) {
-            for (Object annotationObj : method.visibleAnnotations) {
-                AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(annotationTypeDesc)) return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isCallToBooleanValueOfZ(@NotNull AbstractInsnNode insn) {
+    public static boolean isBooleanValueOfZ(@NotNull AbstractInsnNode insn) {
         if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isBooleanValueOfZ(mi.owner, mi.name, mi.desc);
     }
 
-    public static boolean isBooleanValueOfZ(String owner, String name, String desc) {
-        return "java/lang/Boolean".equals(owner) && "valueOf".equals(name) &&
-                "(Z)Ljava/lang/Boolean;".equals(desc);
+    public static boolean isBooleanValueOfZ(@NotNull String methodOwner, @NotNull String methodName,
+                                            @NotNull String methodDesc) {
+        return "java/lang/Boolean".equals(methodOwner) && "valueOf".equals(methodName) &&
+                "(Z)Ljava/lang/Boolean;".equals(methodDesc);
     }
 
-    public static boolean isRuleCreation(AbstractInsnNode insn) {
-        if (insn instanceof MethodInsnNode) {
-            MethodInsnNode methodInsn = (MethodInsnNode) insn;
-            return Type.getReturnType(methodInsn.desc).equals(Types.RULE_TYPE);
-        }
-        return false;
+    public static boolean isActionRoot(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return isActionRoot(mi.owner, mi.name);
+    }
+
+    public static boolean isActionRoot(@NotNull String methodOwner, @NotNull String methodName) {
+        return isAssignableTo(methodOwner, BaseParser.class) && "ACTION".equals(methodName);
+    }
+
+    public static boolean isCaptureRoot(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return isCaptureRoot(mi.owner, mi.name);
+    }
+
+    public static boolean isCaptureRoot(@NotNull String methodOwner, @NotNull String methodName) {
+        return isAssignableTo(methodOwner, BaseParser.class) && "CAPTURE".equals(methodName);
+    }
+
+    public static boolean isContextSwitch(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return isContextSwitch(mi.owner, mi.name);
+    }
+
+    public static boolean isContextSwitch(@NotNull String methodOwner, @NotNull String methodName) {
+        return isAssignableTo(methodOwner, BaseParser.class) &&
+                "UP/UP2/UP3/UP4/UP5/UP6/DOWN/DOWN2/DOWN3/DOWN4/DOWN5/DOWN6".contains(methodName);
+    }
+
+    public static boolean isCallOnContextAware(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return isAssignableTo(mi.owner, ContextAware.class);
     }
 
 }

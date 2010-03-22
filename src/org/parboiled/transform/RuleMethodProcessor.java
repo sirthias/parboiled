@@ -18,8 +18,10 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 
-interface MethodTransformer {
+interface RuleMethodProcessor {
 
-    void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception;
+    boolean appliesTo(@NotNull RuleMethod method);
+
+    void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception;
 
 }

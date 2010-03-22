@@ -26,15 +26,13 @@ import org.objectweb.asm.tree.LabelNode;
  * Replaces all "non-last" return instructions with goto instructions to the last return instruction.
  * If a method contains only one return instruction the transformer does nothing.
  */
-class ReturnInstructionUnifier implements MethodTransformer, Opcodes {
+class ReturnInstructionUnifier implements RuleMethodProcessor, Opcodes {
 
-    private final MethodTransformer next;
-
-    public ReturnInstructionUnifier(MethodTransformer next) {
-        this.next = next;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return method.containsActions() || method.containsCaptures();
     }
 
-    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         AbstractInsnNode current = method.instructions.getLast();
 
         // find last return
@@ -47,14 +45,14 @@ class ReturnInstructionUnifier implements MethodTransformer, Opcodes {
 
         // iterate backwards up to first instructions
         while ((current = current.getPrevious()) != null) {
+
+            // replace returns with gotos
             if (current.getOpcode() == ARETURN) {
                 JumpInsnNode gotoInstruction = new JumpInsnNode(GOTO, lastReturnLabel);
                 method.instructions.set(current, gotoInstruction);
                 current = gotoInstruction;
             }
         }
-
-        if (next != null) next.transform(classNode, method);
     }
 
 }

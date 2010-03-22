@@ -16,58 +16,79 @@
 
 package org.parboiled.transform;
 
-import org.parboiled.Rule;
+import com.google.common.collect.ImmutableList;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.parboiled.transform.AsmTestUtils.assertTraceDumpEquality;
 
-public class ReturnInstructionUnifierTest {
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    private class TestClass {
-        Rule someRule() {
-            if (getClass() != null) {
-                return null;
-            }
-            if (toString() != null) {
-                return null;
-            }
-            return (Rule) this;
-        }
-    }
+public class ReturnInstructionUnifierTest extends TransformationTest {
 
     @SuppressWarnings({"unchecked"})
     @Test
     public void testReturnInstructionUnification() throws Exception {
-        ParserClassNode classNode = new ClassNodeInitializer(null).transform(new ParserClassNode(TestClass.class));
-        RuleMethod method = classNode.ruleMethods.get(0);
-        new LineNumberRemover(
-                new ReturnInstructionUnifier(null)
-        ).transform(classNode, method);
+        List<RuleMethodProcessor> processors = ImmutableList.of(
+                new LineNumberRemover(),
+                new ReturnInstructionUnifier()
+        );
 
-        assertTraceDumpEquality(method, "" +
+        assertTraceDumpEquality(processMethod("RuleWith2Returns", processors), "" +
                 "   L0\n" +
+                "    ILOAD 1\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL java/lang/Object.getClass ()Ljava/lang/Class;\n" +
-                "    IFNULL L1\n" +
+                "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
+                "    IF_ICMPNE L1\n" +
                 "   L2\n" +
-                "    ACONST_NULL\n" +
+                "    ALOAD 0\n" +
+                "    BIPUSH 97\n" +
+                "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.ACTION (Z)Lorg/parboiled/Action;\n" +
+                "    ICONST_0\n" +
+                "    ANEWARRAY java/lang/Object\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    GOTO L3\n" +
                 "   L1\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL java/lang/Object.toString ()Ljava/lang/String;\n" +
-                "    IFNULL L4\n" +
-                "   L5\n" +
-                "    ACONST_NULL\n" +
-                "    GOTO L3\n" +
-                "   L4\n" +
-                "    ALOAD 0\n" +
-                "    CHECKCAST org/parboiled/Rule\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.eoi ()Lorg/parboiled/Rule;\n" +
                 "   L3\n" +
                 "    ARETURN\n" +
-                "   L6\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/transform/ReturnInstructionUnifierTest$TestClass; L0 L6 0\n" +
-                "    MAXSTACK = 1\n" +
+                "   L4\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/transform/TestParser; L0 L4 0\n" +
+                "    LOCALVARIABLE param I L0 L4 1\n" +
+                "    MAXSTACK = 4\n" +
+                "    MAXLOCALS = 2\n");
+
+        assertTraceDumpEquality(processMethod("RuleWithDirectImplicitAction", processors), "" +
+                "   L0\n" +
+                "    LINENUMBER 53 L0\n" +
+                "    ALOAD 0\n" +
+                "    BIPUSH 97\n" +
+                "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
+                "    ALOAD 0\n" +
+                "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
+                "    IFNE L1\n" +
+                "    ICONST_1\n" +
+                "    GOTO L2\n" +
+                "   L1\n" +
+                "    ICONST_0\n" +
+                "   L2\n" +
+                "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
+                "    ICONST_1\n" +
+                "    ANEWARRAY java/lang/Object\n" +
+                "    DUP\n" +
+                "    ICONST_0\n" +
+                "    BIPUSH 98\n" +
+                "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
+                "    AASTORE\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    ARETURN\n" +
+                "   L3\n" +
+                "    LOCALVARIABLE this Lorg/parboiled/transform/TestParser; L0 L3 0\n" +
+                "    MAXSTACK = 7\n" +
                 "    MAXLOCALS = 1\n");
     }
 

@@ -25,12 +25,10 @@ import java.util.List;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 
-public class ClassNodeInializerTest {
+public class ClassNodeInializerTest extends TransformationTest {
 
     @Test
     public void testClassNodeSetup() throws Exception {
-        ParserClassNode classNode = new ClassNodeInitializer(null).transform(new ParserClassNode(TestParser.class));
-
         assertEquals(classNode.name, "org/parboiled/transform/TestParser$$parboiled");
         assertEquals(classNode.superName, "org/parboiled/transform/TestParser");
 
@@ -38,29 +36,51 @@ public class ClassNodeInializerTest {
 
         assertEqualsMultiline(join(classNode.ruleMethods, new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.isToBeCached();
+                return method.containsActions();
             }
-        }), "noActionRule,simpleActionRule,upSetActionRule,complexActionsRule,ch,charIgnoreCase,charRange,charSet," +
-                "charSet,string,stringIgnoreCase,firstOf,oneOrMore,optional,sequence,test,testNot,zeroOrMore,any,empty");
+        }), "RuleWithDirectExplicitAction,RuleWithIndirectExplicitAction,RuleWithIndirectExplicitDownAction," +
+                "RuleWithIndirectExplicit2ParamAction,RuleWith2Returns,RuleWithCaptureInAction");
 
         assertEqualsMultiline(join(classNode.ruleMethods, new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.isToBeRewritten();
+                return method.containsCaptures();
             }
-        }), "simpleActionRule,upSetActionRule,booleanExpressionActionRule,complexActionsRule");
+        }), "RuleWithCapture1,RuleWithCapture2,RuleWithCaptureInAction");
 
         assertEqualsMultiline(join(classNode.ruleMethods, new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.isToBeLabelled();
+                return method.containsImplicitActions();
             }
-        }), "noActionRule,simpleActionRule,upSetActionRule,booleanExpressionActionRule,complexActionsRule,firstOf,"+
-                "oneOrMore,optional,sequence,zeroOrMore,any,empty");
+        }), "RuleWithDirectImplicitAction,RuleWithIndirectImplicitAction,RuleWithDirectImplicitUpAction," +
+                "RuleWithIndirectExplicitDownAction,RuleWithIndirectImplicitParamAction," +
+                "RuleWithCachedAnd2Params,RuleTakingCapture,RuleWithIllegalImplicitAction," +
+                "RuleWithActionAccessingPrivateField,RuleWithActionAccessingPrivateMethod");
 
         assertEqualsMultiline(join(classNode.ruleMethods, new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.isToBeLeafed();
+                return method.hasCachedAnnotation();
             }
-        }), "upSetActionRule,string,stringIgnoreCase");
+        }), "RuleWithIndirectImplicitParamAction,RuleWithIndirectExplicit2ParamAction,RuleWith2Returns," +
+                "RuleWithExplicitActionsOnly,RuleWithCachedAnd2Params,RuleTakingCapture,RuleWithIllegalImplicitAction," +
+                "ch,charIgnoreCase,charRange,charSet,charSet,charSet,string,string,stringIgnoreCase,stringIgnoreCase," +
+                "firstOf,firstOf,oneOrMore,optional,sequence,sequence,test,testNot,zeroOrMore,fromCharLiteral," +
+                "fromStringLiteral,fromCharArray,toRule");
+
+        assertEqualsMultiline(join(classNode.ruleMethods, new Predicate<RuleMethod>() {
+            public boolean apply(RuleMethod method) {
+                return method.hasLabelAnnotation();
+            }
+        }), "RuleWithLabel,RuleWithNamedLabel,RuleWithIndirectImplicitParamAction,RuleWithIndirectExplicit2ParamAction," +
+                "RuleWith2Returns,RuleWithExplicitActionsOnly,RuleWithCachedAnd2Params,RuleTakingCapture," +
+                "RuleWithIllegalImplicitAction,ch,charIgnoreCase,charRange,charSet,charSet,charSet,string,string," +
+                "stringIgnoreCase,stringIgnoreCase,firstOf,firstOf,oneOrMore,optional,sequence,sequence,test,testNot," +
+                "zeroOrMore,fromCharLiteral,fromStringLiteral,fromCharArray,toRule");
+
+        assertEqualsMultiline(join(classNode.ruleMethods, new Predicate<RuleMethod>() {
+            public boolean apply(RuleMethod method) {
+                return method.hasLeafAnnotation();
+            }
+        }), "RuleWithLeaf,string,stringIgnoreCase");
     }
 
     private <T extends MethodNode> String join(List<T> methods, Predicate<T> predicate) {

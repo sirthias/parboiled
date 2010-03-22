@@ -20,26 +20,16 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-class LeafApplicator implements ClassTransformer, Opcodes, Types {
+/**
+ * Adds automatic leaf marking code before the return instruction.
+ */
+class LeafingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
-    private final ClassTransformer nextTransformer;
-
-    public LeafApplicator(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return method.hasLeafAnnotation();
     }
 
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (RuleMethod method : classNode.ruleMethods) {
-            if (method.isToBeLeafed()) {
-                createLeafMarkingCode(method);
-            }
-        }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private void createLeafMarkingCode(RuleMethod method) {
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         InsnList instructions = method.instructions;
         AbstractInsnNode current = instructions.getFirst();
 
@@ -53,8 +43,8 @@ class LeafApplicator implements ClassTransformer, Opcodes, Types {
         LabelNode isNullLabel = new LabelNode();
         instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
-        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
-                "asLeaf", "()" + RULE_TYPE.getDescriptor()));
+        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
+                "asLeaf", "()" + RULE.getDescriptor()));
         // stack: <rule>
         instructions.insertBefore(current, isNullLabel);
         // stack: <rule>

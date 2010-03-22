@@ -25,16 +25,19 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
 
 /**
  * Transforms a RuleMethod by replacing all action expressions with calls to respective
  * action classes, which are generated using the ActionClassGenerator.
  */
-class RuleMethodRewriter implements MethodTransformer, Opcodes {
+class RuleMethodRewriter implements RuleMethodProcessor, Opcodes {
 
-    public void transform(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        int actionNr = 1;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return false;
+    }
+
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        /*int actionNr = 1;
         for (InstructionSubSet subSet : method.getInstructionSubSets()) {
             if (subSet.isActionSet) {
                 ActionClassGenerator generator = new ActionClassGenerator(classNode, method, subSet, actionNr++);
@@ -45,12 +48,12 @@ class RuleMethodRewriter implements MethodTransformer, Opcodes {
             }
         }
 
-        method.localVariables.clear();
+        method.localVariables.clear();*/
     }
 
     private void insertActionClassCreation(ParserClassNode classNode, RuleMethod method,
                                            InstructionSubSet subSet, Type actionType) {
-        InsnList methodInstructions = method.instructions;
+        /*InsnList methodInstructions = method.instructions;
         AbstractInsnNode firstAfterAction = method.getInstructionGraphNodes()[subSet.lastIndex + 1].instruction;
 
         // we do not have to remove the action instructions from the rule method as this has already happened
@@ -60,7 +63,7 @@ class RuleMethodRewriter implements MethodTransformer, Opcodes {
         methodInstructions.insertBefore(firstAfterAction, new VarInsnNode(ALOAD, 0));
         methodInstructions.insertBefore(firstAfterAction,
                 new MethodInsnNode(INVOKESPECIAL, actionType.getInternalName(), "<init>",
-                        "(" + classNode.getDescriptor() + ")V"));
+                        "(" + classNode.getDescriptor() + ")V"));*/
     }
 
 }

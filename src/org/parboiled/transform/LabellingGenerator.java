@@ -22,27 +22,16 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.StringUtils;
 
-class LabelApplicator implements ClassTransformer, Opcodes, Types {
+/**
+ * Adds automatic labelling code before the return instruction.
+ */
+class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
-    private final ClassTransformer nextTransformer;
-
-    public LabelApplicator(ClassTransformer nextTransformer) {
-        this.nextTransformer = nextTransformer;
+    public boolean appliesTo(@NotNull RuleMethod method) {
+        return method.hasLabelAnnotation();
     }
 
-    @SuppressWarnings("unchecked")
-    public ParserClassNode transform(@NotNull ParserClassNode classNode) throws Exception {
-        for (RuleMethod method : classNode.ruleMethods) {
-            if (method.isToBeLabelled()) {
-                createLabellingCode(method);
-            }
-        }
-
-        return nextTransformer != null ? nextTransformer.transform(classNode) : classNode;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private void createLabellingCode(RuleMethod method) {
+    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         InsnList instructions = method.instructions;
         AbstractInsnNode current = instructions.getFirst();
 
@@ -58,8 +47,8 @@ class LabelApplicator implements ClassTransformer, Opcodes, Types {
         // stack: <rule>
         instructions.insertBefore(current, new LdcInsnNode(getLabelText(method)));
         // stack: <rule> :: <labelText>
-        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE_TYPE.getInternalName(),
-                "label", "(Ljava/lang/String;)" + RULE_TYPE.getDescriptor()));
+        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
+                "label", "(Ljava/lang/String;)" + RULE_DESC));
         // stack: <rule>
         instructions.insertBefore(current, isNullLabel);
         // stack: <rule>
@@ -69,7 +58,7 @@ class LabelApplicator implements ClassTransformer, Opcodes, Types {
         if (method.visibleAnnotations != null) {
             for (Object annotationObj : method.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(LABEL_TYPE.getDescriptor()) && annotation.values != null) {
+                if (annotation.desc.equals(LABEL.getDescriptor()) && annotation.values != null) {
                     Preconditions.checkState("value".equals(annotation.values.get(0)));
                     String labelValue = (String) annotation.values.get(1);
                     return StringUtils.isEmpty(labelValue) ? method.name : labelValue;
