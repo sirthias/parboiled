@@ -35,12 +35,6 @@ public class CharactersMatcher<V> extends AbstractMatcher<V> {
         this.characters = characters;
     }
 
-    @Override
-    public String getLabel() {
-        if (hasLabel()) return super.getLabel();
-        return characters.toString();
-    }
-
     public boolean match(@NotNull MatcherContext<V> context) {
         if (!characters.contains(context.getCurrentLocation().getChar())) return false;
         context.advanceInputLocation();

@@ -26,11 +26,6 @@ import org.parboiled.MatcherContext;
  */
 public class EmptyMatcher<V> extends AbstractMatcher<V> {
 
-    @Override
-    public String getLabel() {
-        return hasLabel() ? super.getLabel() : "EMPTY";
-    }
-
     public boolean match(@NotNull MatcherContext<V> context) {
         context.createNode();
         return true;

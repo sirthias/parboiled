@@ -34,12 +34,6 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
         this.charUp = Character.toUpperCase(character);
     }
 
-    @Override
-    public String getLabel() {
-        if (hasLabel()) return super.getLabel();
-        return "\'" + charLow + '/' + charUp + '\'';
-    }
-
     public boolean match(@NotNull MatcherContext<V> context) {
         char c = context.getCurrentLocation().getChar();
         if (c != charLow && c != charUp) return false;

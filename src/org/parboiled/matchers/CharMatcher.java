@@ -18,7 +18,6 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.common.StringUtils;
 
 /**
  * A {@link Matcher} matching a single given character.
@@ -31,12 +30,6 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
 
     public CharMatcher(char character) {
         this.character = character;
-    }
-
-    @Override
-    public String getLabel() {
-        if (hasLabel()) return super.getLabel();
-        return "\'" + StringUtils.escape(character) + '\'';
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

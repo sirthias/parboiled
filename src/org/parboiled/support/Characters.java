@@ -161,9 +161,8 @@ public class Characters {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(subtractive ? "![" : "[");
-        for (int i = 0; i < chars.length; i++) {
-            if (i > 0) sb.append(',');
-            sb.append(StringUtils.escape(chars[i]));
+        for (char c : chars) {
+            sb.append(StringUtils.escape(c));
         }
         sb.append(']');
         return sb.toString();

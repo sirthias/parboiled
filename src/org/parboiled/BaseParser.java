@@ -20,9 +20,11 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
-import org.parboiled.support.*;
+import org.parboiled.support.Cached;
+import org.parboiled.support.Characters;
 
 import static com.google.common.collect.ObjectArrays.concat;
+import static org.parboiled.common.StringUtils.escape;
 
 /**
  * Base class of all parboiled parsers. Defines the basic rule creation methods.
@@ -43,7 +45,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule ch(char c) {
-        return new CharMatcher(c);
+        return new CharMatcher(c).defaultLabel("\'" + escape(c) + '\'');
     }
 
     /**
@@ -56,7 +58,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule charIgnoreCase(char c) {
-        return Character.isLowerCase(c) == Character.isUpperCase(c) ? ch(c) : new CharIgnoreCaseMatcher(c);
+        if (Character.isLowerCase(c) == Character.isUpperCase(c)) {
+            return ch(c);
+        }
+        CharIgnoreCaseMatcher matcher = new CharIgnoreCaseMatcher(c);
+        return matcher.defaultLabel("\'" + escape(matcher.charLow) + '/' + escape(matcher.charUp) + '\'');
     }
 
     /**
@@ -70,12 +76,13 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule charRange(char cLow, char cHigh) {
-        return cLow == cHigh ? ch(cLow) : new CharRangeMatcher(cLow, cHigh);
+        return cLow == cHigh ? ch(cLow) :
+                new CharRangeMatcher(cLow, cHigh).defaultLabel(escape(cLow) + ".." + escape(cHigh));
     }
 
     /**
      * Creates a new rule that matches any of the characters in the given string.
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
      * @param characters the characters
@@ -87,13 +94,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Creates a new rule that matches any of the characters in the given char array.
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
      * @param characters the characters
      * @return a new rule
      */
-    @Cached
     public Rule charSet(@NotNull char... characters) {
         Preconditions.checkArgument(characters.length > 0);
         return characters.length == 1 ? ch(characters[0]) : charSet(Characters.of(characters));
@@ -109,15 +115,17 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule charSet(@NotNull Characters characters) {
-        return !characters.isSubtractive() && characters.getChars().length == 1 ?
-                ch(characters.getChars()[0]) : new CharactersMatcher<V>(characters);
+        if (!characters.isSubtractive() && characters.getChars().length == 1) {
+            return ch(characters.getChars()[0]);
+        }
+        return new CharactersMatcher<V>(characters).defaultLabel(characters.toString());
     }
 
     /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
      * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
      * @param string the string to match
@@ -138,21 +146,18 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Leaf
     public Rule string(char... characters) {
         if (characters.length == 1) return ch(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = ch(characters[i]);
         }
-        return sequence(matchers).label(
-                new StringBuilder(characters.length + 2).append('"').append(characters).append('"').toString()
-        );
+        return ((SequenceMatcher)sequence(matchers)).defaultLabel('"' + String.valueOf(characters) + '"').asLeaf();
     }
 
     /**
      * Explicitly creates a rule matching the given string in a case-independent fashion.
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
      * @param string the string to match
@@ -171,22 +176,19 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Leaf
     public Rule stringIgnoreCase(char... characters) {
         if (characters.length == 1) return charIgnoreCase(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = charIgnoreCase(characters[i]);
         }
-        return sequence(matchers).label(
-                new StringBuilder(characters.length + 2).append('"').append(characters).append('"').toString()
-        );
+        return ((SequenceMatcher)sequence(matchers)).defaultLabel('"' + String.valueOf(characters) + '"').asLeaf();
     }
 
     /**
      * Creates a new rule that successively tries all of the given subrules and succeeds when the first one of
      * its subrules matches. If all subrules fail this rule fails as well.
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * arguments will yield the same rule instance.</p>
      *
      * @param rule      the first subrule
@@ -208,9 +210,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label
     public Rule firstOf(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules));
+        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules)).defaultLabel("firstOf");
     }
 
     /**
@@ -223,9 +224,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label
     public Rule oneOrMore(Object rule) {
-        return new OneOrMoreMatcher(toRule(rule));
+        return new OneOrMoreMatcher(toRule(rule)).defaultLabel("oneOrMore");
     }
 
     /**
@@ -238,14 +238,13 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label
     public Rule optional(Object rule) {
-        return new OptionalMatcher(toRule(rule));
+        return new OptionalMatcher(toRule(rule)).defaultLabel("optional");
     }
 
     /**
      * Creates a new rule that only succeeds if all of its subrule succeed, one after the other.
-     * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * arguments will yield the same rule instance.</p>
      *
      * @param rule      the first subrule
@@ -266,9 +265,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label
     public Rule sequence(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
+        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules)).defaultLabel("sequence");
     }
 
     /**
@@ -283,7 +281,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule test(Object rule) {
-        return new TestMatcher(toRule(rule));
+        Rule subMatcher = toRule(rule);
+        return new TestMatcher(subMatcher).defaultLabel("&(" + subMatcher + ")");
     }
 
     /**
@@ -298,7 +297,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule testNot(Object rule) {
-        return new TestNotMatcher(toRule(rule));
+        Rule subMatcher = toRule(rule);
+        return new TestNotMatcher(subMatcher).defaultLabel("!(" + subMatcher + ")");
     }
 
     /**
@@ -311,9 +311,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label
     public Rule zeroOrMore(Object rule) {
-        return new ZeroOrMoreMatcher(toRule(rule));
+        return new ZeroOrMoreMatcher(toRule(rule)).defaultLabel("zeroOrMore");
     }
 
     /**
@@ -340,7 +339,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     public Rule empty() {
-        return new EmptyMatcher<V>();
+        return new EmptyMatcher<V>().label("EMPTY");
     }
 
     ///************************* "MAGIC" METHODS ***************************///
@@ -391,7 +390,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public final <T> T UP4(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
-    
+
     /**
      * Changes the context scope of the wrapped expression to the parent scope five levels up.
      * Equivalent to UP(UP(UP(UP(UP(...)))))
@@ -502,9 +501,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Explicitly marks the wrapped expression as an action expression.
      * parboiled transforms the wrapped expression into an {@link Action} instance during parser construction.
+     *
      * @param expression the expression to turn into an Action
      * @return the Action wrapping the given expression
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public final Action ACTION(boolean expression) {
         throw new UnsupportedOperationException("ACTION(...) calls can only be used in rule defining parser methods");
     }
@@ -512,9 +513,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Explicitly marks the wrapped expression as an capture expression.
      * parboiled transforms the wrapped expression into a {@link Capture} instance during parser construction.
+     *
      * @param expression the expression to turn into a Capture
      * @return the Capture wrapping the given expression
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public final <T> Capture<T> CAPTURE(T expression) {
         throw new UnsupportedOperationException("CAPTURE(...) calls can only be used in rule defining parser methods");
     }
@@ -584,7 +587,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof Character) return fromCharLiteral((Character) obj);
         if (obj instanceof String) return fromStringLiteral((String) obj);
         if (obj instanceof char[]) return fromCharArray((char[]) obj);
-        if (obj instanceof Action) return new ActionMatcher<V>((Action<V>) obj);
+        if (obj instanceof Action) {
+            Action<V> action = (Action<V>) obj;
+            return new ActionMatcher<V>(action).defaultLabel(action.toString());
+        }
 
         throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
     }

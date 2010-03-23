@@ -67,11 +67,6 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         }
     }
 
-    @Override
-    public String getLabel() {
-        return action.toString();
-    }
-
     public boolean match(@NotNull MatcherContext<V> context) {
         // actions need to run in the parent context
         context = context.getParent();

@@ -36,11 +36,6 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         this.subMatcher = getChildren().get(0);
     }
 
-    @Override
-    public String getLabel() {
-        return hasLabel() ? super.getLabel() : "&(" + subMatcher + ")";
-    }
-
     public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
         if (context.getSubContext(subMatcher).runMatcher()) {

@@ -19,7 +19,6 @@ package org.parboiled.matchers;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.common.StringUtils;
 
 /**
  * A {@link Matcher} matching a single character out of a given range of characters.
@@ -35,11 +34,6 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         Preconditions.checkArgument(cLow < cHigh);
         this.cLow = cLow;
         this.cHigh = cHigh;
-    }
-
-    @Override
-    public String getLabel() {
-        return hasLabel() ? super.getLabel() : StringUtils.escape(cLow) + ".." + StringUtils.escape(cHigh);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {

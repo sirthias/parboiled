@@ -28,6 +28,7 @@ import org.parboiled.trees.ImmutableGraphNode;
  */
 public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
 
+    private String defaultLabel;
     private String label;
     private boolean locked;
     private boolean leaf;
@@ -58,20 +59,27 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return locked;
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void lock() {
         locked = true;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     public boolean isLeaf() {
         return leaf;
     }
 
-    public boolean hasLabel() {
+    public String getLabel() {
+        return label != null ? label : defaultLabel;
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public boolean hasCustomLabel() {
         return label != null;
+    }
+
+    public AbstractMatcher<V> defaultLabel(String defaultLabel) {
+        this.defaultLabel = defaultLabel;
+        return this;
     }
 
     @Override
@@ -96,6 +104,7 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     }
 
     // creates a shallow copy
+
     @SuppressWarnings({"unchecked"})
     private AbstractMatcher<V> createClone() {
         try {
