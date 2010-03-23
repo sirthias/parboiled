@@ -31,6 +31,7 @@ class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
         return method.hasLabelAnnotation();
     }
 
+    // TODO: check whether rule already has a custom label
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         InsnList instructions = method.instructions;
         AbstractInsnNode current = instructions.getFirst();

@@ -20,19 +20,20 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 /**
- * Removes all LineNumber "instructions".
+ * Removes all unused labels.
  */
-class LineNumberRemover implements RuleMethodProcessor {
+class UnusedLabelsRemover implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
         return method.containsActions() || method.containsCaptures();
     }
 
+    @SuppressWarnings({"SuspiciousMethodCalls"})
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         AbstractInsnNode current = method.instructions.getFirst();
         while (current != null) {
             AbstractInsnNode next = current.getNext();
-            if (current.getType() == AbstractInsnNode.LINE) {
+            if (current.getType() == AbstractInsnNode.LABEL && !method.getUsedLabels().contains(current)) {
                 method.instructions.remove(current);
             }
             current = next;

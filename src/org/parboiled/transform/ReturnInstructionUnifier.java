@@ -16,6 +16,7 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -33,6 +34,9 @@ class ReturnInstructionUnifier implements RuleMethodProcessor, Opcodes {
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        if (method.getNumberOfReturns() == 1) return;
+        Preconditions.checkState(method.getNumberOfReturns() > 1);
+
         AbstractInsnNode current = method.instructions.getLast();
 
         // find last return

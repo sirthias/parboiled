@@ -29,17 +29,15 @@ public class ReturnInstructionUnifierTest extends TransformationTest {
     @Test
     public void testReturnInstructionUnification() throws Exception {
         List<RuleMethodProcessor> processors = ImmutableList.of(
-                new LineNumberRemover(),
+                new UnusedLabelsRemover(),
                 new ReturnInstructionUnifier()
         );
 
         assertTraceDumpEquality(processMethod("RuleWith2Returns", processors), "" +
-                "   L0\n" +
                 "    ILOAD 1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
-                "    IF_ICMPNE L1\n" +
-                "   L2\n" +
+                "    IF_ICMPNE L0\n" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
@@ -50,33 +48,30 @@ public class ReturnInstructionUnifierTest extends TransformationTest {
                 "    ICONST_0\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "    GOTO L3\n" +
-                "   L1\n" +
+                "    GOTO L1\n" +
+                "   L0\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.eoi ()Lorg/parboiled/Rule;\n" +
-                "   L3\n" +
-                "    ARETURN\n" +
-                "   L4\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/transform/TestParser; L0 L4 0\n" +
-                "    LOCALVARIABLE param I L0 L4 1\n" +
-                "    MAXSTACK = 4\n" +
-                "    MAXLOCALS = 2\n");
+                "   L1\n" +
+                "    ARETURN\n");
 
-        assertTraceDumpEquality(processMethod("RuleWithDirectImplicitAction", processors), "" +
-                "   L0\n" +
-                "    LINENUMBER 53 L0\n" +
+        assertTraceDumpEquality(processMethod("RuleWithDirectExplicitAction", processors), "" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
                 "    ALOAD 0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
+                "    IFEQ L0\n" +
+                "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
-                "    IFNE L1\n" +
+                "    IFLE L0\n" +
                 "    ICONST_1\n" +
-                "    GOTO L2\n" +
-                "   L1\n" +
+                "    GOTO L1\n" +
+                "   L0\n" +
                 "    ICONST_0\n" +
-                "   L2\n" +
-                "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
+                "   L1\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.ACTION (Z)Lorg/parboiled/Action;\n" +
                 "    ICONST_1\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +
@@ -85,11 +80,7 @@ public class ReturnInstructionUnifierTest extends TransformationTest {
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
                 "    AASTORE\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "    ARETURN\n" +
-                "   L3\n" +
-                "    LOCALVARIABLE this Lorg/parboiled/transform/TestParser; L0 L3 0\n" +
-                "    MAXSTACK = 7\n" +
-                "    MAXLOCALS = 1\n");
+                "    ARETURN\n");
     }
 
 }

@@ -73,7 +73,12 @@ public class AsmTestUtils {
     }
 
     public static void assertTraceDumpEquality(@NotNull MethodNode method, String traceDump) throws Exception {
-        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor();
+        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor() {
+            @Override
+            public void visitMaxs(int maxStack, int maxLocals) {
+                // don't include max values
+            }
+        };
         // MethodAdapter checkMethodAdapter = new MethodAdapter(traceMethodVisitor);
         MethodAdapter checkMethodAdapter = new CheckMethodAdapter(traceMethodVisitor);
         method.accept(checkMethodAdapter);

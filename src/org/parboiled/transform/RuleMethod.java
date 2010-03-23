@@ -24,9 +24,11 @@ package org.parboiled.transform;
 
 import com.google.common.collect.Lists;
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
@@ -39,6 +41,8 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     private final Class<?> ownerClass;
     private final List<InstructionGroup> groups = Lists.newArrayList();
+    private final List<LabelNode> usedLabels = Lists.newArrayList();
+
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsActions; // calls to BaseParser.ACTION(boolean)
     private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
@@ -46,6 +50,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean hasCachedAnnotation;
     private boolean hasLabelAnnotation;
     private boolean hasLeafAnnotation;
+    private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
 
     private List<InstructionGraphNode> graphNodes;
@@ -55,7 +60,8 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         super(access, name, desc, signature, exceptions);
         this.ownerClass = ownerClass;
 
-        if (Type.getArgumentTypes(desc).length > 0) {
+        if (Type.getArgumentTypes(desc).length == 0) {
+            // no parameter rules are automatically cached and labelled
             hasCachedAnnotation = true;
             hasLabelAnnotation = true;
         }
@@ -65,6 +71,14 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public Class<?> getOwnerClass() {
         return ownerClass;
+    }
+
+    public List<InstructionGroup> getGroups() {
+        return groups;
+    }
+
+    public List<LabelNode> getUsedLabels() {
+        return usedLabels;
     }
 
     public boolean containsImplicitActions() {
@@ -99,12 +113,31 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return hasLeafAnnotation;
     }
 
+    public int getNumberOfReturns() {
+        return numberOfReturns;
+    }
+
     public InstructionGraphNode getReturnInstructionNode() {
         return returnInstructionNode;
     }
 
     public void setReturnInstructionNode(InstructionGraphNode returnInstructionNode) {
         this.returnInstructionNode = returnInstructionNode;
+    }
+
+    public InstructionGraphNode getGraphNode(AbstractInsnNode insn) {
+        return graphNodes != null ? graphNodes.get(instructions.indexOf(insn)) : null;
+    }
+
+    public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
+        if (graphNodes == null) {
+            // initialize with a list of null values
+            graphNodes = Lists.newArrayList(new InstructionGraphNode[instructions.size()]);
+        }
+        int index = instructions.indexOf(insn);
+        InstructionGraphNode node = new InstructionGraphNode(insn, index, resultValue, predecessors);
+        graphNodes.set(index, node);
+        return node;
     }
 
     @Override
@@ -141,18 +174,36 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         super.visitMethodInsn(opcode, owner, name, desc);
     }
 
-    public InstructionGraphNode getGraphNode(AbstractInsnNode insn) {
-        return graphNodes != null ? graphNodes.get(instructions.indexOf(insn)) : null;
+    @Override
+    public void visitInsn(int opcode) {
+        if (opcode == ARETURN) numberOfReturns++;
+        super.visitInsn(opcode);
     }
 
-    public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
-        if (graphNodes == null) {
-            // initialize with a list of null values
-            graphNodes = Lists.newArrayList(new InstructionGraphNode[instructions.size()]);
-        }
-        int index = instructions.indexOf(insn);
-        InstructionGraphNode node = new InstructionGraphNode(insn, index, resultValue, predecessors);
-        graphNodes.set(index, node);
-        return node;
+    @Override
+    public void visitJumpInsn(int opcode, Label label) {
+        usedLabels.add(getLabelNode(label));
+        super.visitJumpInsn(opcode, label);
     }
+
+    @Override
+    public void visitLineNumber(int line, Label start) {
+        // do not record line numbers
+    }
+
+    @Override
+    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+        // do not add local variables
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        // do not record old max values
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }
