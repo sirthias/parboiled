@@ -28,7 +28,7 @@ import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
 /**
  * Makes all implicit action expressions in a rule method explicit.
  */
-class ImplicitActionsRemover implements RuleMethodProcessor, Types, Opcodes {
+class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
         return method.containsImplicitActions();
@@ -42,7 +42,7 @@ class ImplicitActionsRemover implements RuleMethodProcessor, Types, Opcodes {
                 method.instructions.insertBefore(current, new VarInsnNode(ALOAD, 0));
                 method.instructions.insertBefore(current, new InsnNode(SWAP));
                 method.instructions.set(current, new MethodInsnNode(INVOKEVIRTUAL,
-                        BASE_PARSER_DESC, "ACTION", "(Z)" + ACTION_DESC));
+                        BASE_PARSER.getInternalName(), "ACTION", "(Z)" + ACTION_DESC));
             }
             current = next;
         }

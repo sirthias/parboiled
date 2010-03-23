@@ -52,7 +52,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean hasLeafAnnotation;
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
-
     private List<InstructionGraphNode> graphNodes;
 
     public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature,
@@ -125,6 +124,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         this.returnInstructionNode = returnInstructionNode;
     }
 
+    public List<InstructionGraphNode> getGraphNodes() {
+        return graphNodes;
+    }
+
     public InstructionGraphNode getGraphNode(AbstractInsnNode insn) {
         return graphNodes != null ? graphNodes.get(instructions.indexOf(insn)) : null;
     }
@@ -135,8 +138,12 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
             graphNodes = Lists.newArrayList(new InstructionGraphNode[instructions.size()]);
         }
         int index = instructions.indexOf(insn);
-        InstructionGraphNode node = new InstructionGraphNode(insn, index, resultValue, predecessors);
-        graphNodes.set(index, node);
+        InstructionGraphNode node = graphNodes.get(index);
+        if (node == null) {
+            node = new InstructionGraphNode(insn, index, resultValue);
+            graphNodes.set(index, node);
+        }
+        node.addPredecessors(predecessors);
         return node;
     }
 
@@ -194,11 +201,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
         // do not add local variables
-    }
-
-    @Override
-    public void visitMaxs(int maxStack, int maxLocals) {
-        // do not record old max values
     }
 
     @Override

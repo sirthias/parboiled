@@ -61,7 +61,7 @@ public class ParserTransformer {
 
     static List<RuleMethodProcessor> createRuleMethodProcessors() {
         return ImmutableList.of(
-                new ImplicitActionsRemover(),
+                new ImplicitActionsConverter(),
                 new UnusedLabelsRemover(),
                 new ReturnInstructionUnifier(),
                 new InstructionGraphCreator(),

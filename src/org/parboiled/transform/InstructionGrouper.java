@@ -23,7 +23,6 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.support.Checks;
 
 class InstructionGrouper implements RuleMethodProcessor {
@@ -40,34 +39,24 @@ class InstructionGrouper implements RuleMethodProcessor {
     }
 
     private void addToGroup(InstructionGraphNode node, InstructionGroup group) {
-        if (node.isCaptureRoot()) {
-            group = new InstructionGroup(InstructionGroup.CAPTURE);
-        } else if (node.isActionRoot()) {
-            group = new InstructionGroup(InstructionGroup.ACTION);
+        if (node.isCaptureRoot() || node.isActionRoot()) {
+            Checks.ensure(group.getType() == InstructionGroup.RETURN,
+                    "Method '" + method.name + "' contains illegal nesting of ACTION(...) and/or CAPTURE(...) calls");
+            group = node.isActionRoot() ?
+                    new InstructionGroup(InstructionGroup.ACTION) :
+                    new InstructionGroup(InstructionGroup.CAPTURE);
         }
 
-        if (group.getType() == InstructionGroup.RETURN) {
-            // do not add to RETURN group twice
-            if (alreadyBelongsToGroupOfType(node, InstructionGroup.RETURN)) return;
-        } else {
-            Checks.ensure(!alreadyBelongsToGroupOfType(node, InstructionGroup.ACTION | InstructionGroup.CAPTURE),
-                    "Method '" + method.name + "' contains illegal nesting of ACTION(...) and/or CAPTURE(...) calls");
-        }
+        // do not add to same group twice
+        if (node.getGroups().contains(group)) return;
 
         node.getGroups().add(group);
         group.getNodes().add(node);
 
         // recurse into predecessors
-        for (Value pred : node.getPredecessors()) {
-            addToGroup((InstructionGraphNode) pred, group);
+        for (InstructionGraphNode pred : node.getPredecessors()) {
+            addToGroup(pred, group);
         }
-    }
-
-    private boolean alreadyBelongsToGroupOfType(InstructionGraphNode node, int groupTypes) {
-        for (InstructionGroup group : node.getGroups()) {
-            if ((group.getType() & groupTypes) > 0) return true;
-        }
-        return false;
     }
 
 }

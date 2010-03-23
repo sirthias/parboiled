@@ -23,10 +23,13 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.Lists;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
+import org.objectweb.asm.util.AbstractVisitor;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,15 +40,14 @@ class InstructionGraphNode implements Value {
     private final AbstractInsnNode instruction;
     private final int instructionIndex;
     private final BasicValue resultValue;
-    private final List<Value> predecessors = Lists.newArrayList();
+    private final List<InstructionGraphNode> predecessors = Lists.newArrayList();
     private final List<InstructionGroup> groups = Lists.newArrayList();
     private final boolean isActionRoot;
     private final boolean isCaptureRoot;
     private final boolean isContextSwitch;
     private final boolean isCallOnContextAware;
 
-    public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex,
-                                BasicValue resultValue, List<Value> predecessors) {
+    public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex, BasicValue resultValue) {
         this.instruction = instruction;
         this.instructionIndex = instructionIndex;
         this.resultValue = resultValue;
@@ -53,7 +55,6 @@ class InstructionGraphNode implements Value {
         this.isCaptureRoot = AsmUtils.isCaptureRoot(instruction);
         this.isContextSwitch = AsmUtils.isContextSwitch(instruction);
         this.isCallOnContextAware = AsmUtils.isCallOnContextAware(instruction);
-        this.predecessors.addAll(predecessors);
     }
 
     public int getSize() {
@@ -72,7 +73,7 @@ class InstructionGraphNode implements Value {
         return resultValue;
     }
 
-    public List<Value> getPredecessors() {
+    public List<InstructionGraphNode> getPredecessors() {
         return predecessors;
     }
 
@@ -96,6 +97,20 @@ class InstructionGraphNode implements Value {
         return isCallOnContextAware;
     }
 
+    public void addPredecessors(@NotNull Collection<Value> preds) {
+        for (Value pred : preds) {
+            if (pred instanceof InstructionGraphNode) {
+                addPredecessor(((InstructionGraphNode) pred));
+            }
+        }
+    }
+
+    public void addPredecessor(InstructionGraphNode node) {
+        if (!predecessors.contains(node)) {
+            predecessors.add(node);
+        }
+    }
+
     public InstructionGraphNode getEarlierstPredecessor() {
         InstructionGraphNode earliestPred = null;
         for (Value predecessor : predecessors) {
@@ -107,6 +122,11 @@ class InstructionGraphNode implements Value {
             }
         }
         return earliestPred;
+    }
+
+    @Override
+    public String toString() {
+        return AbstractVisitor.OPCODES[instruction.getOpcode()];
     }
 
 }

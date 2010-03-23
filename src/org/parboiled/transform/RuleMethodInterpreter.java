@@ -31,6 +31,7 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
+import org.parboiled.support.Checks;
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,6 +76,10 @@ class RuleMethodInterpreter extends BasicInterpreter implements Types {
 
     @Override
     public Value ternaryOperation(AbstractInsnNode insn, Value v1, Value v2, Value v3) throws AnalyzerException {
+        // this method is only called for xASTORE instructions, parameter v1 is the value corresponding to the
+        // NEWARRAY, ANEWARRAY or MULTIANEWARRAY instruction having created the array, we need to insert a special
+        // dependency edge from the array creator to this xSTORE instruction
+        additionalEdges.add(new Edge(insn, findArrayCreatorPredecessor(v1)));
         return createNode(insn, super.ternaryOperation(insn, null, null, null), v1, v2, v3);
     }
 
@@ -106,27 +111,35 @@ class RuleMethodInterpreter extends BasicInterpreter implements Types {
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
         AbstractInsnNode fromInsn = method.instructions.get(instructionIndex);
         AbstractInsnNode toInsn = method.instructions.get(successorIndex);
-        switch (fromInsn.getType()) {
-            case AbstractInsnNode.LABEL:
-            case AbstractInsnNode.JUMP_INSN:
-                additionalEdges.add(new Edge(fromInsn, toInsn));
-                return;
-        }
-
-        switch (toInsn.getType()) {
-            case AbstractInsnNode.JUMP_INSN:
-                additionalEdges.add(new Edge(fromInsn, toInsn));
+        if (fromInsn.getType() == AbstractInsnNode.LABEL ||
+                fromInsn.getType() == AbstractInsnNode.JUMP_INSN ||
+                toInsn.getType() == AbstractInsnNode.JUMP_INSN) {
+            additionalEdges.add(new Edge(fromInsn, toInsn));
         }
     }
 
+    private AbstractInsnNode findArrayCreatorPredecessor(Value value) {
+        String errorMessage = "Internal error during analysis of rule method '" + method.name +
+                "', please report this error to info@parboiled.org! Thank you!";
+        Checks.ensure(value instanceof InstructionGraphNode, errorMessage);
+        InstructionGraphNode node = (InstructionGraphNode) value;
+        while (true) {
+            int opcode = node.getInstruction().getOpcode();
+            if (opcode == ANEWARRAY || opcode == NEWARRAY || opcode == MULTIANEWARRAY) break;
+            Checks.ensure(node.getPredecessors().size() == 1, errorMessage);
+            node = node.getPredecessors().get(0);
+        }
+        return node.getInstruction();
+    }
+
     public void finish() {
-        // finally add all edges so far not included
+        // add all edges so far not included
         for (Edge edge : additionalEdges) {
             InstructionGraphNode node = method.getGraphNode(edge.from);
             if (node == null) node = createNode(edge.from, null);
             InstructionGraphNode succ = method.getGraphNode(edge.to);
             if (succ == null) succ = createNode(edge.to, null);
-            if (!succ.getPredecessors().contains(node)) succ.getPredecessors().add(node);
+            succ.addPredecessor(node);
         }
     }
 
@@ -144,5 +157,4 @@ class RuleMethodInterpreter extends BasicInterpreter implements Types {
             this.to = to;
         }
     }
-
 }

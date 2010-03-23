@@ -52,7 +52,7 @@ public class AsmTestUtils {
     }
 
     public static String getMethodInstructionList(MethodNode methodNode) {
-        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor();
+        TraceMethodVisitor traceMethodVisitor = new NonMaxTraceVisitor();
         methodNode.accept(traceMethodVisitor);
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -73,12 +73,7 @@ public class AsmTestUtils {
     }
 
     public static void assertTraceDumpEquality(@NotNull MethodNode method, String traceDump) throws Exception {
-        TraceMethodVisitor traceMethodVisitor = new TraceMethodVisitor() {
-            @Override
-            public void visitMaxs(int maxStack, int maxLocals) {
-                // don't include max values
-            }
-        };
+        TraceMethodVisitor traceMethodVisitor = new NonMaxTraceVisitor();
         // MethodAdapter checkMethodAdapter = new MethodAdapter(traceMethodVisitor);
         MethodAdapter checkMethodAdapter = new CheckMethodAdapter(traceMethodVisitor);
         method.accept(checkMethodAdapter);
@@ -103,6 +98,13 @@ public class AsmTestUtils {
                 throw new RuntimeException(
                         "Integrity error in method '" + method.name + "' of type '" + classInternalName + "': ", e);
             }
+        }
+    }
+
+    private static class NonMaxTraceVisitor extends TraceMethodVisitor {
+        @Override
+        public void visitMaxs(int maxStack, int maxLocals) {
+            // don't include max values
         }
     }
 

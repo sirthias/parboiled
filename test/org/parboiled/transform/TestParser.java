@@ -50,7 +50,7 @@ class TestParser extends BaseParser<Integer> {
     }
 
     public Rule RuleWithDirectImplicitAction() {
-        return sequence('a', integer == 0, 'b');
+        return sequence('a', integer == 0, 'b', 'c');
     }
 
     public Rule RuleWithIndirectImplicitAction() {

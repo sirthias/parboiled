@@ -41,4 +41,13 @@ class InstructionGroup {
         return nodes;
     }
 
+    @Override
+    public String toString() {
+        switch(type) {
+            case RETURN: return "RETURN";
+            case CAPTURE: return "CAPTURE";
+            case ACTION: return "ACTION";
+        }
+        throw new IllegalStateException();
+    }
 }
