@@ -23,36 +23,18 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.parboiled.Action;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * Base class of generated classes wrapping action expressions.
+ *
+ * @param <V> the type of the value field of a parse tree node
+ */
+@SuppressWarnings({"UnusedDeclaration"})
+public abstract class BaseAction<V> extends BaseGroupClass<V> implements Action<V> {
 
-class ParserClassNode extends ClassNode {
-
-    public final Class<?> parentClass;
-    public final Type parentType;
-    public final List<Type> superTypes = new ArrayList<Type>();
-
-    public final List<MethodNode> constructors = new ArrayList<MethodNode>();
-    public final List<RuleMethod> ruleMethods = new ArrayList<RuleMethod>();
-
-    public byte[] classCode;
-    public Class<?> extendedClass;
-
-    public ParserClassNode(@NotNull Class<?> parentClass) {
-        this.parentClass = parentClass;
-        parentType = Type.getType(parentClass);
+    protected BaseAction(@NotNull String name) {
+        super(name);
     }
-
-    public Type getParentType() {
-        return parentType;
-    }
-
-    public String getDescriptor() {
-        return 'L' + name + ';';
-    }
-
+    
 }

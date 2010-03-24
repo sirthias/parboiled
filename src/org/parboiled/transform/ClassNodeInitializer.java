@@ -57,8 +57,8 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if (ownerClass == classNode.parentClass) {
-            Checks.ensure((access & ACC_PRIVATE) == 0, "Parser class '" + name + "' must not be private.");
-            Checks.ensure((access & ACC_FINAL) == 0, "Parser class '" + name + "' must not be final.");
+            Checks.ensure((access & ACC_PRIVATE) == 0, "Parser class '%s' must not be private", name);
+            Checks.ensure((access & ACC_FINAL) == 0, "Parser class '%s' must not be final.", name);
             classNode.visit(
                     V1_5,
                     ACC_PUBLIC,
@@ -110,9 +110,9 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
         }
 
         // ok, its a new Rule method, collect it
-        Checks.ensure((access & ACC_PRIVATE) == 0, "Rule method '" + name + "'must not be private.\n" +
-                        "Mark the method protected or package-private if you want to prevent public access!");
-        Checks.ensure((access & ACC_FINAL) == 0, "Rule method '" + name + "' must not be final.");
+        Checks.ensure((access & ACC_PRIVATE) == 0, "Rule method '%s'must not be private.\n" +
+                        "Mark the method protected or package-private if you want to prevent public access!", name);
+        Checks.ensure((access & ACC_FINAL) == 0, "Rule method '%s' must not be final.", name);
 
         RuleMethod method =
                 new RuleMethod(ownerClass, access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation);

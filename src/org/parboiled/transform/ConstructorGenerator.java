@@ -34,8 +34,8 @@ class ConstructorGenerator implements Opcodes, Types {
 
     public void process(@NotNull ParserClassNode classNode) throws Exception {
         Checks.ensure(!classNode.constructors.isEmpty(),
-                "Could not extend parser class '" + classNode.getParentType().getClassName() +
-                        "', no constructor visible to derived classes found");
+                "Could not extend parser class '%s', no constructor visible to derived classes found",
+                classNode.getParentType().getClassName());
         for (MethodNode constructor : classNode.constructors) {
             createConstuctor(classNode, constructor);
         }

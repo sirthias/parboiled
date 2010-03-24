@@ -24,6 +24,7 @@ package org.parboiled.transform;
 
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
@@ -35,26 +36,30 @@ import java.util.List;
 /**
  * A node in the instruction dependency graph.
  */
-class InstructionGraphNode implements Value {
+class InstructionGraphNode implements Value, Opcodes {
 
     private final AbstractInsnNode instruction;
-    private final int instructionIndex;
+    private final int originalIndex;
     private final BasicValue resultValue;
     private final List<InstructionGraphNode> predecessors = Lists.newArrayList();
-    private final List<InstructionGroup> groups = Lists.newArrayList();
     private final boolean isActionRoot;
     private final boolean isCaptureRoot;
     private final boolean isContextSwitch;
     private final boolean isCallOnContextAware;
+    private final boolean isXLoad;
+    private final boolean isXStore;
+    private InstructionGroup group;
 
-    public InstructionGraphNode(AbstractInsnNode instruction, int instructionIndex, BasicValue resultValue) {
+    public InstructionGraphNode(AbstractInsnNode instruction, int originalIndex, BasicValue resultValue) {
         this.instruction = instruction;
-        this.instructionIndex = instructionIndex;
+        this.originalIndex = originalIndex;
         this.resultValue = resultValue;
         this.isActionRoot = AsmUtils.isActionRoot(instruction);
         this.isCaptureRoot = AsmUtils.isCaptureRoot(instruction);
         this.isContextSwitch = AsmUtils.isContextSwitch(instruction);
         this.isCallOnContextAware = AsmUtils.isCallOnContextAware(instruction);
+        this.isXLoad = ILOAD <= instruction.getOpcode() && instruction.getOpcode() < IALOAD;
+        this.isXStore = ISTORE <= instruction.getOpcode() && instruction.getOpcode() < IASTORE;
     }
 
     public int getSize() {
@@ -65,8 +70,8 @@ class InstructionGraphNode implements Value {
         return instruction;
     }
 
-    public int getInstructionIndex() {
-        return instructionIndex;
+    public int getOriginalIndex() {
+        return originalIndex;
     }
 
     public BasicValue getResultValue() {
@@ -77,8 +82,20 @@ class InstructionGraphNode implements Value {
         return predecessors;
     }
 
-    public List<InstructionGroup> getGroups() {
-        return groups;
+    public InstructionGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(InstructionGroup newGroup) {
+        if (newGroup != group) {
+            if (group != null) {
+                group.getNodes().remove(this);
+            }
+            group = newGroup;
+            if (group != null) {
+                group.getNodes().add(this);
+            }
+        }
     }
 
     public boolean isActionRoot() {
@@ -97,6 +114,14 @@ class InstructionGraphNode implements Value {
         return isCallOnContextAware;
     }
 
+    public boolean isXLoad() {
+        return isXLoad;
+    }
+
+    public boolean isXStore() {
+        return isXStore;
+    }
+
     public void addPredecessors(@NotNull Collection<Value> preds) {
         for (Value pred : preds) {
             if (pred instanceof InstructionGraphNode) {
@@ -109,19 +134,6 @@ class InstructionGraphNode implements Value {
         if (!predecessors.contains(node)) {
             predecessors.add(node);
         }
-    }
-
-    public InstructionGraphNode getEarlierstPredecessor() {
-        InstructionGraphNode earliestPred = null;
-        for (Value predecessor : predecessors) {
-            if (predecessor instanceof InstructionGraphNode) {
-                InstructionGraphNode predNode = (InstructionGraphNode) predecessor;
-                if (earliestPred == null || earliestPred.instructionIndex > predNode.instructionIndex) {
-                    earliestPred = predNode;
-                }
-            }
-        }
-        return earliestPred;
     }
 
     @Override

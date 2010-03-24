@@ -128,9 +128,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return graphNodes;
     }
 
-    public InstructionGraphNode getGraphNode(AbstractInsnNode insn) {
-        return graphNodes != null ? graphNodes.get(instructions.indexOf(insn)) : null;
-    }
+
 
     public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
         if (graphNodes == null) {

@@ -77,9 +77,12 @@ class TestParser extends BaseParser<Integer> {
         return sequence('a', 'b', integer == param);
     }
 
-    public Rule RuleWithIndirectExplicit2ParamAction(int param) {
+    public Rule RuleWithComplexActionSetup(int param) {
+        int i = 26, j = 18;
         String string = "text";
-        return sequence('a', string, ACTION(integer + param < string.length()));
+        i += param;
+        j -= i;
+        return sequence('a' + i, i > param + j, string, ACTION(integer + param < string.length() - i - j));
     }
 
     public Rule RuleWithCapture1() {

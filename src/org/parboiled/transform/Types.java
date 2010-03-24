@@ -30,7 +30,8 @@ interface Types {
 
     static final Type ABSTRACT_MATCHER = Type.getType(AbstractMatcher.class);
     static final Type ACTION = Type.getType(Action.class);
-    static final Type ACTION_WRAPPER_BASE = Type.getType(ActionWrapperBase.class);
+    static final Type BASE_ACTION = Type.getType(BaseAction.class);
+    static final Type BASE_CAPTURE = Type.getType(BaseCapture.class);
     static final Type BASE_PARSER = Type.getType(BaseParser.class);
     static final Type CACHED = Type.getType(Cached.class);
     static final Type CONTEXT_AWARE = Type.getType(ContextAware.class);

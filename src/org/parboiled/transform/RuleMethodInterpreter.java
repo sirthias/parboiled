@@ -135,12 +135,16 @@ class RuleMethodInterpreter extends BasicInterpreter implements Types {
     public void finish() {
         // add all edges so far not included
         for (Edge edge : additionalEdges) {
-            InstructionGraphNode node = method.getGraphNode(edge.from);
+            InstructionGraphNode node = getGraphNode(edge.from);
             if (node == null) node = createNode(edge.from, null);
-            InstructionGraphNode succ = method.getGraphNode(edge.to);
+            InstructionGraphNode succ = getGraphNode(edge.to);
             if (succ == null) succ = createNode(edge.to, null);
             succ.addPredecessor(node);
         }
+    }
+
+    private InstructionGraphNode getGraphNode(AbstractInsnNode insn) {
+        return method.getGraphNodes().get(method.instructions.indexOf(insn));
     }
 
     private BasicValue unwrap(Value resultValue) {

@@ -21,30 +21,31 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-class ActionClassGenerator extends GroupClassGenerator {
+class CaptureClassGenerator extends GroupClassGenerator {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.containsActions();
+        return method.containsCaptures();
     }
 
     @Override
     protected boolean appliesTo(InstructionGraphNode node) {
-        return node.isActionRoot();
+        return node.isCaptureRoot();
     }
 
     @Override
     protected Type getBaseType() {
-        return BASE_ACTION;
+        return BASE_CAPTURE;
     }
 
     @Override
     protected void generateMethod(InstructionGroup group, ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", '(' + CONTEXT_DESC + ")Z", null, null);
+        InstructionGraphNode rootNode = group.getRoot();
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get", "()" + rootNode.getResultValue().getType().getDescriptor(),
+                null, null);
 
-        // store Context parameter in protected field
+        // check the context
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitFieldInsn(PUTFIELD, BASE_ACTION.getInternalName(), "context", CONTEXT_DESC);
+        mv.visitMethodInsn(INVOKEVIRTUAL, BASE_CAPTURE.getInternalName(), "checkContext", "()V");
 
         fixContextSwitches(group);
         insertSetContextCalls(group);
@@ -53,7 +54,7 @@ class ActionClassGenerator extends GroupClassGenerator {
 
         group.getInstructions().accept(mv);
 
-        mv.visitInsn(IRETURN);
+        mv.visitInsn(ARETURN);
         mv.visitMaxs(0, 0); // trigger automatic computing
     }
 

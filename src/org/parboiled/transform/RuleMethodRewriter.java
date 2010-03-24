@@ -24,46 +24,40 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.*;
 
 /**
- * Transforms a RuleMethod by replacing all action expressions with calls to respective
- * action classes, which are generated using the ActionClassGenerator.
+ * Inserts action group class and capture group call instantiation code at the groups respective placeholders.
  */
-class RuleMethodRewriter implements RuleMethodProcessor, Opcodes {
+class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
+
+    private int actionNr;
+    private int captureNr;
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return false;
+        return method.containsActions() || method.containsCaptures();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        /*int actionNr = 1;
-        for (InstructionSubSet subSet : method.getInstructionSubSets()) {
-            if (subSet.isActionSet) {
-                ActionClassGenerator generator = new ActionClassGenerator(classNode, method, subSet, actionNr++);
-                generator.defineActionClass();
-                insertActionClassCreation(classNode, method, subSet, generator.actionType);
-
-                classNode.actionClassGenerators.add(generator);
-            }
+        actionNr = 0;
+        captureNr = 0;
+        for (InstructionGroup group : method.getGroups()) {
+            rewriteGroup(method, group);
         }
-
-        method.localVariables.clear();*/
     }
 
-    private void insertActionClassCreation(ParserClassNode classNode, RuleMethod method,
-                                           InstructionSubSet subSet, Type actionType) {
-        /*InsnList methodInstructions = method.instructions;
-        AbstractInsnNode firstAfterAction = method.getInstructionGraphNodes()[subSet.lastIndex + 1].instruction;
+    private void rewriteGroup(RuleMethod method, InstructionGroup group) {
+        String internalName = group.getGroupClassType().getInternalName();
+        insert(group, new TypeInsnNode(NEW, internalName));
+        insert(group, new InsnNode(DUP));
+        insert(group, new LdcInsnNode(method.name +
+                (group.getRoot().isActionRoot() ? "_Action" + ++actionNr : "_Capture" + ++captureNr))
+        );
+        insert(group, new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+    }
 
-        // we do not have to remove the action instructions from the rule method as this has already happened
-        // during action class creation, all we have to do is insert the action class creation instructions
-        methodInstructions.insertBefore(firstAfterAction, new TypeInsnNode(NEW, actionType.getInternalName()));
-        methodInstructions.insertBefore(firstAfterAction, new InsnNode(DUP));
-        methodInstructions.insertBefore(firstAfterAction, new VarInsnNode(ALOAD, 0));
-        methodInstructions.insertBefore(firstAfterAction,
-                new MethodInsnNode(INVOKESPECIAL, actionType.getInternalName(), "<init>",
-                        "(" + classNode.getDescriptor() + ")V"));*/
+    private void insert(InstructionGroup group, AbstractInsnNode insn) {
+        group.getInstructions().insertBefore(group.getPlaceHolder(), insn);
     }
 
 }

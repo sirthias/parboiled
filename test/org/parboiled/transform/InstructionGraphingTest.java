@@ -35,7 +35,7 @@ public class InstructionGraphingTest extends TransformationTest {
             new UnusedLabelsRemover(),
             new ReturnInstructionUnifier(),
             new InstructionGraphCreator(),
-            new InstructionGrouper()
+            new InstructionGroupCreator()
     );
 
     @SuppressWarnings({"FieldCanBeLocal"})
@@ -43,10 +43,10 @@ public class InstructionGraphingTest extends TransformationTest {
 
     @Test
     public void testInstructionGraphing() throws Exception {
-        testMethodAnalysis("RuleWithDirectImplicitAction", 3866468079L);
+        // testMethodAnalysis("RuleWithDirectImplicitAction", 3866468079L);
         // renderToGraphViz(dotSource);
 
-        //testMethodAnalysis("RuleWithIndirectExplicit2ParamAction", 2056891149L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 2056891149L);
         renderToGraphViz(dotSource);
 
         testMethodAnalysis("upSetActionRule", 383151074L);
@@ -80,53 +80,40 @@ public class InstructionGraphingTest extends TransformationTest {
                 .append("\";\n");
 
         // legend
-        sb.append(" Action [penwidth=2.0,color=magenta];\n");
-        sb.append(" Capture [penwidth=2.0,color=blue];\n");
+        sb.append(" Action [penwidth=2.0,style=filled,fillcolor=skyblue];\n");
+        sb.append(" Capture [penwidth=2.0,style=filled,fillcolor=pink];\n");
         sb.append(" ContextSwitch [penwidth=2.0,color=green];\n");
+        sb.append(" XLoad [penwidth=2.0,color=orange];\n");
+        sb.append(" XStore [penwidth=2.0,color=red];\n");
         sb.append(" CallOnContextAware [penwidth=2.0];\n");
-        sb.append(" Action -> Capture -> ContextSwitch -> CallOnContextAware;\n");
+        sb.append(" Action -> Capture -> ContextSwitch -> XLoad -> XStore -> CallOnContextAware;\n");
 
         for (InstructionGraphNode node : method.getGraphNodes()) {
             // generate node
             boolean isSpecial = node.isActionRoot() || node.isCaptureRoot() || node.isContextSwitch() ||
-                    node.isCallOnContextAware();
-            sb.append(" ").append(node.getInstructionIndex())
+                    node.isXLoad() || node.isXStore() ||node.isCallOnContextAware();
+            sb.append(" ").append(node.getOriginalIndex())
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
-                    .append(node.isActionRoot() ? "color=magenta," : "")
-                    .append(node.isCaptureRoot() ? "color=blue," : "")
+                    .append(node.isActionRoot() ? "color=blue," : "")
+                    .append(node.isCaptureRoot() ? "color=magenta," : "")
                     .append(node.isContextSwitch() ? "color=green," : "")
-                    .append(node.getGroups().isEmpty() ? "fontcolor=red" :
-                            new StringBuilder("label=\"\\N ")
-                                    .append(belongsToGroup(node, InstructionGroup.RETURN) ? "R" : "")
-                                    .append(belongsToGroup(node, InstructionGroup.ACTION) ? "A" : "")
-                                    .append(belongsToGroup(node, InstructionGroup.CAPTURE) ? "C" : "")
-                                    .append('\"')
-                                    .toString())
-                    .append(node.getGroups().size() > 1 ? ",style=filled,fillcolor=red" :
-                            new StringBuilder()
-                                    .append(node.getGroups().size() == 1 ? ",style=filled,fillcolor=" : "")
-                                    .append(belongsToGroup(node, InstructionGroup.RETURN) ? "lightgrey" : "")
-                                    .append(belongsToGroup(node, InstructionGroup.ACTION) ? "lightblue" : "")
-                                    .append(belongsToGroup(node, InstructionGroup.CAPTURE) ? "orange" : "")
-                                    .toString())
-                    .append("];\n");
+                    .append(node.isXLoad() ? "color=orange," : "")
+                    .append(node.isXStore() ? "color=red," : "")
+                    .append(node.getGroup() != null && node.getGroup().getRoot().isActionRoot() ?
+                            "style=filled,fillcolor=skyblue," : "")
+                    .append(node.getGroup() != null && node.getGroup().getRoot().isCaptureRoot() ?
+                            "style=filled,fillcolor=pink," : "")
+                    .append("fontcolor=black];\n");
 
             // generate edges
             for (InstructionGraphNode pred : node.getPredecessors()) {
-                sb.append(" ").append(pred.getInstructionIndex()).append(" -> ").append(node.getInstructionIndex())
+                sb.append(" ").append(pred.getOriginalIndex()).append(" -> ").append(node.getOriginalIndex())
                         .append(";\n");
             }
         }
         sb.append("}\n");
         return sb.toString();
-    }
-
-    public boolean belongsToGroup(InstructionGraphNode node, int groupTypes) {
-        for (InstructionGroup group : node.getGroups()) {
-            if ((group.getType() & groupTypes) > 0) return true;
-        }
-        return false;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
