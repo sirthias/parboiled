@@ -32,27 +32,47 @@ import java.util.List;
 
 class ParserClassNode extends ClassNode {
 
-    public final Class<?> parentClass;
-    public final Type parentType;
-    public final List<Type> superTypes = new ArrayList<Type>();
-
-    public final List<MethodNode> constructors = new ArrayList<MethodNode>();
-    public final List<RuleMethod> ruleMethods = new ArrayList<RuleMethod>();
-
-    public byte[] classCode;
-    public Class<?> extendedClass;
+    private final Class<?> parentClass;
+    private final Type parentType;
+    private final List<MethodNode> constructors = new ArrayList<MethodNode>();
+    private final List<RuleMethod> ruleMethods = new ArrayList<RuleMethod>();
+    private byte[] classCode;
+    private Class<?> extendedClass;
 
     public ParserClassNode(@NotNull Class<?> parentClass) {
         this.parentClass = parentClass;
         parentType = Type.getType(parentClass);
     }
 
+    public Class<?> getParentClass() {
+        return parentClass;
+    }
+
     public Type getParentType() {
         return parentType;
     }
 
-    public String getDescriptor() {
-        return 'L' + name + ';';
+    public List<MethodNode> getConstructors() {
+        return constructors;
     }
 
+    public List<RuleMethod> getRuleMethods() {
+        return ruleMethods;
+    }
+
+    public byte[] getClassCode() {
+        return classCode;
+    }
+
+    public void setClassCode(byte[] classCode) {
+        this.classCode = classCode;
+    }
+
+    public Class<?> getExtendedClass() {
+        return extendedClass;
+    }
+
+    public void setExtendedClass(Class<?> extendedClass) {
+        this.extendedClass = extendedClass;
+    }
 }

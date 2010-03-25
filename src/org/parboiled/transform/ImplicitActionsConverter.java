@@ -18,10 +18,10 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
 
@@ -30,25 +30,36 @@ import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
  */
 class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
 
+    private final Set<InstructionGraphNode> covered = new HashSet<InstructionGraphNode>();
+    private RuleMethod method;
+
     public boolean appliesTo(@NotNull RuleMethod method) {
         return method.containsImplicitActions();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        AbstractInsnNode current = method.instructions.getFirst();
-        while (current != null) {
-            AbstractInsnNode next = current.getNext();
-            if (isBooleanValueOfZ(current)) {
-                method.instructions.insertBefore(current, new VarInsnNode(ALOAD, 0));
-                method.instructions.insertBefore(current, new InsnNode(SWAP));
-                method.instructions.set(current, new MethodInsnNode(INVOKEVIRTUAL,
-                        BASE_PARSER.getInternalName(), "ACTION", "(Z)" + ACTION_DESC));
-            }
-            current = next;
-        }
-
+        this.method = method;
+        covered.clear();
+        walkNode(method.getReturnInstructionNode());
         method.setContainsImplicitActions(false);
-        method.setContainsActions(true);
     }
 
+    private void walkNode(InstructionGraphNode node) {
+        if (covered.contains(node)) return;
+        covered.add(node);
+
+        if (isBooleanValueOfZ(node.getInstruction())) {
+            MethodInsnNode insn = new MethodInsnNode(INVOKESTATIC, BASE_PARSER.getInternalName(), "ACTION",
+                    "(Z)" + ACTION_DESC);
+            method.instructions.set(node.getInstruction(), insn);
+            node.setIsActionRoot();
+            node.setInstruction(insn);
+            method.setContainsExplicitActions(true);
+        }
+        if (!node.isActionRoot() && !node.isCaptureRoot()) {
+            for (InstructionGraphNode predecessor : node.getPredecessors()) {
+                walkNode(predecessor);
+            }
+        }
+    }
 }

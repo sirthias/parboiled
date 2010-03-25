@@ -24,7 +24,7 @@ import org.objectweb.asm.Type;
 class ActionClassGenerator extends GroupClassGenerator {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.containsActions();
+        return method.containsExplicitActions();
     }
 
     @Override
@@ -49,7 +49,6 @@ class ActionClassGenerator extends GroupClassGenerator {
         fixContextSwitches(group);
         insertSetContextCalls(group);
         convertXLoads(group);
-        removeWrapper(group);
 
         group.getInstructions().accept(mv);
 

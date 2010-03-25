@@ -41,7 +41,7 @@ public abstract class BaseCapture<V> extends BaseGroupClass<V> implements Captur
     @SuppressWarnings({"unchecked"})
     public void setContext(@NotNull Context c) {
         // find the context of the captured expression somewhere up in the current context stack
-        Preconditions.checkState(context != null);
+        Preconditions.checkState(contextRule != null);
         context = c;
         while (context.getMatcher() != contextRule) {
             context = context.getParent();

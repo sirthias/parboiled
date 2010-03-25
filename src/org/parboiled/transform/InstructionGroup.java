@@ -18,7 +18,6 @@ package org.parboiled.transform;
 
 import com.google.common.collect.Lists;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 
@@ -32,18 +31,14 @@ class InstructionGroup {
     private final List<InstructionGraphNode> nodes = Lists.newArrayList();
     private final InsnList instructions = new InsnList();
     private final InstructionGraphNode root;
-    private AbstractInsnNode placeHolder;
+    private final List<FieldNode> fields = Lists.newArrayList();
     private String name;
     private Type groupClassType;
     private Class<?> groupClass;
-    private FieldNode[] fields;
+    private byte[] groupClassCode;
 
     public InstructionGroup(InstructionGraphNode root) {
         this.root = root;
-    }
-
-    public InstructionGraphNode getRoot() {
-        return root;
     }
 
     public List<InstructionGraphNode> getNodes() {
@@ -54,12 +49,12 @@ class InstructionGroup {
         return instructions;
     }
 
-    public AbstractInsnNode getPlaceHolder() {
-        return placeHolder;
+    public InstructionGraphNode getRoot() {
+        return root;
     }
 
-    public void setPlaceHolder(AbstractInsnNode placeHolder) {
-        this.placeHolder = placeHolder;
+    public List<FieldNode> getFields() {
+        return fields;
     }
 
     public String getName() {
@@ -86,12 +81,12 @@ class InstructionGroup {
         this.groupClass = groupClass;
     }
 
-    public FieldNode[] getFields() {
-        return fields;
+    public byte[] getGroupClassCode() {
+        return groupClassCode;
     }
 
-    public void setFields(FieldNode[] fields) {
-        this.fields = fields;
+    public void setGroupClassCode(byte[] groupClassCode) {
+        this.groupClassCode = groupClassCode;
     }
 
     @Override

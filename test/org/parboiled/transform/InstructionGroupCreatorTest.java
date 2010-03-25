@@ -28,13 +28,13 @@ import java.util.List;
 import static org.parboiled.test.TestUtils.computeCRC;
 import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
 
-public class InstructionGraphingTest extends TransformationTest {
+public class InstructionGroupCreatorTest extends TransformationTest {
 
     private final List<RuleMethodProcessor> processors = ImmutableList.of(
-            new ImplicitActionsConverter(),
             new UnusedLabelsRemover(),
             new ReturnInstructionUnifier(),
             new InstructionGraphCreator(),
+            new ImplicitActionsConverter(),
             new InstructionGroupCreator()
     );
 
@@ -43,19 +43,19 @@ public class InstructionGraphingTest extends TransformationTest {
 
     @Test
     public void testInstructionGraphing() throws Exception {
-        // testMethodAnalysis("RuleWithDirectImplicitAction", 3866468079L);
+        // testMethodAnalysis("RuleWithIndirectExplicitAction", 1658700127L);
         // renderToGraphViz(dotSource);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 2056891149L);
+        //testMethodAnalysis("RuleWithComplexActionSetup", 1674342651L);
+        // renderToGraphViz(dotSource);
+
+        //testMethodAnalysis("RuleWithIndirectExplicitDownAction", 2381949497L);
+        // renderToGraphViz(dotSource);
+
+        testMethodAnalysis("RuleWithIndirectImplicitAction", 3547608743L);
         renderToGraphViz(dotSource);
 
-        testMethodAnalysis("upSetActionRule", 383151074L);
-        // renderToGraphViz(dotSource);
-
-        testMethodAnalysis("booleanExpressionActionRule", 3547608743L);
-        // renderToGraphViz(dotSource);
-
-        testMethodAnalysis("complexActionsRule", 3194993502L);
+       // testMethodAnalysis("complexActionsRule", 3194993502L);
         // renderToGraphViz(dotSource);
     }
 
@@ -95,8 +95,8 @@ public class InstructionGraphingTest extends TransformationTest {
             sb.append(" ").append(node.getOriginalIndex())
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
-                    .append(node.isActionRoot() ? "color=blue," : "")
-                    .append(node.isCaptureRoot() ? "color=magenta," : "")
+                    .append(node.isActionRoot() ? "color=skyblue," : "")
+                    .append(node.isCaptureRoot() ? "color=pink," : "")
                     .append(node.isContextSwitch() ? "color=green," : "")
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")

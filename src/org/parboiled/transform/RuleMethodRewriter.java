@@ -24,29 +24,52 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import org.parboiled.support.Checks;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.parboiled.transform.AsmUtils.getLoadingOpcode;
 
 /**
  * Inserts action group class and capture group call instantiation code at the groups respective placeholders.
  */
 class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
 
+    private RuleMethod method;
     private int actionNr;
     private int captureNr;
+    private Map<InstructionGraphNode, Integer> captureVarIndices;
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.containsActions() || method.containsCaptures();
+        return method.containsExplicitActions() || method.containsCaptures();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        this.method = method;
         actionNr = 0;
         captureNr = 0;
+        captureVarIndices = null;
+
         for (InstructionGroup group : method.getGroups()) {
-            rewriteGroup(method, group);
+            createNewGroupClassInstance(group);
+            initializeFields(group);
+            if (group.getRoot().isCaptureRoot()) {
+                insertStoreCapture(group);
+            }
+            removeGroupRootInstruction(group);
+        }
+
+        if (method.containsCaptures()) {
+            finalizeCaptureSetup();
         }
     }
 
-    private void rewriteGroup(RuleMethod method, InstructionGroup group) {
+    private void createNewGroupClassInstance(InstructionGroup group) {
         String internalName = group.getGroupClassType().getInternalName();
         insert(group, new TypeInsnNode(NEW, internalName));
         insert(group, new InsnNode(DUP));
@@ -56,8 +79,68 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
         insert(group, new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
     }
 
+    private void initializeFields(InstructionGroup group) {
+        String internalName = group.getGroupClassType().getInternalName();
+        for (FieldNode field : group.getFields()) {
+            insert(group, new InsnNode(DUP));
+            // the FieldNodes access and value members have been reused for the var index / Type respectively!
+            insert(group, new VarInsnNode(getLoadingOpcode((Type) field.value), field.access));
+            insert(group, new FieldInsnNode(PUTFIELD, internalName, field.name, field.desc));
+        }
+    }
+
+    private void insertStoreCapture(InstructionGroup group) {
+        if (captureVarIndices == null) {
+            captureVarIndices = new HashMap<InstructionGraphNode, Integer>();
+        }
+        int index = method.maxLocals++;
+        captureVarIndices.put(group.getRoot(), index);
+
+        insert(group, new InsnNode(DUP));
+        insert(group, new VarInsnNode(ASTORE, index));
+    }
+
     private void insert(InstructionGroup group, AbstractInsnNode insn) {
-        group.getInstructions().insertBefore(group.getPlaceHolder(), insn);
+        group.getInstructions().insertBefore(group.getRoot().getInstruction(), insn);
+    }
+
+    private void removeGroupRootInstruction(InstructionGroup group) {
+        group.getInstructions().remove(group.getRoot().getInstruction());
+    }
+
+    private void finalizeCaptureSetup() {
+        Set<InstructionGroup> finalizedCaptureGroups = new HashSet<InstructionGroup>();
+        for (InstructionGraphNode node : method.getGraphNodes()) {
+            if (AsmUtils.isCallToRuleCreationMethod(node.getInstruction())) {
+                insertSetContextRuleOnCaptureArguments(node, finalizedCaptureGroups);
+            }
+        }
+        Checks.ensure(finalizedCaptureGroups.size() == captureVarIndices.size(), "Method '%s' contains illegal " +
+                "CAPTURE(...) constructs that are not direct arguments to rule creating methods", method.name);
+    }
+
+    private void insertSetContextRuleOnCaptureArguments(InstructionGraphNode ruleCreationCall,
+                                                        Set<InstructionGroup> finalizedCaptureGroups) {
+        for (InstructionGraphNode predecessor : ruleCreationCall.getPredecessors()) {
+            if (predecessor.isCaptureRoot()) {
+                insertSetContextRule(ruleCreationCall, predecessor);
+                finalizedCaptureGroups.add(predecessor.getGroup());
+            }
+        }
+    }
+
+    private void insertSetContextRule(InstructionGraphNode ruleCreationCall, InstructionGraphNode argument) {
+        String internalName = argument.getGroup().getGroupClassType().getInternalName();
+        AbstractInsnNode location = ruleCreationCall.getInstruction().getNext();
+        // stack: <Rule>
+        method.instructions.insertBefore(location, new InsnNode(DUP));
+        // stack: <Rule> :: <Rule>
+        method.instructions.insertBefore(location, new VarInsnNode(ALOAD, captureVarIndices.get(argument)));
+        // stack: <Rule> :: <Rule> :: <Capture>
+        method.instructions.insertBefore(location, new InsnNode(SWAP));
+        // stack: <Rule> :: <Capture> :: <Rule>
+        method.instructions.insertBefore(location, new FieldInsnNode(PUTFIELD, internalName, "contextRule", RULE_DESC));
+        // stack: <Rule>
     }
 
 }

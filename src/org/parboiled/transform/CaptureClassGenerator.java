@@ -50,7 +50,6 @@ class CaptureClassGenerator extends GroupClassGenerator {
         fixContextSwitches(group);
         insertSetContextCalls(group);
         convertXLoads(group);
-        removeWrapper(group);
 
         group.getInstructions().accept(mv);
 

@@ -42,7 +42,7 @@ public class AsmTestUtils {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         TraceClassVisitor traceClassVisitor = new TraceClassVisitor(printWriter);
-        //ClassAdapter checkClassAdapter = new ClassAdapter(traceClassVisitor);
+        // ClassAdapter checkClassAdapter = new ClassAdapter(traceClassVisitor);
         ClassAdapter checkClassAdapter = new CheckClassAdapter(traceClassVisitor);
         ClassReader classReader;
         classReader = new ClassReader(code);
@@ -91,13 +91,16 @@ public class AsmTestUtils {
         classReader.accept(generatedClassNode, 0);
 
         for (Object methodObj : generatedClassNode.methods) {
-            MethodNode method = (MethodNode) methodObj;
-            try {
-                new Analyzer(new SimpleVerifier()).analyze(classInternalName, method);
-            } catch (AnalyzerException e) {
-                throw new RuntimeException(
-                        "Integrity error in method '" + method.name + "' of type '" + classInternalName + "': ", e);
-            }
+            verifyMethodIntegrity(classInternalName, (MethodNode) methodObj);
+        }
+    }
+
+    public static void verifyMethodIntegrity(String ownerInternalName, MethodNode method) {
+        try {
+            new Analyzer(new SimpleVerifier()).analyze(ownerInternalName, method);
+        } catch (AnalyzerException e) {
+            throw new RuntimeException(
+                    "Integrity error in method '" + method.name + "' of type '" + ownerInternalName + "': ", e);
         }
     }
 

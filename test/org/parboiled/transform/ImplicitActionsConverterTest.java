@@ -28,8 +28,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
     @SuppressWarnings({"unchecked"})
     @Test
     public void testReturnInstructionUnification() throws Exception {
-        List<RuleMethodProcessor> processors = ImmutableList.of(
-                new ImplicitActionsConverter(),
+        List<RuleMethodProcessor> processors = ImmutableList.<RuleMethodProcessor>of(
                 new UnusedLabelsRemover()
         );
 
@@ -45,14 +44,17 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "   L0\n" +
                 "    ICONST_0\n" +
                 "   L1\n" +
-                "    ALOAD 0\n" +
-                "    SWAP\n" +
-                "    INVOKEVIRTUAL org/parboiled/BaseParser.ACTION (Z)Lorg/parboiled/Action;\n" +
-                "    ICONST_1\n" +
+                "    INVOKESTATIC org/parboiled/BaseParser.ACTION (Z)Lorg/parboiled/Action;\n" +
+                "    ICONST_2\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +
                 "    ICONST_0\n" +
                 "    BIPUSH 98\n" +
+                "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
+                "    AASTORE\n" +
+                "    DUP\n" +
+                "    ICONST_1\n" +
+                "    BIPUSH 99\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
                 "    AASTORE\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
@@ -62,7 +64,6 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                "    ALOAD 0\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
                 "    IFEQ L0\n" +
@@ -74,7 +75,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "   L0\n" +
                 "    ICONST_0\n" +
                 "   L1\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.ACTION (Z)Lorg/parboiled/Action;\n" +
+                "    INVOKESTATIC org/parboiled/transform/TestParser.ACTION (Z)Lorg/parboiled/Action;\n" +
                 "    ICONST_1\n" +
                 "    ANEWARRAY java/lang/Object\n" +
                 "    DUP\n" +

@@ -30,7 +30,7 @@ import org.objectweb.asm.tree.LabelNode;
 class ReturnInstructionUnifier implements RuleMethodProcessor, Opcodes {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.containsActions() || method.containsCaptures();
+        return method.containsImplicitActions() || method.containsExplicitActions() || method.containsCaptures();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {

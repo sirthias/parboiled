@@ -30,42 +30,48 @@ public class ParserTransformer {
 
     private ParserTransformer() {}
 
-    public static Class<?> transformParser(@NotNull Class<?> parserClass) throws Exception {
+    @SuppressWarnings({"unchecked"})
+    public static <T> Class<? extends T> transformParser(@NotNull Class<T> parserClass) throws Exception {
         synchronized (lock) {
             // first check whether we did not already create and load the extension of the given parser class
             Class<?> extendedClass = findLoadedClass(
                     getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
             );
-            return extendedClass != null ? extendedClass : extendParserClass(parserClass);
+            return (Class<? extends T>)
+                    (extendedClass != null ? extendedClass : extendParserClass(parserClass).getExtendedClass());
         }
     }
 
-    static Class<?> extendParserClass(Class<?> parserClass) throws Exception {
+    static ParserClassNode extendParserClass(Class<?> parserClass) throws Exception {
         ParserClassNode classNode = new ParserClassNode(parserClass);
         new ClassNodeInitializer().process(classNode);
         runMethodTransformers(classNode);
         new ConstructorGenerator().process(classNode);
-        return defineExtendedParserClass(classNode);
+        defineExtendedParserClass(classNode);
+        return classNode;
     }
 
+    @SuppressWarnings({"unchecked"})
     private static void runMethodTransformers(ParserClassNode classNode) throws Exception {
         List<RuleMethodProcessor> methodProcessors = createRuleMethodProcessors();
-        for (RuleMethod ruleMethod : classNode.ruleMethods) {
+        for (RuleMethod ruleMethod : classNode.getRuleMethods()) {
             for (RuleMethodProcessor methodProcessor : methodProcessors) {
                 if (methodProcessor.appliesTo(ruleMethod)) {
                     methodProcessor.process(classNode, ruleMethod);
                 }
             }
+            classNode.methods.add(ruleMethod);
         }
     }
 
     static List<RuleMethodProcessor> createRuleMethodProcessors() {
         return ImmutableList.of(
-                new ImplicitActionsConverter(),
                 new UnusedLabelsRemover(),
                 new ReturnInstructionUnifier(),
                 new InstructionGraphCreator(),
+                new ImplicitActionsConverter(),
                 new InstructionGroupCreator(),
+                new InstructionGroupPreparer(),
                 new CaptureClassGenerator(),
                 new ActionClassGenerator(),
                 new RuleMethodRewriter(),
@@ -76,15 +82,15 @@ public class ParserTransformer {
         );
     }
 
-    private static Class<?> defineExtendedParserClass(ParserClassNode classNode) {
+    private static void defineExtendedParserClass(ParserClassNode classNode) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(classWriter);
-        classNode.classCode = classWriter.toByteArray();
-        return loadClass(
+        classNode.setClassCode(classWriter.toByteArray());
+        classNode.setExtendedClass(loadClass(
                 classNode.name.replace('/', '.'),
-                classNode.classCode,
-                classNode.parentClass.getClassLoader()
-        );
+                classNode.getClassCode(),
+                classNode.getParentClass().getClassLoader()
+        ));
     }
 
 }

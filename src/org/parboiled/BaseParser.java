@@ -351,8 +351,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP(T expression) {
-        throw new UnsupportedOperationException("UP(...) calls can only be used in rule defining parser methods");
+    public static <T> T UP(T expression) {
+        throw new UnsupportedOperationException("Illegal UP(...) call outside of Action or Capture expression");
     }
 
     /**
@@ -363,7 +363,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP2(T expression) {
+    public static <T> T UP2(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -375,7 +375,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP3(T expression) {
+    public static <T> T UP3(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -387,7 +387,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP4(T expression) {
+    public static <T> T UP4(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -399,7 +399,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP5(T expression) {
+    public static <T> T UP5(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -411,7 +411,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T UP6(T expression) {
+    public static <T> T UP6(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -424,8 +424,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN(T expression) {
-        throw new UnsupportedOperationException("DOWN(...) calls can only be used in rule defining parser methods");
+    public static <T> T DOWN(T expression) {
+        throw new UnsupportedOperationException("Illegal DOWN(...) call outside of Action or Capture expression");
     }
 
     /**
@@ -438,7 +438,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN2(T expression) {
+    public static <T> T DOWN2(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -452,7 +452,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN3(T expression) {
+    public static <T> T DOWN3(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -466,7 +466,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN4(T expression) {
+    public static <T> T DOWN4(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -480,7 +480,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN5(T expression) {
+    public static <T> T DOWN5(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -494,7 +494,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the result of the expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> T DOWN6(T expression) {
+    public static <T> T DOWN6(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
 
@@ -506,8 +506,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the Action wrapping the given expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final Action ACTION(boolean expression) {
-        throw new UnsupportedOperationException("ACTION(...) calls can only be used in rule defining parser methods");
+    public static Action ACTION(boolean expression) {
+        throw new UnsupportedOperationException("ACTION(...) calls can only be used in Rule creating parser methods");
     }
 
     /**
@@ -518,8 +518,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the Capture wrapping the given expression
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public final <T> Capture<T> CAPTURE(T expression) {
-        throw new UnsupportedOperationException("CAPTURE(...) calls can only be used in rule defining parser methods");
+    public static <T> Capture<T> CAPTURE(T expression) {
+        throw new UnsupportedOperationException("CAPTURE(...) calls can only be used in Rule creating parser methods");
     }
 
     ///************************* HELPER METHODS ***************************///

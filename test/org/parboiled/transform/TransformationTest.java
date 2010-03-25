@@ -41,7 +41,7 @@ public class TransformationTest {
     }
 
     public RuleMethod method(String name) {
-        for (RuleMethod method : classNode.ruleMethods) {
+        for (RuleMethod method : classNode.getRuleMethods()) {
             if (name.equals(method.name)) return method;
         }
         throw new IllegalArgumentException("Method '" + name + "' not found");

@@ -34,11 +34,6 @@ class TestParser extends BaseParser<Integer> {
         return sequence('a', 'b');
     }
 
-    @Label
-    public Rule RuleWithLabel() {
-        return sequence('a', 'b');
-    }
-
     @Label("harry")
     public Rule RuleWithNamedLabel() {
         return sequence('a', 'b');
@@ -85,15 +80,15 @@ class TestParser extends BaseParser<Integer> {
         return sequence('a' + i, i > param + j, string, ACTION(integer + param < string.length() - i - j));
     }
 
-    public Rule RuleWithCapture1() {
-        return sequence('a', 'b', RuleTakingCapture(CAPTURE(TEXT("a"))));
+    public Rule RuleWithCapture() {
+        return sequence('a', 'b', RuleWithCaptureParameter(CAPTURE(TEXT("a"))));
     }
 
-    public Rule RuleWithCapture2() {
-        Capture<String> capture = CAPTURE(TEXT("a"));
-        return sequence('a', 'b', capture.get());
+    public Rule RuleWithCaptureParameter(Capture<String> capture) {
+        return sequence('a', "harry".equals(capture.get()));
     }
 
+    @Label
     public Rule RuleWith2Returns(int param) {
         if (param == integer) {
             return sequence('a', ACTION(action()));
@@ -113,10 +108,6 @@ class TestParser extends BaseParser<Integer> {
         return sequence(string, aLong == integer);
     }
 
-    public Rule RuleTakingCapture(Capture<String> capture) {
-        return sequence('a', "harry".equals(capture.get()));
-    }
-
     // error rules
 
     public Rule RuleWithIllegalImplicitAction(int param) {
@@ -124,9 +115,9 @@ class TestParser extends BaseParser<Integer> {
         return sequence('a', 'b', b);
     }
 
-    public Rule RuleWithCaptureInAction() {
+    /*public Rule RuleWithCaptureInAction() {
         return sequence('a', ACTION(integer == CAPTURE(NODES("a").size()).get()));
-    }
+    }*/
 
     public Rule RuleWithActionAccessingPrivateField() {
         return sequence('a', privateInt == 0);
@@ -135,6 +126,11 @@ class TestParser extends BaseParser<Integer> {
     public Rule RuleWithActionAccessingPrivateMethod() {
         return sequence('a', privateAction());
     }
+
+    /*public Rule RuleWithIllegalCapture() {
+        Capture<String> capture = CAPTURE(TEXT("a"));
+        return sequence('a', 'b', capture.get());
+    }*/
 
     // actions
 

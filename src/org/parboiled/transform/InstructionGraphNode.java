@@ -38,11 +38,11 @@ import java.util.List;
  */
 class InstructionGraphNode implements Value, Opcodes {
 
-    private final AbstractInsnNode instruction;
+    private AbstractInsnNode instruction;
     private final int originalIndex;
     private final BasicValue resultValue;
     private final List<InstructionGraphNode> predecessors = Lists.newArrayList();
-    private final boolean isActionRoot;
+    private boolean isActionRoot;
     private final boolean isCaptureRoot;
     private final boolean isContextSwitch;
     private final boolean isCallOnContextAware;
@@ -68,6 +68,10 @@ class InstructionGraphNode implements Value, Opcodes {
 
     public AbstractInsnNode getInstruction() {
         return instruction;
+    }
+
+    public void setInstruction(AbstractInsnNode instruction) {
+        this.instruction = instruction;
     }
 
     public int getOriginalIndex() {
@@ -100,6 +104,10 @@ class InstructionGraphNode implements Value, Opcodes {
 
     public boolean isActionRoot() {
         return isActionRoot;
+    }
+
+    public void setIsActionRoot() {
+        isActionRoot = true;
     }
 
     public boolean isCaptureRoot() {
@@ -138,7 +146,7 @@ class InstructionGraphNode implements Value, Opcodes {
 
     @Override
     public String toString() {
-        return AbstractVisitor.OPCODES[instruction.getOpcode()];
+        return instruction.getOpcode() != -1 ? AbstractVisitor.OPCODES[instruction.getOpcode()] : super.toString();
     }
 
 }

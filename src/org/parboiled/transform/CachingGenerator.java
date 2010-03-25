@@ -55,19 +55,12 @@ class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
         this.instructions = method.instructions;
         this.current = instructions.getFirst();
 
-        skipStartingLabels();
         generateCacheHitReturn();
         generateStoreNewProxyMatcher();
         seekToReturnInstruction();
         generateLock();
         generateArmProxyMatcher();
         generateStoreInCache();
-    }
-
-    private void skipStartingLabels() {
-        while (current.getType() == AbstractInsnNode.LABEL) {
-            current = current.getNext();
-        }
     }
 
     // if (<cache> != null) return <cache>;

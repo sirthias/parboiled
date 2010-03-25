@@ -111,9 +111,8 @@ class RuleMethodInterpreter extends BasicInterpreter implements Types {
     public void newControlFlowEdge(int instructionIndex, int successorIndex) {
         AbstractInsnNode fromInsn = method.instructions.get(instructionIndex);
         AbstractInsnNode toInsn = method.instructions.get(successorIndex);
-        if (fromInsn.getType() == AbstractInsnNode.LABEL ||
-                fromInsn.getType() == AbstractInsnNode.JUMP_INSN ||
-                toInsn.getType() == AbstractInsnNode.JUMP_INSN) {
+        if (fromInsn.getType() == AbstractInsnNode.LABEL || fromInsn.getType() == AbstractInsnNode.JUMP_INSN ||
+                toInsn.getType() == AbstractInsnNode.LABEL || toInsn.getType() == AbstractInsnNode.JUMP_INSN) {
             additionalEdges.add(new Edge(fromInsn, toInsn));
         }
     }

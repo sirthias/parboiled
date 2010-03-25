@@ -34,6 +34,7 @@ interface Types {
     static final Type BASE_CAPTURE = Type.getType(BaseCapture.class);
     static final Type BASE_PARSER = Type.getType(BaseParser.class);
     static final Type CACHED = Type.getType(Cached.class);
+    static final Type CAPTURE = Type.getType(Capture.class);
     static final Type CONTEXT_AWARE = Type.getType(ContextAware.class);
     static final Type CONTEXT = Type.getType(Context.class);
     static final Type EXPLICIT_ACTIONS_ONLY = Type.getType(ExplicitActionsOnly.class);

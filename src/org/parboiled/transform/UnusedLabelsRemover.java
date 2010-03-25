@@ -25,7 +25,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 class UnusedLabelsRemover implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.containsActions() || method.containsCaptures();
+        return method.containsImplicitActions() || method.containsExplicitActions() || method.containsCaptures();
     }
 
     @SuppressWarnings({"SuspiciousMethodCalls"})

@@ -29,6 +29,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.parboiled.BaseParser;
 import org.parboiled.ContextAware;
+import org.parboiled.Rule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -204,7 +205,7 @@ class AsmUtils {
         return instructions;
     }
 
-    private static int getLoadingOpcode(@NotNull Type argType) {
+    public static int getLoadingOpcode(@NotNull Type argType) {
         switch (argType.getSort()) {
             case Type.BOOLEAN:
             case Type.BYTE:
@@ -250,7 +251,7 @@ class AsmUtils {
     }
 
     public static boolean isActionRoot(@NotNull AbstractInsnNode insn) {
-        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL) return false;
+        if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isActionRoot(mi.owner, mi.name);
     }
@@ -260,7 +261,7 @@ class AsmUtils {
     }
 
     public static boolean isCaptureRoot(@NotNull AbstractInsnNode insn) {
-        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL) return false;
+        if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isCaptureRoot(mi.owner, mi.name);
     }
@@ -270,7 +271,7 @@ class AsmUtils {
     }
 
     public static boolean isContextSwitch(@NotNull AbstractInsnNode insn) {
-        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL) return false;
+        if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isContextSwitch(mi.owner, mi.name);
     }
@@ -284,6 +285,13 @@ class AsmUtils {
         if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isAssignableTo(mi.owner, ContextAware.class);
+    }
+
+    public static boolean isCallToRuleCreationMethod(@NotNull AbstractInsnNode insn) {
+        if (insn.getType() != AbstractInsnNode.METHOD_INSN) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        Type type = Type.getReturnType(mi.desc);
+        return type.getSort() == Type.OBJECT && isAssignableTo(type.getInternalName(), Rule.class);
     }
 
 }

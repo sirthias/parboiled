@@ -30,7 +30,7 @@ import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 class SuperCallRewriter implements RuleMethodProcessor, Opcodes {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return !method.containsActions() && !method.containsCaptures();
+        return !method.containsExplicitActions() && !method.containsCaptures();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
@@ -41,8 +41,6 @@ class SuperCallRewriter implements RuleMethodProcessor, Opcodes {
         method.instructions.add(new MethodInsnNode(INVOKESPECIAL,
                 classNode.getParentType().getInternalName(), method.name, method.desc));
         method.instructions.add(new InsnNode(ARETURN));
-
-        method.localVariables.clear();
     }
 
 }

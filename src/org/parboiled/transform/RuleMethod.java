@@ -44,7 +44,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private final List<LabelNode> usedLabels = Lists.newArrayList();
 
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
-    private boolean containsActions; // calls to BaseParser.ACTION(boolean)
+    private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
     private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasCachedAnnotation;
@@ -88,12 +88,12 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         this.containsImplicitActions = containsImplicitActions;
     }
 
-    public boolean containsActions() {
-        return containsActions;
+    public boolean containsExplicitActions() {
+        return containsExplicitActions;
     }
 
-    public void setContainsActions(boolean containsActions) {
-        this.containsActions = containsActions;
+    public void setContainsExplicitActions(boolean containsExplicitActions) {
+        this.containsExplicitActions = containsExplicitActions;
     }
 
     public boolean containsCaptures() {
@@ -170,10 +170,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         if (!hasExplicitActionOnlyAnnotation && opcode == INVOKESTATIC && isBooleanValueOfZ(owner, name, desc)) {
             containsImplicitActions = true;
         }
-        if (opcode == INVOKEVIRTUAL && isActionRoot(owner, name)) {
-            containsActions = true;
+        if (opcode == INVOKESTATIC && isActionRoot(owner, name)) {
+            containsExplicitActions = true;
         }
-        if (opcode == INVOKEVIRTUAL && isCaptureRoot(owner, name)) {
+        if (opcode == INVOKESTATIC && isCaptureRoot(owner, name)) {
             containsCaptures = true;
         }
         super.visitMethodInsn(opcode, owner, name, desc);

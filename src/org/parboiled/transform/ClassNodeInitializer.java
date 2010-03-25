@@ -44,9 +44,10 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
     public void process(@NotNull ParserClassNode classNode) throws IOException {
         this.classNode = classNode;
+        hasExplicitActionOnlyAnnotation = false;
 
         // walk up the parser parent class chain
-        ownerClass = classNode.parentClass;
+        ownerClass = classNode.getParentClass();
         while (!Object.class.equals(ownerClass)) {
             ClassReader classReader = createClassReader(ownerClass);
             classReader.accept(this, ClassReader.SKIP_FRAMES);
@@ -56,7 +57,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        if (ownerClass == classNode.parentClass) {
+        if (ownerClass == classNode.getParentClass()) {
             Checks.ensure((access & ACC_PRIVATE) == 0, "Parser class '%s' must not be private", name);
             Checks.ensure((access & ACC_FINAL) == 0, "Parser class '%s' must not be final.", name);
             classNode.visit(
@@ -77,7 +78,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
             return null;
         }
         // only keep visible annotations on the parser class
-        return visible && ownerClass == classNode.parentClass ? classNode.visitAnnotation(desc, true) : null;
+        return visible && ownerClass == classNode.getParentClass() ? classNode.visitAnnotation(desc, true) : null;
     }
 
     @Override
@@ -90,11 +91,11 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if ("<init>".equals(name)) {
             // do not add constructors from super classes or private constructors
-            if (ownerClass != classNode.parentClass || (access & ACC_PRIVATE) > 0) {
+            if (ownerClass != classNode.getParentClass() || (access & ACC_PRIVATE) > 0) {
                 return null;
             }
             MethodNode constructor = new MethodNode(access, name, desc, signature, exceptions);
-            classNode.constructors.add(constructor);
+            classNode.getConstructors().add(constructor);
             return constructor; // return the newly created method in order to have it "filled" with the method code
         }
 
@@ -105,7 +106,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
         // check, whether we do not already have a method with that name and descriptor
         // if we do we only keep the one we already have since that is the one furthest down in the overriding chain
-        for (RuleMethod method : classNode.ruleMethods) {
+        for (RuleMethod method : classNode.getRuleMethods()) {
             if (method.name.equals(name) && method.desc.equals(desc)) return null;
         }
 
@@ -116,7 +117,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
         RuleMethod method =
                 new RuleMethod(ownerClass, access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation);
-        classNode.ruleMethods.add(method);
+        classNode.getRuleMethods().add(method);
         return method; // return the newly created method in order to have it "filled" with the supers code
     }
 
