@@ -16,11 +16,17 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
@@ -48,7 +54,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
         if (covered.contains(node)) return;
         covered.add(node);
 
-        if (isBooleanValueOfZ(node.getInstruction())) {
+        if (isImplicitAction(node)) {
             MethodInsnNode insn = new MethodInsnNode(INVOKESTATIC, BASE_PARSER.getInternalName(), "ACTION",
                     "(Z)" + ACTION_DESC);
             method.instructions.set(node.getInstruction(), insn);
@@ -62,4 +68,69 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
             }
         }
     }
+
+    private boolean isImplicitAction(InstructionGraphNode node) {
+        // an implicit action must be a call to Boolean.valueOf(boolean)
+        if (!isBooleanValueOfZ(node.getInstruction())) return false;
+
+        // it must have exactly one other instruction that depends on it
+        List<InstructionGraphNode> dependents = getDependents(node);
+        if (dependents.size() != 1) return false;
+
+        // this dependent instruction must be method call
+        InstructionGraphNode dependent = dependents.get(0);
+        return isObjectArgumentToRuleCreatingMethodCall(node, dependent) || isStoredIntoObjectArray(dependent);
+    }
+
+    private boolean isObjectArgumentToRuleCreatingMethodCall(InstructionGraphNode node,
+                                                             InstructionGraphNode dependent) {
+        // is the single dependent a method call ?
+        AbstractInsnNode insn = dependent.getInstruction();
+        if (insn.getType() != AbstractInsnNode.METHOD_INSN) return false;
+
+        // Does this method call return a Rule ?
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        if (!RULE.equals(Type.getReturnType(mi.desc))) return false;
+
+        // Doesthe result of the Boolean.valueOf(boolean) call correspond to an Object parameter ?
+        Type[] argTypes = Type.getArgumentTypes(mi.desc);
+        int argIndex = getArgumentIndex(dependent, node);
+        Preconditions.checkState(argIndex < argTypes.length);
+        return "java/lang/Object".equals(argTypes[argIndex].getInternalName());
+    }
+
+    private boolean isStoredIntoObjectArray(InstructionGraphNode dependent) {
+        // is the single dependent an AASTORE instruction ? 
+        AbstractInsnNode insn = dependent.getInstruction();
+        if (insn.getOpcode() != AASTORE) return false;
+
+        // Does this instruction store into an array of Object ?
+        List<InstructionGraphNode> dependents = getDependents(dependent);
+        Preconditions.checkState(dependents.size() == 1); // an AASTORE instruction should have exactly one dependent
+        AbstractInsnNode newArrayInsn = dependents.get(0).getInstruction();
+        Preconditions.checkState(newArrayInsn.getOpcode() == ANEWARRAY); // which should be a n ANEWARRAY instruction
+        return "java/lang/Object".equals(((TypeInsnNode) newArrayInsn).desc);
+    }
+
+    private int getArgumentIndex(InstructionGraphNode callNode, InstructionGraphNode predecessor) {
+        int startIndex = callNode.getInstruction().getOpcode() == INVOKESTATIC ? 0 : 1;
+        for (int i = startIndex; i < callNode.getPredecessors().size(); i++) {
+            InstructionGraphNode argumentNode = callNode.getPredecessors().get(i);
+            if (predecessor.equals(argumentNode)) {
+                return i - startIndex;
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    private List<InstructionGraphNode> getDependents(InstructionGraphNode predecessor) {
+        List<InstructionGraphNode> dependents = new ArrayList<InstructionGraphNode>();
+        for (InstructionGraphNode node : method.getGraphNodes()) {
+            if (node.getPredecessors().contains(predecessor)) {
+                dependents.add(node);
+            }
+        }
+        return dependents;
+    }
+
 }

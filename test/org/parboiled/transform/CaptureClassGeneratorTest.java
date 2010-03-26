@@ -34,11 +34,11 @@ public class CaptureClassGeneratorTest extends TransformationTest {
             new ImplicitActionsConverter(),
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
-            new CaptureClassGenerator()
+            new CaptureClassGenerator(true)
     );
 
-    @Test
-    public void testActionClassGeneration() throws Exception {
+    @Test(dependsOnGroups = "primary")
+    public void testCaptureClassGeneration() throws Exception {
         RuleMethod method = processMethod("RuleWithCapture", processors);
 
         assertEquals(method.getGroups().size(), 1);
@@ -63,7 +63,7 @@ public class CaptureClassGeneratorTest extends TransformationTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public get()Lorg/parboiled/Capture;\n" +
+                "  public get()Ljava/lang/Object;\n" +
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/BaseCapture.checkContext ()V\n" +
                 "    ALOAD 0\n" +

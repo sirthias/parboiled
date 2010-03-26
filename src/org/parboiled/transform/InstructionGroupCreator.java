@@ -22,15 +22,23 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.parboiled.support.Checks;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
+
+import static org.parboiled.transform.AsmUtils.getClassField;
+import static org.parboiled.transform.AsmUtils.getClassMethod;
 
 class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
 
     private final Set<InstructionGraphNode> covered = new HashSet<InstructionGraphNode>();
+    private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
     private RuleMethod method;
 
     public boolean appliesTo(@NotNull RuleMethod method) {
@@ -62,13 +70,11 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
     }
 
     private void markGroup(InstructionGraphNode node, InstructionGroup group) {
-        if (covered.contains(node)) return;
-        covered.add(node);
-
         Checks.ensure(node == group.getRoot() || (!node.isCaptureRoot() && !node.isActionRoot()),
                 "Method '%s' contains illegal nesting of ACTION(...) and/or CAPTURE(...) constructs", method.name);
-        Checks.ensure(!node.isXStore(), "An ACTION or CAPTURE in rule method '%s' contains illegal writes to a " +
-                "local variable or parameter", method.name);
+
+        if (covered.contains(node)) return;
+        covered.add(node);
 
         node.setGroup(group);
         if (!node.isXLoad()) {
@@ -87,12 +93,65 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         });
     }
 
-    // ensure group instructions form a continuous block in the method
     private void verify(InstructionGroup group) {
         List<InstructionGraphNode> nodes = group.getNodes();
         int sizeMinus1 = nodes.size() - 1;
+
+        // verify all instruction except for the last one (which must be the root)
+        Preconditions.checkState(nodes.get(sizeMinus1) == group.getRoot());
+        for (int i = 0; i < sizeMinus1; i++) {
+            verify(nodes.get(i));
+        }
+
         Checks.ensure(nodes.get(sizeMinus1).getOriginalIndex() - nodes.get(0).getOriginalIndex() == sizeMinus1,
                 "Error during bytecode analysis of rule method '%s': Incontinuous group block", method.name);
+    }
+
+    private void verify(InstructionGraphNode node) {
+        Checks.ensure(!node.isXStore(), "An ACTION or CAPTURE in rule method '%s' contains illegal writes to a " +
+                "local variable or parameter", method.name);
+
+        switch (node.getInstruction().getOpcode()) {
+            case GETFIELD:
+            case GETSTATIC:
+                FieldInsnNode field = (FieldInsnNode) node.getInstruction();
+                Checks.ensure(!isPrivateField(field.owner, field.name),
+                        "Rule method '%s' contains an illegal access to private field '%s'.\n" +
+                                "Mark the field protected or package-private if you want to prevent public access!",
+                        method.name, field.name);
+                break;
+
+            case INVOKEVIRTUAL:
+            case INVOKESTATIC:
+            case INVOKESPECIAL:
+            case INVOKEINTERFACE:
+                MethodInsnNode calledMethod = (MethodInsnNode) node.getInstruction();
+                Checks.ensure(!isPrivateMethod(calledMethod.owner, calledMethod.name, calledMethod.desc),
+                        "Rule method '%s' contains an illegal call to private method '%s'.\nMark '%s' protected or " +
+                                "package-private if you want to prevent public access!",
+                        method.name, calledMethod.name, calledMethod.name);
+                break;
+        }
+    }
+
+    private boolean isPrivateField(String owner, String name) {
+        String key = owner + '#' + name;
+        Integer modifiers = memberModifiers.get(key);
+        if (modifiers == null) {
+            modifiers = getClassField(owner, name).getModifiers();
+            memberModifiers.put(key, modifiers);
+        }
+        return Modifier.isPrivate(modifiers);
+    }
+
+    private boolean isPrivateMethod(String owner, String name, String desc) {
+        String key = owner + '#' + name + '#' + desc;
+        Integer modifiers = memberModifiers.get(key);
+        if (modifiers == null) {
+            modifiers = getClassMethod(owner, name, desc).getModifiers();
+            memberModifiers.put(key, modifiers);
+        }
+        return Modifier.isPrivate(modifiers);
     }
 
 }

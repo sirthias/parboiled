@@ -18,10 +18,11 @@ package org.parboiled;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.errors.ParserRuntimeException;
+import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.Cached;
 import org.parboiled.support.Characters;
+import org.parboiled.support.Checks;
 
 import static com.google.common.collect.ObjectArrays.concat;
 import static org.parboiled.common.StringUtils.escape;
@@ -591,8 +592,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
             Action<V> action = (Action<V>) obj;
             return new ActionMatcher<V>(action).defaultLabel(action.toString());
         }
+        Checks.ensure(!(obj instanceof Boolean), "Rule specification contains an unwrapped Boolean value, " +
+                "if you were trying to specify a parser action wrap the expression with ACTION(...)");
 
-        throw new ParserRuntimeException("'" + obj + "' cannot be automatically converted to a parser Rule");
+        throw new GrammarException("'" + obj + "' cannot be automatically converted to a parser Rule");
     }
 
 }

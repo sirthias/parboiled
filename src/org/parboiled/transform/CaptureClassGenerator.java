@@ -23,6 +23,10 @@ import org.objectweb.asm.Type;
 
 class CaptureClassGenerator extends GroupClassGenerator {
 
+    public CaptureClassGenerator(boolean forceCodeBuilding) {
+        super(forceCodeBuilding);
+    }
+
     public boolean appliesTo(@NotNull RuleMethod method) {
         return method.containsCaptures();
     }
@@ -39,9 +43,7 @@ class CaptureClassGenerator extends GroupClassGenerator {
 
     @Override
     protected void generateMethod(InstructionGroup group, ClassWriter cw) {
-        InstructionGraphNode rootNode = group.getRoot();
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get", "()" + rootNode.getResultValue().getType().getDescriptor(),
-                null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get", "()Ljava/lang/Object;", null, null);
 
         // check the context
         mv.visitVarInsn(ALOAD, 0);

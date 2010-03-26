@@ -22,7 +22,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -30,6 +29,7 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.objectweb.asm.util.AbstractVisitor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,7 +41,7 @@ class InstructionGraphNode implements Value, Opcodes {
     private AbstractInsnNode instruction;
     private final int originalIndex;
     private final BasicValue resultValue;
-    private final List<InstructionGraphNode> predecessors = Lists.newArrayList();
+    private final List<InstructionGraphNode> predecessors = new ArrayList<InstructionGraphNode>();
     private boolean isActionRoot;
     private final boolean isCaptureRoot;
     private final boolean isContextSwitch;

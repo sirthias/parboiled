@@ -16,11 +16,11 @@
 
 package org.parboiled.transform;
 
-import com.google.common.collect.Lists;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,13 +28,12 @@ import java.util.List;
  */
 class InstructionGroup {
 
-    private final List<InstructionGraphNode> nodes = Lists.newArrayList();
+    private final List<InstructionGraphNode> nodes = new ArrayList<InstructionGraphNode>();
     private final InsnList instructions = new InsnList();
     private final InstructionGraphNode root;
-    private final List<FieldNode> fields = Lists.newArrayList();
+    private final List<FieldNode> fields = new ArrayList<FieldNode>();
     private String name;
     private Type groupClassType;
-    private Class<?> groupClass;
     private byte[] groupClassCode;
 
     public InstructionGroup(InstructionGraphNode root) {
@@ -71,14 +70,6 @@ class InstructionGroup {
 
     public void setGroupClassType(Type groupClassType) {
         this.groupClassType = groupClassType;
-    }
-
-    public Class<?> getGroupClass() {
-        return groupClass;
-    }
-
-    public void setGroupClass(Class<?> groupClass) {
-        this.groupClass = groupClass;
     }
 
     public byte[] getGroupClassCode() {

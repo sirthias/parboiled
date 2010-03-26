@@ -23,7 +23,6 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -33,13 +32,14 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.support.Checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 class RuleMethodInterpreter extends BasicInterpreter implements Types {
 
     private final RuleMethod method;
-    private final List<Edge> additionalEdges = Lists.newArrayList();
+    private final List<Edge> additionalEdges = new ArrayList<Edge>();
 
     public RuleMethodInterpreter(RuleMethod method) {
         this.method = method;

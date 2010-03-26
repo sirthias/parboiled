@@ -18,6 +18,7 @@ package org.parboiled.transform;
 
 import com.google.common.base.Predicate;
 import org.objectweb.asm.tree.MethodNode;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import static org.testng.Assert.assertEquals;
 
 public class ClassNodeInializerTest extends TransformationTest {
 
-    //@Test
+    @Test(enabled = false)
     public void testClassNodeSetup() throws Exception {
         assertEquals(classNode.name, "org/parboiled/transform/TestParser$$parboiled");
         assertEquals(classNode.superName, "org/parboiled/transform/TestParser");

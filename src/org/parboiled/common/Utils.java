@@ -18,7 +18,7 @@ package org.parboiled.common;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.errors.ParserRuntimeException;
+import org.parboiled.errors.GrammarException;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -28,22 +28,13 @@ import java.util.*;
  */
 public final class Utils {
 
-    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-    public static final char[] EMPTY_CHAR_ARRAY = new char[0];
     public static final Character[] EMPTY_CHARACTER_OBJECT_ARRAY = new Character[0];
-    public static final int[] EMPTY_INT_ARRAY = new int[0];
     public static final Integer[] EMPTY_INTEGER_OBJECT_ARRAY = new Integer[0];
-    public static final long[] EMPTY_LONG_ARRAY = new long[0];
     public static final Long[] EMPTY_LONG_OBJECT_ARRAY = new Long[0];
-    public static final short[] EMPTY_SHORT_ARRAY = new short[0];
     public static final Short[] EMPTY_SHORT_OBJECT_ARRAY = new Short[0];
-    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
     public static final Byte[] EMPTY_BYTE_OBJECT_ARRAY = new Byte[0];
-    public static final float[] EMPTY_FLOAT_ARRAY = new float[0];
     public static final Float[] EMPTY_FLOAT_OBJECT_ARRAY = new Float[0];
-    public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
     public static final Double[] EMPTY_DOUBLE_OBJECT_ARRAY = new Double[0];
-    public static final boolean[] EMPTY_BOOLEAN_ARRAY = new boolean[0];
     public static final Boolean[] EMPTY_BOOLEAN_OBJECT_ARRAY = new Boolean[0];
 
     private Utils() {}
@@ -120,55 +111,6 @@ public final class Utils {
      */
     public static String toString(Object obj) {
         return obj == null ? "" : obj.toString();
-    }
-
-    // Subarrays
-    //-----------------------------------------------------------------------
-
-    /**
-     * <p>Produces a new array containing the elements between
-     * the start and end indices.</p>
-     * <p/>
-     * <p>The start index is inclusive, the end index exclusive.
-     * Null array input produces null output.</p>
-     * <p/>
-     * <p>The component type of the subarray is always the same as
-     * that of the input array. Thus, if the input is an array of type
-     * <code>Date</code>, the following usage is envisaged:</p>
-     * <p/>
-     * <pre>
-     * Date[] someDates = (Date[])ArrayUtils.subarray(allDates, 2, 5);
-     * </pre>
-     *
-     * @param array               the array
-     * @param startIndexInclusive the starting index. Undervalue (&lt;0)
-     *                            is promoted to 0, overvalue (&gt;array.length) results
-     *                            in an empty array.
-     * @param endIndexExclusive   elements up to endIndex-1 are present in the
-     *                            returned subarray. Undervalue (&lt; startIndex) produces
-     *                            empty array, overvalue (&gt;array.length) is demoted to
-     *                            array length.
-     * @return a new array containing the elements between
-     *         the start and end indices.
-     */
-    public static Object[] subarray(Object[] array, int startIndexInclusive, int endIndexExclusive) {
-        if (array == null) {
-            return null;
-        }
-        if (startIndexInclusive < 0) {
-            startIndexInclusive = 0;
-        }
-        if (endIndexExclusive > array.length) {
-            endIndexExclusive = array.length;
-        }
-        int newSize = endIndexExclusive - startIndexInclusive;
-        Class type = array.getClass().getComponentType();
-        if (newSize <= 0) {
-            return (Object[]) Array.newInstance(type, 0);
-        }
-        Object[] subarray = (Object[]) Array.newInstance(type, newSize);
-        System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
-        return subarray;
     }
 
     /**
@@ -285,8 +227,7 @@ public final class Utils {
             }
             return constructor;
         }
-        throw new ParserRuntimeException("No constructor found for class %s and the given %s arguments", type,
-                args.length);
+        throw new GrammarException("No constructor found for class %s and the given %s arguments", type, args.length);
     }
 
 }

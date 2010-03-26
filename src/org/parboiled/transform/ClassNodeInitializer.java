@@ -115,8 +115,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
                         "Mark the method protected or package-private if you want to prevent public access!", name);
         Checks.ensure((access & ACC_FINAL) == 0, "Rule method '%s' must not be final.", name);
 
-        RuleMethod method =
-                new RuleMethod(ownerClass, access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation);
+        RuleMethod method = new RuleMethod(access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation);
         classNode.getRuleMethods().add(method);
         return method; // return the newly created method in order to have it "filled" with the supers code
     }

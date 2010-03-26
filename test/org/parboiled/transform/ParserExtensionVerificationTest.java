@@ -16,35 +16,31 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.testng.annotations.Test;
 
-import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
-import static org.parboiled.transform.AsmTestUtils.verifyIntegrity;
-import static org.parboiled.transform.AsmTestUtils.verifyMethodIntegrity;
+import java.util.HashSet;
+import java.util.Set;
 
-public class ParserExtensionVerificationTest extends TransformationTest {
+import static org.parboiled.transform.AsmTestUtils.*;
 
-    @Test
-    public void testSpecificMethod() throws Exception {
-        ParserClassNode classNode = ParserTransformer.extendParserClass(TestParser.class);
-        RuleMethod ruleMethod = processMethod("RuleWithIndirectImplicitAction",
-                ParserTransformer.createRuleMethodProcessors());
-        try {
-            verifyMethodIntegrity(classNode.name, ruleMethod);
-        } catch (Exception e) {
-            System.out.println(getMethodInstructionList(ruleMethod));
-            throw e;
-        }
-    }
+@Test(groups = "primary")
+public class ParserExtensionVerificationTest {
 
-    //@Test
     public void verifyTestParserExtension() throws Exception {
         ParserClassNode classNode = ParserTransformer.extendParserClass(TestParser.class);
         verifyIntegrity(classNode.name, classNode.getClassCode());
 
+        Set<String> validGroups = new HashSet<String>();
         for (RuleMethod method : classNode.getRuleMethods()) {
             for (InstructionGroup group : method.getGroups()) {
-                verifyIntegrity(group.getGroupClassType().getInternalName(), group.getGroupClassCode());
+                String internalName = group.getGroupClassType().getInternalName();
+                byte[] classCode = group.getGroupClassCode();
+                if (!validGroups.contains(internalName)) {
+                    Preconditions.checkState(classCode != null);
+                    verifyIntegrity(internalName, classCode);
+                    validGroups.add(internalName);
+                }
             }
         }
     }

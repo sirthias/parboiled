@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
+@Test(groups="secondary", dependsOnGroups = "primary")
 public class InstructionGroupPreparerTest extends TransformationTest {
 
     private final List<RuleMethodProcessor> processors = ImmutableList.of(
@@ -34,7 +35,6 @@ public class InstructionGroupPreparerTest extends TransformationTest {
             new InstructionGroupPreparer()
     );
 
-    @Test
     public void testRuleWithComplexActionSetup() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 

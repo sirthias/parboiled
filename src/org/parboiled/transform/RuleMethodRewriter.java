@@ -41,6 +41,7 @@ import static org.parboiled.transform.AsmUtils.getLoadingOpcode;
 class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
 
     private RuleMethod method;
+    private InstructionGroup group;
     private int actionNr;
     private int captureNr;
     private Map<InstructionGraphNode, Integer> captureVarIndices;
@@ -56,12 +57,13 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
         captureVarIndices = null;
 
         for (InstructionGroup group : method.getGroups()) {
-            createNewGroupClassInstance(group);
-            initializeFields(group);
+            this.group = group;
+            createNewGroupClassInstance();
+            initializeFields();
             if (group.getRoot().isCaptureRoot()) {
-                insertStoreCapture(group);
+                insertStoreCapture();
             }
-            removeGroupRootInstruction(group);
+            removeGroupRootInstruction();
         }
 
         if (method.containsCaptures()) {
@@ -69,43 +71,43 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
         }
     }
 
-    private void createNewGroupClassInstance(InstructionGroup group) {
+    private void createNewGroupClassInstance() {
         String internalName = group.getGroupClassType().getInternalName();
-        insert(group, new TypeInsnNode(NEW, internalName));
-        insert(group, new InsnNode(DUP));
-        insert(group, new LdcInsnNode(method.name +
+        insert(new TypeInsnNode(NEW, internalName));
+        insert(new InsnNode(DUP));
+        insert(new LdcInsnNode(method.name +
                 (group.getRoot().isActionRoot() ? "_Action" + ++actionNr : "_Capture" + ++captureNr))
         );
-        insert(group, new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+        insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
     }
 
-    private void initializeFields(InstructionGroup group) {
+    private void initializeFields() {
         String internalName = group.getGroupClassType().getInternalName();
         for (FieldNode field : group.getFields()) {
-            insert(group, new InsnNode(DUP));
+            insert(new InsnNode(DUP));
             // the FieldNodes access and value members have been reused for the var index / Type respectively!
-            insert(group, new VarInsnNode(getLoadingOpcode((Type) field.value), field.access));
-            insert(group, new FieldInsnNode(PUTFIELD, internalName, field.name, field.desc));
+            insert(new VarInsnNode(getLoadingOpcode((Type) field.value), field.access));
+            insert(new FieldInsnNode(PUTFIELD, internalName, field.name, field.desc));
         }
     }
 
-    private void insertStoreCapture(InstructionGroup group) {
+    private void insertStoreCapture() {
         if (captureVarIndices == null) {
             captureVarIndices = new HashMap<InstructionGraphNode, Integer>();
         }
         int index = method.maxLocals++;
         captureVarIndices.put(group.getRoot(), index);
 
-        insert(group, new InsnNode(DUP));
-        insert(group, new VarInsnNode(ASTORE, index));
+        insert(new InsnNode(DUP));
+        insert(new VarInsnNode(ASTORE, index));
     }
 
-    private void insert(InstructionGroup group, AbstractInsnNode insn) {
-        group.getInstructions().insertBefore(group.getRoot().getInstruction(), insn);
+    private void insert(AbstractInsnNode insn) {
+        method.instructions.insertBefore(group.getRoot().getInstruction(), insn);
     }
 
-    private void removeGroupRootInstruction(InstructionGroup group) {
-        group.getInstructions().remove(group.getRoot().getInstruction());
+    private void removeGroupRootInstruction() {
+        method.instructions.remove(group.getRoot().getInstruction());
     }
 
     private void finalizeCaptureSetup() {

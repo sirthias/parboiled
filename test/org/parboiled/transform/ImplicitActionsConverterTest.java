@@ -28,9 +28,40 @@ public class ImplicitActionsConverterTest extends TransformationTest {
     @SuppressWarnings({"unchecked"})
     @Test
     public void testReturnInstructionUnification() throws Exception {
-        List<RuleMethodProcessor> processors = ImmutableList.<RuleMethodProcessor>of(
-                new UnusedLabelsRemover()
+        List<RuleMethodProcessor> processors = ImmutableList.of(
+                new UnusedLabelsRemover(),
+                new ReturnInstructionUnifier(),
+                new InstructionGraphCreator(),
+                new ImplicitActionsConverter()
         );
+
+        assertTraceDumpEquality(processMethod("RuleWithIndirectImplicitAction", processors), "" +
+                "    ALOAD 0\n" +
+                "    BIPUSH 97\n" +
+                "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
+                "    BIPUSH 98\n" +
+                "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
+                "    ICONST_1\n" +
+                "    ANEWARRAY java/lang/Object\n" +
+                "    DUP\n" +
+                "    ICONST_0\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
+                "    IFNE L0\n" +
+                "    ALOAD 0\n" +
+                "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
+                "    ICONST_5\n" +
+                "    IF_ICMPNE L1\n" +
+                "   L0\n" +
+                "    ICONST_1\n" +
+                "    GOTO L2\n" +
+                "   L1\n" +
+                "    ICONST_0\n" +
+                "   L2\n" +
+                "    INVOKESTATIC org/parboiled/BaseParser.ACTION (Z)Lorg/parboiled/Action;\n" +
+                "    AASTORE\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    ARETURN\n");
 
         assertTraceDumpEquality(processMethod("RuleWithDirectImplicitAction", processors), "" +
                 "    ALOAD 0\n" +

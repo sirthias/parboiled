@@ -22,7 +22,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.collect.Lists;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -33,15 +32,16 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.parboiled.transform.AsmUtils.*;
 
 class RuleMethod extends MethodNode implements Opcodes, Types {
 
-    private final Class<?> ownerClass;
-    private final List<InstructionGroup> groups = Lists.newArrayList();
-    private final List<LabelNode> usedLabels = Lists.newArrayList();
+    private final List<InstructionGroup> groups = new ArrayList<InstructionGroup>();
+    private final List<LabelNode> usedLabels = new ArrayList<LabelNode>();
 
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
@@ -54,10 +54,9 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
 
-    public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature,
+    public RuleMethod(int access, String name, String desc, String signature,
                       String[] exceptions, boolean hasExplicitActionOnlyAnnotation) {
         super(access, name, desc, signature, exceptions);
-        this.ownerClass = ownerClass;
 
         if (Type.getArgumentTypes(desc).length == 0) {
             // no parameter rules are automatically cached and labelled
@@ -66,10 +65,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         }
 
         this.hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnnotation;
-    }
-
-    public Class<?> getOwnerClass() {
-        return ownerClass;
     }
 
     public List<InstructionGroup> getGroups() {
@@ -128,12 +123,11 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return graphNodes;
     }
 
-
-
     public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
         if (graphNodes == null) {
             // initialize with a list of null values
-            graphNodes = Lists.newArrayList(new InstructionGraphNode[instructions.size()]);
+            graphNodes = new ArrayList<InstructionGraphNode>(
+                    Arrays.asList(new InstructionGraphNode[instructions.size()]));
         }
         int index = instructions.indexOf(insn);
         InstructionGraphNode node = graphNodes.get(index);

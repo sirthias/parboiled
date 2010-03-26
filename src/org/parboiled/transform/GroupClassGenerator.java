@@ -34,8 +34,13 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
 
     private static final Object lock = new Object();
 
+    private final boolean forceCodeBuilding;
     protected ParserClassNode classNode;
     protected RuleMethod method;
+
+    protected GroupClassGenerator(boolean forceCodeBuilding) {
+        this.forceCodeBuilding = forceCodeBuilding;
+    }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         this.classNode = classNode;
@@ -58,13 +63,14 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
         Class<?> groupClass;
         synchronized (lock) {
             groupClass = findLoadedClass(className, classLoader);
-            if (groupClass == null) {
+            if (groupClass == null || forceCodeBuilding) {
                 byte[] groupClassCode = generateGroupClassCode(group);
                 group.setGroupClassCode(groupClassCode);
-                groupClass = loadClass(className, groupClassCode, classLoader);
+                if (groupClass == null) {
+                    loadClass(className, groupClassCode, classLoader);
+                }
             }
         }
-        group.setGroupClass(groupClass);
     }
 
     private void createGroupClassType(InstructionGroup group) {

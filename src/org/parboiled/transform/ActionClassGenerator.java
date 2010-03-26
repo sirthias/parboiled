@@ -23,6 +23,10 @@ import org.objectweb.asm.Type;
 
 class ActionClassGenerator extends GroupClassGenerator {
 
+    public ActionClassGenerator(boolean forceCodeBuilding) {
+        super(forceCodeBuilding);
+    }
+
     public boolean appliesTo(@NotNull RuleMethod method) {
         return method.containsExplicitActions();
     }

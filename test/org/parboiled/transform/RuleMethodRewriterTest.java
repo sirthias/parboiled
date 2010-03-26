@@ -33,12 +33,12 @@ public class RuleMethodRewriterTest extends TransformationTest {
             new ImplicitActionsConverter(),
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
-            new CaptureClassGenerator(),
-            new ActionClassGenerator(),
+            new CaptureClassGenerator(true),
+            new ActionClassGenerator(true),
             new RuleMethodRewriter()
     );
 
-    @Test
+    @Test(dependsOnGroups = "primary")
     public void testActionClassGeneration() throws Exception {
         assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithIndirectImplicitAction", processors)), "" +
                 "Method 'RuleWithIndirectImplicitAction':\n" +

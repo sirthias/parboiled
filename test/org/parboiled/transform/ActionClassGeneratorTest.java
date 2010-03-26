@@ -34,10 +34,10 @@ public class ActionClassGeneratorTest extends TransformationTest {
             new ImplicitActionsConverter(),
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
-            new ActionClassGenerator()
+            new ActionClassGenerator(true)
     );
 
-    @Test
+    @Test(dependsOnGroups = "primary")
     public void testActionClassGeneration() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 

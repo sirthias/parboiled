@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.test.TestUtils.computeCRC;
 import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
 
@@ -43,19 +44,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
 
     @Test
     public void testInstructionGraphing() throws Exception {
-        // testMethodAnalysis("RuleWithIndirectExplicitAction", 1658700127L);
-        // renderToGraphViz(dotSource);
-
-        //testMethodAnalysis("RuleWithComplexActionSetup", 1674342651L);
-        // renderToGraphViz(dotSource);
-
-        //testMethodAnalysis("RuleWithIndirectExplicitDownAction", 2381949497L);
-        // renderToGraphViz(dotSource);
-
-        testMethodAnalysis("RuleWithIndirectImplicitAction", 3547608743L);
-        renderToGraphViz(dotSource);
-
-       // testMethodAnalysis("complexActionsRule", 3194993502L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 1823811521L);
         // renderToGraphViz(dotSource);
     }
 
@@ -66,11 +55,11 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         long crc = computeCRC(dotSource);
         if (crc != dotSourceCRC) {
             System.err.println("Invalid dotSource CRC for method '" + methodName + "': " + crc + 'L');
-            //assertEqualsMultiline(dotSource, "");
+            assertEqualsMultiline(dotSource, "");
         }
     }
 
-    public String generateDotSource(@NotNull RuleMethod method) {
+    private String generateDotSource(@NotNull RuleMethod method) {
         // generate graph attributes
         StringBuilder sb = new StringBuilder()
                 .append("digraph G {\n")
@@ -117,7 +106,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public static void renderToGraphViz(String dotSource) throws Exception {
+    private static void renderToGraphViz(String dotSource) throws Exception {
         String command = "C:\\Program Files\\Graphviz2.26\\bin\\dot.exe -Tpng";
         String output = "C:\\3\\graph.png";
 

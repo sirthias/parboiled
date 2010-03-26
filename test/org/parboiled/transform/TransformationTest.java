@@ -23,10 +23,15 @@ import java.util.List;
 
 public class TransformationTest {
 
-    protected final ParserClassNode classNode = new ParserClassNode(TestParser.class);
+    protected ParserClassNode classNode;
 
     @BeforeClass
     public void setup() throws IOException {
+        setup(TestParser.class);
+    }
+
+    public void setup(Class<?> parserClass) throws IOException {
+        classNode = new ParserClassNode(parserClass);
         new ClassNodeInitializer().process(classNode);
     }
 

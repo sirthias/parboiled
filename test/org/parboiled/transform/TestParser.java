@@ -108,37 +108,14 @@ class TestParser extends BaseParser<Integer> {
         return sequence(string, aLong == integer);
     }
 
-    // error rules
-
-    public Rule RuleWithIllegalImplicitAction(int param) {
+    public Rule RuleWithFakeImplicitAction(int param) {
         Boolean b = integer == param;
         return sequence('a', 'b', b);
     }
 
-    /*public Rule RuleWithCaptureInAction() {
-        return sequence('a', ACTION(integer == CAPTURE(NODES("a").size()).get()));
-    }*/
-
-    public Rule RuleWithActionAccessingPrivateField() {
-        return sequence('a', privateInt == 0);
-    }
-
-    public Rule RuleWithActionAccessingPrivateMethod() {
-        return sequence('a', privateAction());
-    }
-
-    /*public Rule RuleWithIllegalCapture() {
-        Capture<String> capture = CAPTURE(TEXT("a"));
-        return sequence('a', 'b', capture.get());
-    }*/
-
     // actions
 
     public boolean action() {
-        return true;
-    }
-
-    private boolean privateAction() {
         return true;
     }
 

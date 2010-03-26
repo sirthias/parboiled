@@ -44,7 +44,6 @@ interface Types {
     static final Type PROXY_MATCHER = Type.getType(ProxyMatcher.class);
     static final Type RULE = Type.getType(Rule.class);
 
-    static final String BASE_PARSER_DESC = BASE_PARSER.getDescriptor();
     static final String ACTION_DESC = ACTION.getDescriptor();
     static final String CACHED_DESC = CACHED.getDescriptor();
     static final String CONTEXT_DESC = CONTEXT.getDescriptor();
