@@ -26,6 +26,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.parboiled.support.Checks;
 
@@ -37,7 +38,6 @@ import static org.parboiled.transform.AsmUtils.getClassMethod;
 
 class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
 
-    private final Set<InstructionGraphNode> covered = new HashSet<InstructionGraphNode>();
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
     private RuleMethod method;
 
@@ -46,7 +46,6 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        covered.clear();
         this.method = method;
 
         // create groups
@@ -67,14 +66,29 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
                 method.getGroups().add(group);
             }
         }
+
+        // also capture all group nodes "hidden" behind xLoads
+        boolean repeat = true;
+        while (repeat) {
+            repeat = false;
+            for (InstructionGraphNode node : method.getGraphNodes()) {
+                if (node.getGroup() != null) continue;
+                for (InstructionGraphNode predecessor : node.getPredecessors()) {
+                    if (predecessor.getGroup() != null && predecessor != predecessor.getGroup().getRoot()) {
+                        node.setGroup(predecessor.getGroup());
+                        repeat = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private void markGroup(InstructionGraphNode node, InstructionGroup group) {
         Checks.ensure(node == group.getRoot() || (!node.isCaptureRoot() && !node.isActionRoot()),
                 "Method '%s' contains illegal nesting of ACTION(...) and/or CAPTURE(...) constructs", method.name);
 
-        if (covered.contains(node)) return;
-        covered.add(node);
+        if (node.getGroup() != null) return; // already visited
 
         node.setGroup(group);
         if (!node.isXLoad()) {
@@ -86,9 +100,11 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
 
     // sort the group instructions according to their method index
     private void sort(InstructionGroup group) {
+        final InsnList instructions = method.instructions;
         Collections.sort(group.getNodes(), new Comparator<InstructionGraphNode>() {
             public int compare(InstructionGraphNode a, InstructionGraphNode b) {
-                return Integer.valueOf(a.getOriginalIndex()).compareTo(b.getOriginalIndex());
+                return Integer.valueOf(instructions.indexOf(a.getInstruction()))
+                        .compareTo(instructions.indexOf(b.getInstruction()));
             }
         });
     }
@@ -103,8 +119,8 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
             verify(nodes.get(i));
         }
 
-        Checks.ensure(nodes.get(sizeMinus1).getOriginalIndex() - nodes.get(0).getOriginalIndex() == sizeMinus1,
-                "Error during bytecode analysis of rule method '%s': Incontinuous group block", method.name);
+        //Checks.ensure(nodes.get(sizeMinus1).getOriginalIndex() - nodes.get(0).getOriginalIndex() == sizeMinus1,
+        //        "Error during bytecode analysis of rule method '%s': Incontinuous group block", method.name);
     }
 
     private void verify(InstructionGraphNode node) {

@@ -36,7 +36,7 @@ public class CalculatorTest extends AbstractTest {
                 "            [zeroOrMore]\n" +
                 "        [zeroOrMore, {5}] '+5'\n" +
                 "            [sequence, {5}] '+5'\n" +
-                "                [[+,-]] '+'\n" +
+                "                [[+-]] '+'\n" +
                 "                [term, {5}] '5'\n" +
                 "                    [factor, {5}] '5'\n" +
                 "                        [number, {5}] '5'\n" +

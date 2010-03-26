@@ -47,7 +47,7 @@ public class SimpleTest extends AbstractTest {
                 "    [operator] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [digit] '5'\n" +
-                "    [[a,b,c,d]] 'b'\n" +
+                "    [[abcd]] 'b'\n" +
                 "    [EOI]\n");
     }
 

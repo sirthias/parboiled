@@ -39,7 +39,6 @@ import java.util.List;
 class InstructionGraphNode implements Value, Opcodes {
 
     private AbstractInsnNode instruction;
-    private final int originalIndex;
     private final BasicValue resultValue;
     private final List<InstructionGraphNode> predecessors = new ArrayList<InstructionGraphNode>();
     private boolean isActionRoot;
@@ -50,9 +49,8 @@ class InstructionGraphNode implements Value, Opcodes {
     private final boolean isXStore;
     private InstructionGroup group;
 
-    public InstructionGraphNode(AbstractInsnNode instruction, int originalIndex, BasicValue resultValue) {
+    public InstructionGraphNode(AbstractInsnNode instruction, BasicValue resultValue) {
         this.instruction = instruction;
-        this.originalIndex = originalIndex;
         this.resultValue = resultValue;
         this.isActionRoot = AsmUtils.isActionRoot(instruction);
         this.isCaptureRoot = AsmUtils.isCaptureRoot(instruction);
@@ -72,10 +70,6 @@ class InstructionGraphNode implements Value, Opcodes {
 
     public void setInstruction(AbstractInsnNode instruction) {
         this.instruction = instruction;
-    }
-
-    public int getOriginalIndex() {
-        return originalIndex;
     }
 
     public BasicValue getResultValue() {

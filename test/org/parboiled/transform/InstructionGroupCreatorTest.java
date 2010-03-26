@@ -19,10 +19,12 @@ package org.parboiled.transform;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.test.FileUtils;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
@@ -42,10 +44,19 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     @SuppressWarnings({"FieldCanBeLocal"})
     private String dotSource;
 
+    @BeforeClass
+    @Override
+    public void setup() throws IOException {
+        // do not setup with the TestParser
+    }
+
     @Test
     public void testInstructionGraphing() throws Exception {
-        testMethodAnalysis("RuleWithComplexActionSetup", 1823811521L);
-        // renderToGraphViz(dotSource);
+        setup(TestParser.class);
+
+        //testMethodAnalysis("RuleWithComplexActionSetup", 1823811521L);
+        testMethodAnalysis("RuleWithDirectImplicitUpAction", 825425354L);
+        renderToGraphViz(dotSource);
     }
 
     private void testMethodAnalysis(String methodName, long dotSourceCRC) throws Exception {
@@ -77,11 +88,12 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         sb.append(" CallOnContextAware [penwidth=2.0];\n");
         sb.append(" Action -> Capture -> ContextSwitch -> XLoad -> XStore -> CallOnContextAware;\n");
 
-        for (InstructionGraphNode node : method.getGraphNodes()) {
+        for (int i = 0; i < method.getGraphNodes().size(); i++) {
+            InstructionGraphNode node = method.getGraphNodes().get(i);
             // generate node
             boolean isSpecial = node.isActionRoot() || node.isCaptureRoot() || node.isContextSwitch() ||
-                    node.isXLoad() || node.isXStore() ||node.isCallOnContextAware();
-            sb.append(" ").append(node.getOriginalIndex())
+                    node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
+            sb.append(" ").append(i)
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
                     .append(node.isActionRoot() ? "color=skyblue," : "")
@@ -97,7 +109,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
 
             // generate edges
             for (InstructionGraphNode pred : node.getPredecessors()) {
-                sb.append(" ").append(pred.getOriginalIndex()).append(" -> ").append(node.getOriginalIndex())
+                sb.append(" ").append(method.getGraphNodes().indexOf(pred)).append(" -> ").append(i)
                         .append(";\n");
             }
         }

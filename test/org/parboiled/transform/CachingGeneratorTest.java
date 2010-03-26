@@ -53,12 +53,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/transform/TestParser.RuleWithoutAction ()Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
-                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
-                "    IFEQ L1\n" +
-                "    DUP\n" +
-                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.hasCustomLabel ()Z\n" +
-                "    IFNE L1\n" +
+                "    IFNULL L1\n" +
                 "    LDC \"RuleWithoutAction\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
                 "   L1\n" +
@@ -97,12 +92,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/transform/TestParser.RuleWithNamedLabel ()Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
-                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
-                "    IFEQ L1\n" +
-                "    DUP\n" +
-                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.hasCustomLabel ()Z\n" +
-                "    IFNE L1\n" +
+                "    IFNULL L1\n" +
                 "    LDC \"harry\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
                 "   L1\n" +
@@ -140,12 +130,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKESPECIAL org/parboiled/transform/TestParser.RuleWithLeaf ()Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
-                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
-                "    IFEQ L1\n" +
-                "    DUP\n" +
-                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.hasCustomLabel ()Z\n" +
-                "    IFNE L1\n" +
+                "    IFNULL L1\n" +
                 "    LDC \"RuleWithLeaf\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
                 "   L1\n" +

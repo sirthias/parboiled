@@ -22,13 +22,11 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import org.parboiled.support.Checks;
 
 import java.util.HashSet;
 import java.util.List;
 
-import static org.parboiled.transform.AsmUtils.findLoadedClass;
-import static org.parboiled.transform.AsmUtils.loadClass;
+import static org.parboiled.transform.AsmUtils.*;
 
 abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Types {
 
@@ -125,7 +123,8 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
 
             // insert context switch
             String contextSwitchType = ((MethodInsnNode) node.getInstruction()).name;
-            AbstractInsnNode firstInsn = getFirstOfSubtree(node, new HashSet<InstructionGraphNode>()).getInstruction();
+            AbstractInsnNode firstInsn = getFirstOfSubtree(instructions, node, new HashSet<InstructionGraphNode>())
+                    .getInstruction();
             instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 0));
             instructions.insertBefore(firstInsn, new MethodInsnNode(INVOKEVIRTUAL,
                     getBaseType().getInternalName(), contextSwitchType, "()V"));
@@ -135,6 +134,21 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
             instructions.set(node.getInstruction(), new MethodInsnNode(INVOKEVIRTUAL,
                     getBaseType().getInternalName(), contextSwitchType.startsWith("UP") ? contextSwitchType
                             .replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP"), "()V"));
+
+            // remove Boolean.valueOf(boolean) if preceding
+            AbstractInsnNode precedingInsn = node.getInstruction().getPrevious().getPrevious();
+            if (isBooleanValueOfZ(precedingInsn)) {
+                instructions.remove(precedingInsn);
+            }
+
+            // remove following Boolean.value
+            AbstractInsnNode following = node.getInstruction().getNext();
+            if (following.getType() == AbstractInsnNode.METHOD_INSN) {
+                MethodInsnNode mi = (MethodInsnNode) following;
+                if ("java/lang/Boolean".equals(mi.desc) && "booleanValue".equals(mi.name) && "()Z".equals(mi.desc)) {
+                    instructions.remove(following);
+                }
+            }
         }
     }
 
@@ -144,8 +158,6 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
             if (!node.isCallOnContextAware()) continue;
 
             AbstractInsnNode loadTarget = node.getPredecessors().get(0).getInstruction();
-            Checks.ensure(loadTarget.getOpcode() == ALOAD, "Error during bytecode analysis of rule method '%s': " +
-                    "Unusual call on ContextAware", method.name);
             AbstractInsnNode afterFirstInsn = loadTarget.getNext();
             instructions.insertBefore(afterFirstInsn, new InsnNode(DUP));
             instructions.insertBefore(afterFirstInsn, new VarInsnNode(ALOAD, 0));
@@ -172,14 +184,14 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
         }
     }
 
-    public static InstructionGraphNode getFirstOfSubtree(InstructionGraphNode node,
+    public static InstructionGraphNode getFirstOfSubtree(InsnList instructions, InstructionGraphNode node,
                                                          HashSet<InstructionGraphNode> covered) {
         InstructionGraphNode first = node;
         if (!covered.contains(node)) {
             covered.add(node);
             for (InstructionGraphNode predecessor : node.getPredecessors()) {
-                InstructionGraphNode firstOfPred = getFirstOfSubtree(predecessor, covered);
-                if (first.getOriginalIndex() > firstOfPred.getOriginalIndex()) {
+                InstructionGraphNode firstOfPred = getFirstOfSubtree(instructions, predecessor, covered);
+                if (instructions.indexOf(first.getInstruction()) > instructions.indexOf(firstOfPred.getInstruction())) {
                     first = firstOfPred;
                 }
             }

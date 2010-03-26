@@ -55,18 +55,38 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
         covered.add(node);
 
         if (isImplicitAction(node)) {
-            MethodInsnNode insn = new MethodInsnNode(INVOKESTATIC, BASE_PARSER.getInternalName(), "ACTION",
-                    "(Z)" + ACTION_DESC);
-            method.instructions.set(node.getInstruction(), insn);
-            node.setIsActionRoot();
-            node.setInstruction(insn);
-            method.setContainsExplicitActions(true);
+            replaceWithActionWrapper(node);
+            return;
+        }
+        if (node.isContextSwitch()) {
+            insertNewActionWrapperAfter(node);
+            return;
         }
         if (!node.isActionRoot() && !node.isCaptureRoot()) {
             for (InstructionGraphNode predecessor : node.getPredecessors()) {
                 walkNode(predecessor);
             }
         }
+    }
+
+    private void replaceWithActionWrapper(InstructionGraphNode node) {
+        MethodInsnNode insn = createActionWrappingInsn();
+        method.instructions.set(node.getInstruction(), insn);
+        node.setIsActionRoot();
+        node.setInstruction(insn);
+        method.setContainsExplicitActions(true);
+    }
+
+    private void insertNewActionWrapperAfter(InstructionGraphNode node) {
+        MethodInsnNode insn = createActionWrappingInsn();
+        method.instructions.insert(node.getInstruction(), insn);
+        InstructionGraphNode newNode = new InstructionGraphNode(insn, null);
+        for (InstructionGraphNode dependent : getDependents(node)) {
+            dependent.getPredecessors().set(dependent.getPredecessors().indexOf(node), newNode);
+        }
+        List<InstructionGraphNode> graphNodes = method.getGraphNodes();
+        graphNodes.add(graphNodes.indexOf(node) + 1, newNode);
+        newNode.getPredecessors().add(node);
     }
 
     private boolean isImplicitAction(InstructionGraphNode node) {
@@ -100,7 +120,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
     }
 
     private boolean isStoredIntoObjectArray(InstructionGraphNode dependent) {
-        // is the single dependent an AASTORE instruction ? 
+        // is the single dependent an AASTORE instruction ?
         AbstractInsnNode insn = dependent.getInstruction();
         if (insn.getOpcode() != AASTORE) return false;
 
@@ -131,6 +151,11 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
             }
         }
         return dependents;
+    }
+
+    private MethodInsnNode createActionWrappingInsn() {
+        return new MethodInsnNode(INVOKESTATIC, BASE_PARSER.getInternalName(), "ACTION",
+                "(Z)" + ACTION_DESC);
     }
 
 }

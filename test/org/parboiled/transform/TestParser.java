@@ -61,7 +61,7 @@ class TestParser extends BaseParser<Integer> {
     }
 
     public Rule RuleWithDirectImplicitUpAction() {
-        return sequence('a', UP(integer) < 18, 'b');
+        return sequence('a', UP2(SET(integer)), 'b');
     }
 
     public Rule RuleWithIndirectExplicitDownAction() {

@@ -16,8 +16,9 @@
 
 package org.parboiled.support;
 
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class CharactersTest {
 
@@ -42,8 +43,8 @@ public class CharactersTest {
         assertEquals(Characters.NONE.remove(Characters.ALL), Characters.NONE);
         assertEquals(Characters.ALL.remove(Characters.NONE), Characters.ALL);
 
-        assertEquals(Characters.ALL.remove(Characters.of('A', 'B')).toString(), "![A,B]");
-        assertEquals(Characters.ALL.remove(Characters.allBut('A', 'B')).toString(), "[A,B]");
+        assertEquals(Characters.ALL.remove(Characters.of('A', 'B')).toString(), "![AB]");
+        assertEquals(Characters.ALL.remove(Characters.allBut('A', 'B')).toString(), "[AB]");
 
         assertEquals(Characters.of('A', 'B').add(Characters.of('B', 'C')), Characters.of('A', 'B', 'C'));
         assertEquals(Characters.allBut('A', 'B').add(Characters.of('B', 'C')), Characters.allBut('A'));

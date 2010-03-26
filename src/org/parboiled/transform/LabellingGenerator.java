@@ -39,29 +39,18 @@ class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
             current = current.getNext();
         }
 
-        LabelNode elseLabel = new LabelNode();
+        LabelNode isNullLabel = new LabelNode();
         // stack: <rule>
         instructions.insertBefore(current, new InsnNode(DUP));
         // stack: <rule> :: <rule>
-        instructions.insertBefore(current, new TypeInsnNode(INSTANCEOF, ABSTRACT_MATCHER.getInternalName()));
-        // stack: <rule> :: <0 or 1>
-        instructions.insertBefore(current, new JumpInsnNode(IFEQ, elseLabel));
-        // stack: <rule>
-        instructions.insertBefore(current, new InsnNode(DUP));
-        // stack: <rule> :: <rule>
-        instructions.insertBefore(current, new TypeInsnNode(CHECKCAST, ABSTRACT_MATCHER.getInternalName()));
-        // stack: <rule> :: <abstractMatcher>
-        instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, ABSTRACT_MATCHER.getInternalName(),
-                "hasCustomLabel", "()Z"));
-        // stack: <rule> :: <0 or 1>
-        instructions.insertBefore(current, new JumpInsnNode(IFNE, elseLabel));
+        instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
         instructions.insertBefore(current, new LdcInsnNode(getLabelText(method)));
         // stack: <rule> :: <labelText>
         instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
                 "label", "(Ljava/lang/String;)" + RULE_DESC));
         // stack: <rule>
-        instructions.insertBefore(current, elseLabel);
+        instructions.insertBefore(current, isNullLabel);
         // stack: <rule>
     }
 

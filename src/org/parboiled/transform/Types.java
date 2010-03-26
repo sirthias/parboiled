@@ -21,10 +21,7 @@ import org.parboiled.*;
 import org.parboiled.matchers.AbstractMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.support.Cached;
-import org.parboiled.support.ExplicitActionsOnly;
-import org.parboiled.support.Label;
-import org.parboiled.support.Leaf;
+import org.parboiled.support.*;
 
 interface Types {
 
@@ -37,6 +34,7 @@ interface Types {
     static final Type CAPTURE = Type.getType(Capture.class);
     static final Type CONTEXT_AWARE = Type.getType(ContextAware.class);
     static final Type CONTEXT = Type.getType(Context.class);
+    static final Type DONT_LABEL = Type.getType(DontLabel.class);
     static final Type EXPLICIT_ACTIONS_ONLY = Type.getType(ExplicitActionsOnly.class);
     static final Type LABEL = Type.getType(Label.class);
     static final Type LEAF = Type.getType(Leaf.class);
@@ -47,6 +45,7 @@ interface Types {
     static final String ACTION_DESC = ACTION.getDescriptor();
     static final String CACHED_DESC = CACHED.getDescriptor();
     static final String CONTEXT_DESC = CONTEXT.getDescriptor();
+    static final String DONT_LABEL_DESC = DONT_LABEL.getDescriptor();
     static final String EXPLICIT_ACTIONS_ONLY_DESC = EXPLICIT_ACTIONS_ONLY.getDescriptor();
     static final String LABEL_DESC = LABEL.getDescriptor();
     static final String LEAF_DESC = LEAF.getDescriptor();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="listo" default="compile.main">
+<project name="parboiled" default="compile.main">
 
     <!-- can be overridden at the command line with -Dversion= -->
     <property name="version" value="snapshot"/>

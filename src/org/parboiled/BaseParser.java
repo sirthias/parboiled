@@ -20,9 +20,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
-import org.parboiled.support.Cached;
-import org.parboiled.support.Characters;
-import org.parboiled.support.Checks;
+import org.parboiled.support.*;
 
 import static com.google.common.collect.ObjectArrays.concat;
 import static org.parboiled.common.StringUtils.escape;
@@ -46,7 +44,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     public Rule ch(char c) {
-        return new CharMatcher(c).defaultLabel("\'" + escape(c) + '\'');
+        return new CharMatcher(c).label("\'" + escape(c) + '\'');
     }
 
     /**
@@ -63,7 +61,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
             return ch(c);
         }
         CharIgnoreCaseMatcher matcher = new CharIgnoreCaseMatcher(c);
-        return matcher.defaultLabel("\'" + escape(matcher.charLow) + '/' + escape(matcher.charUp) + '\'');
+        return matcher.label("\'" + escape(matcher.charLow) + '/' + escape(matcher.charUp) + '\'');
     }
 
     /**
@@ -78,7 +76,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule charRange(char cLow, char cHigh) {
         return cLow == cHigh ? ch(cLow) :
-                new CharRangeMatcher(cLow, cHigh).defaultLabel(escape(cLow) + ".." + escape(cHigh));
+                new CharRangeMatcher(cLow, cHigh).label(escape(cLow) + ".." + escape(cHigh));
     }
 
     /**
@@ -119,7 +117,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return ch(characters.getChars()[0]);
         }
-        return new CharactersMatcher<V>(characters).defaultLabel(characters.toString());
+        return new CharactersMatcher<V>(characters).label(characters.toString());
     }
 
     /**
@@ -153,7 +151,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = ch(characters[i]);
         }
-        return ((SequenceMatcher)sequence(matchers)).defaultLabel('"' + String.valueOf(characters) + '"').asLeaf();
+        return ((SequenceMatcher)sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
     }
 
     /**
@@ -183,7 +181,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = charIgnoreCase(characters[i]);
         }
-        return ((SequenceMatcher)sequence(matchers)).defaultLabel('"' + String.valueOf(characters) + '"').asLeaf();
+        return ((SequenceMatcher)sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
     }
 
     /**
@@ -211,8 +209,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label("firstOf")
     public Rule firstOf(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules)).defaultLabel("firstOf");
+        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules));
     }
 
     /**
@@ -225,8 +224,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label("oneOrMore")
     public Rule oneOrMore(Object rule) {
-        return new OneOrMoreMatcher(toRule(rule)).defaultLabel("oneOrMore");
+        return new OneOrMoreMatcher(toRule(rule));
     }
 
     /**
@@ -239,8 +239,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label("optional")
     public Rule optional(Object rule) {
-        return new OptionalMatcher(toRule(rule)).defaultLabel("optional");
+        return new OptionalMatcher(toRule(rule));
     }
 
     /**
@@ -266,8 +267,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label("sequence")
     public Rule sequence(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules)).defaultLabel("sequence");
+        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
     }
 
     /**
@@ -283,7 +285,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule test(Object rule) {
         Rule subMatcher = toRule(rule);
-        return new TestMatcher(subMatcher).defaultLabel("&(" + subMatcher + ")");
+        return new TestMatcher(subMatcher).label("&(" + subMatcher + ")");
     }
 
     /**
@@ -299,7 +301,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     public Rule testNot(Object rule) {
         Rule subMatcher = toRule(rule);
-        return new TestNotMatcher(subMatcher).defaultLabel("!(" + subMatcher + ")");
+        return new TestNotMatcher(subMatcher).label("!(" + subMatcher + ")");
     }
 
     /**
@@ -312,8 +314,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @Label("zeroOrMore")
     public Rule zeroOrMore(Object rule) {
-        return new ZeroOrMoreMatcher(toRule(rule)).defaultLabel("zeroOrMore");
+        return new ZeroOrMoreMatcher(toRule(rule));
     }
 
     /**
@@ -321,8 +324,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @Label("EOI")
     public Rule eoi() {
-        return ch(Characters.EOI).label("EOI");
+        return ch(Characters.EOI);
     }
 
     /**
@@ -330,8 +334,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @Label("ANY")
     public Rule any() {
-        return new CharactersMatcher<V>(Characters.allBut(Characters.EOI)).label("ANY");
+        return new CharactersMatcher<V>(Characters.allBut(Characters.EOI));
     }
 
     /**
@@ -339,8 +344,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      *
      * @return a new rule
      */
+    @Label("EMPTY")
     public Rule empty() {
-        return new EmptyMatcher<V>().label("EMPTY");
+        return new EmptyMatcher<V>();
     }
 
     ///************************* "MAGIC" METHODS ***************************///
@@ -590,7 +596,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof char[]) return fromCharArray((char[]) obj);
         if (obj instanceof Action) {
             Action<V> action = (Action<V>) obj;
-            return new ActionMatcher<V>(action).defaultLabel(action.toString());
+            return new ActionMatcher<V>(action).label(action.toString());
         }
         Checks.ensure(!(obj instanceof Boolean), "Rule specification contains an unwrapped Boolean value, " +
                 "if you were trying to specify a parser action wrap the expression with ACTION(...)");

@@ -41,6 +41,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
     private ParserClassNode classNode;
     private Class<?> ownerClass;
     private boolean hasExplicitActionOnlyAnnotation;
+    private boolean hasDontLabelAnnotation;
 
     public void process(@NotNull ParserClassNode classNode) throws IOException {
         this.classNode = classNode;
@@ -77,6 +78,11 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
             hasExplicitActionOnlyAnnotation = true;
             return null;
         }
+        if (DONT_LABEL_DESC.equals(desc)) {
+            hasDontLabelAnnotation = true;
+            return null;
+        }
+
         // only keep visible annotations on the parser class
         return visible && ownerClass == classNode.getParentClass() ? classNode.visitAnnotation(desc, true) : null;
     }
@@ -115,7 +121,8 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
                         "Mark the method protected or package-private if you want to prevent public access!", name);
         Checks.ensure((access & ACC_FINAL) == 0, "Rule method '%s' must not be final.", name);
 
-        RuleMethod method = new RuleMethod(access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation);
+        RuleMethod method = new RuleMethod(access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation,
+                hasDontLabelAnnotation);
         classNode.getRuleMethods().add(method);
         return method; // return the newly created method in order to have it "filled" with the supers code
     }

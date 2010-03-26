@@ -54,17 +54,14 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
 
-    public RuleMethod(int access, String name, String desc, String signature,
-                      String[] exceptions, boolean hasExplicitActionOnlyAnnotation) {
+    public RuleMethod(int access, String name, String desc, String signature, String[] exceptions,
+                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnnotation) {
         super(access, name, desc, signature, exceptions);
 
-        if (Type.getArgumentTypes(desc).length == 0) {
-            // no parameter rules are automatically cached and labelled
-            hasCachedAnnotation = true;
-            hasLabelAnnotation = true;
-        }
-
-        this.hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnnotation;
+        boolean parameterless = Type.getArgumentTypes(desc).length == 0;
+        hasCachedAnnotation = parameterless;
+        hasLabelAnnotation = parameterless && !hasDontLabelAnnotation;
+        hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnno;
     }
 
     public List<InstructionGroup> getGroups() {
@@ -132,7 +129,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         int index = instructions.indexOf(insn);
         InstructionGraphNode node = graphNodes.get(index);
         if (node == null) {
-            node = new InstructionGraphNode(insn, index, resultValue);
+            node = new InstructionGraphNode(insn, resultValue);
             graphNodes.set(index, node);
         }
         node.addPredecessors(predecessors);
@@ -152,6 +149,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         if (LEAF_DESC.equals(desc)) {
             hasLeafAnnotation = true;
             return null; // we do not need to record this annotation
+        }
+        if (DONT_LABEL_DESC.equals(desc)) {
+            hasLabelAnnotation = false;
+            return null;
         }
         if (LABEL_DESC.equals(desc)) {
             hasLabelAnnotation = true;
