@@ -54,9 +54,11 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        //testMethodAnalysis("RuleWithComplexActionSetup", 1823811521L);
-        testMethodAnalysis("RuleWithDirectImplicitUpAction", 825425354L);
-        renderToGraphViz(dotSource);
+        testMethodAnalysis("RuleWithComplexActionSetup", 1823811521L);
+        //renderToGraphViz(dotSource);
+
+        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 1228139512L);
+        //renderToGraphViz(dotSource);
     }
 
     private void testMethodAnalysis(String methodName, long dotSourceCRC) throws Exception {

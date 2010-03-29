@@ -24,6 +24,9 @@ import org.parboiled.support.ExplicitActionsOnly;
 import org.parboiled.support.Label;
 import org.parboiled.support.Leaf;
 
+import static java.lang.Integer.parseInt;
+import static org.parboiled.common.StringUtils.isEmpty;
+
 @SuppressWarnings({"UnusedDeclaration"})
 class TestParser extends BaseParser<Integer> {
 
@@ -65,7 +68,7 @@ class TestParser extends BaseParser<Integer> {
     }
 
     public Rule RuleWithIndirectExplicitDownAction() {
-        return sequence('a', 'b', ACTION(DOWN2(integer < 0 && action())));
+        return sequence('a', 'b', UP3(DOWN2(integer < 0 && action())));
     }
 
     public Rule RuleWithIndirectImplicitParamAction(int param) {
@@ -111,6 +114,13 @@ class TestParser extends BaseParser<Integer> {
     public Rule RuleWithFakeImplicitAction(int param) {
         Boolean b = integer == param;
         return sequence('a', 'b', b);
+    }
+
+    public Rule NumberRule() {
+        return sequence(
+                oneOrMore(charRange('0', '9')).asLeaf(),
+                SET(parseInt(isEmpty(LAST_TEXT()) ? "0" : LAST_TEXT()))
+        );
     }
 
     // actions

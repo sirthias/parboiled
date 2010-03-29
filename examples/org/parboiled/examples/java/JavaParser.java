@@ -29,6 +29,7 @@
 //    2009-07-10 Copying and distribution conditions relaxed by the author.
 //    2010-01-28 Transcribed to parboiled
 //    2010-02-01 Fixed problem in rule "formalParameterDecls"
+//    2010-03-29 Fixed problem in "annotation"
 //
 //===========================================================================
 
@@ -792,18 +793,23 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule annotation() {
-        return sequence(
-                AT,
-                qualifiedIdentifier(),
-                optional(
-                        sequence(
-                                LPAR,
-                                optional(sequence(identifier(), EQU)),
-                                elementValue(),
-                                RPAR
-                        )
-                )
-        );
+        return sequence(AT, qualifiedIdentifier(), optional(annotationRest()));
+    }
+
+    public Rule annotationRest() {
+        return firstOf(normalAnnotationRest(), singleElementAnnotationRest());
+    }
+
+    public Rule normalAnnotationRest() {
+        return sequence(LPAR, optional(elementValuePairs()), RPAR);
+    }
+
+    public Rule elementValuePairs() {
+        return sequence(elementValuePair(), zeroOrMore(sequence(COMMA, elementValuePair())));
+    }
+
+    public Rule elementValuePair() {
+        return sequence(identifier(), EQU, elementValue());
     }
 
     public Rule elementValue() {
@@ -816,6 +822,10 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule elementValues() {
         return sequence(elementValue(), zeroOrMore(sequence(COMMA, elementValue())));
+    }
+
+    public Rule singleElementAnnotationRest() {
+        return sequence(LPAR, elementValue(), RPAR);
     }
 
     //-------------------------------------------------------------------------

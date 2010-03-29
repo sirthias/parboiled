@@ -18,14 +18,15 @@ package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
-import org.parboiled.BasicParseRunner;
-import static org.parboiled.errors.ErrorUtils.printParseErrors;
+import org.parboiled.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
 
 public class Main {
     public static void main(String[] args) {
@@ -55,7 +56,7 @@ public class Main {
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<Object> result = BasicParseRunner.run(parser.compilationUnit(), sourceText);
+            ParsingResult<Object> result = ReportingParseRunner.run(parser.compilationUnit(), sourceText);
             if (!result.matched) {
                 System.out.printf("\nParse error(s) in file '%s':\n%s",
                         sourceFile,

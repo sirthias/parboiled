@@ -16,15 +16,16 @@
 
 package org.parboiled.examples;
 
-import org.parboiled.test.AbstractTest;
 import org.parboiled.Parboiled;
-import org.parboiled.RecoveringParseRunner;
-import org.parboiled.support.ParsingResult;
+import org.parboiled.ReportingParseRunner;
 import org.parboiled.examples.calculator3.CalcNode;
 import org.parboiled.examples.calculator3.CalculatorParser;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import org.testng.annotations.Test;
 
 public class Calculator3Test extends AbstractTest {
 
@@ -40,7 +41,7 @@ public class Calculator3Test extends AbstractTest {
     }
 
     private void test(String input, double value) {
-        ParsingResult<CalcNode> result = RecoveringParseRunner.run(parser.inputLine(), input);
+        ParsingResult<CalcNode> result = ReportingParseRunner.run(parser.inputLine(), input);
         double resultValue = result.parseTreeRoot.getValue().getValue();
         assertFalse(result.hasErrors());
         assertEquals(resultValue, value);

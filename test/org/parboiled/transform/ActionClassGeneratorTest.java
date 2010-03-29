@@ -38,7 +38,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
     );
 
     @Test(dependsOnGroups = "primary")
-    public void testActionClassGeneration() throws Exception {
+    public synchronized void testActionClassGeneration() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 
         assertEquals(method.getGroups().size(), 2);
@@ -148,6 +148,69 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "   L0\n" +
                 "    ICONST_0\n" +
                 "   L1\n" +
+                "    IRETURN\n" +
+                "    MAXSTACK = 3\n" +
+                "    MAXLOCALS = 2\n" +
+                "}\n");
+    }
+
+    @Test(dependsOnGroups = "primary")
+    public synchronized void testActionClassGeneration2() throws Exception {
+        RuleMethod method = processMethod("RuleWithIndirectExplicitDownAction", processors);
+
+        assertEquals(method.getGroups().size(), 1);
+
+        InstructionGroup group = method.getGroups().get(0);
+        assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
+                "// class version 49.0 (49)\n" +
+                "// access flags 17\n" +
+                "public final class org/parboiled/transform/Action$GJF0X0MS6WiJeöpo extends org/parboiled/transform/BaseAction  {\n" +
+                "\n" +
+                "\n" +
+                "  // access flags 4097\n" +
+                "  public Lorg/parboiled/transform/TestParser$$parboiled; field$0\n" +
+                "\n" +
+                "  // access flags 1\n" +
+                "  public <init>(Ljava/lang/String;)V\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    INVOKESPECIAL org/parboiled/transform/BaseAction.<init> (Ljava/lang/String;)V\n" +
+                "    RETURN\n" +
+                "    MAXSTACK = 2\n" +
+                "    MAXLOCALS = 2\n" +
+                "\n" +
+                "  // access flags 1\n" +
+                "  public run(Lorg/parboiled/Context;)Z\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    PUTFIELD org/parboiled/transform/BaseAction.context : Lorg/parboiled/Context;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.UP3 ()V\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN2 ()V\n" +
+                "    ALOAD 0\n" +
+                "    GETFIELD org/parboiled/transform/Action$GJF0X0MS6WiJeöpo.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
+                "    IFGE L0\n" +
+                "    ALOAD 0\n" +
+                "    GETFIELD org/parboiled/transform/Action$GJF0X0MS6WiJeöpo.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    DUP\n" +
+                "    ALOAD 0\n" +
+                "    GETFIELD org/parboiled/transform/Action$GJF0X0MS6WiJeöpo.context : Lorg/parboiled/Context;\n" +
+                "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
+                "    IFEQ L0\n" +
+                "    ICONST_1\n" +
+                "    GOTO L1\n" +
+                "   L0\n" +
+                "    ICONST_0\n" +
+                "   L1\n" +
+                "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.UP2 ()V\n" +
+                "    ALOAD 0\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN3 ()V\n" +
+                "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
                 "    IRETURN\n" +
                 "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 2\n" +

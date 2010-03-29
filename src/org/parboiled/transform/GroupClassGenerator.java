@@ -26,7 +26,8 @@ import org.objectweb.asm.tree.*;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.parboiled.transform.AsmUtils.*;
+import static org.parboiled.transform.AsmUtils.findLoadedClass;
+import static org.parboiled.transform.AsmUtils.loadClass;
 
 abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Types {
 
@@ -117,7 +118,7 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
     protected void fixContextSwitches(InstructionGroup group) {
         List<InstructionGraphNode> nodes = group.getNodes();
         InsnList instructions = group.getInstructions();
-        for (int i = 0, nodesSize = nodes.size(); i < nodesSize; i++) {
+        for (int i = nodes.size() - 1; i >= 0; i--) {
             InstructionGraphNode node = nodes.get(i);
             if (!node.isContextSwitch()) continue;
 
@@ -134,21 +135,6 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
             instructions.set(node.getInstruction(), new MethodInsnNode(INVOKEVIRTUAL,
                     getBaseType().getInternalName(), contextSwitchType.startsWith("UP") ? contextSwitchType
                             .replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP"), "()V"));
-
-            // remove Boolean.valueOf(boolean) if preceding
-            AbstractInsnNode precedingInsn = node.getInstruction().getPrevious().getPrevious();
-            if (isBooleanValueOfZ(precedingInsn)) {
-                instructions.remove(precedingInsn);
-            }
-
-            // remove following Boolean.value
-            AbstractInsnNode following = node.getInstruction().getNext();
-            if (following.getType() == AbstractInsnNode.METHOD_INSN) {
-                MethodInsnNode mi = (MethodInsnNode) following;
-                if ("java/lang/Boolean".equals(mi.desc) && "booleanValue".equals(mi.name) && "()Z".equals(mi.desc)) {
-                    instructions.remove(following);
-                }
-            }
         }
     }
 

@@ -54,6 +54,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         // prepare groups for later stages
         for (InstructionGroup group : method.getGroups()) {
             sort(group);
+            markUngroupedEnclosedNodes(group);
             verify(group);
         }
     }
@@ -64,22 +65,6 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
                 InstructionGroup group = new InstructionGroup(node);
                 markGroup(node, group);
                 method.getGroups().add(group);
-            }
-        }
-
-        // also capture all group nodes "hidden" behind xLoads
-        boolean repeat = true;
-        while (repeat) {
-            repeat = false;
-            for (InstructionGraphNode node : method.getGraphNodes()) {
-                if (node.getGroup() != null) continue;
-                for (InstructionGraphNode predecessor : node.getPredecessors()) {
-                    if (predecessor.getGroup() != null && predecessor != predecessor.getGroup().getRoot()) {
-                        node.setGroup(predecessor.getGroup());
-                        repeat = true;
-                        break;
-                    }
-                }
             }
         }
     }
@@ -109,6 +94,22 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         });
     }
 
+    // also capture all group nodes "hidden" behind xLoads
+    private void markUngroupedEnclosedNodes(InstructionGroup group) {
+        while_:
+        while (true) {
+            for (int i = getIndexOfFirstInsn(group), max = getIndexOfLastInsn(group); i < max; i++) {
+                InstructionGraphNode node = method.getGraphNodes().get(i);
+                if (node.getGroup() == null) {
+                    node.setGroup(group);
+                    sort(group);
+                    continue while_;
+                }
+            }
+            break;
+        }
+    }
+
     private void verify(InstructionGroup group) {
         List<InstructionGraphNode> nodes = group.getNodes();
         int sizeMinus1 = nodes.size() - 1;
@@ -119,8 +120,8 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
             verify(nodes.get(i));
         }
 
-        //Checks.ensure(nodes.get(sizeMinus1).getOriginalIndex() - nodes.get(0).getOriginalIndex() == sizeMinus1,
-        //        "Error during bytecode analysis of rule method '%s': Incontinuous group block", method.name);
+        Checks.ensure(getIndexOfLastInsn(group) - getIndexOfFirstInsn(group) == sizeMinus1,
+                "Error during bytecode analysis of rule method '%s': Incontinuous group block", method.name);
     }
 
     private void verify(InstructionGraphNode node) {
@@ -148,6 +149,15 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
                         method.name, calledMethod.name, calledMethod.name);
                 break;
         }
+    }
+
+    private int getIndexOfFirstInsn(InstructionGroup group) {
+        return method.instructions.indexOf(group.getNodes().get(0).getInstruction());
+    }
+
+    private int getIndexOfLastInsn(InstructionGroup group) {
+        List<InstructionGraphNode> graphNodes = group.getNodes();
+        return method.instructions.indexOf(graphNodes.get(graphNodes.size() - 1).getInstruction());
     }
 
     private boolean isPrivateField(String owner, String name) {

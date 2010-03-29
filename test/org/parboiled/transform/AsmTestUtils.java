@@ -26,7 +26,6 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
-import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.CheckMethodAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 import org.objectweb.asm.util.TraceMethodVisitor;
@@ -43,8 +42,8 @@ public class AsmTestUtils {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         TraceClassVisitor traceClassVisitor = new TraceClassVisitor(printWriter);
-        // ClassAdapter checkClassAdapter = new ClassAdapter(traceClassVisitor);
-        ClassAdapter checkClassAdapter = new CheckClassAdapter(traceClassVisitor);
+        ClassAdapter checkClassAdapter = new ClassAdapter(traceClassVisitor);
+        //ClassAdapter checkClassAdapter = new CheckClassAdapter(traceClassVisitor);
         ClassReader classReader;
         classReader = new ClassReader(code);
         classReader.accept(checkClassAdapter, 0);

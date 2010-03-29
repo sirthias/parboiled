@@ -37,7 +37,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
                         sequence(
                                 firstOf('+', '-'),
                                 term(),
-                                UP2(SET(actions.createAst(DOWN(DOWN(CHAR("firstOf"))), VALUE(), LAST_VALUE())))
+                                UP2(SET(actions.createAst(DOWN2(CHAR("firstOf")), VALUE(), LAST_VALUE())))
                                 // this creates a new AST node and sets it as the value of the "expression"
                                 // the node contains the operator ('+' or '-'), the old "expression" value as left
                                 // child and the value of the "term" following the operator as right child
