@@ -10,6 +10,7 @@ X1+2
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {2}] '+2'
             [sequence, {2}] '+2'
@@ -18,6 +19,7 @@ X1+2
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore]
     [EOI]
 ###
@@ -33,6 +35,7 @@ xyz1+2
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {2}] '+2'
             [sequence, {2}] '+2'
@@ -41,6 +44,7 @@ xyz1+2
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore]
     [EOI]
 ###
@@ -60,6 +64,7 @@ x1+*2
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {2}]E '+2'
             [sequence, {2}]E '+2'
@@ -84,6 +89,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 2):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {2}]E '+2'
             [sequence, {2}]E '+2'
@@ -92,6 +98,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 2):
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore]
     [EOI]
 ###
@@ -107,6 +114,7 @@ Invalid input 'X', expected term (line 1, pos 3):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {2}]E '+2'
             [sequence, {2}]E '+2'
@@ -131,6 +139,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {2}] '+2'
             [sequence, {2}] '+2'
@@ -139,6 +148,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore]
     [EOI]
 ###
@@ -154,6 +164,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {5}]E '+2*(3-4)-5'
             [sequence, {-2}]E '+2*(3-4)'
@@ -162,6 +173,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore, {-1}]E '*(3-4)'
                         [sequence, {-1}]E '*(3-4)'
                             [[*/]] '*'
@@ -173,6 +185,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
                                             [factor, {3}] '3'
                                                 [number, {3}] '3'
                                                     [oneOrMore] '3'
+                                                        [digit] '3'
                                             [zeroOrMore]
                                         [zeroOrMore, {4}] '-4'
                                             [sequence, {4}] '-4'
@@ -181,6 +194,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
                                                     [factor, {4}] '4'
                                                         [number, {4}] '4'
                                                             [oneOrMore] '4'
+                                                                [digit] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
             [sequence, {5}] '-5'
@@ -189,6 +203,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
                     [factor, {5}] '5'
                         [number, {5}] '5'
                             [oneOrMore] '5'
+                                [digit] '5'
                     [zeroOrMore]
     [EOI]
 ###
@@ -204,6 +219,7 @@ Invalid input 'X', expected factor (line 1, pos 5):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {5}]E '+2*(3-4)-5'
             [sequence, {-2}]E '+2*(3-4)'
@@ -212,6 +228,7 @@ Invalid input 'X', expected factor (line 1, pos 5):
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore, {-1}]E '*(3-4)'
                         [sequence, {-1}]E '*(3-4)'
                             [[*/]] '*'
@@ -223,6 +240,7 @@ Invalid input 'X', expected factor (line 1, pos 5):
                                             [factor, {3}] '3'
                                                 [number, {3}] '3'
                                                     [oneOrMore] '3'
+                                                        [digit] '3'
                                             [zeroOrMore]
                                         [zeroOrMore, {4}] '-4'
                                             [sequence, {4}] '-4'
@@ -231,6 +249,7 @@ Invalid input 'X', expected factor (line 1, pos 5):
                                                     [factor, {4}] '4'
                                                         [number, {4}] '4'
                                                             [oneOrMore] '4'
+                                                                [digit] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
             [sequence, {5}] '-5'
@@ -239,6 +258,7 @@ Invalid input 'X', expected factor (line 1, pos 5):
                     [factor, {5}] '5'
                         [number, {5}] '5'
                             [oneOrMore] '5'
+                                [digit] '5'
                     [zeroOrMore]
     [EOI]
 ###
@@ -254,6 +274,7 @@ Invalid input 'X', expected expression (line 1, pos 6):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {5}]E '+2*(3-4)-5'
             [sequence, {-2}]E '+2*(3-4)'
@@ -262,6 +283,7 @@ Invalid input 'X', expected expression (line 1, pos 6):
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore, {-1}]E '*(3-4)'
                         [sequence, {-1}]E '*(3-4)'
                             [[*/]] '*'
@@ -282,6 +304,7 @@ Invalid input 'X', expected expression (line 1, pos 6):
                                                     [factor, {4}] '4'
                                                         [number, {4}] '4'
                                                             [oneOrMore] '4'
+                                                                [digit] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
             [sequence, {5}] '-5'
@@ -290,6 +313,7 @@ Invalid input 'X', expected expression (line 1, pos 6):
                     [factor, {5}] '5'
                         [number, {5}] '5'
                             [oneOrMore] '5'
+                                [digit] '5'
                     [zeroOrMore]
     [EOI]
 ###
@@ -305,6 +329,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
             [factor, {1}] '1'
                 [number, {1}] '1'
                     [oneOrMore] '1'
+                        [digit] '1'
             [zeroOrMore]
         [zeroOrMore, {5}]E '+2*(3-4)-5'
             [sequence, {-2}]E '+2*(3-4)'
@@ -313,6 +338,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
                     [factor, {2}] '2'
                         [number, {2}] '2'
                             [oneOrMore] '2'
+                                [digit] '2'
                     [zeroOrMore, {-1}]E '*(3-4)'
                         [sequence, {-1}]E '*(3-4)'
                             [[*/]] '*'
@@ -324,6 +350,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
                                             [factor, {3}] '3'
                                                 [number, {3}] '3'
                                                     [oneOrMore] '3'
+                                                        [digit] '3'
                                             [zeroOrMore]
                                         [zeroOrMore, {4}]E '-4'
                                             [sequence, {4}]E '-4'
@@ -332,6 +359,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
                                                     [factor, {4}] '4'
                                                         [number, {4}] '4'
                                                             [oneOrMore] '4'
+                                                                [digit] '4'
                                                     [zeroOrMore]
                                     [')'] ')'
             [sequence, {5}] '-5'
@@ -340,6 +368,7 @@ Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
                     [factor, {5}] '5'
                         [number, {5}] '5'
                             [oneOrMore] '5'
+                                [digit] '5'
                     [zeroOrMore]
     [EOI]
 ###

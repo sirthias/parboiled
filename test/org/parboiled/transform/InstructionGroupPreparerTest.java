@@ -17,13 +17,14 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
-@Test(groups="secondary", dependsOnGroups = "primary")
 public class InstructionGroupPreparerTest extends TransformationTest {
 
     private final List<RuleMethodProcessor> processors = ImmutableList.of(
@@ -35,6 +36,12 @@ public class InstructionGroupPreparerTest extends TransformationTest {
             new InstructionGroupPreparer()
     );
 
+    @BeforeClass
+    public void setup() throws IOException {
+        setup(TestParser.class);
+    }
+
+    @Test(dependsOnGroups = "primary")
     public void testRuleWithComplexActionSetup() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 

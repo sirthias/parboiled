@@ -20,10 +20,8 @@ import com.google.common.collect.ImmutableList;
 import org.parboiled.BaseParser;
 import org.parboiled.Capture;
 import org.parboiled.Rule;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -43,12 +41,6 @@ public class ErrorDetectionTest extends TransformationTest {
             new ActionClassGenerator(true),
             new RuleMethodRewriter()
     );
-
-    @BeforeClass
-    @Override
-    public void setup() throws IOException {
-        // do not setup with the TestParser
-    }
 
     @Test
     public synchronized void testRuleWithCaptureInAction() throws Exception {

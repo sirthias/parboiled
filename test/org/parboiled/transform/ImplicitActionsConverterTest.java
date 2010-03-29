@@ -17,24 +17,31 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.transform.AsmTestUtils.assertTraceDumpEquality;
 
 public class ImplicitActionsConverterTest extends TransformationTest {
 
+    private final List<RuleMethodProcessor> processors = ImmutableList.of(
+            new UnusedLabelsRemover(),
+            new ReturnInstructionUnifier(),
+            new InstructionGraphCreator(),
+            new ImplicitActionsConverter()
+    );
+
+    @BeforeClass
+    public void setup() throws IOException {
+        setup(TestParser.class);
+    }
+
     @SuppressWarnings({"unchecked"})
     @Test
     public void testReturnInstructionUnification() throws Exception {
-        List<RuleMethodProcessor> processors = ImmutableList.of(
-                new UnusedLabelsRemover(),
-                new ReturnInstructionUnifier(),
-                new InstructionGraphCreator(),
-                new ImplicitActionsConverter()
-        );
-
         assertTraceDumpEquality(processMethod("RuleWithIndirectImplicitAction", processors), "" +
                 "    ALOAD 0\n" +
                 "    BIPUSH 97\n" +

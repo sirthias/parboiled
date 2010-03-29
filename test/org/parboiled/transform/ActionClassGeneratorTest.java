@@ -17,8 +17,10 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
@@ -37,8 +39,14 @@ public class ActionClassGeneratorTest extends TransformationTest {
             new ActionClassGenerator(true)
     );
 
+
+    @BeforeClass
+    public void setup() throws IOException {
+        setup(TestParser.class);
+    }
+
     @Test(dependsOnGroups = "primary")
-    public synchronized void testActionClassGeneration() throws Exception {
+    public void testActionClassGeneration() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 
         assertEquals(method.getGroups().size(), 2);
@@ -154,8 +162,8 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "}\n");
     }
 
-    @Test(dependsOnGroups = "primary")
-    public synchronized void testActionClassGeneration2() throws Exception {
+    @Test(dependsOnGroups = "primary", dependsOnMethods = "testActionClassGeneration")
+    public void testActionClassGeneration2() throws Exception {
         RuleMethod method = processMethod("RuleWithIndirectExplicitDownAction", processors);
 
         assertEquals(method.getGroups().size(), 1);

@@ -17,38 +17,12 @@
 package org.parboiled.trees;
 
 import com.google.common.base.Function;
-import org.parboiled.Node;
-import static org.parboiled.trees.GraphUtils.hasChildren;
 
 /**
- * Utility interface defining a few commonly used parse tree node filters.
+ * Utility interface defining a filters for graph printing.
  *
  * @param <T> the type of {@link GraphNode} this Filter is operating on
  */
 public interface Filter<T extends GraphNode<T>> extends Function<T, Printability> {
-
-    static final Filter<Node<Object>> SkipEmptyOptionalsAndZeroOrMores = new Filter<Node<Object>>() {
-        public Printability apply(Node<Object> node) {
-            return SkipEmptyOptionals.apply(node) == Printability.Skip ||
-                    SkipEmptyZeroOrMores.apply(node) == Printability.Skip ?
-                    Printability.Skip : Printability.PrintAndDescend;
-        }
-    };
-
-    static final Filter<Node<Object>> SkipEmptyOptionals = new Filter<Node<Object>>() {
-        public Printability apply(Node<Object> node) {
-            return hasChildren(node) || node.getEndLocation() != node.getStartLocation() || !"optional"
-                    .equals(node.getLabel()) ?
-                    Printability.PrintAndDescend : Printability.Skip;
-        }
-    };
-
-    static final Filter<Node<Object>> SkipEmptyZeroOrMores = new Filter<Node<Object>>() {
-        public Printability apply(Node<Object> node) {
-            return hasChildren(node) || node.getEndLocation() != node.getStartLocation() || !"zeroOrMore"
-                    .equals(node.getLabel()) ?
-                    Printability.PrintAndDescend : Printability.Skip;
-        }
-    };
 
 }

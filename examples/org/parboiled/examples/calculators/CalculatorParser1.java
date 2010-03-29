@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator;
+package org.parboiled.examples.calculators;
 
-import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import static org.parboiled.common.StringUtils.isEmpty;
 
-import static java.lang.Integer.parseInt;
 import java.util.List;
 
-public class CalculatorParser extends BaseParser<Integer> {
+import static java.lang.Integer.parseInt;
+import static org.parboiled.common.StringUtils.isEmpty;
 
+public class CalculatorParser1 extends CalculatorParser<Integer> {
+
+    @Override
     public Rule inputLine() {
-        return sequence(
-                expression(),
-                eoi()
-        );
+        return sequence(expression(), eoi());
     }
 
     public Rule expression() {
         return sequence(
                 term(),
-                zeroOrMore(sequence(charSet("+-"), term())),
+                zeroOrMore(
+                        sequence(
+                                charSet("+-"),
+                                term()
+                        )
+                ),
+                // "z/s/[" is short for "zeroOrMore/sequence/[+-]"
                 compute(VALUE("term"), CHARS("z/s/["), VALUES("z/s/term"))
         );
     }
@@ -43,7 +47,13 @@ public class CalculatorParser extends BaseParser<Integer> {
     public Rule term() {
         return sequence(
                 factor(),
-                zeroOrMore(sequence(charSet("*/"), factor())),
+                zeroOrMore(
+                        sequence(
+                                charSet("*/"),
+                                factor()
+                        )
+                ),
+                // "z/s/[" is short for "zeroOrMore/sequence/[*/]"
                 compute(VALUE("factor"), CHARS("z/s/["), VALUES("z/s/factor"))
         );
     }
@@ -61,8 +71,8 @@ public class CalculatorParser extends BaseParser<Integer> {
 
     public Rule number() {
         return sequence(
-                oneOrMore(digit()).asLeaf(),
-                SET(parseInt(isEmpty(LAST_TEXT()) ? "0" : LAST_TEXT()))
+                oneOrMore(digit()),
+                SET(isEmpty(LAST_TEXT()) ? 0 : parseInt(LAST_TEXT()))
         );
     }
 
@@ -77,8 +87,7 @@ public class CalculatorParser extends BaseParser<Integer> {
         for (int i = 0; i < Math.min(operators.size(), values.size()); i++) {
             value = performOperation(value, operators.get(i), values.get(i));
         }
-        getContext().setNodeValue(value);
-        return true;
+        return SET(value);
     }
 
     private int performOperation(int value1, Character operator, Integer value2) {
@@ -95,6 +104,12 @@ public class CalculatorParser extends BaseParser<Integer> {
             }
         }
         throw new IllegalStateException();
+    }
+
+    //**************** MAIN ****************
+
+    public static void main(String[] args) {
+        main(CalculatorParser1.class);
     }
 
 }

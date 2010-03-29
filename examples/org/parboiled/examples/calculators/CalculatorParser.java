@@ -14,23 +14,34 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator;
+package org.parboiled.examples.calculators;
 
+import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.RecoveringParseRunner;
+import org.parboiled.Rule;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;
 
 import java.util.Scanner;
 
-public class Main {
+import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 
-    public static void main(String[] args) {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
+/**
+ * Base class of all calculator parsers in the org.parboiled.examples.calculators package.
+ * Simply add the public static main entry point.
+ *
+ * @param <V>
+ */
+public abstract class CalculatorParser<V> extends BaseParser<V> {
+
+    public abstract Rule inputLine();
+
+    public static <V, P extends CalculatorParser<V>> void main(Class<P> parserClass) {
+        CalculatorParser<V> parser = Parboiled.createParser(parserClass);
 
         while (true) {
-            System.out.print("Enter a calculator expression (single RETURN to exit)!\n");
+            System.out.print("Enter a calculators expression (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 

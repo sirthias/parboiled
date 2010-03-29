@@ -17,11 +17,11 @@
 package org.parboiled.examples.rpn;
 
 import org.parboiled.Parboiled;
-import org.parboiled.common.StringUtils;
 import org.parboiled.RecoveringParseRunner;
+import org.parboiled.common.StringUtils;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.trees.Filter;
+import org.parboiled.trees.Filters;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,7 +39,7 @@ public class Main {
 
             ParsingResult<Node> result = RecoveringParseRunner.run(parser.operation(), input);
 
-            System.out.println(ParseTreeUtils.printNodeTree(result, Filter.SkipEmptyOptionalsAndZeroOrMores));
+            System.out.println(ParseTreeUtils.printNodeTree(result, Filters.<Object>skipEmptyOptionalsAndZeroOrMores()));
 
             List<BigDecimal> output = result.parseTreeRoot.getValue().getResult();
             if (!result.matched) {

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.parboiled.common;
+package org.parboiled.support;
+
+import org.parboiled.common.Formatter;
 
 /**
  * A simple Formatter falling back to the objects toString() method.

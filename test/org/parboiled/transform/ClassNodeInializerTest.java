@@ -18,14 +18,21 @@ package org.parboiled.transform;
 
 import com.google.common.base.Predicate;
 import org.objectweb.asm.tree.MethodNode;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 
 public class ClassNodeInializerTest extends TransformationTest {
+
+    @BeforeClass
+    public void setup() throws IOException {
+        setup(TestParser.class);
+    }
 
     @Test(enabled = false)
     public void testClassNodeSetup() throws Exception {

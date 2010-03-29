@@ -17,8 +17,10 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
@@ -37,6 +39,11 @@ public class RuleMethodRewriterTest extends TransformationTest {
             new ActionClassGenerator(true),
             new RuleMethodRewriter()
     );
+
+    @BeforeClass
+    public void setup() throws IOException {
+        setup(TestParser.class);
+    }
 
     @Test(dependsOnGroups = "primary")
     public void testActionClassGeneration() throws Exception {

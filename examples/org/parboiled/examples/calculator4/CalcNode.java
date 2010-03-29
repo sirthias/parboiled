@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator3;
+package org.parboiled.examples.calculator4;
 
 import org.parboiled.trees.ImmutableBinaryTreeNode;
 

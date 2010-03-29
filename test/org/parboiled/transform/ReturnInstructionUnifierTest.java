@@ -17,22 +17,29 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.transform.AsmTestUtils.assertTraceDumpEquality;
 
 public class ReturnInstructionUnifierTest extends TransformationTest {
 
+    private final List<RuleMethodProcessor> processors = ImmutableList.of(
+            new UnusedLabelsRemover(),
+            new ReturnInstructionUnifier()
+    );
+
+    @BeforeClass
+    public void setup() throws IOException {
+        setup(TestParser.class);
+    }
+
     @SuppressWarnings({"unchecked"})
     @Test
     public void testReturnInstructionUnification() throws Exception {
-        List<RuleMethodProcessor> processors = ImmutableList.of(
-                new UnusedLabelsRemover(),
-                new ReturnInstructionUnifier()
-        );
-
         assertTraceDumpEquality(processMethod("RuleWith2Returns", processors), "" +
                 "  @Lorg/parboiled/support/Label;()\n" +
                 "    ILOAD 1\n" +

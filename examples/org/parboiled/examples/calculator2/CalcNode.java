@@ -19,7 +19,7 @@ package org.parboiled.examples.calculator2;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
- * The AST node for the calculator. The type of the node is carried as a Character that can either contain an operator
+ * The AST node for the calculators. The type of the node is carried as a Character that can either contain an operator
  * or be null. In the latter case the AST node is a leaf directly containing a value.
  */
 public class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {

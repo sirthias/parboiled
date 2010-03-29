@@ -204,7 +204,7 @@
     </target>
 
     <target name="run-example-calc" depends="compile.examples" description="Run the Calculator example">
-        <java classname="org.parboiled.examples.calculator.Main" fork="true">
+        <java classname="org.parboiled.examples.calculators.CalculatorParser" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath location="build/main"/>
             <classpath location="build/examples"/>

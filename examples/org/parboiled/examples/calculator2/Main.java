@@ -20,7 +20,8 @@ import org.parboiled.Parboiled;
 import org.parboiled.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.common.StringUtils;
-import org.parboiled.common.ToStringFormatter;
+import org.parboiled.support.ToStringFormatter;
+
 import static org.parboiled.trees.GraphUtils.printTree;
 
 import java.util.Scanner;
@@ -31,7 +32,7 @@ public class Main {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
 
         while (true) {
-            System.out.print("Enter a calculator expression (single RETURN to exit)!\n");
+            System.out.print("Enter a calculators expression (single RETURN to exit)!\n");
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 

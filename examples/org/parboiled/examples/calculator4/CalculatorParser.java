@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.parboiled.examples.calculator3;
+package org.parboiled.examples.calculator4;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
 public class CalculatorParser extends BaseParser<CalcNode> {
-
-    final CalculatorActions actions = new CalculatorActions();
 
     public Rule inputLine() {
         return sequence(
@@ -38,7 +36,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
                         sequence(
                                 firstOf('+', '-'),
                                 term(),
-                                UP2(SET(actions.createAst(DOWN2(CHAR("firstOf")), VALUE(), LAST_VALUE())))
+                                UP2(SET(createAst(DOWN2(CHAR("firstOf")), VALUE(), LAST_VALUE())))
                                 // this creates a new AST node and sets it as the value of the "expression",
                                 // the node contains the operator ('+' or '-'), the old "expression" value as left
                                 // child and the value of the "term" following the operator as right child
@@ -54,7 +52,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
                         sequence(
                                 firstOf('*', '/'),
                                 factor(),
-                                UP2(SET(actions.createAst(DOWN2(CHAR("firstOf")), VALUE(), LAST_VALUE())))
+                                UP2(SET(createAst(DOWN2(CHAR("firstOf")), VALUE(), LAST_VALUE())))
                         )
                 )
         );
@@ -67,7 +65,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
                         sequence(
                                 '^',
                                 atom(),
-                                UP2(SET(actions.createAst('^', VALUE(), LAST_VALUE())))
+                                UP2(SET(createAst('^', VALUE(), LAST_VALUE())))
                         )
                 )
         );
@@ -85,7 +83,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
         return sequence(
                 "SQRT",
                 parens(),
-                SET(actions.createAst('R', VALUE(), VALUE()))
+                SET(createAst('R', VALUE(), VALUE()))
         );
     }
 
@@ -100,7 +98,7 @@ public class CalculatorParser extends BaseParser<CalcNode> {
                         oneOrMore(digit()),
                         optional(sequence(ch('.'), oneOrMore(digit())))
                 ),
-                SET(actions.createAst(Double.parseDouble(LAST_TEXT()))),
+                SET(createAst(Double.parseDouble(LAST_TEXT()))),
                 whiteSpace()
         );
     }
@@ -130,6 +128,16 @@ public class CalculatorParser extends BaseParser<CalcNode> {
     protected Rule fromStringLiteral(@NotNull String string) {
         // same thing for string literals
         return sequence(string(string), whiteSpace());
+    }
+
+    // ACTIONS
+
+    public CalcNode createAst(Double value) {
+        return new CalcNode(value);
+    }
+
+    public CalcNode createAst(Character type, CalcNode left, CalcNode right) {
+        return new CalcNode(type, left, right);
     }
 
 }

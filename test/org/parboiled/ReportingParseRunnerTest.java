@@ -17,7 +17,8 @@
 package org.parboiled;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
-import org.parboiled.examples.calculator.CalculatorParser;
+
+import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
@@ -65,7 +66,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
 
     @Test
     public void testSimpleReporting() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
+        CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
         Rule rule = parser.inputLine();
         for (int i = 0; i < inputs.length; i++) {
             ParsingResult<Integer> result = ReportingParseRunner.run(rule, inputs[i]);

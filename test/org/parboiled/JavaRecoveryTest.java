@@ -19,7 +19,7 @@ package org.parboiled;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.test.FileUtils;
-import org.parboiled.trees.Filter;
+import org.parboiled.trees.Filters;
 import org.testng.annotations.Test;
 
 public class JavaRecoveryTest extends AbstractTest {
@@ -52,7 +52,7 @@ public class JavaRecoveryTest extends AbstractTest {
     private void runTest(JavaParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser.compilationUnit(), s[0], s[1], s[2], Filter.SkipEmptyOptionalsAndZeroOrMores);
+            testFail(parser.compilationUnit(), s[0], s[1], s[2], Filters.skipEmptyOptionalsAndZeroOrMores());
         }
     }
 

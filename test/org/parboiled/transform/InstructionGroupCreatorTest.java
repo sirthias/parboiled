@@ -44,12 +44,6 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     @SuppressWarnings({"FieldCanBeLocal"})
     private String dotSource;
 
-    @BeforeClass
-    @Override
-    public void setup() throws IOException {
-        // do not setup with the TestParser
-    }
-
     @Test
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);

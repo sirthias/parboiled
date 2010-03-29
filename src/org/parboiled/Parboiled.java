@@ -23,7 +23,7 @@ import org.parboiled.transform.ParserTransformer;
 import java.lang.reflect.Constructor;
 
 /**
- * Main class providing the high-level entry point into the parboiled library.
+ * CalculatorParser class providing the high-level entry point into the parboiled library.
  */
 public class Parboiled {
 
