@@ -51,13 +51,13 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 " 6     ANEWARRAY java/lang/Object\n" +
                 " 7     DUP\n" +
                 " 8     ICONST_0\n" +
-                " 9     NEW org/parboiled/transform/Action$MoALzYkUjUT8mJäs\n" +
+                " 9     NEW org/parboiled/transform/Action$T3ibjgjNOs8QKeHY\n" +
                 "10     DUP\n" +
                 "11     LDC \"RuleWithIndirectImplicitAction_Action1\"\n" +
-                "12     INVOKESPECIAL org/parboiled/transform/Action$MoALzYkUjUT8mJäs.<init> (Ljava/lang/String;)V\n" +
+                "12     INVOKESPECIAL org/parboiled/transform/Action$T3ibjgjNOs8QKeHY.<init> (Ljava/lang/String;)V\n" +
                 "13     DUP\n" +
                 "14     ALOAD 0\n" +
-                "15     PUTFIELD org/parboiled/transform/Action$MoALzYkUjUT8mJäs.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "15     PUTFIELD org/parboiled/transform/Action$T3ibjgjNOs8QKeHY.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "16     AASTORE\n" +
                 "17     INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "18     ARETURN\n");
@@ -83,19 +83,19 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "16     ILOAD 2\n" +
                 "17     IADD\n" +
                 "18     INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
-                "19     NEW org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy\n" +
+                "19     NEW org/parboiled/transform/Action$HCsAlhftW7cYn1dT\n" +
                 "20     DUP\n" +
                 "21     LDC \"RuleWithComplexActionSetup_Action1\"\n" +
-                "22     INVOKESPECIAL org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.<init> (Ljava/lang/String;)V\n" +
+                "22     INVOKESPECIAL org/parboiled/transform/Action$HCsAlhftW7cYn1dT.<init> (Ljava/lang/String;)V\n" +
                 "23     DUP\n" +
                 "24     ILOAD 2\n" +
-                "25     PUTFIELD org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.field$0 : I\n" +
+                "25     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$0 : I\n" +
                 "26     DUP\n" +
                 "27     ILOAD 1\n" +
-                "28     PUTFIELD org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.field$1 : I\n" +
+                "28     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$1 : I\n" +
                 "29     DUP\n" +
                 "30     ILOAD 3\n" +
-                "31     PUTFIELD org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.field$2 : I\n" +
+                "31     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$2 : I\n" +
                 "32     ICONST_2\n" +
                 "33     ANEWARRAY java/lang/Object\n" +
                 "34     DUP\n" +
@@ -104,25 +104,25 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "37     AASTORE\n" +
                 "38     DUP\n" +
                 "39     ICONST_1\n" +
-                "40     NEW org/parboiled/transform/Action$vLSRdXHTo6M2s2py\n" +
+                "40     NEW org/parboiled/transform/Action$ZtTW8WICJeWWcGjq\n" +
                 "41     DUP\n" +
                 "42     LDC \"RuleWithComplexActionSetup_Action2\"\n" +
-                "43     INVOKESPECIAL org/parboiled/transform/Action$vLSRdXHTo6M2s2py.<init> (Ljava/lang/String;)V\n" +
+                "43     INVOKESPECIAL org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.<init> (Ljava/lang/String;)V\n" +
                 "44     DUP\n" +
                 "45     ALOAD 0\n" +
-                "46     PUTFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "46     PUTFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "47     DUP\n" +
                 "48     ILOAD 1\n" +
-                "49     PUTFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$1 : I\n" +
+                "49     PUTFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$1 : I\n" +
                 "50     DUP\n" +
                 "51     ALOAD 4\n" +
-                "52     PUTFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$2 : Ljava/lang/String;\n" +
+                "52     PUTFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$2 : Ljava/lang/String;\n" +
                 "53     DUP\n" +
                 "54     ILOAD 2\n" +
-                "55     PUTFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$3 : I\n" +
+                "55     PUTFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$3 : I\n" +
                 "56     DUP\n" +
                 "57     ILOAD 3\n" +
-                "58     PUTFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$4 : I\n" +
+                "58     PUTFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$4 : I\n" +
                 "59     AASTORE\n" +
                 "60     INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "61     ARETURN\n");
@@ -139,20 +139,20 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 " 7     DUP\n" +
                 " 8     ICONST_0\n" +
                 " 9     ALOAD 0\n" +
-                "10     NEW org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ\n" +
+                "10     NEW org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR\n" +
                 "11     DUP\n" +
                 "12     LDC \"RuleWithCapture_Capture1\"\n" +
-                "13     INVOKESPECIAL org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ.<init> (Ljava/lang/String;)V\n" +
+                "13     INVOKESPECIAL org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.<init> (Ljava/lang/String;)V\n" +
                 "14     DUP\n" +
                 "15     ALOAD 0\n" +
-                "16     PUTFIELD org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "16     PUTFIELD org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "17     DUP\n" +
                 "18     ASTORE 1\n" +
                 "19     INVOKEVIRTUAL org/parboiled/transform/TestParser.RuleWithCaptureParameter (Lorg/parboiled/Capture;)Lorg/parboiled/Rule;\n" +
                 "20     DUP\n" +
                 "21     ALOAD 1\n" +
                 "22     SWAP\n" +
-                "23     PUTFIELD org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ.contextRule : Lorg/parboiled/Rule;\n" +
+                "23     PUTFIELD org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.contextRule : Lorg/parboiled/Rule;\n" +
                 "24     AASTORE\n" +
                 "25     INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "26     ARETURN\n");

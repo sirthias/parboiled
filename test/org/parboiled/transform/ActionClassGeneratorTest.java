@@ -47,7 +47,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$HCsAlhftW7cYn1dT extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -74,11 +74,11 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    ALOAD 1\n" +
                 "    PUTFIELD org/parboiled/transform/BaseAction.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.field$0 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$0 : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.field$1 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$1 : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$bcdrqiT5Ofp84Pöy.field$2 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$2 : I\n" +
                 "    IADD\n" +
                 "    IF_ICMPLE L0\n" +
                 "    ICONST_1\n" +
@@ -95,7 +95,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Action$vLSRdXHTo6M2s2py extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$ZtTW8WICJeWWcGjq extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -128,19 +128,19 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    ALOAD 1\n" +
                 "    PUTFIELD org/parboiled/transform/BaseAction.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$1 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$1 : I\n" +
                 "    IADD\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$2 : Ljava/lang/String;\n" +
+                "    GETFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$2 : Ljava/lang/String;\n" +
                 "    INVOKEVIRTUAL java/lang/String.length ()I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$3 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$3 : I\n" +
                 "    ISUB\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$vLSRdXHTo6M2s2py.field$4 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$4 : I\n" +
                 "    ISUB\n" +
                 "    IF_ICMPGE L0\n" +
                 "    ICONST_1\n" +
@@ -164,7 +164,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Action$GJF0X0MS6WiJeöpo extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$4keN2urdHg0w1kKä extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -189,14 +189,14 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN2 ()V\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$GJF0X0MS6WiJeöpo.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
                 "    IFGE L0\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$GJF0X0MS6WiJeöpo.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$GJF0X0MS6WiJeöpo.context : Lorg/parboiled/Context;\n" +
+                "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.context : Lorg/parboiled/Context;\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
                 "    IFEQ L0\n" +

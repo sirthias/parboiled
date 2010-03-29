@@ -47,7 +47,7 @@ public class CaptureClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ extends org/parboiled/transform/BaseCapture  {\n" +
+                "public final class org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR extends org/parboiled/transform/BaseCapture  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -67,10 +67,10 @@ public class CaptureClassGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/BaseCapture.checkContext ()V\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Capture$äY9ptjsv0EazxIRZ.context : Lorg/parboiled/Context;\n" +
+                "    GETFIELD org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.context : Lorg/parboiled/Context;\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
                 "    LDC \"a\"\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.TEXT (Ljava/lang/String;)Ljava/lang/String;\n" +

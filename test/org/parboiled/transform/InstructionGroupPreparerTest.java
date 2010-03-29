@@ -41,14 +41,14 @@ public class InstructionGroupPreparerTest extends TransformationTest {
         assertEquals(method.getGroups().size(), 2);
 
         InstructionGroup group = method.getGroups().get(0);
-        assertEquals(group.getName(), "Action$bcdrqiT5Ofp84Pöy");
+        assertEquals(group.getName(), "Action$HCsAlhftW7cYn1dT");
         assertEquals(group.getFields().size(), 3);
         assertEquals(group.getFields().get(0).desc, "I");
         assertEquals(group.getFields().get(1).desc, "I");
         assertEquals(group.getFields().get(2).desc, "I");
 
         group = method.getGroups().get(1);
-        assertEquals(group.getName(), "Action$vLSRdXHTo6M2s2py");
+        assertEquals(group.getName(), "Action$ZtTW8WICJeWWcGjq");
         assertEquals(group.getFields().size(), 5);
         assertEquals(group.getFields().get(0).desc, "Lorg/parboiled/transform/TestParser$$parboiled;");
         assertEquals(group.getFields().get(1).desc, "I");
