@@ -30,6 +30,8 @@
 //    2010-01-28 Transcribed to parboiled
 //    2010-02-01 Fixed problem in rule "formalParameterDecls"
 //    2010-03-29 Fixed problem in "annotation"
+//    2010-03-31 Fixed problem in unicode escapes, string literals and line comments
+//               (Thanks to Reinier Zwitserloot for the finds)
 //
 //===========================================================================
 
@@ -837,13 +839,17 @@ public class JavaParser extends BaseParser<Object> {
         return zeroOrMore(firstOf(
 
                 // whitespace
-                oneOrMore(charSet(" \t\r\n\u000c")),
+                oneOrMore(charSet(" \t\r\n\f")),
 
                 // traditional comment
                 sequence("/*", zeroOrMore(sequence(testNot("*/"), any())), "*/"),
 
                 // end of line comment
-                sequence("//", zeroOrMore(sequence(testNot(charSet("\r\n")), any())), charSet("\r\n"))
+                sequence(
+                        "//",
+                        zeroOrMore(sequence(testNot(charSet("\r\n")), any())),
+                        firstOf("\r\n", '\r', '\n', eoi())
+                )
         ));
     }
 
@@ -1013,7 +1019,7 @@ public class JavaParser extends BaseParser<Object> {
                 zeroOrMore(
                         firstOf(
                                 escape(),
-                                sequence(testNot(charSet("\"\\")), any())
+                                sequence(testNot(charSet("\r\n\"\\")), any())
                         )
                 ),
                 '"'
@@ -1033,7 +1039,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule unicodeEscape() {
-        return sequence('u', hexDigit(), hexDigit(), hexDigit(), hexDigit());
+        return sequence(oneOrMore('u'), hexDigit(), hexDigit(), hexDigit(), hexDigit());
     }
 
     //-------------------------------------------------------------------------
