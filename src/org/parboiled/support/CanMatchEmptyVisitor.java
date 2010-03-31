@@ -45,6 +45,10 @@ public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
         return false;
     }
 
+    public Boolean visit(CustomMatcher<V> matcher) {
+        return matcher.canMatchEmpty();
+    }
+
     public Boolean visit(EmptyMatcher<V> matcher) {
         return true;
     }

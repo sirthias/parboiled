@@ -52,6 +52,10 @@ public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
         return matcher.cLow <= starterChar && starterChar <= matcher.cHigh;
     }
 
+    public Boolean visit(CustomMatcher<V> matcher) {
+        return matcher.isStarterChar(starterChar);
+    }
+
     public Boolean visit(EmptyMatcher<V> matcher) {
         return false;
     }

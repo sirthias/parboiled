@@ -45,6 +45,10 @@ public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean>
         return true;
     }
 
+    public Boolean visit(CustomMatcher<V> matcher) {
+        return matcher.isSingleCharMatcher();
+    }
+
     public Boolean visit(EmptyMatcher<V> matcher) {
         return false;
     }

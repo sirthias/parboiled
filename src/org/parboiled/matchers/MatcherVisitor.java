@@ -33,6 +33,8 @@ public interface MatcherVisitor<V, R> {
 
     R visit(CharMatcher<V> matcher);
 
+    R visit(CustomMatcher<V> matcher);
+
     R visit(CharRangeMatcher<V> matcher);
 
     R visit(EmptyMatcher<V> matcher);
