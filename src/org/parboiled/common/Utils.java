@@ -230,5 +230,48 @@ public final class Utils {
         throw new GrammarException("No constructor found for class %s and the given %s arguments", type, args.length);
     }
 
+    /**
+     * "Zips" up two Iterables into one Iterable providing key/value pairs of the zipped up entries.
+     *
+     * @param keys   the first Iterable
+     * @param values the second Iterable
+     * @return an Iterable of key/value pairs corresponding to the respective entries of the two Iterables
+     */
+    public static <K, V> Iterable<Map.Entry<K, V>> zip(final Iterable<K> keys, final Iterable<V> values) {
+        return new Iterable<Map.Entry<K, V>>() {
+            public Iterator<Map.Entry<K, V>> iterator() {
+                return new Iterator<Map.Entry<K, V>>() {
+                    private Iterator<K> keyIterator = keys.iterator();
+                    private Iterator<V> valueIterator = values.iterator();
+
+                    public boolean hasNext() {
+                        return keyIterator.hasNext() && valueIterator.hasNext();
+                    }
+
+                    public Map.Entry<K, V> next() {
+                        final K key = keyIterator.next();
+                        final V value = valueIterator.next();
+                        return new Map.Entry<K, V>() {
+                            public K getKey() {
+                                return key;
+                            }
+
+                            public V getValue() {
+                                return value;
+                            }
+
+                            public V setValue(V value) {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+    }
 }
 

@@ -17,13 +17,14 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import static org.parboiled.common.Utils.findConstructor;
 import org.parboiled.transform.ParserTransformer;
 
 import java.lang.reflect.Constructor;
 
+import static org.parboiled.common.Utils.findConstructor;
+
 /**
- * CalculatorParser class providing the high-level entry point into the parboiled library.
+ * Main class providing the high-level entry point into the parboiled library.
  */
 public class Parboiled {
 

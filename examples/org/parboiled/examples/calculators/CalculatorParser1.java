@@ -19,10 +19,14 @@ package org.parboiled.examples.calculators;
 import org.parboiled.Rule;
 
 import java.util.List;
+import java.util.Map;
 
-import static java.lang.Integer.parseInt;
-import static org.parboiled.common.StringUtils.isEmpty;
+import static org.parboiled.common.Utils.zip;
 
+/**
+ * A simple calculator parser using an action approach demonstrating node selecting queries and keeping calculation
+ * results directly in the value field of the parse tree nodes.
+ */
 public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     @Override
@@ -35,12 +39,13 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                 term(),
                 zeroOrMore(
                         sequence(
-                                charSet("+-"),
+                                charSet("+-").label("op"),
                                 term()
                         )
                 ),
-                // "z/s/[" is short for "zeroOrMore/sequence/[+-]"
-                compute(VALUE("term"), CHARS("z/s/["), VALUES("z/s/term"))
+
+                // "z/s/..." is short for "zeroOrMore/sequence/..."
+                compute(VALUE("term"), CHARS("z/s/op"), VALUES("z/s/term"))
         );
     }
 
@@ -49,20 +54,18 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                 factor(),
                 zeroOrMore(
                         sequence(
-                                charSet("*/"),
+                                charSet("*/").label("op"),
                                 factor()
                         )
                 ),
-                // "z/s/[" is short for "zeroOrMore/sequence/[*/]"
-                compute(VALUE("factor"), CHARS("z/s/["), VALUES("z/s/factor"))
+
+                // "z/s/..." is short for "zeroOrMore/sequence/..."
+                compute(VALUE("factor"), CHARS("z/s/op"), VALUES("z/s/factor"))
         );
     }
 
     public Rule factor() {
-        return firstOf(
-                number(),
-                parens()
-        );
+        return firstOf(number(), parens());
     }
 
     public Rule parens() {
@@ -71,9 +74,16 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     public Rule number() {
         return sequence(
-                oneOrMore(digit()),
-                SET(isEmpty(LAST_TEXT()) ? 0 : parseInt(LAST_TEXT()))
+                digits(),
+
+                // parse the input text matched by the preceding "digits" rule, convert it into an Integer and set this
+                // Integer as the value of the parse tree node of this rule (the sequence rule labelled "number")
+                SET(Integer.parseInt(LAST_TEXT()))
         );
+    }
+
+    public Rule digits() {
+        return oneOrMore(digit());
     }
 
     public Rule digit() {
@@ -83,25 +93,23 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
     //**************** ACTIONS ****************
 
     public boolean compute(Integer firstValue, List<Character> operators, List<Integer> values) {
-        int value = firstValue != null ? firstValue : 0;
-        for (int i = 0; i < Math.min(operators.size(), values.size()); i++) {
-            value = performOperation(value, operators.get(i), values.get(i));
+        int value = firstValue;
+        for (Map.Entry<Character, Integer> entry : zip(operators, values)) {
+            value = performOperation(entry.getKey(), value, entry.getValue());
         }
         return SET(value);
     }
 
-    private int performOperation(int value1, Character operator, Integer value2) {
-        if (operator != null && value2 != null) {
-            switch (operator) {
-                case '+':
-                    return value1 + value2;
-                case '-':
-                    return value1 - value2;
-                case '*':
-                    return value1 * value2;
-                case '/':
-                    return value1 / value2;
-            }
+    private int performOperation(char operator, int value1, int value2) {
+        switch (operator) {
+            case '+':
+                return value1 + value2;
+            case '-':
+                return value1 - value2;
+            case '*':
+                return value1 * value2;
+            case '/':
+                return value1 / value2;
         }
         throw new IllegalStateException();
     }
