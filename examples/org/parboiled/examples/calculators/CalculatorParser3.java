@@ -148,7 +148,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
         @Override
         public String toString() {
-            return (operator == null ? "Value " + value : "Operator '" + operator + '\'') + '|' + getValue();
+            return (operator == null ? "Value " + value : "Operator '" + operator + '\'') + " | " + getValue();
         }
 
     }

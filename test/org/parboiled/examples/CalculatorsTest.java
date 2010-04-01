@@ -203,7 +203,7 @@ public class CalculatorsTest extends AbstractTest {
         }
         String str = result.parseTreeRoot.getValue().toString();
         int ix = str.indexOf('|');
-        if (ix >= 0) str = str.substring(ix + 1);
+        if (ix >= 0) str = str.substring(ix + 2);
         assertEquals(str, value);
     }
 

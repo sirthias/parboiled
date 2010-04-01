@@ -22,10 +22,14 @@ import org.parboiled.RecoveringParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ToStringFormatter;
+import org.parboiled.trees.GraphNode;
 
 import java.util.Scanner;
 
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import static org.parboiled.trees.GraphUtils.printTree;
 
 /**
  * Base class of all calculator parsers in the org.parboiled.examples.calculators package.
@@ -37,6 +41,7 @@ public abstract class CalculatorParser<V> extends BaseParser<V> {
 
     public abstract Rule InputLine();
 
+    @SuppressWarnings({"unchecked"})
     public static <V, P extends CalculatorParser<V>> void main(Class<P> parserClass) {
         CalculatorParser<V> parser = Parboiled.createParser(parserClass);
 
@@ -47,11 +52,22 @@ public abstract class CalculatorParser<V> extends BaseParser<V> {
 
             ParsingResult<?> result = RecoveringParseRunner.run(parser.InputLine(), input);
 
-            System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
-            System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');
+            if (result.hasErrors()) {
+                System.out.println("\nParse Errors:\n" + printParseErrors(result.parseErrors, result.inputBuffer));
+            }
 
-            if (!result.matched) {
-                System.out.println(StringUtils.join(result.parseErrors, "---\n"));
+            Object value = result.parseTreeRoot.getValue();
+            if (value != null) {
+                String str = value.toString();
+                int ix = str.indexOf('|');
+                if (ix >= 0) str = str.substring(ix + 2); // extract value part of AST node toString()
+                System.out.println(input + " = " + str + '\n');
+            }
+            if (value instanceof GraphNode) {
+                System.out.println("\nAbstract Syntax Tree:\n" +
+                        printTree((GraphNode) value, new ToStringFormatter(null)) + '\n');
+            } else {
+                System.out.println("\nParse Tree:\n" + printNodeTree(result) + '\n');
             }
         }
     }
