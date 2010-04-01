@@ -105,6 +105,22 @@ public class InputLocation {
         }
     }
 
+    /**
+     * Returns the input character at a certain offset from the position of this InputLocation.
+     * Note that this method does not honor virtual insertions/removals via {@link #removeNext()} or
+     * {@link #insertNext(InputLocation)}/{@link #insertNext(char)} but rather works directly on the underlying
+     * {@link InputBuffer}.
+     * If the offset position is outside of the valid range of input positions the method return
+     * {@link org.parboiled.support.Characters#EOI}.
+     *
+     * @param inputBuffer the underlying InputBuffer
+     * @param delta       the position offset
+     * @return the character at the offset position
+     */
+    public char lookAhead(@NotNull InputBuffer inputBuffer, int delta) {
+        return inputBuffer.charAt(index + delta);
+    }
+
     @Override
     public String toString() {
         return String.format("#%s(%s,%s)'%s'", index, row, column, StringUtils.escape(character));

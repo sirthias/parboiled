@@ -176,6 +176,18 @@ public interface Context<V> {
     List<Node<V>> getSubNodes();
 
     /**
+     * Returns the input character at the position with the given offset from the current input location.
+     * Note that this method works directly on the underlying InputBuffer and does not honor any virtual
+     * character removals or insertions (see {@link InputLocation#lookAhead(org.parboiled.support.InputBuffer, int)}
+     * If the offset position is outside of the valid range of input positions the method return
+     * {@link org.parboiled.support.Characters#EOI}.
+     *
+     * @param delta the positional offset
+     * @return the character at the offset position.
+     */
+    char lookAhead(int delta);
+
+    /**
      * Returns true if the current rule is running somewhere underneath a test/testNot rule.
      *
      * @return true if the current context has a parent which corresponds to a test/testNot rule
@@ -183,9 +195,9 @@ public interface Context<V> {
     boolean inPredicate();
 
     /**
-     * Returns true if the current context is running below a context with a matcher marked @Leaf
+     * Returns true if the current context is running below a context for a matcher marked @Leaf
      *
-     * @return true if the current context is running below a context with a matcher marked @Leaf
+     * @return true if the current context is running below a context for a matcher marked @Leaf
      */
     boolean isBelowLeafLevel();
 

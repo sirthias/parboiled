@@ -20,19 +20,20 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.errors.ErrorUtils.printParseError;
+import org.parboiled.errors.BasicParseError;
 import org.parboiled.errors.ParseError;
 import org.parboiled.errors.ParserRuntimeException;
-import org.parboiled.errors.BasicParseError;
 import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.*;
-import static org.parboiled.support.ParseTreeUtils.findNode;
-import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 import java.util.List;
+
+import static org.parboiled.errors.ErrorUtils.printParseError;
+import static org.parboiled.support.ParseTreeUtils.findNode;
+import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
@@ -180,6 +181,10 @@ public class MatcherContext<V> implements Context<V> {
         return subNodes;
     }
 
+    public char lookAhead(int delta) {
+        return currentLocation.lookAhead(inputBuffer, delta);
+    }
+
     public boolean inPredicate() {
         return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
     }
@@ -262,48 +267,6 @@ public class MatcherContext<V> implements Context<V> {
                 elements[size] = node;
                 subNodes = ImmutableList.of((Node<V>[]) elements);
                 break;
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public void addChildNodes(@NotNull List<Node<V>> nodes) {
-        switch (nodes.size()) {
-            case 0:
-                return;
-            case 1:
-                addChildNode(nodes.get(0));
-                return;
-            case 2:
-                switch (subNodes.size()) {
-                    case 0:
-                        subNodes = ImmutableList.copyOf(nodes);
-                        return;
-                    case 1:
-                        subNodes = ImmutableList.of(subNodes.get(0), nodes.get(0), nodes.get(1));
-                        return;
-                    case 2:
-                        subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), nodes.get(0), nodes.get(1));
-                        return;
-                }
-                break;
-        }
-        int size = subNodes.size();
-        int newSize = size + nodes.size();
-        Node[] elements = new Node[newSize];
-        for (int i = 0; i < size; i++) elements[i] = subNodes.get(i);
-        for (int i = size; i < newSize; i++) elements[i] = nodes.get(i - size);
-        subNodes = ImmutableList.of((Node<V>[]) elements);
-    }
-
-    public void setSubNodes(@NotNull List<Node<V>> nodes) {
-        subNodes = ImmutableList.copyOf(nodes);
-    }
-
-    public void clearSubLeafNodeSuppression() {
-        MatcherContext<V> context = this;
-        while (context != null && context.belowLeafLevel) {
-            context.belowLeafLevel = false;
-            context = context.getParent();
         }
     }
 
