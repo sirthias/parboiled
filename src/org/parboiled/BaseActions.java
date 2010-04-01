@@ -21,16 +21,18 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.support.Checks;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
-import static org.parboiled.support.ParseTreeUtils.collectNodes;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.parboiled.support.ParseTreeUtils.collectNodes;
 
 /**
  * Convenience context aware base class defining a number of useful helper methods.
  *
  * @param <V> the type of the value field of a parse tree node
  */
+@SuppressWarnings({"UnusedDeclaration"})
 public abstract class BaseActions<V> implements ContextAware<V> {
 
     private Context<V> context;
@@ -359,6 +361,16 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     public boolean IN_PREDICATE() {
         check();
         return context.inPredicate();
+    }
+
+    /**
+     * Returns true if the current rule is running below a rule marked @Leaf.
+     *
+     * @return true if in a below a leaf rule
+     */
+    public boolean BELOW_LEAF_LEVEL() {
+        check();
+        return context.isBelowLeafLevel();
     }
 
     /**
