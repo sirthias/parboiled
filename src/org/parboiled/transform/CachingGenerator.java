@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.parboiled.common.Utils.toObjectArray;
-import static org.parboiled.transform.AsmUtils.getFieldByName;
 
 /**
  * Wraps the method code with caching and proxying constructs.
@@ -161,10 +160,17 @@ class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
     private String findUnusedCacheFieldName() {
         String name = "cache$" + method.name;
         int i = 2;
-        while (getFieldByName((List<FieldNode>) classNode.fields, name) != null) {
+        while (hasField(name)) {
             name = "cache$" + method.name + i++;
         }
         return name;
+    }
+
+    public boolean hasField(String fieldName) {
+        for (Object field : classNode.fields) {
+            if (fieldName.equals(((FieldNode)field).name)) return true;
+        }
+        return false;
     }
 
     private void generatePushNewParameterObjectArray(Type[] paramTypes) {

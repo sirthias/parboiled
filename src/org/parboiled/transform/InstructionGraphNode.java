@@ -45,6 +45,7 @@ class InstructionGraphNode implements Value, Opcodes {
     private final boolean isCaptureRoot;
     private final boolean isContextSwitch;
     private final boolean isCallOnContextAware;
+    private final boolean isCaptureGet;
     private final boolean isXLoad;
     private final boolean isXStore;
     private InstructionGroup group;
@@ -56,6 +57,7 @@ class InstructionGraphNode implements Value, Opcodes {
         this.isCaptureRoot = AsmUtils.isCaptureRoot(instruction);
         this.isContextSwitch = AsmUtils.isContextSwitch(instruction);
         this.isCallOnContextAware = AsmUtils.isCallOnContextAware(instruction);
+        this.isCaptureGet = AsmUtils.isCaptureGet(instruction);
         this.isXLoad = ILOAD <= instruction.getOpcode() && instruction.getOpcode() < IALOAD;
         this.isXStore = ISTORE <= instruction.getOpcode() && instruction.getOpcode() < IASTORE;
     }
@@ -114,6 +116,10 @@ class InstructionGraphNode implements Value, Opcodes {
 
     public boolean isCallOnContextAware() {
         return isCallOnContextAware;
+    }
+
+    public boolean isCaptureGet() {
+        return isCaptureGet;
     }
 
     public boolean isXLoad() {

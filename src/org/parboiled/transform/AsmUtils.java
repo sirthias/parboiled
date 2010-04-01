@@ -26,8 +26,12 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.parboiled.BaseParser;
+import org.parboiled.Capture;
 import org.parboiled.ContextAware;
 import org.parboiled.Rule;
 
@@ -35,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -182,20 +185,6 @@ class AsmUtils {
         }
     }
 
-    public static <T extends MethodNode> T getMethodByName(@NotNull List<T> methods, @NotNull String methodName) {
-        for (T method : methods) {
-            if (methodName.equals(method.name)) return method;
-        }
-        return null;
-    }
-
-    public static <T extends FieldNode> T getFieldByName(@NotNull List<T> fields, @NotNull String fieldName) {
-        for (T field : fields) {
-            if (fieldName.equals(field.name)) return field;
-        }
-        return null;
-    }
-
     public static InsnList createArgumentLoaders(@NotNull String methodDescriptor) {
         InsnList instructions = new InsnList();
         Type[] types = Type.getArgumentTypes(methodDescriptor);
@@ -257,7 +246,7 @@ class AsmUtils {
     }
 
     public static boolean isActionRoot(@NotNull String methodOwner, @NotNull String methodName) {
-        return isAssignableTo(methodOwner, BaseParser.class) && "ACTION".equals(methodName);
+        return "ACTION".equals(methodName) && isAssignableTo(methodOwner, BaseParser.class);
     }
 
     public static boolean isCaptureRoot(@NotNull AbstractInsnNode insn) {
@@ -267,7 +256,7 @@ class AsmUtils {
     }
 
     public static boolean isCaptureRoot(@NotNull String methodOwner, @NotNull String methodName) {
-        return isAssignableTo(methodOwner, BaseParser.class) && "CAPTURE".equals(methodName);
+        return "CAPTURE".equals(methodName) && isAssignableTo(methodOwner, BaseParser.class);
     }
 
     public static boolean isContextSwitch(@NotNull AbstractInsnNode insn) {
@@ -285,6 +274,13 @@ class AsmUtils {
         if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isAssignableTo(mi.owner, ContextAware.class);
+    }
+
+    public static boolean isCaptureGet(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return "get".equals(mi.name) && "()Ljava/lang/Object;".equals(mi.desc) &&
+                isAssignableTo(mi.owner, Capture.class);
     }
 
     public static boolean isCallToRuleCreationMethod(@NotNull AbstractInsnNode insn) {

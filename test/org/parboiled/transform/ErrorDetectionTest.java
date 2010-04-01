@@ -101,19 +101,36 @@ public class ErrorDetectionTest extends TransformationTest {
     }
 
     @Test
-    public synchronized void testRuleWithIllegalCapture() throws Exception {
+    public synchronized void testRuleWithIllegalCapture1() throws Exception {
         setup(new BaseParser<Object>() {
-            public Rule RuleWithIllegalCapture() {
+            public Rule RuleWithIllegalCapture1() {
                 Capture<String> capture = CAPTURE(text("a"));
                 return Sequence('a', 'b', capture.get());
             }
         }.getClass());
 
         try {
-            processMethod("RuleWithIllegalCapture", processors);
+            processMethod("RuleWithIllegalCapture1", processors);
             fail();
         } catch (Exception e) {
-            assertEquals(e.getMessage(), "Method 'RuleWithIllegalCapture' contains illegal CAPTURE(...) constructs " +
+            assertEquals(e.getMessage(), "Method 'RuleWithIllegalCapture1' contains illegal CAPTURE(...) constructs " +
+                    "that are not direct arguments to rule creating methods");
+        }
+    }
+
+    @Test
+    public synchronized void testRuleWithIllegalCapture2() throws Exception {
+        setup(new BaseParser<Object>() {
+            public Rule RuleWithIllegalCapture2() {
+                return Sequence('a', 'b', UP(CAPTURE(text("a"))));
+            }
+        }.getClass());
+
+        try {
+            processMethod("RuleWithIllegalCapture2", processors);
+            fail();
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Method 'RuleWithIllegalCapture2' contains illegal CAPTURE(...) constructs " +
                     "that are not direct arguments to rule creating methods");
         }
     }
