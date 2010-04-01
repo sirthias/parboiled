@@ -138,19 +138,31 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
         }
     }
 
-    protected void insertSetContextCalls(InstructionGroup group) {
+    protected void insertSetContextCalls(InstructionGroup group, int localVarIx) {
         InsnList instructions = group.getInstructions();
         for (InstructionGraphNode node : group.getNodes()) {
-            if (!node.isCallOnContextAware()) continue;
+            if (node.isCallOnContextAware()) {
+                AbstractInsnNode insn = node.getInstruction();
 
-            AbstractInsnNode loadTarget = node.getPredecessors().get(0).getInstruction();
-            AbstractInsnNode afterFirstInsn = loadTarget.getNext();
-            instructions.insertBefore(afterFirstInsn, new InsnNode(DUP));
-            instructions.insertBefore(afterFirstInsn, new VarInsnNode(ALOAD, 0));
-            instructions.insertBefore(afterFirstInsn, new FieldInsnNode(GETFIELD,
-                    group.getGroupClassType().getInternalName(), "context", CONTEXT_DESC));
-            instructions.insertBefore(afterFirstInsn, new MethodInsnNode(INVOKEINTERFACE,
-                    CONTEXT_AWARE.getInternalName(), "setContext", "(" + CONTEXT_DESC + ")V"));
+                if (node.getPredecessors().size() > 1) {
+                    // store the target of the call in a new local variable
+                    AbstractInsnNode loadTarget = node.getPredecessors().get(0).getInstruction();
+                    instructions.insert(loadTarget, new VarInsnNode(ASTORE, ++localVarIx));
+                    instructions.insert(loadTarget, new InsnNode(DUP)); // the DUP is inserted BEFORE the ASTORE
+
+                    // immediately before the call get the target from the local var and set the context on it
+                    instructions.insertBefore(insn, new VarInsnNode(ALOAD, localVarIx));
+                } else {
+                    // if we have only one predecessor the call does not take any parameters and we can
+                    // skip the storing and loading of the invocation target
+                    instructions.insertBefore(insn, new InsnNode(DUP));
+                }
+                instructions.insertBefore(insn, new VarInsnNode(ALOAD, 0));
+                instructions.insertBefore(insn, new FieldInsnNode(GETFIELD,
+                        group.getGroupClassType().getInternalName(), "context", CONTEXT_DESC));
+                instructions.insertBefore(insn, new MethodInsnNode(INVOKEINTERFACE,
+                        CONTEXT_AWARE.getInternalName(), "setContext", "(" + CONTEXT_DESC + ")V"));
+            }
         }
     }
 

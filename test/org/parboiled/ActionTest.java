@@ -16,15 +16,13 @@
 
 package org.parboiled;
 
+import org.parboiled.support.Label;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 public class ActionTest extends AbstractTest {
 
-    public static class ActionTestActions extends BaseActions<Object> {
-        public Integer timesTwo(Integer i) {
-            return i != null ? i * 2 : null;
-        }
+    public static class Actions extends BaseActions<Object> {
 
         public boolean addOne() {
             Integer i = (Integer) getContext().getNodeValue();
@@ -33,64 +31,69 @@ public class ActionTest extends AbstractTest {
         }
     }
 
-    public static class ActionTestParser extends BaseParser<Object> {
+    public static class Parser extends BaseParser<Integer> {
 
-        protected final ActionTestActions actions = new ActionTestActions();
+        final Actions actions = new Actions();
 
-        public Rule number() {
+        public Rule A() {
             return sequence(
-                    oneOrMore(digit()),
-                    SET(actions.timesTwo(Integer.parseInt(LAST_TEXT()))),
-                    actions.addOne(),
-                    new Action<Object>() {
-                        public boolean run(Context<Object> context) {
-                            return actions.addOne();
-                        }
-                    }
+                    'a',
+                    SET(42),
+                    B(18)
             );
         }
 
-        public Rule digit() {
-            return charRange('0', '9');
+        @Label
+        public Rule B(int i) {
+            int j = i + 1;
+            return sequence(
+                    'b',
+                    SET(timesTwo(i + j)),
+                    C()
+            );
         }
 
-        public Rule a() {
-            return sequence('a', b());
-        }
-
-        public Rule b() {
-            return sequence('b', c());
-        }
-
-        public Rule c() {
-            return sequence('c',
+        public Rule C() {
+            return sequence(
+                    'c',
                     new Action() {
                         public boolean run(Context context) {
                             return getContext() == context;
                         }
-                    }
+                    },
+                    D(1)
             );
+        }
+
+        @Label
+        public Rule D(int i) {
+            return sequence(
+                    'd', SET(UP3(VALUE())),
+                    UP(SET(i)),
+                    actions.addOne()
+            );
+        }
+
+        // ************* ACTIONS **************
+
+        public int timesTwo(int i) {
+            return i * 2;
         }
 
     }
 
     @Test
     public void test() {
-        ActionTestParser parser = Parboiled.createParser(ActionTestParser.class);
-        test(parser.number(), "123", "" +
-                "[number, {248}] '123'\n" +
-                "    [oneOrMore] '123'\n" +
-                "        [digit] '1'\n" +
-                "        [digit] '2'\n" +
-                "        [digit] '3'\n");
-
-        test(parser.a(), "abc", "" +
-                "[a] 'abc'\n" +
+        Parser parser = Parboiled.createParser(Parser.class);
+        test(parser.A(), "abcd", "" +
+                "[A, {42}] 'abcd'\n" +
                 "    ['a'] 'a'\n" +
-                "    [b] 'bc'\n" +
+                "    [B, {74}] 'bcd'\n" +
                 "        ['b'] 'b'\n" +
-                "        [c] 'c'\n" +
-                "            ['c'] 'c'\n");
+                "        [C, {1}] 'cd'\n" +
+                "            ['c'] 'c'\n" +
+                "            [D, {43}] 'd'\n" +
+                "                ['d'] 'd'\n");
     }
 
 }

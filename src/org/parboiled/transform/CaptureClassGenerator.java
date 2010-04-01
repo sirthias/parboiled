@@ -50,7 +50,7 @@ class CaptureClassGenerator extends GroupClassGenerator {
         mv.visitMethodInsn(INVOKEVIRTUAL, BASE_CAPTURE.getInternalName(), "checkContext", "()V");
 
         fixContextSwitches(group);
-        insertSetContextCalls(group);
+        insertSetContextCalls(group, 0);
         convertXLoads(group);
 
         group.getInstructions().accept(mv);

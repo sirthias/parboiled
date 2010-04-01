@@ -76,14 +76,16 @@ public class CaptureClassGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
+                "    ASTORE 1\n" +
+                "    LDC \"a\"\n" +
+                "    ALOAD 1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Capture$1MäBfU3öEmOr2YDR.context : Lorg/parboiled/Context;\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
-                "    LDC \"a\"\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.TEXT (Ljava/lang/String;)Ljava/lang/String;\n" +
                 "    ARETURN\n" +
-                "    MAXSTACK = 3\n" +
-                "    MAXLOCALS = 1\n" +
+                "    MAXSTACK = 4\n" +
+                "    MAXLOCALS = 2\n" +
                 "}\n");
     }
 

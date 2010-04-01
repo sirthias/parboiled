@@ -24,6 +24,7 @@ import org.parboiled.Rule;
 import org.parboiled.errors.ActionError;
 import org.parboiled.errors.ActionException;
 import org.parboiled.errors.GrammarException;
+import org.parboiled.transform.BaseAction;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -43,25 +44,25 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     public ActionMatcher(@NotNull Action<V> action) {
         this.action = action;
 
-        if (action instanceof ContextAware) {
-            contextAwares.add((ContextAware<V>) action);
-        }
-
-        // in order to make anonymous inner classes and other member classes work seamlessly
-        // we collect the synthetic references to the outer parent classes and inform them of
-        // the current parsing context if they implement ContextAware
-        Class<?> actionClass = action.getClass();
-        Field[] declaredFields = actionClass.getDeclaredFields();
-        for (Field field : declaredFields) {
-            if (field.isSynthetic() && ContextAware.class.isAssignableFrom(field.getType())) {
-                field.setAccessible(true);
-                try {
-                    ContextAware<V> contextAware = (ContextAware<V>) field.get(action);
-                    if (contextAware != null) contextAwares.add(contextAware);
-                } catch (IllegalAccessException e) {
-                    // ignore
-                } finally {
-                    field.setAccessible(false);
+        // Base Actions take care of their context setting need themselves, so we do not need to analyze fields, etc.
+        if (!(action instanceof BaseAction)) {
+            if (action instanceof ContextAware) {
+                contextAwares.add((ContextAware<V>) action);
+            }
+            // in order to make anonymous inner classes and other member classes work seamlessly
+            // we collect the synthetic references to the outer parent classes and inform them of
+            // the current parsing context if they implement ContextAware
+            for (Field field : action.getClass().getDeclaredFields()) {
+                if (field.isSynthetic() && ContextAware.class.isAssignableFrom(field.getType())) {
+                    field.setAccessible(true);
+                    try {
+                        ContextAware<V> contextAware = (ContextAware<V>) field.get(action);
+                        if (contextAware != null) contextAwares.add(contextAware);
+                    } catch (IllegalAccessException e) {
+                        // ignore
+                    } finally {
+                        field.setAccessible(false);
+                    }
                 }
             }
         }
@@ -70,8 +71,10 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     public boolean match(@NotNull MatcherContext<V> context) {
         // actions need to run in the parent context
         context = context.getParent();
-        for (ContextAware<V> contextAware : contextAwares) {
-            contextAware.setContext(context);
+        if (!contextAwares.isEmpty()) {
+            for (ContextAware<V> contextAware : contextAwares) {
+                contextAware.setContext(context);
+            }
         }
 
         try {

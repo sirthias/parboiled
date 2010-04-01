@@ -51,7 +51,7 @@ class ActionClassGenerator extends GroupClassGenerator {
         mv.visitFieldInsn(PUTFIELD, BASE_ACTION.getInternalName(), "context", CONTEXT_DESC);
 
         fixContextSwitches(group);
-        insertSetContextCalls(group);
+        insertSetContextCalls(group, 1);
         convertXLoads(group);
 
         group.getInstructions().accept(mv);
