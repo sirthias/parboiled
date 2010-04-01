@@ -52,7 +52,7 @@ public class CalculatorRecoveryTest extends AbstractTest {
     private void runTest(CalculatorParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser.inputLine(), s[0].replaceAll("\r?\n", ""), s[1], s[2]);
+            testFail(parser.InputLine(), s[0].replaceAll("\r?\n", ""), s[1], s.length > 2 ? s[2] : "");
         }
     }
 

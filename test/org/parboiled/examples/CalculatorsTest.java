@@ -38,22 +38,22 @@ public class CalculatorsTest extends AbstractTest {
     @Test
     public void testCalculator0() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser0.class);
-        test(parser.inputLine(), "1+5", "" +
-                "[inputLine] '1+5'\n" +
-                "    [expression] '1+5'\n" +
-                "        [term] '1'\n" +
-                "            [factor] '1'\n" +
-                "                [number] '1'\n" +
-                "                    [digit] '1'\n" +
-                "            [zeroOrMore]\n" +
-                "        [zeroOrMore] '+5'\n" +
-                "            [sequence] '+5'\n" +
+        test(parser.InputLine(), "1+5", "" +
+                "[InputLine] '1+5'\n" +
+                "    [Expression] '1+5'\n" +
+                "        [Term] '1'\n" +
+                "            [Factor] '1'\n" +
+                "                [Number] '1'\n" +
+                "                    [Digit] '1'\n" +
+                "            [ZeroOrMore]\n" +
+                "        [ZeroOrMore] '+5'\n" +
+                "            [Sequence] '+5'\n" +
                 "                [[+-]] '+'\n" +
-                "                [term] '5'\n" +
-                "                    [factor] '5'\n" +
-                "                        [number] '5'\n" +
-                "                            [digit] '5'\n" +
-                "                    [zeroOrMore]\n" +
+                "                [Term] '5'\n" +
+                "                    [Factor] '5'\n" +
+                "                        [Number] '5'\n" +
+                "                            [Digit] '5'\n" +
+                "                    [ZeroOrMore]\n" +
                 "    [EOI]\n");
     }
 
@@ -70,44 +70,44 @@ public class CalculatorsTest extends AbstractTest {
 
         assertEqualsMultiline(
                 printTree(
-                        (Matcher<Integer>) parser.inputLine(),
+                        (Matcher<Integer>) parser.InputLine(),
                         new ToStringFormatter<Matcher<Integer>>(),
                         Filters.<Integer>preventLoops()
                 ), "" +
-                        "inputLine\n" +
-                        "    expression\n" +
-                        "        term\n" +
-                        "            factor\n" +
-                        "                number\n" +
-                        "                    digits\n" +
-                        "                        digit\n" +
-                        "                    number_Action1\n" +
-                        "                parens\n" +
+                        "InputLine\n" +
+                        "    Expression\n" +
+                        "        Term\n" +
+                        "            Factor\n" +
+                        "                Number\n" +
+                        "                    Digits\n" +
+                        "                        Digit\n" +
+                        "                    Number_Action1\n" +
+                        "                Parens\n" +
                         "                    '('\n" +
-                        "                    expression\n" +
+                        "                    Expression\n" +
                         "                    ')'\n" +
-                        "            term_Action1\n" +
-                        "            zeroOrMore\n" +
-                        "                firstOf\n" +
-                        "                    sequence\n" +
+                        "            Term_Action1\n" +
+                        "            ZeroOrMore\n" +
+                        "                FirstOf\n" +
+                        "                    Sequence\n" +
                         "                        '*'\n" +
-                        "                        factor\n" +
-                        "                        term_Action2\n" +
-                        "                    sequence\n" +
+                        "                        Factor\n" +
+                        "                        Term_Action2\n" +
+                        "                    Sequence\n" +
                         "                        '/'\n" +
-                        "                        factor\n" +
-                        "                        term_Action3\n" +
-                        "        expression_Action1\n" +
-                        "        zeroOrMore\n" +
-                        "            firstOf\n" +
-                        "                sequence\n" +
+                        "                        Factor\n" +
+                        "                        Term_Action3\n" +
+                        "        Expression_Action1\n" +
+                        "        ZeroOrMore\n" +
+                        "            FirstOf\n" +
+                        "                Sequence\n" +
                         "                    '+'\n" +
-                        "                    term\n" +
-                        "                    expression_Action2\n" +
-                        "                sequence\n" +
+                        "                    Term\n" +
+                        "                    Expression_Action2\n" +
+                        "                Sequence\n" +
                         "                    '-'\n" +
-                        "                    term\n" +
-                        "                    expression_Action3\n" +
+                        "                    Term\n" +
+                        "                    Expression_Action3\n" +
                         "    EOI\n");
 
         runBasicCalculationTests(parser, "");
@@ -120,34 +120,34 @@ public class CalculatorsTest extends AbstractTest {
 
         assertEqualsMultiline(
                 printTree(
-                        (Matcher<Integer>) parser.inputLine(),
+                        (Matcher<Integer>) parser.InputLine(),
                         new ToStringFormatter<Matcher<Integer>>(),
                         Filters.<Integer>preventLoops()
                 ), "" +
-                        "inputLine\n" +
-                        "    expression\n" +
-                        "        term\n" +
-                        "            factor\n" +
-                        "                number\n" +
-                        "                    digits\n" +
-                        "                        digit\n" +
-                        "                    number_Action1\n" +
-                        "                parens\n" +
+                        "InputLine\n" +
+                        "    Expression\n" +
+                        "        Term\n" +
+                        "            Factor\n" +
+                        "                Number\n" +
+                        "                    Digits\n" +
+                        "                        Digit\n" +
+                        "                    Number_Action1\n" +
+                        "                Parens\n" +
                         "                    '('\n" +
-                        "                    expression\n" +
+                        "                    Expression\n" +
                         "                    ')'\n" +
-                        "            term_Action1\n" +
-                        "            zeroOrMore\n" +
-                        "                sequence\n" +
-                        "                    op\n" +
-                        "                    factor\n" +
-                        "                    term_Action2\n" +
-                        "        expression_Action1\n" +
-                        "        zeroOrMore\n" +
-                        "            sequence\n" +
-                        "                op\n" +
-                        "                term\n" +
-                        "                expression_Action2\n" +
+                        "            Term_Action1\n" +
+                        "            ZeroOrMore\n" +
+                        "                Sequence\n" +
+                        "                    Op\n" +
+                        "                    Factor\n" +
+                        "                    Term_Action2\n" +
+                        "        Expression_Action1\n" +
+                        "        ZeroOrMore\n" +
+                        "            Sequence\n" +
+                        "                Op\n" +
+                        "                Term\n" +
+                        "                Expression_Action2\n" +
                         "    EOI\n");
 
         runBasicCalculationTests(parser, "");
@@ -193,7 +193,7 @@ public class CalculatorsTest extends AbstractTest {
 
     @SuppressWarnings({"unchecked"})
     private void test(CalculatorParser parser, String input, String value) {
-        ParsingResult result = ReportingParseRunner.run(parser.inputLine(), input);
+        ParsingResult result = ReportingParseRunner.run(parser.InputLine(), input);
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     printParseErrors(result.parseErrors, result.inputBuffer) +

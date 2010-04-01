@@ -52,7 +52,7 @@ public class JavaRecoveryTest extends AbstractTest {
     private void runTest(JavaParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser.compilationUnit(), s[0], s[1], s[2], Filters.skipEmptyOptionalsAndZeroOrMores());
+            testFail(parser.CompilationUnit(), s[0], s[1], s[2], Filters.skipEmptyOptionalsAndZeroOrMores());
         }
     }
 

@@ -19,65 +19,68 @@ package org.parboiled.examples.time;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
+/**
+ * Parser for very relaxed time literals. Demonstrates parse tree node selection via labels.
+ */
 public class TimeParser extends BaseParser<Object> {
 
-    public Rule time() {
-        return sequence(
-                firstOf(time_hh_mm_ss(), time_hhmmss(), time_hmm()),
-                SET(convertToTime(
-                        (Integer) VALUE(NODE_BY_LABEL("hours")),
-                        (Integer) VALUE(NODE_BY_LABEL("minutes")),
-                        (Integer) VALUE(NODE_BY_LABEL("seconds"))))
+    public Rule Time() {
+        return Sequence(
+                FirstOf(Time_HH_MM_SS(), Time_HHMMSS(), Time_HMM()),
+                set(convertToTime(
+                        (Integer) value(nodeByLabel("hours")),
+                        (Integer) value(nodeByLabel("minutes")),
+                        (Integer) value(nodeByLabel("seconds"))))
         );
     }
 
     // hh:mm(:ss)?
-    public Rule time_hh_mm_ss() {
-        return sequence(
-                oneOrTwoDigits().label("hours"), ':',
-                twoDigits().label("minutes"),
-                optional(sequence(':', twoDigits().label("seconds"))),
-                test(eoi())
+    public Rule Time_HH_MM_SS() {
+        return Sequence(
+                OneOrTwoDigits().label("hours"), ':',
+                TwoDigits().label("minutes"),
+                Optional(Sequence(':', TwoDigits().label("seconds"))),
+                Test(Eoi())
         );
     }
 
     // hh(mm(ss)?)?
-    public Rule time_hhmmss() {
-        return sequence(
-                twoDigits().label("hours"),
-                optional(
-                        sequence(
-                                twoDigits().label("minutes"),
-                                optional(twoDigits().label("seconds"))
+    public Rule Time_HHMMSS() {
+        return Sequence(
+                TwoDigits().label("hours"),
+                Optional(
+                        Sequence(
+                                TwoDigits().label("minutes"),
+                                Optional(TwoDigits().label("seconds"))
                         )
                 ),
-                test(eoi())
+                Test(Eoi())
         );
     }
 
     // h(mm)?
-    public Rule time_hmm() {
-        return sequence(
-                oneDigit().label("hours"),
-                optional(twoDigits().label("minutes")),
-                test(eoi())
+    public Rule Time_HMM() {
+        return Sequence(
+                OneDigit().label("hours"),
+                Optional(TwoDigits().label("minutes")),
+                Test(Eoi())
         );
     }
 
-    public Rule oneOrTwoDigits() {
-        return firstOf(twoDigits(), oneDigit());
+    public Rule OneOrTwoDigits() {
+        return FirstOf(TwoDigits(), OneDigit());
     }
 
-    public Rule oneDigit() {
-        return sequence(digit(), SET(Integer.parseInt(LAST_TEXT())));
+    public Rule OneDigit() {
+        return Sequence(Digit(), set(Integer.parseInt(lastText())));
     }
 
-    public Rule twoDigits() {
-        return sequence(sequence(digit(), digit()), SET(Integer.parseInt(LAST_TEXT())));
+    public Rule TwoDigits() {
+        return Sequence(Sequence(Digit(), Digit()), set(Integer.parseInt(lastText())));
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
     // ************************* ACTIONS *****************************

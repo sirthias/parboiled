@@ -17,13 +17,32 @@
 package org.parboiled;
 
 import org.parboiled.test.AbstractTest;
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class InPredicateTest extends AbstractTest {
 
-    public static class ActionTestActions extends BaseActions<Object> {
+    public static class Parser extends BaseParser<Object> {
         public int count = 0;
+
+        public Rule Number() {
+            return OneOrMore(Digit());
+        }
+
+        public Rule Digit() {
+            return Sequence(Test(FirstOf(Five(), Six())), CharRange('0', '9'));
+        }
+
+        public Rule Five() {
+            return Sequence('5', inPredicate() || count1());
+        }
+
+        public Rule Six() {
+            return Sequence('6', count2());
+        }
+
+        // ********* ACTION *******
 
         public boolean count1() {
             count++;
@@ -36,40 +55,18 @@ public class InPredicateTest extends AbstractTest {
         }
     }
 
-    public static class ActionTestParser extends BaseParser<Object> {
-
-        protected final ActionTestActions actions = new ActionTestActions();
-
-        public Rule number() {
-            return oneOrMore(digit());
-        }
-
-        public Rule digit() {
-            return sequence(test(firstOf(five(), six())), charRange('0', '9'));
-        }
-
-        public Rule five() {
-            return sequence('5', IN_PREDICATE() || actions.count1());
-        }
-
-        public Rule six() {
-            return sequence('6', actions.count2());
-        }
-
-    }
-
     @Test
     public void test() {
-        ActionTestParser parser = Parboiled.createParser(ActionTestParser.class);
-        test(parser.number(), "565", "" +
-                "[number] '565'\n" +
-                "    [digit] '5'\n" +
+        Parser parser = Parboiled.createParser(Parser.class);
+        test(parser.Number(), "565", "" +
+                "[Number] '565'\n" +
+                "    [Digit] '5'\n" +
                 "        [0..9] '5'\n" +
-                "    [digit] '6'\n" +
+                "    [Digit] '6'\n" +
                 "        [0..9] '6'\n" +
-                "    [digit] '5'\n" +
+                "    [Digit] '5'\n" +
                 "        [0..9] '5'\n");
-        assertEquals(parser.actions.count, 1);
+        assertEquals(parser.count, 1);
     }
 
 }

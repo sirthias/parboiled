@@ -36,7 +36,7 @@ public class JavaTest {
     public void simpleJavaTest() {
         String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTest.java");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
-        Rule compilationUnit = parser.compilationUnit();
+        Rule compilationUnit = parser.CompilationUnit();
         ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +

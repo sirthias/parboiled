@@ -75,11 +75,11 @@ public class PegTranslator extends BaseParser<Object> {
     // -------------------
 
     public Rule Grammar() {
-        return sequence(
+        return Sequence(
                 startClass(),
                 Spacing(),
-                oneOrMore(Definition()),
-                eoi(),
+                OneOrMore(Definition()),
+                Eoi(),
                 endClass()
         );
     }
@@ -88,7 +88,7 @@ public class PegTranslator extends BaseParser<Object> {
     //    Definition () is only called in one context and if it fails then Grammar() fails as well
     //    so it's nothing to recover, really
     public Rule Definition() {
-        return sequence(
+        return Sequence(
                 Identifier(),
                 outComment(),
                 startMethod(theMostRecentSpacedTrimmedTerminal),
@@ -98,18 +98,18 @@ public class PegTranslator extends BaseParser<Object> {
         );
     }
 
-    // could always use firstOf (new Rule[] {...}) for 1 or more rules
+    // could always use FirstOf (new Rule[] {...}) for 1 or more rules
     // but it doesn't look nice when there is only one element (the leading Sequence) in that array
     public Rule Expression() {
-        return firstOf(
-                sequence(
+        return FirstOf(
+                Sequence(
                         push(StackElementType.EXPRESSION),
                         Sequence(),
                         incr(),
-                        zeroOrMore(
-                                sequence(
+                        ZeroOrMore(
+                                Sequence(
                                         SLASH(),
-                                        outComma(),   // separator between firstOf() args
+                                        outComma(),   // separator between FirstOf() args
                                         Sequence(),
                                         incr()
                                 )
@@ -122,12 +122,12 @@ public class PegTranslator extends BaseParser<Object> {
 
     // don't have a separator between Prefix-es like SLASH in Expression! so need to push()
     public Rule Sequence() {
-        return firstOf(
-                sequence(
+        return FirstOf(
+                Sequence(
                         push(StackElementType.SEQUENCE),
-                        zeroOrMore(
-                                firstOf(
-                                        sequence(
+                        ZeroOrMore(
+                                FirstOf(
+                                        Sequence(
                                                 push(StackElementType.SEQUENCE_ELEMENT),
                                                 Prefix(),
                                                 pop(true),
@@ -143,13 +143,13 @@ public class PegTranslator extends BaseParser<Object> {
     }
 
     public Rule Prefix() {
-        return firstOf(
-                sequence(
+        return FirstOf(
+                Sequence(
                         push(StackElementType.PREFIX),
-                        optional(
-                                firstOf(
-                                        sequence(AND(), set(2)),
-                                        sequence(NOT(), set(1))
+                        Optional(
+                                FirstOf(
+                                        Sequence(AND(), set(2)),
+                                        Sequence(NOT(), set(1))
                                 )
                         ),
                         Suffix(),
@@ -160,15 +160,15 @@ public class PegTranslator extends BaseParser<Object> {
     }
 
     public Rule Suffix() {
-        return firstOf(
-                sequence(
+        return FirstOf(
+                Sequence(
                         push(StackElementType.SUFFIX),
                         Primary(),
-                        optional(
-                                firstOf(
-                                        sequence(QUESTION(), set(1)),
-                                        sequence(STAR(), set(2)),
-                                        sequence(PLUS(), set(3))
+                        Optional(
+                                FirstOf(
+                                        Sequence(QUESTION(), set(1)),
+                                        Sequence(STAR(), set(2)),
+                                        Sequence(PLUS(), set(3))
                                 )
                         ),
                         pop(true)
@@ -180,18 +180,18 @@ public class PegTranslator extends BaseParser<Object> {
     // no need to recover if Expression() fails; OPEN/CLOSE are only used here
     // TODO: replace new Rule[] with something better than that
     public Rule Primary() {
-        return firstOf(
-                sequence(
+        return FirstOf(
+                Sequence(
                         Identifier(),
-                        testNot(LEFTARROW()),
+                        TestNot(LEFTARROW()),
                         outIdentifier(theMostRecentSpacedTrimmedTerminal)
                 ),
-                sequence(
+                Sequence(
                         OPEN(),
-                        out("sequence (new Rule[] {"),
+                        out("Sequence(new Rule[] {"),
                         Expression(),
                         CLOSE(),
-                        out("} )")
+                        out("})")
                 ),
                 Literal(),
                 Class(),
@@ -202,43 +202,43 @@ public class PegTranslator extends BaseParser<Object> {
     // Lexical syntax
     // --------------
     public Rule Identifier() {
-        return sequence(
-                sequence(
+        return Sequence(
+                Sequence(
                         IdentStart(),
-                        zeroOrMore(IdentCont())
+                        ZeroOrMore(IdentCont())
                 ),
-                setMostRecentSpacedTrimmedTerminal(TEXT(LAST_NODE())),
+                setMostRecentSpacedTrimmedTerminal(text(lastNode())),
                 Spacing()
         );
     }
 
     public Rule IdentStart() {
-        return firstOf(
-                charRange('a', 'z'),
-                charRange('A', 'Z'),
-                charRange('0', '9'),
-                ch('_')
+        return FirstOf(
+                CharRange('a', 'z'),
+                CharRange('A', 'Z'),
+                CharRange('0', '9'),
+                Ch('_')
         );
     }
 
     public Rule IdentCont() {
-        return firstOf(
+        return FirstOf(
                 IdentStart(),
-                charRange('0', '9')
+                CharRange('0', '9')
         );
     }
 
-    // TODO: as per the PEG there is a zeroOrMore in between the quotes!?
+    // TODO: as per the PEG there is a ZeroOrMore in between the quotes!?
     public Rule Literal() {
-        return sequence(
-                firstOf(
-                        sequence(
-                                sequence(ch('\''), zeroOrMore(sequence(testNot(ch('\'')), Char())), ch('\'')),
-                                setMostRecentSpacedTrimmedTerminal(TEXT(LAST_NODE())),
+        return Sequence(
+                FirstOf(
+                        Sequence(
+                                Sequence(Ch('\''), ZeroOrMore(Sequence(TestNot(Ch('\'')), Char())), Ch('\'')),
+                                setMostRecentSpacedTrimmedTerminal(text(lastNode())),
                                 Spacing()
                         ),
-                        sequence(sequence(ch('\"'), zeroOrMore(sequence(testNot(ch('\"')), Char())), ch('\"')),
-                                setMostRecentSpacedTrimmedTerminal(TEXT(LAST_NODE())),
+                        Sequence(Sequence(Ch('\"'), ZeroOrMore(Sequence(TestNot(Ch('\"')), Char())), Ch('\"')),
+                                setMostRecentSpacedTrimmedTerminal(text(lastNode())),
                                 Spacing()
                         )
                 ),
@@ -246,12 +246,12 @@ public class PegTranslator extends BaseParser<Object> {
         );
     }
 
-    // TODO: as per the PEG there is a zeroOrMore in between the []-s!?
+    // TODO: as per the PEG there is a ZeroOrMore in between the []-s!?
     public Rule Class() {
-        return sequence(
-                sequence(
-                        sequence(ch('['), zeroOrMore(sequence(testNot(ch(']')), Range())), ch(']')),
-                        setMostRecentSpacedTrimmedTerminal(TEXT(LAST_NODE())),
+        return Sequence(
+                Sequence(
+                        Sequence(Ch('['), ZeroOrMore(Sequence(TestNot(Ch(']')), Range())), Ch(']')),
+                        setMostRecentSpacedTrimmedTerminal(text(lastNode())),
                         Spacing()
                 ),
                 outCharacterClass(theMostRecentSpacedTrimmedTerminal)
@@ -259,19 +259,19 @@ public class PegTranslator extends BaseParser<Object> {
     }
 
     public Rule Range() {
-        return firstOf(
-                sequence(Char(), ch('-'), Char()),
+        return FirstOf(
+                Sequence(Char(), Ch('-'), Char()),
                 Char()
         );
     }
 
     // no whitespace is recognized inside these structures
     public Rule Char() {
-        return firstOf(
-                sequence(ch('\\'), charSet("nrt'\"[]\\")),
-                sequence(ch('\\'), charRange('0', '2'), charRange('0', '7'), charRange('0', '7')),
-                sequence(ch('\\'), charRange('0', '7'), optional(charRange('0', '7'))),
-                sequence(testNot(ch('\\')), any())
+        return FirstOf(
+                Sequence(Ch('\\'), CharSet("nrt'\"[]\\")),
+                Sequence(Ch('\\'), CharRange('0', '2'), CharRange('0', '7'), CharRange('0', '7')),
+                Sequence(Ch('\\'), CharRange('0', '7'), Optional(CharRange('0', '7'))),
+                Sequence(TestNot(Ch('\\')), Any())
         );
     }
 
@@ -280,66 +280,66 @@ public class PegTranslator extends BaseParser<Object> {
     //    SO: there is no need to add any Spacing-related logic for them
     //        like done for Identifier, Literal, Class
     public Rule LEFTARROW() {
-        return sequence(string("<-"), Spacing());
+        return Sequence(String("<-"), Spacing());
     }
 
     public Rule SLASH() {
-        return sequence(ch('/'), Spacing());
+        return Sequence(Ch('/'), Spacing());
     }
 
     public Rule AND() {
-        return sequence(ch('&'), Spacing());
+        return Sequence(Ch('&'), Spacing());
     }
 
     public Rule NOT() {
-        return sequence(ch('!'), Spacing());
+        return Sequence(Ch('!'), Spacing());
     }
 
     public Rule QUESTION() {
-        return sequence(ch('?'), Spacing());
+        return Sequence(Ch('?'), Spacing());
     }
 
     public Rule STAR() {
-        return sequence(ch('*'), Spacing());
+        return Sequence(Ch('*'), Spacing());
     }
 
     public Rule PLUS() {
-        return sequence(ch('+'), Spacing());
+        return Sequence(Ch('+'), Spacing());
     }
 
     public Rule OPEN() {
-        return sequence(ch('('), Spacing());
+        return Sequence(Ch('('), Spacing());
     }
 
     public Rule CLOSE() {
-        return sequence(ch(')'), Spacing());
+        return Sequence(Ch(')'), Spacing());
     }
 
     public Rule DOT() {
-        return sequence(ch('.'), Spacing(), outAny());
+        return Sequence(Ch('.'), Spacing(), outAny());
     }
 
     public Rule Spacing() {
-        return zeroOrMore(firstOf(Space(), Comment()));
+        return ZeroOrMore(FirstOf(Space(), Comment()));
     }
 
     // TODO: empty lines around and in between comment lines get lost
     public Rule Comment() {
-        return sequence(
-                ch('#'),
-                sequence(
-                        sequence(zeroOrMore(sequence(testNot(EndOfLine()), any())), EndOfLine()),
-                        addComment(TEXT(LAST_NODE()))
+        return Sequence(
+                Ch('#'),
+                Sequence(
+                        Sequence(ZeroOrMore(Sequence(TestNot(EndOfLine()), Any())), EndOfLine()),
+                        addComment(text(lastNode()))
                 )
         );
     }
 
     public Rule Space() {
-        return firstOf(ch(' '), ch('\t'), EndOfLine());
+        return FirstOf(Ch(' '), Ch('\t'), EndOfLine());
     }
 
     public Rule EndOfLine() {
-        return firstOf(string("\r\n"), ch('\n'), ch('\r'));
+        return FirstOf(String("\r\n"), Ch('\n'), Ch('\r'));
     }
 
     //***********
@@ -375,7 +375,7 @@ public class PegTranslator extends BaseParser<Object> {
             switch (stackElementType) {
                 case EXPRESSION:
                     if (n > 1) {
-                        out("firstOf (");
+                        out("FirstOf(");
                         out(bodyStr);
                         out(")");
                     } else {
@@ -385,24 +385,24 @@ public class PegTranslator extends BaseParser<Object> {
 
                 case SEQUENCE:
                     if (n > 1) {
-                        out("sequence (");
+                        out("Sequence(");
                         out(bodyStr);
                         out(")");
                     } else if (n == 1) {
                         out(bodyStr);
                     } else {
-                        out("empty ()");
+                        out("Empty()");
                     }
                     break;
 
                 case PREFIX:
                     if (n == 2) {
-                        out("test (");
+                        out("Test(");
                         out(bodyStr);
                         out(")");
                     }    // AND
                     else if (n == 1) {
-                        out("testNot (");
+                        out("TestNot(");
                         out(bodyStr);
                         out(")");
                     }    // NOT
@@ -413,17 +413,17 @@ public class PegTranslator extends BaseParser<Object> {
 
                 case SUFFIX:
                     if (n == 1) {
-                        out("optional (");
+                        out("Optional(");
                         out(bodyStr);
                         out(")");
                     }    // ?
                     else if (n == 2) {
-                        out("zeroOrMore (");
+                        out("ZeroOrMore(");
                         out(bodyStr);
                         out(")");
                     }    // *
                     else if (n == 3) {
-                        out("oneOrMore (");
+                        out("OneOrMore(");
                         out(bodyStr);
                         out(")");
                     }    // +
@@ -454,7 +454,7 @@ public class PegTranslator extends BaseParser<Object> {
         }
     }
 
-    // TODO: needed this function because expressions like  " push (new StackElement (...)) "  are NOT ALLOWED as element in a sequence()
+    // TODO: needed this function because expressions like  " push (new StackElement (...)) "  are NOT ALLOWED as element in a Sequence()
     StackElement newStackElement(StackElementType stackElementType) {
         return new StackElement(stackElementType);
     }
@@ -557,16 +557,16 @@ public class PegTranslator extends BaseParser<Object> {
         // startsWith() is called just to avoid the pattern matching in the most common situations
         if (retStr.length() == 1 || retStr.startsWith("\\") && escapedCharPat.matcher(retStr).matches()) {
             // single character, includes escaped ones
-            retStr = "ch ('" + escapeChar(retStr) + "')";
+            retStr = "Ch('" + escapeChar(retStr) + "')";
         } else {
             // >1 characters
-            retStr = "string (\"" + escapeString(retStr) + "\")";
+            retStr = "String(\"" + escapeString(retStr) + "\")";
         }
 
         return out(retStr);
     }
 
-    // TODO: could group >1 adjacent single characters and output them under a charSet() instead of as individual ch()-s
+    // TODO: could group >1 adjacent single characters and output them under a CharSet() instead of as individual Ch()-s
     boolean outCharacterClass(String str) {
         // ASSERT
         if (!str.startsWith("[") || !str.endsWith("]"))
@@ -595,11 +595,11 @@ public class PegTranslator extends BaseParser<Object> {
 
             if (mat.group(1) != null) {
                 // real range
-                sb.append("charRange ('").append(escapeChar(mat.group(2))).append("', '")
+                sb.append("CharRange('").append(escapeChar(mat.group(2))).append("', '")
                         .append(escapeChar(mat.group(3))).append("')");
             } else if (mat.group(4) != null) {
                 // single character
-                sb.append("ch ('").append(escapeChar(mat.group(4))).append("')");
+                sb.append("Ch('").append(escapeChar(mat.group(4))).append("')");
             }
 
             endWasHit = true;
@@ -612,13 +612,13 @@ public class PegTranslator extends BaseParser<Object> {
         }
 
         if (matchCounter > 1) {
-            sb.insert(0, "firstOf (");
+            sb.insert(0, "FirstOf(");
             sb.append(")");
         } else if (matchCounter == 1) {
             // do nothing
         } else {
             // character class with no characters !? ARE allowed by the PEG grammar
-            sb.append("empty ()");
+            sb.append("Empty()");
         }
 
         return out(sb.toString());
@@ -633,7 +633,7 @@ public class PegTranslator extends BaseParser<Object> {
     }
 
     boolean outAny() {
-        return out("any ()");
+        return out("Any()");
     }
 
     boolean outComma() {

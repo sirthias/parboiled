@@ -28,15 +28,15 @@ public class AbcTest extends AbstractTest {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
         test(parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
-                "    [oneOrMore] 'aa'\n" +
+                "    [OneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
                 "        ['a'] 'a'\n" +
                 "    [B] 'bbcc'\n" +
                 "        ['b'] 'b'\n" +
-                "        [optional] 'bc'\n" +
+                "        [Optional] 'bc'\n" +
                 "            [B] 'bc'\n" +
                 "                ['b'] 'b'\n" +
-                "                [optional]\n" +
+                "                [Optional]\n" +
                 "                ['c'] 'c'\n" +
                 "        ['c'] 'c'\n");
     }
@@ -49,15 +49,15 @@ public class AbcTest extends AbstractTest {
                 "aabbbcc\n" +
                 "    ^\n", "" +
                 "[S]E 'aabbcc'\n" +
-                "    [oneOrMore] 'aa'\n" +
+                "    [OneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
                 "        ['a'] 'a'\n" +
                 "    [B]E 'bbcc'\n" +
                 "        ['b'] 'b'\n" +
-                "        [optional]E 'bc'\n" +
+                "        [Optional]E 'bc'\n" +
                 "            [B]E 'bc'\n" +
                 "                ['b'] 'b'\n" +
-                "                [optional]\n" +
+                "                [Optional]\n" +
                 "                ['c'] 'c'\n" +
                 "        ['c'] 'c'\n"
         );
@@ -71,15 +71,15 @@ public class AbcTest extends AbstractTest {
                 "aabcc\n" +
                 "   ^\n", "" +
                 "[S]E 'aabbcc'\n" +
-                "    [oneOrMore] 'aa'\n" +
+                "    [OneOrMore] 'aa'\n" +
                 "        ['a'] 'a'\n" +
                 "        ['a'] 'a'\n" +
                 "    [B]E 'bbcc'\n" +
                 "        ['b'] 'b'\n" +
-                "        [optional]E 'bc'\n" +
+                "        [Optional]E 'bc'\n" +
                 "            [B]E 'bc'\n" +
                 "                ['b']E 'b'\n" +
-                "                [optional]\n" +
+                "                [Optional]\n" +
                 "                ['c'] 'c'\n" +
                 "        ['c'] 'c'\n"
         );

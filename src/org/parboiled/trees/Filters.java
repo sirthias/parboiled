@@ -44,7 +44,7 @@ public class Filters {
         return new Filter<Node<V>>() {
             public Printability apply(Node<V> node) {
                 return hasChildren(node) || node.getEndLocation() != node.getStartLocation() ||
-                        !"optional".equals(node.getLabel()) ?
+                        !"Optional".equals(node.getLabel()) ?
                         Printability.PrintAndDescend : Printability.Skip;
             }
         };
@@ -53,7 +53,7 @@ public class Filters {
     public static <V> Filter<Node<V>> skipEmptyZeroOrMores() {
         return new Filter<Node<V>>() {
             public Printability apply(Node<V> node) {
-                return hasChildren(node) || node.getEndLocation() != node.getStartLocation() || !"zeroOrMore"
+                return hasChildren(node) || node.getEndLocation() != node.getStartLocation() || !"ZeroOrMore"
                         .equals(node.getLabel()) ?
                         Printability.PrintAndDescend : Printability.Skip;
             }

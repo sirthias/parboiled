@@ -39,10 +39,10 @@ public class TestNotMatcher<V> extends AbstractMatcher<V> {
     public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
         if (context.getSubContext(subMatcher).runMatcher()) {
-            context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
+            context.setCurrentLocation(lastLocation); // reset location, Test matchers never advance
             return false;
         }
-        context.setCurrentLocation(lastLocation); // reset location, test matchers never advance
+        context.setCurrentLocation(lastLocation); // reset location, Test matchers never advance
         return true;
     }
 

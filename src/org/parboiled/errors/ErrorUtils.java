@@ -64,27 +64,27 @@ public final class ErrorUtils {
             @Override
             public Boolean visit(FirstOfMatcher<V> matcher) {
                 String label = matcher.getLabel();
-                return !"firstOf".equals(label);
+                return !"FirstOf".equals(label);
             }
 
             @Override
             public Boolean visit(OneOrMoreMatcher<V> matcher) {
-                return !"oneOrMore".equals(matcher.getLabel());
+                return !"OneOrMore".equals(matcher.getLabel());
             }
 
             @Override
             public Boolean visit(OptionalMatcher<V> matcher) {
-                return !"optional".equals(matcher.getLabel());
+                return !"Optional".equals(matcher.getLabel());
             }
 
             @Override
             public Boolean visit(SequenceMatcher<V> matcher) {
-                return !"sequence".equals(matcher.getLabel());
+                return !"Sequence".equals(matcher.getLabel());
             }
 
             @Override
             public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
-                return !"zeroOrMore".equals(matcher.getLabel());
+                return !"ZeroOrMore".equals(matcher.getLabel());
             }
 
             @Override

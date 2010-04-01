@@ -46,7 +46,7 @@ public class ErrorDetectionTest extends TransformationTest {
     public synchronized void testRuleWithCaptureInAction() throws Exception {
         setup(new BaseParser<Object>() {
             public Rule RuleWithCaptureInAction() {
-                return sequence('a', ACTION(5 == CAPTURE(NODES("a").size()).get()));
+                return Sequence('a', ACTION(5 == CAPTURE(nodes("a").size()).get()));
             }
         }.getClass());
         try {
@@ -64,7 +64,7 @@ public class ErrorDetectionTest extends TransformationTest {
             private int privateInt = 5;
 
             public Rule RuleWithActionAccessingPrivateField() {
-                return sequence('a', privateInt == 0);
+                return Sequence('a', privateInt == 0);
             }
         }.getClass());
 
@@ -82,7 +82,7 @@ public class ErrorDetectionTest extends TransformationTest {
     public synchronized void testRuleWithActionAccessingPrivateMethod() throws Exception {
         setup(new BaseParser<Object>() {
             public Rule RuleWithActionAccessingPrivateMethod() {
-                return sequence('a', privateAction());
+                return Sequence('a', privateAction());
             }
 
             private boolean privateAction() {
@@ -104,8 +104,8 @@ public class ErrorDetectionTest extends TransformationTest {
     public synchronized void testRuleWithIllegalCapture() throws Exception {
         setup(new BaseParser<Object>() {
             public Rule RuleWithIllegalCapture() {
-                Capture<String> capture = CAPTURE(TEXT("a"));
-                return sequence('a', 'b', capture.get());
+                Capture<String> capture = CAPTURE(text("a"));
+                return Sequence('a', 'b', capture.get());
             }
         }.getClass());
 

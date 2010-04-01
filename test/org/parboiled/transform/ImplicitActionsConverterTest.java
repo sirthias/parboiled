@@ -67,7 +67,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "   L2\n" +
                 "    INVOKESTATIC org/parboiled/BaseParser.ACTION (Z)Lorg/parboiled/Action;\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n");
 
         assertTraceDumpEquality(processMethod("RuleWithDirectImplicitAction", processors), "" +
@@ -95,7 +95,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "    BIPUSH 99\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n");
 
         assertTraceDumpEquality(processMethod("RuleWithDirectImplicitUpAction", processors), "" +
@@ -106,7 +106,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
                 "    INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.SET (Ljava/lang/Object;)Z\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.set (Ljava/lang/Object;)Z\n" +
                 "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
                 "    INVOKESTATIC org/parboiled/transform/TestParser.UP2 (Ljava/lang/Object;)Ljava/lang/Object;\n" +
                 "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
@@ -118,7 +118,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "    BIPUSH 98\n" +
                 "    INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n");
 
         assertTraceDumpEquality(processMethod("RuleWithIndirectExplicitDownAction", processors), "" +
@@ -148,7 +148,7 @@ public class ImplicitActionsConverterTest extends TransformationTest {
                 "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
                 "    INVOKESTATIC org/parboiled/BaseParser.ACTION (Z)Lorg/parboiled/Action;\n" +
                 "    AASTORE\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "    ARETURN\n");
     }
 

@@ -7,121 +7,121 @@ public class PegParser extends BaseParser<Object> {
    // Hierarchical syntax
    // -------------------
     public Rule Grammar () {
-        return sequence (Spacing(), oneOrMore (Definition()), EndOfFile());
+        return Sequence(Spacing(), OneOrMore(Definition()), EndOfFile());
     }
 
     public Rule Definition () {
-        return sequence (Identifier(), LEFTARROW(), Expression());
+        return Sequence(Identifier(), LEFTARROW(), Expression());
     }
 
     public Rule Expression () {
-        return sequence (Sequence(), zeroOrMore (sequence (new Rule[] {sequence (SLASH(), Sequence())} )));
+        return Sequence(Sequence(), ZeroOrMore(Sequence(new Rule[] {Sequence(SLASH(), Sequence())})));
     }
 
     public Rule Sequence () {
-        return zeroOrMore (Prefix());
+        return ZeroOrMore(Prefix());
     }
 
     public Rule Prefix () {
-        return sequence (optional (sequence (new Rule[] {firstOf (AND(), NOT())} )), Suffix());
+        return Sequence(Optional(Sequence(new Rule[] {FirstOf(AND(), NOT())})), Suffix());
     }
 
     public Rule Suffix () {
-        return sequence (Primary(), optional (sequence (new Rule[] {firstOf (QUESTION(), STAR(), PLUS())} )));
+        return Sequence(Primary(), Optional(Sequence(new Rule[] {FirstOf(QUESTION(), STAR(), PLUS())})));
     }
 
     public Rule Primary () {
-        return firstOf (sequence (Identifier(), testNot (LEFTARROW())), sequence (OPEN(), Expression(), CLOSE()), Literal(), Class(), DOT());
+        return FirstOf(Sequence(Identifier(), TestNot(LEFTARROW())), Sequence(OPEN(), Expression(), CLOSE()), Literal(), Class(), DOT());
     }
 
    // Lexical syntax
    // --------------
     public Rule Identifier () {
-        return sequence (IdentStart(), zeroOrMore (IdentCont()), Spacing());
+        return Sequence(IdentStart(), ZeroOrMore(IdentCont()), Spacing());
     }
 
     public Rule IdentStart () {
-        return firstOf (charRange ('a', 'z'), charRange ('A', 'Z'), ch ('_'));
+        return FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), Ch('_'));
     }
 
     public Rule IdentCont () {
-        return firstOf (IdentStart(), charRange ('0', '9'));
+        return FirstOf(IdentStart(), CharRange('0', '9'));
     }
 
     public Rule Literal () {
-        return firstOf (sequence (ch ('\''), zeroOrMore (sequence (new Rule[] {sequence (testNot (ch ('\'')), Char())} )), ch ('\''), Spacing()), sequence (ch ('"'), zeroOrMore (sequence (new Rule[] {sequence (testNot (ch ('"')), Char())} )), ch ('"'), Spacing()));
+        return FirstOf(Sequence(Ch('\''), ZeroOrMore(Sequence(new Rule[] {Sequence(TestNot(Ch('\'')), Char())})), Ch('\''), Spacing()), Sequence(Ch('"'), ZeroOrMore(Sequence(new Rule[] {Sequence(TestNot(Ch('"')), Char())})), Ch('"'), Spacing()));
     }
 
     public Rule Class () {
-        return sequence (ch ('['), zeroOrMore (sequence (new Rule[] {sequence (testNot (ch (']')), Range())} )), ch (']'), Spacing());
+        return Sequence(Ch('['), ZeroOrMore(Sequence(new Rule[] {Sequence(TestNot(Ch(']')), Range())})), Ch(']'), Spacing());
     }
 
     public Rule Range () {
-        return firstOf (sequence (Char(), ch ('-'), Char()), Char());
+        return FirstOf(Sequence(Char(), Ch('-'), Char()), Char());
     }
 
     public Rule Char () {
-        return firstOf (sequence (ch ('\\'), firstOf (ch ('n'), ch ('r'), ch ('t'), ch ('\''), ch ('"'), ch ('['), ch (']'), ch ('\\'))), sequence (ch ('\\'), charRange ('0', '2'), charRange ('0', '7'), charRange ('0', '7')), sequence (ch ('\\'), charRange ('0', '7'), optional (charRange ('0', '7'))), sequence (testNot (ch ('\\')), any ()));
+        return FirstOf(Sequence(Ch('\\'), FirstOf(Ch('n'), Ch('r'), Ch('t'), Ch('\''), Ch('"'), Ch('['), Ch(']'), Ch('\\'))), Sequence(Ch('\\'), CharRange('0', '2'), CharRange('0', '7'), CharRange('0', '7')), Sequence(Ch('\\'), CharRange('0', '7'), Optional(CharRange('0', '7'))), Sequence(TestNot(Ch('\\')), Any()));
     }
 
     public Rule LEFTARROW () {
-        return sequence (string ("<-"), Spacing());
+        return Sequence(String("<-"), Spacing());
     }
 
     public Rule SLASH () {
-        return sequence (ch ('/'), Spacing());
+        return Sequence(Ch('/'), Spacing());
     }
 
     public Rule AND () {
-        return sequence (ch ('&'), Spacing());
+        return Sequence(Ch('&'), Spacing());
     }
 
     public Rule NOT () {
-        return sequence (ch ('!'), Spacing());
+        return Sequence(Ch('!'), Spacing());
     }
 
     public Rule QUESTION () {
-        return sequence (ch ('?'), Spacing());
+        return Sequence(Ch('?'), Spacing());
     }
 
     public Rule STAR () {
-        return sequence (ch ('*'), Spacing());
+        return Sequence(Ch('*'), Spacing());
     }
 
     public Rule PLUS () {
-        return sequence (ch ('+'), Spacing());
+        return Sequence(Ch('+'), Spacing());
     }
 
     public Rule OPEN () {
-        return sequence (ch ('('), Spacing());
+        return Sequence(Ch('('), Spacing());
     }
 
     public Rule CLOSE () {
-        return sequence (ch (')'), Spacing());
+        return Sequence(Ch(')'), Spacing());
     }
 
     public Rule DOT () {
-        return sequence (ch ('.'), Spacing());
+        return Sequence(Ch('.'), Spacing());
     }
 
     public Rule Spacing () {
-        return zeroOrMore (sequence (new Rule[] {firstOf (Space(), Comment())} ));
+        return ZeroOrMore(Sequence(new Rule[] {FirstOf(Space(), Comment())}));
     }
 
     public Rule Comment () {
-        return sequence (ch ('#'), zeroOrMore (sequence (new Rule[] {sequence (testNot (EndOfLine()), any ())} )), EndOfLine());
+        return Sequence(Ch('#'), ZeroOrMore(Sequence(new Rule[] {Sequence(TestNot(EndOfLine()), Any())})), EndOfLine());
     }
 
     public Rule Space () {
-        return firstOf (ch (' '), ch ('\t'), EndOfLine());
+        return FirstOf(Ch(' '), Ch('\t'), EndOfLine());
     }
 
     public Rule EndOfLine () {
-        return firstOf (string ("\r\n"), ch ('\n'), ch ('\r'));
+        return FirstOf(String("\r\n"), Ch('\n'), Ch('\r'));
     }
 
     public Rule EndOfFile () {
-        return testNot (any ());
+        return TestNot(Any());
     }
 
 }

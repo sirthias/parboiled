@@ -30,64 +30,64 @@ import static org.parboiled.common.Utils.zip;
 public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     @Override
-    public Rule inputLine() {
-        return sequence(expression(), eoi());
+    public Rule InputLine() {
+        return Sequence(Expression(), Eoi());
     }
 
-    public Rule expression() {
-        return sequence(
-                term(),
-                zeroOrMore(
-                        sequence(
-                                charSet("+-").label("op"),
-                                term()
+    public Rule Expression() {
+        return Sequence(
+                Term(),
+                ZeroOrMore(
+                        Sequence(
+                                CharSet("+-").label("Op"),
+                                Term()
                         )
                 ),
 
-                // "z/s/..." is short for "zeroOrMore/sequence/..."
-                compute(VALUE("term"), CHARS("z/s/op"), VALUES("z/s/term"))
+                // "Z/S/..." is short for "ZeroOrMore/Sequence/..."
+                compute(value("Term"), chars("Z/S/Op"), values("Z/S/Term"))
         );
     }
 
-    public Rule term() {
-        return sequence(
-                factor(),
-                zeroOrMore(
-                        sequence(
-                                charSet("*/").label("op"),
-                                factor()
+    public Rule Term() {
+        return Sequence(
+                Factor(),
+                ZeroOrMore(
+                        Sequence(
+                                CharSet("*/").label("Op"),
+                                Factor()
                         )
                 ),
 
-                // "z/s/..." is short for "zeroOrMore/sequence/..."
-                compute(VALUE("factor"), CHARS("z/s/op"), VALUES("z/s/factor"))
+                // "Z/S/..." is short for "ZeroOrMore/Sequence/..."
+                compute(value("Factor"), chars("Z/S/Op"), values("Z/S/Factor"))
         );
     }
 
-    public Rule factor() {
-        return firstOf(number(), parens());
+    public Rule Factor() {
+        return FirstOf(Number(), Parens());
     }
 
-    public Rule parens() {
-        return sequence('(', expression(), ')');
+    public Rule Parens() {
+        return Sequence('(', Expression(), ')');
     }
 
-    public Rule number() {
-        return sequence(
-                digits(),
+    public Rule Number() {
+        return Sequence(
+                Digits(),
 
-                // parse the input text matched by the preceding "digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the sequence rule labelled "number")
-                SET(Integer.parseInt(LAST_TEXT()))
+                // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
+                // Integer as the value of the parse tree node of this rule (the Sequence rule labeled "Number")
+                set(Integer.parseInt(lastText()))
         );
     }
 
-    public Rule digits() {
-        return oneOrMore(digit());
+    public Rule Digits() {
+        return OneOrMore(Digit());
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
     //**************** ACTIONS ****************
@@ -97,7 +97,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         for (Map.Entry<Character, Integer> entry : zip(operators, values)) {
             value = performOperation(entry.getKey(), value, entry.getValue());
         }
-        return SET(value);
+        return set(value);
     }
 
     private int performOperation(char operator, int value1, int value2) {

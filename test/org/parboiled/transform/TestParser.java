@@ -34,45 +34,45 @@ class TestParser extends BaseParser<Integer> {
     private int privateInt;
 
     public Rule RuleWithoutAction() {
-        return sequence('a', 'b');
+        return Sequence('a', 'b');
     }
 
     @Label("harry")
     public Rule RuleWithNamedLabel() {
-        return sequence('a', 'b');
+        return Sequence('a', 'b');
     }
 
     @Leaf
     public Rule RuleWithLeaf() {
-        return sequence('a', 'b');
+        return Sequence('a', 'b');
     }
 
     public Rule RuleWithDirectImplicitAction() {
-        return sequence('a', integer == 0, 'b', 'c');
+        return Sequence('a', integer == 0, 'b', 'c');
     }
 
     public Rule RuleWithIndirectImplicitAction() {
-        return sequence('a', 'b', action() || integer == 5);
+        return Sequence('a', 'b', action() || integer == 5);
     }
 
     public Rule RuleWithDirectExplicitAction() {
-        return sequence('a', ACTION(action() && integer > 0), 'b');
+        return Sequence('a', ACTION(action() && integer > 0), 'b');
     }
 
     public Rule RuleWithIndirectExplicitAction() {
-        return sequence('a', 'b', ACTION(integer < 0 && action()));
+        return Sequence('a', 'b', ACTION(integer < 0 && action()));
     }
 
     public Rule RuleWithDirectImplicitUpAction() {
-        return sequence('a', UP2(SET(integer)), 'b');
+        return Sequence('a', UP2(set(integer)), 'b');
     }
 
     public Rule RuleWithIndirectExplicitDownAction() {
-        return sequence('a', 'b', UP3(DOWN2(integer < 0 && action())));
+        return Sequence('a', 'b', UP3(DOWN2(integer < 0 && action())));
     }
 
     public Rule RuleWithIndirectImplicitParamAction(int param) {
-        return sequence('a', 'b', integer == param);
+        return Sequence('a', 'b', integer == param);
     }
 
     public Rule RuleWithComplexActionSetup(int param) {
@@ -80,46 +80,46 @@ class TestParser extends BaseParser<Integer> {
         String string = "text";
         i += param;
         j -= i;
-        return sequence('a' + i, i > param + j, string, ACTION(integer + param < string.length() - i - j));
+        return Sequence('a' + i, i > param + j, string, ACTION(integer + param < string.length() - i - j));
     }
 
     public Rule RuleWithCapture() {
-        return sequence('a', 'b', RuleWithCaptureParameter(CAPTURE(TEXT("a"))));
+        return Sequence('a', 'b', RuleWithCaptureParameter(CAPTURE(text("a"))));
     }
 
     public Rule RuleWithCaptureParameter(Capture<String> capture) {
-        return sequence('a', "harry".equals(capture.get()));
+        return Sequence('a', "harry".equals(capture.get()));
     }
 
     @Label
     public Rule RuleWith2Returns(int param) {
         if (param == integer) {
-            return sequence('a', ACTION(action()));
+            return Sequence('a', ACTION(action()));
         } else {
-            return eoi();
+            return Eoi();
         }
     }
 
     @ExplicitActionsOnly
     public Rule RuleWithExplicitActionsOnly(int param) {
         Boolean b = integer == param;
-        return sequence('a', 'b', b);
+        return Sequence('a', 'b', b);
     }
 
     @Cached
     public Rule RuleWithCachedAnd2Params(String string, long aLong) {
-        return sequence(string, aLong == integer);
+        return Sequence(string, aLong == integer);
     }
 
     public Rule RuleWithFakeImplicitAction(int param) {
         Boolean b = integer == param;
-        return sequence('a', 'b', b);
+        return Sequence('a', 'b', b);
     }
 
     public Rule NumberRule() {
-        return sequence(
-                oneOrMore(charRange('0', '9')).asLeaf(),
-                SET(parseInt(isEmpty(LAST_TEXT()) ? "0" : LAST_TEXT()))
+        return Sequence(
+                OneOrMore(CharRange('0', '9')).asLeaf(),
+                set(parseInt(isEmpty(lastText()) ? "0" : lastText()))
         );
     }
 

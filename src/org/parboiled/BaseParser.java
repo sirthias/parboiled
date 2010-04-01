@@ -30,11 +30,12 @@ import static org.parboiled.common.StringUtils.escape;
  *
  * @param <V> the type of the value field of the parse tree nodes created by this parser
  */
+@SuppressWarnings({"UnusedDeclaration"})
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
-     * directly in you rule description. However, if you don't want to go through {@link #fromCharLiteral(char)},
+     * directly in you rule description. However, if you don't want to go through {@link #FromCharLiteral(char)},
      * e.g. because you redefined it, you can also use this wrapper.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
@@ -43,7 +44,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule ch(char c) {
+    public Rule Ch(char c) {
         return new CharMatcher(c).label("\'" + escape(c) + '\'');
     }
 
@@ -56,9 +57,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule charIgnoreCase(char c) {
+    public Rule CharIgnoreCase(char c) {
         if (Character.isLowerCase(c) == Character.isUpperCase(c)) {
-            return ch(c);
+            return Ch(c);
         }
         CharIgnoreCaseMatcher matcher = new CharIgnoreCaseMatcher(c);
         return matcher.label("\'" + escape(matcher.charLow) + '/' + escape(matcher.charUp) + '\'');
@@ -74,8 +75,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule charRange(char cLow, char cHigh) {
-        return cLow == cHigh ? ch(cLow) :
+    public Rule CharRange(char cLow, char cHigh) {
+        return cLow == cHigh ? Ch(cLow) :
                 new CharRangeMatcher(cLow, cHigh).label(escape(cLow) + ".." + escape(cHigh));
     }
 
@@ -87,8 +88,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param characters the characters
      * @return a new rule
      */
-    public Rule charSet(@NotNull String characters) {
-        return charSet(characters.toCharArray());
+    public Rule CharSet(@NotNull String characters) {
+        return CharSet(characters.toCharArray());
     }
 
     /**
@@ -99,9 +100,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param characters the characters
      * @return a new rule
      */
-    public Rule charSet(@NotNull char... characters) {
+    public Rule CharSet(@NotNull char... characters) {
         Preconditions.checkArgument(characters.length > 0);
-        return characters.length == 1 ? ch(characters[0]) : charSet(Characters.of(characters));
+        return characters.length == 1 ? Ch(characters[0]) : CharSet(Characters.of(characters));
     }
 
     /**
@@ -113,30 +114,30 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule charSet(@NotNull Characters characters) {
+    public Rule CharSet(@NotNull Characters characters) {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
-            return ch(characters.getChars()[0]);
+            return Ch(characters.getChars()[0]);
         }
         return new CharactersMatcher<V>(characters).label(characters.toString());
     }
 
     /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
-     * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
+     * directly in you rule description. However, if you want to not go through {@link #FromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
      * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
-     * @param string the string to match
+     * @param string the String to match
      * @return a new rule
      */
-    public Rule string(@NotNull String string) {
-        return string(string.toCharArray());
+    public Rule String(@NotNull String string) {
+        return String(string.toCharArray());
     }
 
     /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
-     * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
+     * directly in you rule description. However, if you want to not go through {@link #FromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
@@ -145,13 +146,13 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule string(char... characters) {
-        if (characters.length == 1) return ch(characters[0]); // optimize one-char strings
+    public Rule String(char... characters) {
+        if (characters.length == 1) return Ch(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
-            matchers[i] = ch(characters[i]);
+            matchers[i] = Ch(characters[i]);
         }
-        return ((SequenceMatcher)sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
+        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
     }
 
     /**
@@ -162,8 +163,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string to match
      * @return a new rule
      */
-    public Rule stringIgnoreCase(@NotNull String string) {
-        return stringIgnoreCase(string.toCharArray());
+    public Rule StringIgnoreCase(@NotNull String string) {
+        return StringIgnoreCase(string.toCharArray());
     }
 
     /**
@@ -175,13 +176,13 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule stringIgnoreCase(char... characters) {
-        if (characters.length == 1) return charIgnoreCase(characters[0]); // optimize one-char strings
+    public Rule StringIgnoreCase(char... characters) {
+        if (characters.length == 1) return CharIgnoreCase(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
-            matchers[i] = charIgnoreCase(characters[i]);
+            matchers[i] = CharIgnoreCase(characters[i]);
         }
-        return ((SequenceMatcher)sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
+        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
     }
 
     /**
@@ -195,8 +196,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    public Rule firstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
-        return firstOf(concat(rule, concat(rule2, moreRules)));
+    public Rule FirstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return FirstOf(concat(rule, concat(rule2, moreRules)));
     }
 
     /**
@@ -209,9 +210,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("firstOf")
-    public Rule firstOf(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new FirstOfMatcher(toRules(rules));
+    @Label("FirstOf")
+    public Rule FirstOf(@NotNull Object[] rules) {
+        return rules.length == 1 ? ToRule(rules[0]) : new FirstOfMatcher(ToRules(rules));
     }
 
     /**
@@ -224,9 +225,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("oneOrMore")
-    public Rule oneOrMore(Object rule) {
-        return new OneOrMoreMatcher(toRule(rule));
+    @Label("OneOrMore")
+    public Rule OneOrMore(Object rule) {
+        return new OneOrMoreMatcher(ToRule(rule));
     }
 
     /**
@@ -239,9 +240,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("optional")
-    public Rule optional(Object rule) {
-        return new OptionalMatcher(toRule(rule));
+    @Label("Optional")
+    public Rule Optional(Object rule) {
+        return new OptionalMatcher(ToRule(rule));
     }
 
     /**
@@ -254,8 +255,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
-    public Rule sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
-        return sequence(concat(rule, concat(rule2, moreRules)));
+    public Rule Sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return Sequence(concat(rule, concat(rule2, moreRules)));
     }
 
     /**
@@ -267,9 +268,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("sequence")
-    public Rule sequence(@NotNull Object[] rules) {
-        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
+    @Label("Sequence")
+    public Rule Sequence(@NotNull Object[] rules) {
+        return rules.length == 1 ? ToRule(rules[0]) : new SequenceMatcher(ToRules(rules));
     }
 
     /**
@@ -283,8 +284,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule test(Object rule) {
-        Rule subMatcher = toRule(rule);
+    public Rule Test(Object rule) {
+        Rule subMatcher = ToRule(rule);
         return new TestMatcher(subMatcher).label("&(" + subMatcher + ")");
     }
 
@@ -299,8 +300,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    public Rule testNot(Object rule) {
-        Rule subMatcher = toRule(rule);
+    public Rule TestNot(Object rule) {
+        Rule subMatcher = ToRule(rule);
         return new TestNotMatcher(subMatcher).label("!(" + subMatcher + ")");
     }
 
@@ -314,9 +315,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("zeroOrMore")
-    public Rule zeroOrMore(Object rule) {
-        return new ZeroOrMoreMatcher(toRule(rule));
+    @Label("ZeroOrMore")
+    public Rule ZeroOrMore(Object rule) {
+        return new ZeroOrMoreMatcher(ToRule(rule));
     }
 
     /**
@@ -325,8 +326,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Label("EOI")
-    public Rule eoi() {
-        return ch(Characters.EOI);
+    public Rule Eoi() {
+        return Ch(Characters.EOI);
     }
 
     /**
@@ -335,7 +336,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Label("ANY")
-    public Rule any() {
+    public Rule Any() {
         return new CharactersMatcher<V>(Characters.allBut(Characters.EOI));
     }
 
@@ -345,7 +346,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Label("EMPTY")
-    public Rule empty() {
+    public Rule Empty() {
         return new EmptyMatcher<V>();
     }
 
@@ -357,7 +358,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T UP(T expression) {
         throw new UnsupportedOperationException("Illegal UP(...) call outside of Action or Capture expression");
     }
@@ -369,7 +369,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T UP2(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
@@ -381,7 +380,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T UP3(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
@@ -393,7 +391,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T UP4(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
@@ -405,7 +402,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T UP5(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
@@ -417,7 +413,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T UP6(T expression) {
         return UP(expression); // will always throw an UnsupportedOperationException
     }
@@ -430,7 +425,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T DOWN(T expression) {
         throw new UnsupportedOperationException("Illegal DOWN(...) call outside of Action or Capture expression");
     }
@@ -444,7 +438,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T DOWN2(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
@@ -458,7 +451,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T DOWN3(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
@@ -472,7 +464,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T DOWN4(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
@@ -486,7 +477,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T DOWN5(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
@@ -500,7 +490,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to change the context for
      * @return the result of the expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> T DOWN6(T expression) {
         return DOWN(expression); // will always throw an UnsupportedOperationException
     }
@@ -512,7 +501,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to turn into an Action
      * @return the Action wrapping the given expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static Action ACTION(boolean expression) {
         throw new UnsupportedOperationException("ACTION(...) calls can only be used in Rule creating parser methods");
     }
@@ -524,7 +512,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param expression the expression to turn into a Capture
      * @return the Capture wrapping the given expression
      */
-    @SuppressWarnings({"UnusedDeclaration"})
     public static <T> Capture<T> CAPTURE(T expression) {
         throw new UnsupportedOperationException("CAPTURE(...) calls can only be used in Rule creating parser methods");
     }
@@ -533,38 +520,38 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Used internally to convert the given character literal to a parser rule.
-     * You can override this method, e.g. for specifying a sequence that automatically matches all trailing
+     * You can override this method, e.g. for specifying a Sequence that automatically matches all trailing
      * whitespace after the character.
      *
      * @param c the character
      * @return the rule
      */
-    protected Rule fromCharLiteral(char c) {
-        return ch(c);
+    protected Rule FromCharLiteral(char c) {
+        return Ch(c);
     }
 
     /**
      * Used internally to convert the given string literal to a parser rule.
-     * You can override this method, e.g. for specifying a sequence that automatically matches all trailing
+     * You can override this method, e.g. for specifying a Sequence that automatically matches all trailing
      * whitespace after the string.
      *
      * @param string the string
      * @return the rule
      */
-    protected Rule fromStringLiteral(@NotNull String string) {
-        return fromCharArray(string.toCharArray());
+    protected Rule FromStringLiteral(@NotNull String string) {
+        return FromCharArray(string.toCharArray());
     }
 
     /**
      * Used internally to convert the given char array to a parser rule.
-     * You can override this method, e.g. for specifying a sequence that automatically matches all trailing
+     * You can override this method, e.g. for specifying a Sequence that automatically matches all trailing
      * whitespace after the characters.
      *
      * @param array the char array
      * @return the rule
      */
-    protected Rule fromCharArray(@NotNull char[] array) {
-        return string(array);
+    protected Rule FromCharArray(@NotNull char[] array) {
+        return String(array);
     }
 
     /**
@@ -573,10 +560,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param objects the objects to convert
      * @return the rules corresponding to the given objects
      */
-    public Rule[] toRules(@NotNull Object... objects) {
+    public Rule[] ToRules(@NotNull Object... objects) {
         Rule[] rules = new Rule[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            rules[i] = toRule(objects[i]);
+            rules[i] = ToRule(objects[i]);
         }
         return rules;
     }
@@ -589,11 +576,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule corresponding to the given object
      */
     @SuppressWarnings({"unchecked"})
-    public Rule toRule(Object obj) {
+    public Rule ToRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
-        if (obj instanceof Character) return fromCharLiteral((Character) obj);
-        if (obj instanceof String) return fromStringLiteral((String) obj);
-        if (obj instanceof char[]) return fromCharArray((char[]) obj);
+        if (obj instanceof Character) return FromCharLiteral((Character) obj);
+        if (obj instanceof String) return FromStringLiteral((String) obj);
+        if (obj instanceof char[]) return FromCharArray((char[]) obj);
         if (obj instanceof Action) {
             Action<V> action = (Action<V>) obj;
             return new ActionMatcher<V>(action).label(action.toString());

@@ -37,7 +37,7 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Node> result = RecoveringParseRunner.run(parser.operation(), input);
+            ParsingResult<Node> result = RecoveringParseRunner.run(parser.Operation(), input);
 
             System.out.println(ParseTreeUtils.printNodeTree(result, Filters.<Object>skipEmptyOptionalsAndZeroOrMores()));
 

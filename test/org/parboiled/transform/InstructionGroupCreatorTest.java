@@ -19,12 +19,10 @@ package org.parboiled.transform;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.test.FileUtils;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
@@ -48,10 +46,10 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 1823811521L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 2163082022L);
         //renderToGraphViz(dotSource);
 
-        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 1228139512L);
+        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 1172289281L);
         //renderToGraphViz(dotSource);
     }
 

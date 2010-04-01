@@ -36,9 +36,9 @@ public class ActionTest extends AbstractTest {
         final Actions actions = new Actions();
 
         public Rule A() {
-            return sequence(
+            return Sequence(
                     'a',
-                    SET(42),
+                    set(42),
                     B(18)
             );
         }
@@ -46,15 +46,15 @@ public class ActionTest extends AbstractTest {
         @Label
         public Rule B(int i) {
             int j = i + 1;
-            return sequence(
+            return Sequence(
                     'b',
-                    SET(timesTwo(i + j)),
+                    set(timesTwo(i + j)),
                     C()
             );
         }
 
         public Rule C() {
-            return sequence(
+            return Sequence(
                     'c',
                     new Action() {
                         public boolean run(Context context) {
@@ -67,9 +67,9 @@ public class ActionTest extends AbstractTest {
 
         @Label
         public Rule D(int i) {
-            return sequence(
-                    'd', SET(UP3(VALUE())),
-                    UP(SET(i)),
+            return Sequence(
+                    'd', set(UP3(value())),
+                    UP(set(i)),
                     actions.addOne()
             );
         }

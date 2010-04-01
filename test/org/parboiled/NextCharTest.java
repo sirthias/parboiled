@@ -17,25 +17,26 @@
 package org.parboiled;
 
 import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
+
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.Test;
 
 public class NextCharTest extends AbstractTest {
 
-    public static class NextCharTestParser extends BaseParser<Object> {
+    public static class Parser extends BaseParser<Object> {
 
-        public Rule clause() {
-            return sequence(NEXT_CHAR() == 'a', any(), eoi());
+        public Rule Clause() {
+            return Sequence(nextChar() == 'a', Any(), Eoi());
         }
 
     }
 
     @Test
     public void test() {
-        NextCharTestParser parser = Parboiled.createParser(NextCharTestParser.class);
-        assertFalse(RecoveringParseRunner.run(parser.clause(), "a").hasErrors());
-        assertTrue(RecoveringParseRunner.run(parser.clause(), "b").hasErrors());
+        Parser parser = Parboiled.createParser(Parser.class);
+        assertFalse(RecoveringParseRunner.run(parser.Clause(), "a").hasErrors());
+        assertTrue(RecoveringParseRunner.run(parser.Clause(), "b").hasErrors());
     }
 
 }

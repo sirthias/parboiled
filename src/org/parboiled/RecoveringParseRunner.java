@@ -148,7 +148,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             errorLocation = errorLocation.advance(inputBuffer);
             count++;
         }
-        if (count == 0) return false;
+        if (count == 0 || errorLocation.getChar() == Characters.EOI) return false;
         currentError.setErrorCharCount(count);
         startLocation = errorLocation;
         return true;
@@ -290,10 +290,10 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             context.clearBelowLeafLevelMarker();
             context.markError();
 
-            // create a node for the failed sequence, taking ownership of all sub nodes created so far
+            // create a node for the failed Sequence, taking ownership of all sub nodes created so far
             context.createNode();
 
-            // skip over all characters that are not legal followers of the failed sequence
+            // skip over all characters that are not legal followers of the failed Sequence
             context.advanceInputLocation(); // gobble RESYNC marker
             List<Matcher<V>> followMatchers = new FollowMatchersVisitor<V>().getFollowMatchers(context);
             int resyncCharCount = gobbleIllegalCharacters(context, followMatchers);

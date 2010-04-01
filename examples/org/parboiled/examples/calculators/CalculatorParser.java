@@ -35,7 +35,7 @@ import static org.parboiled.support.ParseTreeUtils.printNodeTree;
  */
 public abstract class CalculatorParser<V> extends BaseParser<V> {
 
-    public abstract Rule inputLine();
+    public abstract Rule InputLine();
 
     public static <V, P extends CalculatorParser<V>> void main(Class<P> parserClass) {
         CalculatorParser<V> parser = Parboiled.createParser(parserClass);
@@ -45,7 +45,7 @@ public abstract class CalculatorParser<V> extends BaseParser<V> {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<Integer> result = RecoveringParseRunner.run(parser.inputLine(), input);
+            ParsingResult<?> result = RecoveringParseRunner.run(parser.InputLine(), input);
 
             System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
             System.out.println("Parse Tree:\n" + printNodeTree(result) + '\n');

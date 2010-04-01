@@ -29,16 +29,16 @@ public class TimeTest {
     @Test
     public void test() {
         TimeParser parser = Parboiled.createParser(TimeParser.class);
-        assertEquals(RecoveringParseRunner.run(parser.time(), "12:00").parseTreeRoot.getValue(), "12 h, 0 min, 0 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "9:01").parseTreeRoot.getValue(), "9 h, 1 min, 0 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "02:34:56").parseTreeRoot.getValue(),
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "12:00").parseTreeRoot.getValue(), "12 h, 0 min, 0 s");
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "9:01").parseTreeRoot.getValue(), "9 h, 1 min, 0 s");
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "02:34:56").parseTreeRoot.getValue(),
                 "2 h, 34 min, 56 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "1").parseTreeRoot.getValue(), "1 h, 0 min, 0 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "12").parseTreeRoot.getValue(), "12 h, 0 min, 0 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "123").parseTreeRoot.getValue(), "1 h, 23 min, 0 s");
-        assertEquals(RecoveringParseRunner.run(parser.time(), "1234").parseTreeRoot.getValue(), "12 h, 34 min, 0 s");
-        assertTrue(RecoveringParseRunner.run(parser.time(), "12345").hasErrors());
-        assertEquals(RecoveringParseRunner.run(parser.time(), "123456").parseTreeRoot.getValue(), "12 h, 34 min, 56 s");
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "1").parseTreeRoot.getValue(), "1 h, 0 min, 0 s");
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "12").parseTreeRoot.getValue(), "12 h, 0 min, 0 s");
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "123").parseTreeRoot.getValue(), "1 h, 23 min, 0 s");
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "1234").parseTreeRoot.getValue(), "12 h, 34 min, 0 s");
+        assertTrue(RecoveringParseRunner.run(parser.Time(), "12345").hasErrors());
+        assertEquals(RecoveringParseRunner.run(parser.Time(), "123456").parseTreeRoot.getValue(), "12 h, 34 min, 56 s");
     }
 
 }

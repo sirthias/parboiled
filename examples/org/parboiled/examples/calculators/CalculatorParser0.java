@@ -24,38 +24,38 @@ import org.parboiled.Rule;
 public class CalculatorParser0 extends CalculatorParser<Integer> {
 
     @Override
-    public Rule inputLine() {
-        return sequence(expression(), eoi());
+    public Rule InputLine() {
+        return Sequence(Expression(), Eoi());
     }
 
-    public Rule expression() {
-        return sequence(
-                term(),
-                zeroOrMore(sequence(charSet("+-"), term()))
+    public Rule Expression() {
+        return Sequence(
+                Term(),
+                ZeroOrMore(Sequence(CharSet("+-"), Term()))
         );
     }
 
-    public Rule term() {
-        return sequence(
-                factor(),
-                zeroOrMore(sequence(charSet("*/"), factor()))
+    public Rule Term() {
+        return Sequence(
+                Factor(),
+                ZeroOrMore(Sequence(CharSet("*/"), Factor()))
         );
     }
 
-    public Rule factor() {
-        return firstOf(number(), parens());
+    public Rule Factor() {
+        return FirstOf(Number(), Parens());
     }
 
-    public Rule parens() {
-        return sequence('(', expression(), ')');
+    public Rule Parens() {
+        return Sequence('(', Expression(), ')');
     }
 
-    public Rule number() {
-        return oneOrMore(digit());
+    public Rule Number() {
+        return OneOrMore(Digit());
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
     //**************** MAIN ****************

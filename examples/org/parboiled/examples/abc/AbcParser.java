@@ -29,20 +29,20 @@ import org.parboiled.Rule;
 public class AbcParser extends BaseParser<Object> {
 
     public Rule S() {
-        return sequence(
-                test(sequence(A(), 'c')),
-                oneOrMore('a'),
+        return Sequence(
+                Test(Sequence(A(), 'c')),
+                OneOrMore('a'),
                 B(),
-                testNot(firstOf('a', 'b', 'c'))
+                TestNot(FirstOf('a', 'b', 'c'))
         );
     }
 
     public Rule A() {
-        return sequence('a', optional(A()), 'b');
+        return Sequence('a', Optional(A()), 'b');
     }
 
     public Rule B() {
-        return sequence('b', optional(B()), 'c');
+        return Sequence('b', Optional(B()), 'c');
     }
 
 }

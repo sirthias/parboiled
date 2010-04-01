@@ -29,75 +29,75 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
 public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
     @Override
-    public Rule inputLine() {
-        return sequence(expression(), eoi());
+    public Rule InputLine() {
+        return Sequence(Expression(), Eoi());
     }
 
-    public Rule expression() {
-        return sequence(
-                term(), SET(), // the SET() sets the value of the "expression" to the value of the preceding "term"
-                zeroOrMore(
-                        sequence(
-                                charSet("+-").label("op"),
-                                term(),
+    public Rule Expression() {
+        return Sequence(
+                Term(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Term"
+                ZeroOrMore(
+                        Sequence(
+                                CharSet("+-").label("Op"),
+                                Term(),
 
                                 // create an AST node for the operation that was just matched
                                 // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // for the "expression" sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "expression")
-                                // - the old value of the "expression" as left child
-                                // - the value of the preceding "term" as right child
-                                UP2(SET(createAst(DOWN2(CHAR("op")), VALUE(), LAST_VALUE())))
+                                // for the "Expression" Sequence two levels up. The arguments for the AST node are
+                                // - the operator that matched (which is two levels underneath the "Expression")
+                                // - the old value of the "Expression" as left child
+                                // - the value of the preceding "Term" as right child
+                                UP2(set(createAst(DOWN2(character("Op")), value(), lastValue())))
                         )
                 )
         );
     }
 
-    public Rule term() {
-        return sequence(
-                factor(), SET(), // the SET() sets the value of the "expression" to the value of the preceding "factor"
-                zeroOrMore(
-                        sequence(
-                                charSet("*/").label("op"),
-                                factor(),
+    public Rule Term() {
+        return Sequence(
+                Factor(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Factor"
+                ZeroOrMore(
+                        Sequence(
+                                CharSet("*/").label("Op"),
+                                Factor(),
 
                                 // create an AST node for the operation that was just matched
                                 // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // one for the "term" sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "term")
-                                // - the old value of the "term" as left child
-                                // - the value of the preceding "factor" as right child
-                                UP2(SET(createAst(DOWN2(CHAR("op")), VALUE(), LAST_VALUE())))
+                                // one for the "Term" Sequence two levels up. The arguments for the AST node are
+                                // - the operator that matched (which is two levels underneath the "Term")
+                                // - the old value of the "Term" as left child
+                                // - the value of the preceding "Factor" as right child
+                                UP2(set(createAst(DOWN2(character("Op")), value(), lastValue())))
                         )
                 )
         );
     }
 
-    public Rule factor() {
-        return firstOf(number(), parens());
+    public Rule Factor() {
+        return FirstOf(Number(), Parens());
     }
 
-    public Rule parens() {
-        return sequence('(', expression(), ')');
+    public Rule Parens() {
+        return Sequence('(', Expression(), ')');
     }
 
-    public Rule number() {
-        return sequence(
-                digits(),
+    public Rule Number() {
+        return Sequence(
+                Digits(),
 
-                // parse the input text matched by the preceding "digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the sequence rule labelled "number")
-                SET(createAst(Integer.parseInt(LAST_TEXT())))
+                // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
+                // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
+                set(createAst(Integer.parseInt(lastText())))
         );
     }
 
     @Leaf
-    public Rule digits() {
-        return oneOrMore(digit());
+    public Rule Digits() {
+        return OneOrMore(Digit());
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
     //**************** ACTIONS ****************

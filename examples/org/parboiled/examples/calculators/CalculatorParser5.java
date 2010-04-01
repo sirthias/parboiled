@@ -22,81 +22,81 @@ import org.parboiled.examples.calculators.CalculatorParser4.CalcNode;
 
 /**
  * A calculator parser defining the same language as the CalculatorParser4 but using a rule building helper methods
- * to factor out common constructs.
+ * to Factor out common constructs.
  */
 public class CalculatorParser5 extends CalculatorParser<CalcNode> {
 
     @Override
-    public Rule inputLine() {
-        return sequence(expression(), eoi());
+    public Rule InputLine() {
+        return Sequence(Expression(), Eoi());
     }
 
-    public Rule expression() {
-        return operatorRule(term(), firstOf('+', '-'));
+    public Rule Expression() {
+        return OperatorRule(Term(), FirstOf('+', '-'));
     }
 
-    public Rule term() {
-        return operatorRule(factor(), firstOf('*', '/'));
+    public Rule Term() {
+        return OperatorRule(Factor(), FirstOf('*', '/'));
     }
 
-    public Rule factor() {
-        // by using toRule('^') instead of ch('^') we make use of the fromCharLiteral(...) transformation below
-        return operatorRule(atom(), toRule('^'));
+    public Rule Factor() {
+        // by using ToRule('^') instead of Ch('^') we make use of the FromCharLiteral(...) transformation below
+        return OperatorRule(Atom(), ToRule('^'));
     }
 
-    public Rule operatorRule(Rule subRule, Rule operatorRule) {
-        return sequence(
-                subRule, SET(),
-                zeroOrMore(
-                        sequence(
-                                operatorRule.label("op"),
+    public Rule OperatorRule(Rule subRule, Rule operatorRule) {
+        return Sequence(
+                subRule, set(),
+                ZeroOrMore(
+                        Sequence(
+                                operatorRule.label("Op"),
                                 subRule,
-                                UP2(SET(createAst(DOWN2(CHAR("op")), VALUE(), LAST_VALUE())))
+                                UP2(set(createAst(DOWN2(character("Op")), value(), lastValue())))
                         )
                 )
         );
     }
 
-    public Rule atom() {
-        return firstOf(number(), squareRoot(), parens());
+    public Rule Atom() {
+        return FirstOf(Number(), SquareRoot(), Parens());
     }
 
-    public Rule squareRoot() {
-        return sequence("SQRT", parens(), SET(createAst('R', LAST_VALUE(), null)));
+    public Rule SquareRoot() {
+        return Sequence("SQRT", Parens(), set(createAst('R', lastValue(), null)));
     }
 
-    public Rule parens() {
-        return sequence('(', expression(), ')');
+    public Rule Parens() {
+        return Sequence('(', Expression(), ')');
     }
 
-    public Rule number() {
-        return sequence(
-                sequence(
-                        optional(ch('-')),
-                        oneOrMore(digit()),
-                        optional(sequence(ch('.'), oneOrMore(digit())))
+    public Rule Number() {
+        return Sequence(
+                Sequence(
+                        Optional(Ch('-')),
+                        OneOrMore(Digit()),
+                        Optional(Sequence(Ch('.'), OneOrMore(Digit())))
                 ),
-                SET(createAst(Double.parseDouble(LAST_TEXT()))),
-                whiteSpace()
+                set(createAst(Double.parseDouble(lastText()))),
+                WhiteSpace()
         );
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
-    public Rule whiteSpace() {
-        return zeroOrMore(charSet(" \t\f"));
-    }
-
-    @Override
-    protected Rule fromCharLiteral(char c) {
-        return sequence(ch(c), whiteSpace());
+    public Rule WhiteSpace() {
+        return ZeroOrMore(CharSet(" \t\f"));
     }
 
     @Override
-    protected Rule fromStringLiteral(@NotNull String string) {
-        return sequence(string(string), whiteSpace());
+    protected Rule FromCharLiteral(char c) {
+        return Sequence(Ch(c), WhiteSpace());
+    }
+
+    @Override
+    protected Rule FromStringLiteral(@NotNull String string) {
+        return Sequence(String(string), WhiteSpace());
     }
 
     //**************** ACTIONS ****************

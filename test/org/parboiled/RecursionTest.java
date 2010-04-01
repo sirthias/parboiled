@@ -21,28 +21,28 @@ import org.parboiled.test.AbstractTest;
 
 public class RecursionTest extends AbstractTest {
 
-    public static class RecursionParser extends BaseParser<Object> {
+    public static class Parser extends BaseParser<Object> {
 
         @SuppressWarnings({"InfiniteRecursion"})
-        public Rule lotsOfAs() {
-            return sequence(charIgnoreCase('a'), optional(lotsOfAs()));
+        public Rule LotsOfAs() {
+            return Sequence(CharIgnoreCase('a'), Optional(LotsOfAs()));
         }
 
     }
 
     @Test
     public void testRecursion() {
-        RecursionParser parser = Parboiled.createParser(RecursionParser.class);
-        test(parser.lotsOfAs(), "AaA", "" +
-                "[lotsOfAs] 'AaA'\n" +
+        Parser parser = Parboiled.createParser(Parser.class);
+        test(parser.LotsOfAs(), "AaA", "" +
+                "[LotsOfAs] 'AaA'\n" +
                 "    ['a/A'] 'A'\n" +
-                "    [optional] 'aA'\n" +
-                "        [lotsOfAs] 'aA'\n" +
+                "    [Optional] 'aA'\n" +
+                "        [LotsOfAs] 'aA'\n" +
                 "            ['a/A'] 'a'\n" +
-                "            [optional] 'A'\n" +
-                "                [lotsOfAs] 'A'\n" +
+                "            [Optional] 'A'\n" +
+                "                [LotsOfAs] 'A'\n" +
                 "                    ['a/A'] 'A'\n" +
-                "                    [optional]\n");
+                "                    [Optional]\n");
     }
 
 }

@@ -18,36 +18,36 @@ package org.parboiled;
 
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class IndentDedentTest extends AbstractTest {
 
     public static class IndentDedentParser extends BaseParser<Object> {
-
         public int currentIndent;
         public int indents;
         public int dedents;
 
-        public Rule file() {
-            return zeroOrMore(line());
+        public Rule File() {
+            return ZeroOrMore(Line());
         }
 
-        public Rule line() {
-            return sequence(
-                    zeroOrMore(' '),
-                    countIndentOrDedent(TEXT(LAST_NODE())),
-                    zeroOrMore(lineChar()),
-                    newline()
+        public Rule Line() {
+            return Sequence(
+                    ZeroOrMore(' '),
+                    countIndentOrDedent(text(lastNode())),
+                    ZeroOrMore(LineChar()),
+                    Newline()
             );
         }
 
-        public Rule lineChar() {
-            return sequence(testNot(newline()), any());
+        public Rule LineChar() {
+            return Sequence(TestNot(Newline()), Any());
         }
 
-        public Rule newline() {
-            return firstOf("\r\n", '\r', '\n');
+        public Rule Newline() {
+            return FirstOf("\r\n", '\r', '\n');
         }
 
         public boolean countIndentOrDedent(String lineStartWhiteSpace) {
@@ -62,7 +62,7 @@ public class IndentDedentTest extends AbstractTest {
     @Test
     public void test() {
         IndentDedentParser parser = Parboiled.createParser(IndentDedentParser.class);
-        Rule rule = parser.file();
+        Rule rule = parser.File();
         ParsingResult<?> result = RecoveringParseRunner.run(rule, "" +
                 "a file containing\n" +
                 "  some\n" +

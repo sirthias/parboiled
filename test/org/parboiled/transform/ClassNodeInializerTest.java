@@ -71,8 +71,8 @@ public class ClassNodeInializerTest extends TransformationTest {
                 "RuleWithIndirectImplicitAction,RuleWithDirectExplicitAction,RuleWithIndirectExplicitAction," +
                 "RuleWithDirectImplicitUpAction,RuleWithIndirectExplicitDownAction,RuleWithCapture1,RuleWithCapture2," +
                 "RuleWithCachedAnd2Params,RuleWithCaptureInAction,RuleWithActionAccessingPrivateField," +
-                "RuleWithActionAccessingPrivateMethod,ch,charIgnoreCase,charRange,charSet,string,stringIgnoreCase," +
-                "firstOf,oneOrMore,optional,sequence,test,testNot,zeroOrMore,eoi,any,empty");
+                "RuleWithActionAccessingPrivateMethod,Ch,CharIgnoreCase,CharRange,CharSet,String,StringIgnoreCase," +
+                "FirstOf,OneOrMore,Optional,Sequence,Test,TestNot,ZeroOrMore,Eoi,Any,Empty");
 
         assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
@@ -82,7 +82,7 @@ public class ClassNodeInializerTest extends TransformationTest {
                 "RuleWithIndirectImplicitAction,RuleWithDirectExplicitAction,RuleWithIndirectExplicitAction," +
                 "RuleWithDirectImplicitUpAction,RuleWithIndirectExplicitDownAction,RuleWithCapture1,RuleWithCapture2," +
                 "RuleWithCaptureInAction,RuleWithActionAccessingPrivateField,RuleWithActionAccessingPrivateMethod," +
-                "eoi,any,empty");
+                "Eoi,Any,Empty");
 
         assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {

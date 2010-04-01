@@ -12,67 +12,67 @@ public class RpnParser extends BaseParser<Node> {
 
     public final RpnActions actions = new RpnActions();
 
-    public Rule operation() {
-        return sequence(
-                separator(),
-                zeroOrMore(atom()).label("sequenceOfAtoms"),
-                eoi(),
-                SET(actions.runStack(VALUES("s/a"))));
+    public Rule Operation() {
+        return Sequence(
+                Separator(),
+                ZeroOrMore(Atom()).label("sequenceOfAtoms"),
+                Eoi(),
+                set(actions.runStack(values("s/a"))));
     }
 
-    public Rule atom() {
-        return firstOf(number(), binarySymbol());
+    public Rule Atom() {
+        return FirstOf(Number(), BinarySymbol());
     }
 
-    public Rule binarySymbol() {
-        return sequence(
-                firstOf('+', '-', '*', '/', '^'),
-                SET(actions.toOperator(LAST_CHAR())),
-                separator()
+    public Rule BinarySymbol() {
+        return Sequence(
+                FirstOf('+', '-', '*', '/', '^'),
+                set(actions.toOperator(lastChar())),
+                Separator()
         );
     }
 
-    public Rule number() {
-        return sequence(
-                sequence(
-                        optional(minus()),
-                        firstOf(
-                                dotNumber(),
-                                sequence(digits(), optional(dotNumber()))
+    public Rule Number() {
+        return Sequence(
+                Sequence(
+                        Optional(Minus()),
+                        FirstOf(
+                                DotNumber(),
+                                Sequence(Digits(), Optional(DotNumber()))
                         ),
-                        optional(exponent())
+                        Optional(Exponent())
                 ),
-                SET(actions.toBigDecimal(LAST_TEXT())),
-                separator()
+                set(actions.toBigDecimal(lastText())),
+                Separator()
         );
     }
 
     @Leaf
-    public Rule exponent() {
-        return sequence(
-                charIgnoreCase('E'),
-                optional(minus()),
-                digits()
+    public Rule Exponent() {
+        return Sequence(
+                CharIgnoreCase('E'),
+                Optional(Minus()),
+                Digits()
         );
     }
 
-    public Rule minus() {
-        return ch('-');
+    public Rule Minus() {
+        return Ch('-');
     }
 
     @Leaf
-    public Rule dotNumber() {
-        return sequence('.', digits());
+    public Rule DotNumber() {
+        return Sequence('.', Digits());
     }
 
     @Leaf
-    public Rule separator() {
-        return zeroOrMore(' ');
+    public Rule Separator() {
+        return ZeroOrMore(' ');
     }
 
     @Leaf
-    public Rule digits() {
-        return oneOrMore(charRange('0', '9'));
+    public Rule Digits() {
+        return OneOrMore(CharRange('0', '9'));
     }
 
 }

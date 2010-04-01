@@ -188,9 +188,9 @@ public interface Context<V> {
     char lookAhead(int delta);
 
     /**
-     * Returns true if the current rule is running somewhere underneath a test/testNot rule.
+     * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
      *
-     * @return true if the current context has a parent which corresponds to a test/testNot rule
+     * @return true if the current context has a parent which corresponds to a Test/TestNot rule
      */
     boolean inPredicate();
 

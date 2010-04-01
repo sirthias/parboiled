@@ -16,15 +16,15 @@
 
 package org.parboiled;
 
-import static org.parboiled.errors.ErrorUtils.printParseErrors;
-
 import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
+
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
-import org.testng.annotations.Test;
 
 public class ReportingParseRunnerTest extends AbstractTest {
 
@@ -47,27 +47,27 @@ public class ReportingParseRunnerTest extends AbstractTest {
     };
 
     private final String[] errorMessages = new String[] {
-            "Invalid input 'X', expected inputLine (line 1, pos 1):\nX1+2\n^\n",
-            "Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 2):\n1X+2\n ^\n",
-            "Invalid input 'X', expected term (line 1, pos 3):\n1+X2\n  ^\n",
-            "Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):\n1+2X\n   ^\n",
-            "Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):\n1+2X*(3-4)-5\n   ^\n",
-            "Invalid input 'X', expected factor (line 1, pos 5):\n1+2*X(3-4)-5\n    ^\n",
-            "Invalid input 'X', expected expression (line 1, pos 6):\n1+2*(X3-4)-5\n     ^\n",
-            "Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):\n1+2*(3X-4)-5\n      ^\n",
-            "Invalid input 'X', expected term (line 1, pos 8):\n1+2*(3-X4)-5\n       ^\n",
-            "Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 9):\n1+2*(3-4X)-5\n        ^\n",
+            "Invalid input 'X', expected InputLine (line 1, pos 1):\nX1+2\n^\n",
+            "Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 2):\n1X+2\n ^\n",
+            "Invalid input 'X', expected Term (line 1, pos 3):\n1+X2\n  ^\n",
+            "Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 4):\n1+2X\n   ^\n",
+            "Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 4):\n1+2X*(3-4)-5\n   ^\n",
+            "Invalid input 'X', expected Factor (line 1, pos 5):\n1+2*X(3-4)-5\n    ^\n",
+            "Invalid input 'X', expected Expression (line 1, pos 6):\n1+2*(X3-4)-5\n     ^\n",
+            "Invalid input 'X', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 7):\n1+2*(3X-4)-5\n      ^\n",
+            "Invalid input 'X', expected Term (line 1, pos 8):\n1+2*(3-X4)-5\n       ^\n",
+            "Invalid input 'X', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):\n1+2*(3-4X)-5\n        ^\n",
             "Invalid input 'X', expected '*', '/', '+', '-' or EOI (line 1, pos 10):\n1+2*(3-4)X-5\n         ^\n",
-            "Invalid input 'X', expected term (line 1, pos 11):\n1+2*(3-4)-X5\n          ^\n",
-            "Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 12):\n1+2*(3-4)-5X\n           ^\n",
-            "Invalid input 'EOI', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 11):\n1+2*(3-4-5\n          ^\n",
-            "Invalid input ')', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 8):\n1+2*3-4)-5\n       ^\n"
+            "Invalid input 'X', expected Term (line 1, pos 11):\n1+2*(3-4)-X5\n          ^\n",
+            "Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 12):\n1+2*(3-4)-5X\n           ^\n",
+            "Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 11):\n1+2*(3-4-5\n          ^\n",
+            "Invalid input ')', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 8):\n1+2*3-4)-5\n       ^\n"
     };
 
     @Test
     public void testSimpleReporting() {
         CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
-        Rule rule = parser.inputLine();
+        Rule rule = parser.InputLine();
         for (int i = 0; i < inputs.length; i++) {
             ParsingResult<Integer> result = ReportingParseRunner.run(rule, inputs[i]);
             assertEquals(result.parseErrors.size(), 1);
@@ -87,11 +87,11 @@ public class ReportingParseRunnerTest extends AbstractTest {
                 "}";
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
-        Rule rule = parser.compilationUnit();
+        Rule rule = parser.CompilationUnit();
         ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
-                "Invalid input ';', expected spacing, expression or ')' (line 5, pos 32):\n" +
+                "Invalid input ';', expected Spacing, Expression or ')' (line 5, pos 32):\n" +
                 "        String name = toString(;\n" +
                 "                               ^\n");
     }
@@ -108,11 +108,11 @@ public class ReportingParseRunnerTest extends AbstractTest {
                 "}";
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
-        Rule rule = parser.compilationUnit();
+        Rule rule = parser.CompilationUnit();
         ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
-                "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", dim, '=', ',' or ';' (line 5, pos 22):\n" +
+                "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
                 "        String name  toString();\n" +
                 "                     ^\n");
     }

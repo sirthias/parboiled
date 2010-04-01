@@ -63,7 +63,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param path the path to search for
      * @return the parse tree node if found or null if not found
      */
-    public Node<V> NODE(String path) {
+    public Node<V> node(String path) {
         check();
         return context.getNodeByPath(path);
     }
@@ -77,7 +77,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the list of parse tree nodes
      */
     @NotNull
-    public List<Node<V>> NODES(String path) {
+    public List<Node<V>> nodes(String path) {
         check();
         return ParseTreeUtils.collectNodesByPath(context.getSubNodes(), path, new ArrayList<Node<V>>());
     }
@@ -90,7 +90,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param labelPrefix the label prefix
      * @return the parse tree node if found or null if not found
      */
-    public Node<V> NODE_BY_LABEL(String labelPrefix) {
+    public Node<V> nodeByLabel(String labelPrefix) {
         check();
         return context.getNodeByLabel(labelPrefix);
     }
@@ -104,7 +104,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the list of parse tree nodes
      */
     @NotNull
-    public List<Node<V>> NODES_BY_LABEL(String labelPrefix) {
+    public List<Node<V>> nodesByLabel(String labelPrefix) {
         check();
         return collectNodes(context.getSubNodes(),
                 new LabelPrefixPredicate<V>(labelPrefix),
@@ -118,7 +118,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @return the last node created during this parsing run
      */
-    public Node<V> LAST_NODE() {
+    public Node<V> lastNode() {
         check();
         return context.getLastNode();
     }
@@ -129,7 +129,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @return the tree value of the current context scope
      */
-    public V VALUE() {
+    public V value() {
         check();
         return context.getTreeValue();
     }
@@ -140,19 +140,19 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param node the node the get the value from
      * @return the value of the node, or null if the node is null
      */
-    public V VALUE(Node<V> node) {
+    public V value(Node<V> node) {
         return node == null ? null : node.getValue();
     }
 
     /**
      * Returns the value of the node found under the given prefix path.
-     * Equivalent to <code>VALUE(NODE(path))</code>.
+     * Equivalent to <code>value(node(path))</code>.
      *
      * @param path the path to search for
      * @return the value of the node, or null if the node is not found
      */
-    public V VALUE(String path) {
-        return VALUE(NODE(path));
+    public V value(String path) {
+        return value(node(path));
     }
 
     /**
@@ -162,7 +162,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the list of values
      */
     @NotNull
-    public List<V> VALUES(List<Node<V>> nodes) {
+    public List<V> values(List<Node<V>> nodes) {
         List<V> values = new ArrayList<V>();
         for (Node<V> node : nodes) {
             values.add(node.getValue());
@@ -172,24 +172,24 @@ public abstract class BaseActions<V> implements ContextAware<V> {
 
     /**
      * Returns the list of the values of all nodes found under the given prefix path.
-     * Equivalent to <code>VALUES(NODES(path))</code>.
+     * Equivalent to <code>values(nodes(path))</code>.
      *
      * @param path the path to search for
      * @return the list of values
      */
     @NotNull
-    public List<V> VALUES(String path) {
-        return VALUES(NODES(path));
+    public List<V> values(String path) {
+        return values(nodes(path));
     }
 
     /**
      * Returns the value of the last node created during this parsing run.
-     * Equivalent to <code>VALUE(LAST_NODE())</code>.
+     * Equivalent to <code>value(lastNode())</code>.
      *
      * @return the value of the last node created
      */
-    public V LAST_VALUE() {
-        return VALUE(LAST_NODE());
+    public V lastValue() {
+        return value(lastNode());
     }
 
     /**
@@ -198,20 +198,20 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param node the parse tree node
      * @return the input text matched by the given node
      */
-    public String TEXT(Node<V> node) {
+    public String text(Node<V> node) {
         check();
         return context.getNodeText(node);
     }
 
     /**
      * Returns the input text matched by the node found under the given prefix path.
-     * Equivalent to <code>TEXT(NODE(path))</code>.
+     * Equivalent to <code>text(node(path))</code>.
      *
      * @param path the path to search for
      * @return the matched input text
      */
-    public String TEXT(String path) {
-        return TEXT(NODE(path));
+    public String text(String path) {
+        return text(node(path));
     }
 
     /**
@@ -221,7 +221,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the list of matched input texts
      */
     @NotNull
-    public List<String> TEXTS(List<Node<V>> nodes) {
+    public List<String> texts(List<Node<V>> nodes) {
         check();
         List<String> values = new ArrayList<String>();
         for (Node<V> node : nodes) {
@@ -232,24 +232,24 @@ public abstract class BaseActions<V> implements ContextAware<V> {
 
     /**
      * Returns a list of the input texts matched by of all nodes found under the given prefix path.
-     * Equivalent to <code>TEXTS(NODES(path))</code>.
+     * Equivalent to <code>texts(nodes(path))</code>.
      *
      * @param path the path to search for
      * @return the list of matched input texts
      */
     @NotNull
-    public List<String> TEXTS(String path) {
-        return TEXTS(NODES(path));
+    public List<String> texts(String path) {
+        return texts(nodes(path));
     }
 
     /**
      * Returns the input text matched by the last node created during this parsing run.
-     * Equivalent to <code>TEXT(LAST_NODE())</code>.
+     * Equivalent to <code>text(lastNode())</code>.
      *
      * @return the input text matched by the last node created
      */
-    public String LAST_TEXT() {
-        return TEXT(LAST_NODE());
+    public String lastText() {
+        return text(lastNode());
     }
 
     /**
@@ -258,20 +258,20 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param node the parse tree node
      * @return the first matched character or null if the given node is null
      */
-    public Character CHAR(Node<V> node) {
-        String text = TEXT(node);
+    public Character character(Node<V> node) {
+        String text = text(node);
         return StringUtils.isEmpty(text) ? null : text.charAt(0);
     }
 
     /**
      * Returns the first character of the input text matched by the node found under the given prefix path.
-     * Equivalent to <code>CHAR(NODE(path))</code>.
+     * Equivalent to <code>character(node(path))</code>.
      *
      * @param path the path to search for
      * @return the first matched character or null if the node is not found
      */
-    public Character CHAR(String path) {
-        return CHAR(NODE(path));
+    public Character character(String path) {
+        return character(node(path));
     }
 
     /**
@@ -281,11 +281,11 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @return the list of the first matched characters
      */
     @NotNull
-    public List<Character> CHARS(List<Node<V>> nodes) {
+    public List<Character> chars(List<Node<V>> nodes) {
         check();
         List<Character> values = new ArrayList<Character>();
         for (Node<V> node : nodes) {
-            values.add(CHAR(node));
+            values.add(character(node));
         }
         return values;
     }
@@ -293,35 +293,35 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Returns a list of the first characters of the input texts matched by of all nodes found
      * under the given prefix path.
-     * Equivalent to <code>CHARS(NODES(path))</code>.
+     * Equivalent to <code>chars(nodes(path))</code>.
      *
      * @param path the path to search for
      * @return the list of the first matched characters
      */
     @NotNull
-    public List<Character> CHARS(String path) {
-        return CHARS(NODES(path));
+    public List<Character> chars(String path) {
+        return chars(nodes(path));
     }
 
     /**
      * Returns the first character of the input text matched by the last node created during this parsing run.
-     * Equivalent to <code>CHAR(LAST_NODE())</code>.
+     * Equivalent to <code>character(lastNode())</code>.
      *
      * @return the first character of the input text matched by the last node created
      */
-    public Character LAST_CHAR() {
-        return CHAR(LAST_NODE());
+    public Character lastChar() {
+        return character(lastNode());
     }
 
     /**
      * Sets the value of the parse tree node to be created for the current context
      * scope to the value of the last node created during the current parsing run.
-     * Equivalent to <code>SET(LAST_VALUE())</code>.
+     * Equivalent to <code>set(lastValue())</code>.
      *
      * @return true
      */
-    public boolean SET() {
-        return SET(LAST_VALUE());
+    public boolean set() {
+        return set(lastValue());
     }
 
     /**
@@ -330,7 +330,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * @param value the value to set
      * @return true
      */
-    public boolean SET(V value) {
+    public boolean set(V value) {
         check();
         context.setNodeValue(value);
         return true;
@@ -341,24 +341,24 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @return the next input character about to be matched
      */
-    public Character NEXT_CHAR() {
+    public Character nextChar() {
         check();
         return context.getCurrentLocation().getChar();
     }
 
     /**
-     * Returns true if the current rule is running somewhere underneath a test/testNot rule.
+     * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
      * Useful for example for making sure actions are not run inside of a predicate evaluation:
      * <code>
-     * return sequence(
+     * return Sequence(
      * ...,
-     * IN_PREDICATE() || actions.doSomething()
+     * inPredicate() || actions.doSomething()
      * );
      * </code>
      *
      * @return true if in a predicate
      */
-    public boolean IN_PREDICATE() {
+    public boolean inPredicate() {
         check();
         return context.inPredicate();
     }
@@ -368,7 +368,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @return true if in a below a leaf rule
      */
-    public boolean BELOW_LEAF_LEVEL() {
+    public boolean belowLeafLevel() {
         check();
         return context.isBelowLeafLevel();
     }
@@ -377,15 +377,15 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * Determines whether the current rule or a sub rule has recorded a parse error.
      * Useful for example for making sure actions are not run on erroneous input:
      * <code>
-     * return sequence(
+     * return Sequence(
      * ...,
-     * !HAS_ERROR() && actions.doSomething()
+     * !hasError() && actions.doSomething()
      * );
      * </code>
      *
      * @return true if either the current rule or a sub rule has recorded a parse error
      */
-    public boolean HAS_ERROR() {
+    public boolean hasError() {
         check();
         return context.hasError();
     }

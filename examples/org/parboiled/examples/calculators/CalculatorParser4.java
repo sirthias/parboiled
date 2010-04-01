@@ -30,124 +30,124 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
 public class CalculatorParser4 extends CalculatorParser<CalcNode> {
 
     @Override
-    public Rule inputLine() {
-        return sequence(expression(), eoi());
+    public Rule InputLine() {
+        return Sequence(Expression(), Eoi());
     }
 
-    public Rule expression() {
-        return sequence(
-                term(), SET(), // the SET() sets the value of the "expression" to the value of the preceding "term"
-                zeroOrMore(
-                        sequence(
-                                // we use a firstOf(...) instead of a charSet so we can use the fromCharLiteral transformation
-                                firstOf('+', '-').label("op"),
-                                term(),
+    public Rule Expression() {
+        return Sequence(
+                Term(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Term"
+                ZeroOrMore(
+                        Sequence(
+                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral transformation
+                                FirstOf('+', '-').label("op"),
+                                Term(),
 
                                 // create an AST node for the operation that was just matched
                                 // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // one for the "expression" sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "expression")
-                                // - the old value of the "expression" as left child
-                                // - the value of the preceding "term" as right child
-                                UP2(SET(createAst(DOWN2(CHAR("op")), VALUE(), LAST_VALUE())))
+                                // one for the "Expression" Sequence two levels up. The arguments for the AST node are
+                                // - the operator that matched (which is two levels underneath the "Expression")
+                                // - the old value of the "Expression" as left child
+                                // - the value of the preceding "Term" as right child
+                                UP2(set(createAst(DOWN2(character("op")), value(), lastValue())))
                         )
                 )
         );
     }
 
-    public Rule term() {
-        return sequence(
-                factor(), SET(), // the SET() sets the value of the "term" to the value of the preceding "factor"
-                zeroOrMore(
-                        sequence(
-                                // we use a firstOf(...) instead of a charSet so we can use the fromCharLiteral transformation
-                                firstOf('*', '/').label("op"),
-                                factor(),
+    public Rule Term() {
+        return Sequence(
+                Factor(), set(), // the set() sets the value of the "Term" to the value of the preceding "Factor"
+                ZeroOrMore(
+                        Sequence(
+                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral transformation
+                                FirstOf('*', '/').label("op"),
+                                Factor(),
 
                                 // create an AST node for the operation that was just matched
                                 // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // one for the "term" sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "term")
-                                // - the old value of the "term" as left child
-                                // - the value of the preceding "factor" as right child
-                                UP2(SET(createAst(DOWN2(CHAR("op")), VALUE(), LAST_VALUE())))
+                                // one for the "Term" Sequence two levels up. The arguments for the AST node are
+                                // - the operator that matched (which is two levels underneath the "Term")
+                                // - the old value of the "Term" as left child
+                                // - the value of the preceding "Factor" as right child
+                                UP2(set(createAst(DOWN2(character("op")), value(), lastValue())))
                         )
                 )
         );
     }
 
-    public Rule factor() {
-        return sequence(
-                atom(), SET(), // the SET() sets the value of the "factor" to the value of the preceding "atom"
-                zeroOrMore(
-                        sequence(
+    public Rule Factor() {
+        return Sequence(
+                Atom(), set(), // the set() sets the value of the "Factor" to the value of the preceding "Atom"
+                ZeroOrMore(
+                        Sequence(
                                 '^',
-                                atom(),
+                                Atom(),
 
                                 // create a new AST node and set it as the value of the parse tree node for the
-                                // "factor" rule, the node contains the operator ('^'), the old
-                                // "factor" value as left child and the value of the "atom" following
+                                // "Factor" rule, the node contains the operator ('^'), the old
+                                // "Factor" value as left child and the value of the "Atom" following
                                 // the operator as right child
-                                UP2(SET(createAst('^', VALUE(), LAST_VALUE())))
+                                UP2(set(createAst('^', value(), lastValue())))
                         )
                 )
         );
     }
 
-    public Rule atom() {
-        return firstOf(number(), squareRoot(), parens());
+    public Rule Atom() {
+        return FirstOf(Number(), SquareRoot(), Parens());
     }
 
-    public Rule squareRoot() {
-        return sequence(
+    public Rule SquareRoot() {
+        return Sequence(
                 "SQRT",
-                parens(),
+                Parens(),
 
                 // create a new AST node with a special operator 'R' and only one child
-                SET(createAst('R', LAST_VALUE(), null))
+                set(createAst('R', lastValue(), null))
         );
     }
 
-    public Rule parens() {
-        return sequence('(', expression(), ')');
+    public Rule Parens() {
+        return Sequence('(', Expression(), ')');
     }
 
-    public Rule number() {
-        return sequence(
-                // we use another sequence in the "number" sequence so we can easily access the input text matched
-                // by the three enclosed rules with "LAST_TEXT()"
-                sequence(
-                        optional(ch('-')),
-                        oneOrMore(digit()),
-                        optional(sequence(ch('.'), oneOrMore(digit())))
+    public Rule Number() {
+        return Sequence(
+                // we use another Sequence in the "Number" Sequence so we can easily access the input text matched
+                // by the three enclosed rules with "lastText()"
+                Sequence(
+                        Optional(Ch('-')),
+                        OneOrMore(Digit()),
+                        Optional(Sequence(Ch('.'), OneOrMore(Digit())))
                 ),
-                SET(createAst(Double.parseDouble(LAST_TEXT()))),
-                whiteSpace()
+                set(createAst(Double.parseDouble(lastText()))),
+                WhiteSpace()
         );
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
-    public Rule whiteSpace() {
-        return zeroOrMore(charSet(" \t\f"));
+    public Rule WhiteSpace() {
+        return ZeroOrMore(CharSet(" \t\f"));
     }
 
     // we redefine the rule creation for character literals to also match trailing whitespace this way we don't have
     // to insert extra whitespace() rules after each character literal however, we now have to wrap character matching
-    // rules we don't want to be "space swallowing" with the ch(...) rule creator
+    // rules we don't want to be "space swallowing" with the Ch(...) rule creator
 
     @Override
-    protected Rule fromCharLiteral(char c) {
-        return sequence(ch(c), whiteSpace());
+    protected Rule FromCharLiteral(char c) {
+        return Sequence(Ch(c), WhiteSpace());
     }
 
-    // same thing for string literals
+    // same thing for String literals
 
     @Override
-    protected Rule fromStringLiteral(@NotNull String string) {
-        return sequence(string(string), whiteSpace());
+    protected Rule FromStringLiteral(@NotNull String string) {
+        return Sequence(String(string), WhiteSpace());
     }
 
     //**************** ACTIONS ****************

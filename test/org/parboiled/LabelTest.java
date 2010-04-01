@@ -16,108 +16,109 @@
 
 package org.parboiled;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import org.parboiled.test.AbstractTest;
-import org.parboiled.support.ToStringFormatter;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.Label;
+import org.parboiled.support.ToStringFormatter;
+import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
+
+import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.parboiled.trees.GraphUtils.printTree;
-import org.parboiled.support.Label;
 import static org.testng.Assert.assertEquals;
-import org.testng.annotations.Test;
 
 public class LabelTest extends AbstractTest {
 
     public static class LabellingParser extends BaseParser<Object> {
 
-        public Rule aOpB() {
-            return sequence(
-                    number().label("a"),
-                    operator().label("firstOp"),
-                    number().label("b"),
-                    operator().label("secondOp"),
-                    number()
+        public Rule AOpB() {
+            return Sequence(
+                    Number().label("A"),
+                    Operator().label("FirstOp"),
+                    Number().label("B"),
+                    Operator().label("SecondOp"),
+                    Number()
             );
         }
 
-        public Rule operator() {
-            return firstOf('+', '-');
+        public Rule Operator() {
+            return FirstOf('+', '-');
         }
 
         @Label("NUmBER")
-        public Rule number() {
-            return oneOrMore(digit());
+        public Rule Number() {
+            return OneOrMore(Digit());
         }
 
-        public Rule digit() {
-            return charRange('0', '9');
+        public Rule Digit() {
+            return CharRange('0', '9');
         }
 
         @SuppressWarnings({"InfiniteRecursion"})
-        public Rule recursiveLabel() {
-            return firstOf('a', sequence('b', recursiveLabel().label("first"), recursiveLabel().label("second")));
+        public Rule RecursiveLabel() {
+            return FirstOf('a', Sequence('b', RecursiveLabel().label("First"), RecursiveLabel().label("Second")));
         }
 
     }
 
     @SuppressWarnings("unchecked")
-    //@Test
+    @Test
     public void testLabellingParser() {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);
-        Rule rule = parser.aOpB();
+        Rule rule = parser.AOpB();
 
         assertEqualsMultiline(printTree((Matcher) rule, new ToStringFormatter<Matcher>()), "" +
-                "aOpB\n" +
-                "    a\n" +
-                "        digit\n" +
-                "    firstOp\n" +
+                "AOpB\n" +
+                "    A\n" +
+                "        Digit\n" +
+                "    FirstOp\n" +
                 "        '+'\n" +
                 "        '-'\n" +
-                "    b\n" +
-                "        digit\n" +
-                "    secondOp\n" +
+                "    B\n" +
+                "        Digit\n" +
+                "    SecondOp\n" +
                 "        '+'\n" +
                 "        '-'\n" +
                 "    NUmBER\n" +
-                "        digit\n");
+                "        Digit\n");
 
-        // verify that there is each only one digit matcher, '+' matcher and '-' matcher
+        // verify that there is each only one Digit matcher, '+' matcher and '-' matcher
         assertEquals(countAllDistinct((Matcher) rule), 9);
 
         test(rule, "123-54+9", "" +
-                "[aOpB] '123-54+9'\n" +
-                "    [a] '123'\n" +
-                "        [digit] '1'\n" +
-                "        [digit] '2'\n" +
-                "        [digit] '3'\n" +
-                "    [firstOp] '-'\n" +
+                "[AOpB] '123-54+9'\n" +
+                "    [A] '123'\n" +
+                "        [Digit] '1'\n" +
+                "        [Digit] '2'\n" +
+                "        [Digit] '3'\n" +
+                "    [FirstOp] '-'\n" +
                 "        ['-'] '-'\n" +
-                "    [b] '54'\n" +
-                "        [digit] '5'\n" +
-                "        [digit] '4'\n" +
-                "    [secondOp] '+'\n" +
+                "    [B] '54'\n" +
+                "        [Digit] '5'\n" +
+                "        [Digit] '4'\n" +
+                "    [SecondOp] '+'\n" +
                 "        ['+'] '+'\n" +
                 "    [NUmBER] '9'\n" +
-                "        [digit] '9'\n");
+                "        [Digit] '9'\n");
     }
 
     @Test
     public void testRecursiveLabelling() {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);
-        Rule rule = parser.recursiveLabel();
+        Rule rule = parser.RecursiveLabel();
 
         test(rule, "bbaaaa", "" +
-                "[recursiveLabel] 'bbaaa'\n" +
-                "    [sequence] 'bbaaa'\n" +
+                "[RecursiveLabel] 'bbaaa'\n" +
+                "    [Sequence] 'bbaaa'\n" +
                 "        ['b'] 'b'\n" +
-                "        [first] 'baa'\n" +
-                "            [sequence] 'baa'\n" +
+                "        [First] 'baa'\n" +
+                "            [Sequence] 'baa'\n" +
                 "                ['b'] 'b'\n" +
-                "                [first] 'a'\n" +
+                "                [First] 'a'\n" +
                 "                    ['a'] 'a'\n" +
-                "                [second] 'a'\n" +
+                "                [Second] 'a'\n" +
                 "                    ['a'] 'a'\n" +
-                "        [second] 'a'\n" +
+                "        [Second] 'a'\n" +
                 "            ['a'] 'a'\n");
     }
 

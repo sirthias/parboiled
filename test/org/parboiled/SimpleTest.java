@@ -23,16 +23,16 @@ public class SimpleTest extends AbstractTest {
 
     static class Parser extends BaseParser<Object> {
 
-        public Rule clause() {
-            return sequence(digit(), operator(), digit(), charSet("abcd").asLeaf(), eoi());
+        public Rule Clause() {
+            return Sequence(Digit(), Operator(), Digit(), CharSet("abcd").asLeaf(), Eoi());
         }
 
-        public Rule operator() {
-            return firstOf('+', '-');
+        public Rule Operator() {
+            return FirstOf('+', '-');
         }
 
-        public Rule digit() {
-            return charRange('0', '9');
+        public Rule Digit() {
+            return CharRange('0', '9');
         }
 
     }
@@ -40,13 +40,13 @@ public class SimpleTest extends AbstractTest {
     @Test
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
-        Rule rule = parser.clause();
+        Rule rule = parser.Clause();
         test(rule, "1+5b", "" +
-                "[clause] '1+5b'\n" +
-                "    [digit] '1'\n" +
-                "    [operator] '+'\n" +
+                "[Clause] '1+5b'\n" +
+                "    [Digit] '1'\n" +
+                "    [Operator] '+'\n" +
                 "        ['+'] '+'\n" +
-                "    [digit] '5'\n" +
+                "    [Digit] '5'\n" +
                 "    [[abcd]] 'b'\n" +
                 "    [EOI]\n");
     }

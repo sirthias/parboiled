@@ -26,69 +26,69 @@ import org.parboiled.support.Leaf;
 public class CalculatorParser2 extends CalculatorParser<Integer> {
 
     @Override
-    public Rule inputLine() {
-        return sequence(expression(), eoi());
+    public Rule InputLine() {
+        return Sequence(Expression(), Eoi());
     }
 
-    public Rule expression() {
-        return sequence(
-                term(), SET(), // the SET() sets the value of the "expression" to the value of the preceding "term"
-                zeroOrMore(
-                        firstOf(
-                                // the action that is run after the '+' and the "term" have been matched
-                                // sets the value of the enclosing "expression" to the sum of the old value and the
-                                // value of the node that was constructed last, in this case the preceding "term"
-                                sequence('+', term(), UP3(SET(VALUE() + LAST_VALUE()))),
+    public Rule Expression() {
+        return Sequence(
+                Term(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Term"
+                ZeroOrMore(
+                        FirstOf(
+                                // the action that is run after the '+' and the "Term" have been matched
+                                // sets the value of the enclosing "Expression" to the sum of the old value and the
+                                // value of the node that was constructed last, in this case the preceding "Term"
+                                Sequence('+', Term(), UP3(set(value() + lastValue()))),
 
                                 // dito for the '-' operator
-                                sequence('-', term(), UP3(SET(VALUE() - LAST_VALUE())))
+                                Sequence('-', Term(), UP3(set(value() - lastValue())))
                         )
                 )
         );
     }
 
-    public Rule term() {
-        return sequence(
-                factor(), SET(), // the SET() sets the value of the "term" to the value of the preceding "factor"
-                zeroOrMore(
-                        firstOf(
-                                // the action that is run after the '*' and the "factor" have been matched
-                                // sets the value of the enclosing "term" to the product of the old value and the
-                                // value of the node that was constructed last, in this case the preceding "factor"
-                                sequence('*', factor(), UP3(SET(VALUE() * LAST_VALUE()))),
+    public Rule Term() {
+        return Sequence(
+                Factor(), set(), // the set() sets the value of the "Term" to the value of the preceding "Factor"
+                ZeroOrMore(
+                        FirstOf(
+                                // the action that is run after the '*' and the "Factor" have been matched
+                                // sets the value of the enclosing "Term" to the product of the old value and the
+                                // value of the node that was constructed last, in this case the preceding "Factor"
+                                Sequence('*', Factor(), UP3(set(value() * lastValue()))),
 
                                 // dito for the '/' operator
-                                sequence('/', factor(), UP3(SET(VALUE() / LAST_VALUE())))
+                                Sequence('/', Factor(), UP3(set(value() / lastValue())))
                         )
                 )
         );
     }
 
-    public Rule factor() {
-        return firstOf(number(), parens());
+    public Rule Factor() {
+        return FirstOf(Number(), Parens());
     }
 
-    public Rule parens() {
-        return sequence('(', expression(), ')');
+    public Rule Parens() {
+        return Sequence('(', Expression(), ')');
     }
 
-    public Rule number() {
-        return sequence(
-                digits(),
+    public Rule Number() {
+        return Sequence(
+                Digits(),
 
-                // parse the input text matched by the preceding "digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the sequence rule labelled "number")
-                SET(Integer.parseInt(LAST_TEXT()))
+                // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
+                // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
+                set(Integer.parseInt(lastText()))
         );
     }
     
     @Leaf
-    public Rule digits() {
-        return oneOrMore(digit());
+    public Rule Digits() {
+        return OneOrMore(Digit());
     }
 
-    public Rule digit() {
-        return charRange('0', '9');
+    public Rule Digit() {
+        return CharRange('0', '9');
     }
 
     //**************** MAIN ****************

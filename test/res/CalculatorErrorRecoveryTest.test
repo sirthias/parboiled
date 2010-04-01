@@ -1,448 +1,484 @@
+xyz
+===
+Invalid input 'x', expected InputLine (line 1, pos 1):
+xyz
+^
+===
+###
 X1+2
 ===
-Invalid input 'X', expected inputLine (line 1, pos 1):
+Invalid input 'X', expected InputLine (line 1, pos 1):
 X1+2
 ^
 ===
-[inputLine, {3}] '1+2'
-    [expression, {3}] '1+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [digits] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}] '+2'
-            [firstOf, {2}] '+2'
-                [sequence, {2}] '+2'
+[InputLine, {3}] '1+2'
+    [Expression, {3}] '1+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}] '+2'
+            [FirstOf, {2}] '+2'
+                [Sequence, {2}] '+2'
                     ['+'] '+'
-                    [term, {2}] '2'
-                        [factor, {2}] '2'
-                            [number, {2}] '2'
-                                [digits] '2'
-                        [zeroOrMore]
+                    [Term, {2}] '2'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 xyz1+2
 ===
-Invalid input 'x...', expected inputLine (line 1, pos 1):
+Invalid input 'x...', expected InputLine (line 1, pos 1):
 xyz1+2
 ^^^
 ===
-[inputLine, {3}] '1+2'
-    [expression, {3}] '1+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}] '+2'
-            [sequence, {2}] '+2'
-                [[+-]] '+'
-                [term, {2}] '2'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore]
+[InputLine, {3}] '1+2'
+    [Expression, {3}] '1+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}] '+2'
+            [FirstOf, {2}] '+2'
+                [Sequence, {2}] '+2'
+                    ['+'] '+'
+                    [Term, {2}] '2'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 x1+*2
 ===
-Invalid input 'x', expected inputLine (line 1, pos 1):
+Invalid input 'x', expected InputLine (line 1, pos 1):
 x1+*2
 ^
 ---
-Invalid input '*', expected term (line 1, pos 4):
+Invalid input '*', expected Term (line 1, pos 4):
 x1+*2
    ^
 ===
-[inputLine, {3}]E '1+2'
-    [expression, {3}]E '1+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}]E '+2'
-            [sequence, {2}]E '+2'
-                [[+-]] '+'
-                [term, {2}]E '2'
-                    [factor, {2}]E '2'
-                        [number, {2}]E '2'
-                            [oneOrMore]E '2'
-                                [digit] '2'
-                    [zeroOrMore]
+[InputLine, {3}]E '1+2'
+    [Expression, {3}]E '1+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}]E '+2'
+            [FirstOf, {2}]E '+2'
+                [Sequence, {2}]E '+2'
+                    ['+'] '+'
+                    [Term, {2}]E '2'
+                        [Factor, {2}]E '2'
+                            [Number, {2}]E '2'
+                                [Digits]E '2'
+                                    [Digit] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 1X+2
 ===
-Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 2):
+Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 2):
 1X+2
  ^
 ===
-[inputLine, {3}]E '1+2'
-    [expression, {3}]E '1+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}]E '+2'
-            [sequence, {2}]E '+2'
-                [[+-]] '+'
-                [term, {2}] '2'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore]
+[InputLine, {3}]E '1+2'
+    [Expression, {3}]E '1+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}]E '+2'
+            [FirstOf, {2}]E '+2'
+                [Sequence, {2}]E '+2'
+                    ['+'] '+'
+                    [Term, {2}] '2'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+X2
 ===
-Invalid input 'X', expected term (line 1, pos 3):
+Invalid input 'X', expected Term (line 1, pos 3):
 1+X2
   ^
 ===
-[inputLine, {3}]E '1+2'
-    [expression, {3}]E '1+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}]E '+2'
-            [sequence, {2}]E '+2'
-                [[+-]] '+'
-                [term, {2}]E '2'
-                    [factor, {2}]E '2'
-                        [number, {2}]E '2'
-                            [oneOrMore]E '2'
-                                [digit] '2'
-                    [zeroOrMore]
+[InputLine, {3}]E '1+2'
+    [Expression, {3}]E '1+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}]E '+2'
+            [FirstOf, {2}]E '+2'
+                [Sequence, {2}]E '+2'
+                    ['+'] '+'
+                    [Term, {2}]E '2'
+                        [Factor, {2}]E '2'
+                            [Number, {2}]E '2'
+                                [Digits]E '2'
+                                    [Digit] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2X
 ===
-Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
+Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
 1+2X
    ^
 ===
-[inputLine, {3}]E '1+2'
-    [expression, {3}] '1+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}] '+2'
-            [sequence, {2}] '+2'
-                [[+-]] '+'
-                [term, {2}] '2'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore]
+[InputLine, {3}]E '1+2'
+    [Expression, {3}] '1+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}] '+2'
+            [FirstOf, {2}] '+2'
+                [Sequence, {2}] '+2'
+                    ['+'] '+'
+                    [Term, {2}] '2'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2X*(3-4)-5
 ===
-Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
+Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
 1+2X*(3-4)-5
    ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}]E '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}]E '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}]E '*(3-4)'
-                        [sequence, {-1}]E '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}] '(3-4)'
-                                [parens, {-1}] '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}] '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}]E '+2*(3-4)'
+                [Sequence, {-2}]E '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}]E '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}]E '*(3-4)'
+                            [FirstOf, {-1}]E '*(3-4)'
+                                [Sequence, {-1}]E '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}] '(3-4)'
+                                        [Parens, {-1}] '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}] '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*X(3-4)-5
 ===
-Invalid input 'X', expected factor (line 1, pos 5):
+Invalid input 'X', expected Factor (line 1, pos 5):
 1+2*X(3-4)-5
     ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}]E '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}]E '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}]E '*(3-4)'
-                        [sequence, {-1}]E '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}]E '(3-4)'
-                                [parens, {-1}]E '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}] '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}]E '+2*(3-4)'
+                [Sequence, {-2}]E '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}]E '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}]E '*(3-4)'
+                            [FirstOf, {-1}]E '*(3-4)'
+                                [Sequence, {-1}]E '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}]E '(3-4)'
+                                        [Parens, {-1}]E '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}] '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(X3-4)-5
 ===
-Invalid input 'X', expected expression (line 1, pos 6):
+Invalid input 'X', expected Expression (line 1, pos 6):
 1+2*(X3-4)-5
      ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}]E '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}]E '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}]E '*(3-4)'
-                        [sequence, {-1}]E '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}]E '(3-4)'
-                                [parens, {-1}]E '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}]E '3-4'
-                                        [term, {3}]E '3'
-                                            [factor, {3}]E '3'
-                                                [number, {3}]E '3'
-                                                    [oneOrMore]E '3'
-                                                        [digit] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}]E '+2*(3-4)'
+                [Sequence, {-2}]E '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}]E '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}]E '*(3-4)'
+                            [FirstOf, {-1}]E '*(3-4)'
+                                [Sequence, {-1}]E '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}]E '(3-4)'
+                                        [Parens, {-1}]E '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}]E '3-4'
+                                                [Term, {3}]E '3'
+                                                    [Factor, {3}]E '3'
+                                                        [Number, {3}]E '3'
+                                                            [Digits]E '3'
+                                                                [Digit] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3X-4)-5
 ===
-Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
+Invalid input 'X', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 7):
 1+2*(3X-4)-5
       ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}]E '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}]E '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}]E '*(3-4)'
-                        [sequence, {-1}]E '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}]E '(3-4)'
-                                [parens, {-1}]E '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}]E '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}]E '-4'
-                                            [sequence, {4}]E '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}]E '+2*(3-4)'
+                [Sequence, {-2}]E '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}]E '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}]E '*(3-4)'
+                            [FirstOf, {-1}]E '*(3-4)'
+                                [Sequence, {-1}]E '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}]E '(3-4)'
+                                        [Parens, {-1}]E '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}]E '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}]E '-4'
+                                                    [FirstOf, {4}]E '-4'
+                                                        [Sequence, {4}]E '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3-X4)-5
 ===
-Invalid input 'X', expected term (line 1, pos 8):
+Invalid input 'X', expected Term (line 1, pos 8):
 1+2*(3-X4)-5
        ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}]E '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}]E '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}]E '*(3-4)'
-                        [sequence, {-1}]E '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}]E '(3-4)'
-                                [parens, {-1}]E '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}]E '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}]E '-4'
-                                            [sequence, {4}]E '-4'
-                                                [[+-]] '-'
-                                                [term, {4}]E '4'
-                                                    [factor, {4}]E '4'
-                                                        [number, {4}]E '4'
-                                                            [oneOrMore]E '4'
-                                                                [digit] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}]E '+2*(3-4)'
+                [Sequence, {-2}]E '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}]E '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}]E '*(3-4)'
+                            [FirstOf, {-1}]E '*(3-4)'
+                                [Sequence, {-1}]E '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}]E '(3-4)'
+                                        [Parens, {-1}]E '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}]E '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}]E '-4'
+                                                    [FirstOf, {4}]E '-4'
+                                                        [Sequence, {4}]E '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}]E '4'
+                                                                [Factor, {4}]E '4'
+                                                                    [Number, {4}]E '4'
+                                                                        [Digits]E '4'
+                                                                            [Digit] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3-4X)-5
 ===
-Invalid input 'X', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
+Invalid input 'X', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 1+2*(3-4X)-5
         ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}]E '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}]E '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}]E '*(3-4)'
-                        [sequence, {-1}]E '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}]E '(3-4)'
-                                [parens, {-1}]E '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}] '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}]E '+2*(3-4)'
+                [Sequence, {-2}]E '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}]E '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}]E '*(3-4)'
+                            [FirstOf, {-1}]E '*(3-4)'
+                                [Sequence, {-1}]E '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}]E '(3-4)'
+                                        [Parens, {-1}]E '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}] '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3-4)X-5
@@ -451,352 +487,379 @@ Invalid input 'X', expected '*', '/', '+', '-' or EOI (line 1, pos 10):
 1+2*(3-4)X-5
          ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}] '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}] '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(3-4)'
-                        [sequence, {-1}] '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}] '(3-4)'
-                                [parens, {-1}] '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}] '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}]E '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}] '+2*(3-4)'
+                [Sequence, {-2}] '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}] '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}] '*(3-4)'
+                            [FirstOf, {-1}] '*(3-4)'
+                                [Sequence, {-1}] '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}] '(3-4)'
+                                        [Parens, {-1}] '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}] '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}]E '-5'
+                [Sequence, {5}]E '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3-4)-X5
 ===
-Invalid input 'X', expected term (line 1, pos 11):
+Invalid input 'X', expected Term (line 1, pos 11):
 1+2*(3-4)-X5
           ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}]E '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*(3-4)-5'
-            [sequence, {-2}] '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}] '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(3-4)'
-                        [sequence, {-1}] '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}] '(3-4)'
-                                [parens, {-1}] '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}] '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}]E '-5'
-                [[+-]] '-'
-                [term, {5}]E '5'
-                    [factor, {5}]E '5'
-                        [number, {5}]E '5'
-                            [oneOrMore]E '5'
-                                [digit] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}]E '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*(3-4)-5'
+            [FirstOf, {-2}] '+2*(3-4)'
+                [Sequence, {-2}] '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}] '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}] '*(3-4)'
+                            [FirstOf, {-1}] '*(3-4)'
+                                [Sequence, {-1}] '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}] '(3-4)'
+                                        [Parens, {-1}] '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}] '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}]E '-5'
+                [Sequence, {5}]E '-5'
+                    ['-'] '-'
+                    [Term, {5}]E '5'
+                        [Factor, {5}]E '5'
+                            [Number, {5}]E '5'
+                                [Digits]E '5'
+                                    [Digit] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3-4)-5X
 ===
-Invalid input 'X', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 12):
+Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 12):
 1+2*(3-4)-5X
            ^
 ===
-[inputLine, {-6}]E '1+2*(3-4)-5'
-    [expression, {-6}] '1+2*(3-4)-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}] '+2*(3-4)-5'
-            [sequence, {-2}] '+2*(3-4)'
-                [[+-]] '+'
-                [term, {-2}] '2*(3-4)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-1}] '*(3-4)'
-                        [sequence, {-1}] '*(3-4)'
-                            [[*/]] '*'
-                            [factor, {-1}] '(3-4)'
-                                [parens, {-1}] '(3-4)'
-                                    ['('] '('
-                                    [expression, {-1}] '3-4'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {4}] '-4'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                    [')'] ')'
-            [sequence, {5}] '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-6}]E '1+2*(3-4)-5'
+    [Expression, {-6}] '1+2*(3-4)-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}] '+2*(3-4)-5'
+            [FirstOf, {-2}] '+2*(3-4)'
+                [Sequence, {-2}] '+2*(3-4)'
+                    ['+'] '+'
+                    [Term, {-2}] '2*(3-4)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-1}] '*(3-4)'
+                            [FirstOf, {-1}] '*(3-4)'
+                                [Sequence, {-1}] '*(3-4)'
+                                    ['*'] '*'
+                                    [Factor, {-1}] '(3-4)'
+                                        [Parens, {-1}] '(3-4)'
+                                            ['('] '('
+                                            [Expression, {-1}] '3-4'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {4}] '-4'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                            [')'] ')'
+            [FirstOf, {5}] '-5'
+                [Sequence, {5}] '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2*(3-4-5
 ===
-Invalid input 'EOI', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 11):
+Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 11):
 1+2*(3-4-5
           ^
 ===
-[inputLine, {-11}]E '1+2*(3-4-5)'
-    [expression, {-11}]E '1+2*(3-4-5)'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {-12}]E '+2*(3-4-5)'
-            [sequence, {-12}]E '+2*(3-4-5)'
-                [[+-]] '+'
-                [term, {-12}]E '2*(3-4-5)'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {-6}]E '*(3-4-5)'
-                        [sequence, {-6}]E '*(3-4-5)'
-                            [[*/]] '*'
-                            [factor, {-6}]E '(3-4-5)'
-                                [parens, {-6}]E '(3-4-5)'
-                                    ['('] '('
-                                    [expression, {-6}] '3-4-5'
-                                        [term, {3}] '3'
-                                            [factor, {3}] '3'
-                                                [number, {3}] '3'
-                                                    [oneOrMore] '3'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {5}] '-4-5'
-                                            [sequence, {4}] '-4'
-                                                [[+-]] '-'
-                                                [term, {4}] '4'
-                                                    [factor, {4}] '4'
-                                                        [number, {4}] '4'
-                                                            [oneOrMore] '4'
-                                                    [zeroOrMore]
-                                            [sequence, {5}] '-5'
-                                                [[+-]] '-'
-                                                [term, {5}] '5'
-                                                    [factor, {5}] '5'
-                                                        [number, {5}] '5'
-                                                            [oneOrMore] '5'
-                                                    [zeroOrMore]
-                                    [')']E ')'
+[InputLine, {-11}]E '1+2*(3-4-5)'
+    [Expression, {-11}]E '1+2*(3-4-5)'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {-12}]E '+2*(3-4-5)'
+            [FirstOf, {-12}]E '+2*(3-4-5)'
+                [Sequence, {-12}]E '+2*(3-4-5)'
+                    ['+'] '+'
+                    [Term, {-12}]E '2*(3-4-5)'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {-6}]E '*(3-4-5)'
+                            [FirstOf, {-6}]E '*(3-4-5)'
+                                [Sequence, {-6}]E '*(3-4-5)'
+                                    ['*'] '*'
+                                    [Factor, {-6}]E '(3-4-5)'
+                                        [Parens, {-6}]E '(3-4-5)'
+                                            ['('] '('
+                                            [Expression, {-6}] '3-4-5'
+                                                [Term, {3}] '3'
+                                                    [Factor, {3}] '3'
+                                                        [Number, {3}] '3'
+                                                            [Digits] '3'
+                                                    [ZeroOrMore]
+                                                [ZeroOrMore, {5}] '-4-5'
+                                                    [FirstOf, {4}] '-4'
+                                                        [Sequence, {4}] '-4'
+                                                            ['-'] '-'
+                                                            [Term, {4}] '4'
+                                                                [Factor, {4}] '4'
+                                                                    [Number, {4}] '4'
+                                                                        [Digits] '4'
+                                                                [ZeroOrMore]
+                                                    [FirstOf, {5}] '-5'
+                                                        [Sequence, {5}] '-5'
+                                                            ['-'] '-'
+                                                            [Term, {5}] '5'
+                                                                [Factor, {5}] '5'
+                                                                    [Number, {5}] '5'
+                                                                        [Digits] '5'
+                                                                [ZeroOrMore]
+                                            [')']E ')'
     [EOI]
 ###
 1+2*3-4)-5
 ===
-Invalid input ')', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 8):
+Invalid input ')', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 8):
 1+2*3-4)-5
        ^
 ===
-[inputLine, {-2}]E '1+2*3-4-5'
-    [expression, {-2}]E '1+2*3-4-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*3-4-5'
-            [sequence, {6}] '+2*3'
-                [[+-]] '+'
-                [term, {6}] '2*3'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {3}] '*3'
-                        [sequence, {3}] '*3'
-                            [[*/]] '*'
-                            [factor, {3}] '3'
-                                [number, {3}] '3'
-                                    [oneOrMore] '3'
-            [sequence, {4}] '-4'
-                [[+-]] '-'
-                [term, {4}] '4'
-                    [factor, {4}] '4'
-                        [number, {4}] '4'
-                            [oneOrMore] '4'
-                    [zeroOrMore]
-            [sequence, {5}]E '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-2}]E '1+2*3-4-5'
+    [Expression, {-2}]E '1+2*3-4-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*3-4-5'
+            [FirstOf, {6}] '+2*3'
+                [Sequence, {6}] '+2*3'
+                    ['+'] '+'
+                    [Term, {6}] '2*3'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {3}] '*3'
+                            [FirstOf, {3}] '*3'
+                                [Sequence, {3}] '*3'
+                                    ['*'] '*'
+                                    [Factor, {3}] '3'
+                                        [Number, {3}] '3'
+                                            [Digits] '3'
+            [FirstOf, {4}] '-4'
+                [Sequence, {4}] '-4'
+                    ['-'] '-'
+                    [Term, {4}] '4'
+                        [Factor, {4}] '4'
+                            [Number, {4}] '4'
+                                [Digits] '4'
+                        [ZeroOrMore]
+            [FirstOf, {5}]E '-5'
+                [Sequence, {5}]E '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+*6
 ===
-Invalid input '*', expected term (line 1, pos 3):
+Invalid input '*', expected Term (line 1, pos 3):
 1+*6
   ^
 ===
-[inputLine, {7}]E '1+6'
-    [expression, {7}]E '1+6'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {6}]E '+6'
-            [sequence, {6}]E '+6'
-                [[+-]] '+'
-                [term, {6}]E '6'
-                    [factor, {6}]E '6'
-                        [number, {6}]E '6'
-                            [oneOrMore]E '6'
-                                [digit] '6'
-                    [zeroOrMore]
+[InputLine, {7}]E '1+6'
+    [Expression, {7}]E '1+6'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {6}]E '+6'
+            [FirstOf, {6}]E '+6'
+                [Sequence, {6}]E '+6'
+                    ['+'] '+'
+                    [Term, {6}]E '6'
+                        [Factor, {6}]E '6'
+                            [Number, {6}]E '6'
+                                [Digits]E '6'
+                                    [Digit] '6'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+++2
 ===
-Invalid input '+', expected term (line 1, pos 3):
+Invalid input '+', expected Term (line 1, pos 3):
 1+++2
   ^
 ---
-Invalid input '+', expected term (line 1, pos 4):
+Invalid input '+', expected Term (line 1, pos 4):
 1+++2
    ^
 ===
-[inputLine, {3}]E '1+0+2'
-    [expression, {3}]E '1+0+2'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {2}]E '+0+2'
-            [sequence, {0}]E '+0'
-                [[+-]] '+'
-                [term, {0}]E '0'
-                    [factor, {0}]E '0'
-                        [number, {0}]E '0'
-                            [oneOrMore]E '0'
-                                [digit]E '0'
-                    [zeroOrMore]
-            [sequence, {2}]E '+2'
-                [[+-]] '+'
-                [term, {2}]E '2'
-                    [factor, {2}]E '2'
-                        [number, {2}]E '2'
-                            [oneOrMore]E '2'
-                                [digit] '2'
-                    [zeroOrMore]
+[InputLine, {3}]E '1+0+2'
+    [Expression, {3}]E '1+0+2'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {2}]E '+0+2'
+            [FirstOf, {0}]E '+0'
+                [Sequence, {0}]E '+0'
+                    ['+'] '+'
+                    [Term, {0}]E '0'
+                        [Factor, {0}]E '0'
+                            [Number, {0}]E '0'
+                                [Digits]E '0'
+                                    [Digit]E '0'
+                        [ZeroOrMore]
+            [FirstOf, {2}]E '+2'
+                [Sequence, {2}]E '+2'
+                    ['+'] '+'
+                    [Term, {2}]E '2'
+                        [Factor, {2}]E '2'
+                            [Number, {2}]E '2'
+                                [Digits]E '2'
+                                    [Digit] '2'
+                        [ZeroOrMore]
     [EOI]
 ###
 1+2x*3-4)-5
 ===
-Invalid input 'x', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
+Invalid input 'x', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 4):
 1+2x*3-4)-5
    ^
 ---
-Invalid input ')', expected digit, '*', '/', '+', '-' or EOI (line 1, pos 9):
+Invalid input ')', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 9):
 1+2x*3-4)-5
         ^
 ===
-[inputLine, {-2}]E '1+2*3-4-5'
-    [expression, {-2}]E '1+2*3-4-5'
-        [term, {1}] '1'
-            [factor, {1}] '1'
-                [number, {1}] '1'
-                    [oneOrMore] '1'
-            [zeroOrMore]
-        [zeroOrMore, {5}]E '+2*3-4-5'
-            [sequence, {6}]E '+2*3'
-                [[+-]] '+'
-                [term, {6}]E '2*3'
-                    [factor, {2}] '2'
-                        [number, {2}] '2'
-                            [oneOrMore] '2'
-                    [zeroOrMore, {3}]E '*3'
-                        [sequence, {3}]E '*3'
-                            [[*/]] '*'
-                            [factor, {3}] '3'
-                                [number, {3}] '3'
-                                    [oneOrMore] '3'
-            [sequence, {4}] '-4'
-                [[+-]] '-'
-                [term, {4}] '4'
-                    [factor, {4}] '4'
-                        [number, {4}] '4'
-                            [oneOrMore] '4'
-                    [zeroOrMore]
-            [sequence, {5}]E '-5'
-                [[+-]] '-'
-                [term, {5}] '5'
-                    [factor, {5}] '5'
-                        [number, {5}] '5'
-                            [oneOrMore] '5'
-                    [zeroOrMore]
+[InputLine, {-2}]E '1+2*3-4-5'
+    [Expression, {-2}]E '1+2*3-4-5'
+        [Term, {1}] '1'
+            [Factor, {1}] '1'
+                [Number, {1}] '1'
+                    [Digits] '1'
+            [ZeroOrMore]
+        [ZeroOrMore, {5}]E '+2*3-4-5'
+            [FirstOf, {6}]E '+2*3'
+                [Sequence, {6}]E '+2*3'
+                    ['+'] '+'
+                    [Term, {6}]E '2*3'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
+                        [ZeroOrMore, {3}]E '*3'
+                            [FirstOf, {3}]E '*3'
+                                [Sequence, {3}]E '*3'
+                                    ['*'] '*'
+                                    [Factor, {3}] '3'
+                                        [Number, {3}] '3'
+                                            [Digits] '3'
+            [FirstOf, {4}] '-4'
+                [Sequence, {4}] '-4'
+                    ['-'] '-'
+                    [Term, {4}] '4'
+                        [Factor, {4}] '4'
+                            [Number, {4}] '4'
+                                [Digits] '4'
+                        [ZeroOrMore]
+            [FirstOf, {5}]E '-5'
+                [Sequence, {5}]E '-5'
+                    ['-'] '-'
+                    [Term, {5}] '5'
+                        [Factor, {5}] '5'
+                            [Number, {5}] '5'
+                                [Digits] '5'
+                        [ZeroOrMore]
     [EOI]
 ###
 ((1+x2)
 ===
-Invalid input 'x', expected term (line 1, pos 5):
+Invalid input 'x', expected Term (line 1, pos 5):
 ((1+x2)
     ^
 ---
@@ -804,47 +867,48 @@ Invalid input 'EOI', expected '*', '/', '+', '-' or ')' (line 1, pos 8):
 ((1+x2)
        ^
 ===
-[inputLine, {3}]E '((1+2))'
-    [expression, {3}]E '((1+2))'
-        [term, {3}]E '((1+2))'
-            [factor, {3}]E '((1+2))'
-                [parens, {3}]E '((1+2))'
+[InputLine, {3}]E '((1+2))'
+    [Expression, {3}]E '((1+2))'
+        [Term, {3}]E '((1+2))'
+            [Factor, {3}]E '((1+2))'
+                [Parens, {3}]E '((1+2))'
                     ['('] '('
-                    [expression, {3}]E '(1+2)'
-                        [term, {3}]E '(1+2)'
-                            [factor, {3}]E '(1+2)'
-                                [parens, {3}]E '(1+2)'
+                    [Expression, {3}]E '(1+2)'
+                        [Term, {3}]E '(1+2)'
+                            [Factor, {3}]E '(1+2)'
+                                [Parens, {3}]E '(1+2)'
                                     ['('] '('
-                                    [expression, {3}]E '1+2'
-                                        [term, {1}] '1'
-                                            [factor, {1}] '1'
-                                                [number, {1}] '1'
-                                                    [oneOrMore] '1'
-                                            [zeroOrMore]
-                                        [zeroOrMore, {2}]E '+2'
-                                            [sequence, {2}]E '+2'
-                                                [[+-]] '+'
-                                                [term, {2}]E '2'
-                                                    [factor, {2}]E '2'
-                                                        [number, {2}]E '2'
-                                                            [oneOrMore]E '2'
-                                                                [digit] '2'
-                                                    [zeroOrMore]
+                                    [Expression, {3}]E '1+2'
+                                        [Term, {1}] '1'
+                                            [Factor, {1}] '1'
+                                                [Number, {1}] '1'
+                                                    [Digits] '1'
+                                            [ZeroOrMore]
+                                        [ZeroOrMore, {2}]E '+2'
+                                            [FirstOf, {2}]E '+2'
+                                                [Sequence, {2}]E '+2'
+                                                    ['+'] '+'
+                                                    [Term, {2}]E '2'
+                                                        [Factor, {2}]E '2'
+                                                            [Number, {2}]E '2'
+                                                                [Digits]E '2'
+                                                                    [Digit] '2'
+                                                        [ZeroOrMore]
                                     [')'] ')'
-                            [zeroOrMore]
-                        [zeroOrMore]
+                            [ZeroOrMore]
+                        [ZeroOrMore]
                     [')']E ')'
-            [zeroOrMore]
-        [zeroOrMore]
+            [ZeroOrMore]
+        [ZeroOrMore]
     [EOI]
 ###
 (2+*(5-1x)y+1
 ===
-Invalid input '*', expected term (line 1, pos 4):
+Invalid input '*', expected Term (line 1, pos 4):
 (2+*(5-1x)y+1
    ^
 ---
-Invalid input 'x', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
+Invalid input 'x', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 (2+*(5-1x)y+1
         ^
 ---
@@ -852,105 +916,110 @@ Invalid input 'y', expected '*', '/', '+', '-' or ')' (line 1, pos 11):
 (2+*(5-1x)y+1
           ^
 ---
-Invalid input 'EOI', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 14):
+Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 14):
 (2+*(5-1x)y+1
              ^
 ===
-[inputLine, {7}]E '(2+(5-1)+1)'
-    [expression, {7}]E '(2+(5-1)+1)'
-        [term, {7}]E '(2+(5-1)+1)'
-            [factor, {7}]E '(2+(5-1)+1)'
-                [parens, {7}]E '(2+(5-1)+1)'
+[InputLine, {7}]E '(2+(5-1)+1)'
+    [Expression, {7}]E '(2+(5-1)+1)'
+        [Term, {7}]E '(2+(5-1)+1)'
+            [Factor, {7}]E '(2+(5-1)+1)'
+                [Parens, {7}]E '(2+(5-1)+1)'
                     ['('] '('
-                    [expression, {7}]E '2+(5-1)+1'
-                        [term, {2}] '2'
-                            [factor, {2}] '2'
-                                [number, {2}] '2'
-                                    [oneOrMore] '2'
-                            [zeroOrMore]
-                        [zeroOrMore, {1}]E '+(5-1)+1'
-                            [sequence, {4}]E '+(5-1)'
-                                [[+-]] '+'
-                                [term, {4}]E '(5-1)'
-                                    [factor, {4}]E '(5-1)'
-                                        [parens, {4}]E '(5-1)'
-                                            ['('] '('
-                                            [expression, {4}] '5-1'
-                                                [term, {5}] '5'
-                                                    [factor, {5}] '5'
-                                                        [number, {5}] '5'
-                                                            [oneOrMore] '5'
-                                                    [zeroOrMore]
-                                                [zeroOrMore, {1}] '-1'
-                                                    [sequence, {1}] '-1'
-                                                        [[+-]] '-'
-                                                        [term, {1}] '1'
-                                                            [factor, {1}] '1'
-                                                                [number, {1}] '1'
-                                                                    [oneOrMore] '1'
-                                                            [zeroOrMore]
-                                            [')'] ')'
-                                    [zeroOrMore]
-                            [sequence, {1}]E '+1'
-                                [[+-]] '+'
-                                [term, {1}] '1'
-                                    [factor, {1}] '1'
-                                        [number, {1}] '1'
-                                            [oneOrMore] '1'
-                                    [zeroOrMore]
+                    [Expression, {7}]E '2+(5-1)+1'
+                        [Term, {2}] '2'
+                            [Factor, {2}] '2'
+                                [Number, {2}] '2'
+                                    [Digits] '2'
+                            [ZeroOrMore]
+                        [ZeroOrMore, {1}]E '+(5-1)+1'
+                            [FirstOf, {4}]E '+(5-1)'
+                                [Sequence, {4}]E '+(5-1)'
+                                    ['+'] '+'
+                                    [Term, {4}]E '(5-1)'
+                                        [Factor, {4}]E '(5-1)'
+                                            [Parens, {4}]E '(5-1)'
+                                                ['('] '('
+                                                [Expression, {4}] '5-1'
+                                                    [Term, {5}] '5'
+                                                        [Factor, {5}] '5'
+                                                            [Number, {5}] '5'
+                                                                [Digits] '5'
+                                                        [ZeroOrMore]
+                                                    [ZeroOrMore, {1}] '-1'
+                                                        [FirstOf, {1}] '-1'
+                                                            [Sequence, {1}] '-1'
+                                                                ['-'] '-'
+                                                                [Term, {1}] '1'
+                                                                    [Factor, {1}] '1'
+                                                                        [Number, {1}] '1'
+                                                                            [Digits] '1'
+                                                                    [ZeroOrMore]
+                                                [')'] ')'
+                                        [ZeroOrMore]
+                            [FirstOf, {1}]E '+1'
+                                [Sequence, {1}]E '+1'
+                                    ['+'] '+'
+                                    [Term, {1}] '1'
+                                        [Factor, {1}] '1'
+                                            [Number, {1}] '1'
+                                                [Digits] '1'
+                                        [ZeroOrMore]
                     [')']E ')'
-            [zeroOrMore]
-        [zeroOrMore]
+            [ZeroOrMore]
+        [ZeroOrMore]
     [EOI]
 ###
 (2*ab4-7
 ===
-Invalid input 'a...', expected factor (line 1, pos 4):
+Invalid input 'a...', expected Factor (line 1, pos 4):
 (2*ab4-7
    ^^^
 ---
-Invalid input 'EOI', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
+Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 (2*ab4-7
         ^
 ===
-[inputLine, {-5}]E '(2*-7)'
-    [expression, {-5}]E '(2*-7)'
-        [term, {-5}]E '(2*-7)'
-            [factor, {-5}]E '(2*-7)'
-                [parens, {-5}]E '(2*-7)'
+[InputLine, {-5}]E '(2*-7)'
+    [Expression, {-5}]E '(2*-7)'
+        [Term, {-5}]E '(2*-7)'
+            [Factor, {-5}]E '(2*-7)'
+                [Parens, {-5}]E '(2*-7)'
                     ['('] '('
-                    [expression, {-5}]E '2*-7'
-                        [term, {2}]E '2*'
-                            [factor, {2}] '2'
-                                [number, {2}] '2'
-                                    [oneOrMore] '2'
-                            [zeroOrMore]E '*'
-                                [sequence]E '*'
-                                    [[*/]] '*'
-                        [zeroOrMore, {7}] '-7'
-                            [sequence, {7}] '-7'
-                                [[+-]] '-'
-                                [term, {7}] '7'
-                                    [factor, {7}] '7'
-                                        [number, {7}] '7'
-                                            [oneOrMore] '7'
-                                    [zeroOrMore]
+                    [Expression, {-5}]E '2*-7'
+                        [Term, {2}]E '2*'
+                            [Factor, {2}] '2'
+                                [Number, {2}] '2'
+                                    [Digits] '2'
+                            [ZeroOrMore]E '*'
+                                [FirstOf]E '*'
+                                    [Sequence]E '*'
+                                        ['*'] '*'
+                        [ZeroOrMore, {7}] '-7'
+                            [FirstOf, {7}] '-7'
+                                [Sequence, {7}] '-7'
+                                    ['-'] '-'
+                                    [Term, {7}] '7'
+                                        [Factor, {7}] '7'
+                                            [Number, {7}] '7'
+                                                [Digits] '7'
+                                        [ZeroOrMore]
                     [')']E ')'
-            [zeroOrMore]
-        [zeroOrMore]
+            [ZeroOrMore]
+        [ZeroOrMore]
     [EOI]
 ###
 (2++*(5-1xy)y+1
 ===
-Invalid input '+', expected term (line 1, pos 4):
+Invalid input '+', expected Term (line 1, pos 4):
 (2++*(5-1xy)y+1
    ^
 ---
-Invalid input '*', expected term (line 1, pos 5):
+Invalid input '*', expected Term (line 1, pos 5):
 (2++*(5-1xy)y+1
     ^
 ---
-Invalid input 'x...', expected digit, '*', '/', '+', '-' or ')' (line 1, pos 10):
+Invalid input 'x...', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 10):
 (2++*(5-1xy)y+1
          ^^
 ---
@@ -958,56 +1027,60 @@ Invalid input 'y', expected '*', '/', '+', '-' or EOI (line 1, pos 13):
 (2++*(5-1xy)y+1
             ^
 ===
-[inputLine, {7}]E '(2+0+(5-1)+1'
-    [expression, {7}]E '(2+0+(5-1)+1'
-        [term, {6}]E '(2+0+(5-1)'
-            [factor, {6}]E '(2+0+(5-1)'
-                [parens, {6}]E '(2+0+(5-1)'
+[InputLine, {7}]E '(2+0+(5-1)+1'
+    [Expression, {7}]E '(2+0+(5-1)+1'
+        [Term, {6}]E '(2+0+(5-1)'
+            [Factor, {6}]E '(2+0+(5-1)'
+                [Parens, {6}]E '(2+0+(5-1)'
                     ['('] '('
-                    [expression, {6}]E '2+0+(5-1'
-                        [term, {2}] '2'
-                            [factor, {2}] '2'
-                                [number, {2}] '2'
-                                    [oneOrMore] '2'
-                            [zeroOrMore]
-                        [zeroOrMore, {4}]E '+0+(5-1'
-                            [sequence, {0}]E '+0'
-                                [[+-]] '+'
-                                [term, {0}]E '0'
-                                    [factor, {0}]E '0'
-                                        [number, {0}]E '0'
-                                            [oneOrMore]E '0'
-                                                [digit]E '0'
-                                    [zeroOrMore]
-                            [sequence, {4}]E '+(5-1'
-                                [[+-]] '+'
-                                [term, {4}]E '(5-1'
-                                    [factor, {4}]E '(5-1'
-                                        [parens, {4}]E '(5-1'
-                                            ['('] '('
-                                            [expression, {4}] '5-1'
-                                                [term, {5}] '5'
-                                                    [factor, {5}] '5'
-                                                        [number, {5}] '5'
-                                                            [oneOrMore] '5'
-                                                    [zeroOrMore]
-                                                [zeroOrMore, {1}] '-1'
-                                                    [sequence, {1}] '-1'
-                                                        [[+-]] '-'
-                                                        [term, {1}] '1'
-                                                            [factor, {1}] '1'
-                                                                [number, {1}] '1'
-                                                                    [oneOrMore] '1'
-                                                            [zeroOrMore]
-                                    [zeroOrMore]
+                    [Expression, {6}]E '2+0+(5-1'
+                        [Term, {2}] '2'
+                            [Factor, {2}] '2'
+                                [Number, {2}] '2'
+                                    [Digits] '2'
+                            [ZeroOrMore]
+                        [ZeroOrMore, {4}]E '+0+(5-1'
+                            [FirstOf, {0}]E '+0'
+                                [Sequence, {0}]E '+0'
+                                    ['+'] '+'
+                                    [Term, {0}]E '0'
+                                        [Factor, {0}]E '0'
+                                            [Number, {0}]E '0'
+                                                [Digits]E '0'
+                                                    [Digit]E '0'
+                                        [ZeroOrMore]
+                            [FirstOf, {4}]E '+(5-1'
+                                [Sequence, {4}]E '+(5-1'
+                                    ['+'] '+'
+                                    [Term, {4}]E '(5-1'
+                                        [Factor, {4}]E '(5-1'
+                                            [Parens, {4}]E '(5-1'
+                                                ['('] '('
+                                                [Expression, {4}] '5-1'
+                                                    [Term, {5}] '5'
+                                                        [Factor, {5}] '5'
+                                                            [Number, {5}] '5'
+                                                                [Digits] '5'
+                                                        [ZeroOrMore]
+                                                    [ZeroOrMore, {1}] '-1'
+                                                        [FirstOf, {1}] '-1'
+                                                            [Sequence, {1}] '-1'
+                                                                ['-'] '-'
+                                                                [Term, {1}] '1'
+                                                                    [Factor, {1}] '1'
+                                                                        [Number, {1}] '1'
+                                                                            [Digits] '1'
+                                                                    [ZeroOrMore]
+                                        [ZeroOrMore]
                     [')'] ')'
-            [zeroOrMore]
-        [zeroOrMore, {1}]E '+1'
-            [sequence, {1}]E '+1'
-                [[+-]] '+'
-                [term, {1}] '1'
-                    [factor, {1}] '1'
-                        [number, {1}] '1'
-                            [oneOrMore] '1'
-                    [zeroOrMore]
+            [ZeroOrMore]
+        [ZeroOrMore, {1}]E '+1'
+            [FirstOf, {1}]E '+1'
+                [Sequence, {1}]E '+1'
+                    ['+'] '+'
+                    [Term, {1}] '1'
+                        [Factor, {1}] '1'
+                            [Number, {1}] '1'
+                                [Digits] '1'
+                        [ZeroOrMore]
     [EOI]

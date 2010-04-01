@@ -18,40 +18,42 @@ package org.parboiled;
 
 import org.parboiled.matchers.FirstOfMatcher;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.Label;
 import org.parboiled.test.AbstractTest;
+import org.testng.annotations.Test;
+
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.testng.Assert.assertEquals;
-import org.testng.annotations.Test;
 
 public class CachingTest extends AbstractTest {
 
     public static class CachingParser extends BaseParser<Object> {
 
-        public Rule rule1() {
-            return sequence(
-                    firstOf('+', '-'),
-                    digit(),
-                    firstOf('+', '-'),
-                    digit()
+        public Rule Rule1() {
+            return Sequence(
+                    FirstOf('+', '-'),
+                    Digit(),
+                    FirstOf('+', '-'),
+                    Digit()
             );
         }
 
-        public Rule rule2() {
-            return sequence(
-                    firstOf_uncached('+', '-'),
-                    digit(),
-                    firstOf_uncached('+', '-'),
-                    digit()
+        public Rule Rule2() {
+            return Sequence(
+                    FirstOf_uncached('+', '-'),
+                    Digit(),
+                    FirstOf_uncached('+', '-'),
+                    Digit()
             );
         }
 
-        public Rule digit() {
-            return charRange('0', '9');
+        public Rule Digit() {
+            return CharRange('0', '9');
         }
 
-        public Rule firstOf_uncached(Object... rules) {
-            
-            return new FirstOfMatcher(toRules(rules)).label("firstOf");
+        @Label("FirstOf")
+        public Rule FirstOf_uncached(Object... rules) {
+            return new FirstOfMatcher(ToRules(rules));
         }
 
     }
@@ -61,8 +63,8 @@ public class CachingTest extends AbstractTest {
     public void testLabellingParser() {
         CachingParser parser = Parboiled.createParser(CachingParser.class);
 
-        Matcher matcher1 = (Matcher) parser.rule1();
-        Matcher matcher2 = (Matcher) parser.rule2();
+        Matcher matcher1 = (Matcher) parser.Rule1();
+        Matcher matcher2 = (Matcher) parser.Rule2();
 
         assertEquals(countAllDistinct(matcher1), 5);
         assertEquals(countAllDistinct(matcher2), 6);
