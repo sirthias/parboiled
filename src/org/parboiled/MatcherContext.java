@@ -29,6 +29,7 @@ import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.matchers.TestMatcher;
 import org.parboiled.support.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
@@ -169,7 +170,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public Node<V> getNodeByLabel(String labelPrefix) {
-        return subNodes != null ? findNode(subNodes, new LabelPrefixPredicate<V>(labelPrefix)) : null;
+        return findNode(subNodes, new LabelPrefixPredicate<V>(labelPrefix));
     }
 
     public Node<V> getLastNode() {
@@ -242,7 +243,7 @@ public class MatcherContext<V> implements Context<V> {
         lastNodeRef.setTarget(node);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({"fallthrough"})
     public void addChildNode(@NotNull Node<V> node) {
         switch (subNodes.size()) {
             case 0:
@@ -258,25 +259,29 @@ public class MatcherContext<V> implements Context<V> {
                 subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), subNodes.get(2), node);
                 break;
             case 4:
-                subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), subNodes.get(2), subNodes.get(3), node);
-                break;
+                Node<V> node0 = subNodes.get(0);
+                Node<V> node1 = subNodes.get(1);
+                Node<V> node2 = subNodes.get(2);
+                Node<V> node3 = subNodes.get(3);
+                subNodes = new ArrayList<Node<V>>();
+                subNodes.add(node0);
+                subNodes.add(node1);
+                subNodes.add(node2);
+                subNodes.add(node3);
+                // fall-through
             default:
-                int size = subNodes.size();
-                Node[] elements = new Node[size + 1];
-                for (int i = 0; i < size; i++) elements[i] = subNodes.get(i);
-                elements[size] = node;
-                subNodes = ImmutableList.of((Node<V>[]) elements);
+                subNodes.add(node);
                 break;
         }
     }
 
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
         if (subContext == null) {
-            // we need to introduce a new level
+            // introduce a new level
             subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this, level + 1);
         }
 
-        // normally we just reuse the existing subContext instance
+        // normally just reuse the existing subContext instance
         subContext.matcher = ProxyMatcher.unwrap(matcher);
         subContext.startLocation = currentLocation;
         subContext.currentLocation = currentLocation;
