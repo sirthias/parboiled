@@ -23,10 +23,10 @@ import org.objectweb.asm.tree.*;
 /**
  * Adds automatic leaf marking code before the return instruction.
  */
-class LeafingGenerator implements RuleMethodProcessor, Opcodes, Types {
+class SuppressNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.hasLeafAnnotation();
+        return method.hasSuppressNodeAnnotation() || method.hasSuppressSubnodesAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
@@ -44,7 +44,7 @@ class LeafingGenerator implements RuleMethodProcessor, Opcodes, Types {
         instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
         instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
-                "asLeaf", "()" + RULE.getDescriptor()));
+                method.hasSuppressNodeAnnotation() ? "suppressNode" : "suppressSubnodes", "()" + RULE.getDescriptor()));
         // stack: <rule>
         instructions.insertBefore(current, isNullLabel);
         // stack: <rule>

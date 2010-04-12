@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,12 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parser methods returning {@link org.parboiled.Rule}s and having at least one parameter.
- * Instructs parboiled to automatically cache the method return value for the parameters it was created with.
- * Note that all parser methods returning {@link org.parboiled.Rule} objects and <b>not</b> taking any parameter are
- * automatically cached and are therefore not allowed to carry this annotation.
+ * Annotation that can be used on parser methods returning {@link org.parboiled.Rule} objects.
+ * Instructs parboiled to not create parse tree nodes for the subrules of the rule,
+ * which can significantly increase parsing performance.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface Cached {
+public @interface SuppressSubnodes {
 }

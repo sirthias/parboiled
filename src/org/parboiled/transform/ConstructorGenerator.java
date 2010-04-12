@@ -32,7 +32,7 @@ import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
  */
 class ConstructorGenerator implements Opcodes, Types {
 
-    public void process(@NotNull ParserClassNode classNode) throws Exception {
+    public void process(@NotNull ParserClassNode classNode) {
         Checks.ensure(!classNode.getConstructors().isEmpty(),
                 "Could not extend parser class '%s', no constructor visible to derived classes found",
                 classNode.getParentType().getClassName());

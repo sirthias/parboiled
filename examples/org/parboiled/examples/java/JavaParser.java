@@ -39,7 +39,8 @@ package org.parboiled.examples.java;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.support.Leaf;
+import org.parboiled.annotations.SuppressNode;
+import org.parboiled.annotations.SuppressSubnodes;
 
 @SuppressWarnings({"InfiniteRecursion"})
 public class JavaParser extends BaseParser<Object> {
@@ -50,7 +51,7 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule CompilationUnit() {
         return Sequence(
-                Optional(Spacing()),
+                Spacing(),
                 Optional(PackageDeclaration()),
                 ZeroOrMore(ImportDeclaration()),
                 ZeroOrMore(TypeDeclaration()),
@@ -608,7 +609,7 @@ public class JavaParser extends BaseParser<Object> {
         return Sequence(
                 FirstOf("byte", "short", "char", "int", "long", "float", "double", "boolean"),
                 TestNot(LetterOrDigit()),
-                Optional(Spacing())
+                Spacing()
         );
     }
 
@@ -747,7 +748,7 @@ public class JavaParser extends BaseParser<Object> {
                         FirstOf("public", "protected", "private", "static", "abstract", "final", "native",
                                 "synchronized", "transient", "volatile", "strictfp"),
                         TestNot(LetterOrDigit()),
-                        Optional(Spacing())
+                        Spacing()
                 )
         );
     }
@@ -834,7 +835,7 @@ public class JavaParser extends BaseParser<Object> {
     //  JLS 3.6-7  Spacing
     //-------------------------------------------------------------------------
 
-    @Leaf
+    @SuppressNode
     public Rule Spacing() {
         return ZeroOrMore(FirstOf(
 
@@ -857,9 +858,9 @@ public class JavaParser extends BaseParser<Object> {
     //  JLS 3.8  Identifiers
     //-------------------------------------------------------------------------
 
-    @Leaf
+    @SuppressSubnodes
     public Rule Identifier() {
-        return Sequence(TestNot(Keyword()), Letter(), ZeroOrMore(LetterOrDigit()), Optional(Spacing()));
+        return Sequence(TestNot(Keyword()), Letter(), ZeroOrMore(LetterOrDigit()), Spacing());
     }
 
     // The following are traditional definitions of letters and digits.
@@ -922,7 +923,7 @@ public class JavaParser extends BaseParser<Object> {
     public final Rule VOID = Keyword("void");
     public final Rule WHILE = Keyword("while");
 
-    @Leaf
+    @SuppressNode
     public Rule Keyword(String keyword) {
         return Terminal(keyword, LetterOrDigit());
     }
@@ -942,20 +943,21 @@ public class JavaParser extends BaseParser<Object> {
                         Sequence("false", TestNot(LetterOrDigit())),
                         Sequence("null", TestNot(LetterOrDigit()))
                 ),
-                Optional(Spacing())
+                Spacing()
         );
     }
 
+    @SuppressSubnodes
     public Rule IntegerLiteral() {
         return Sequence(FirstOf(HexNumeral(), OctalNumeral(), DecimalNumeral()), Optional(CharSet("lL")));
     }
 
-    @Leaf
+    @SuppressSubnodes
     public Rule DecimalNumeral() {
         return FirstOf('0', Sequence(CharRange('1', '9'), ZeroOrMore(Digit())));
     }
 
-    @Leaf
+    @SuppressSubnodes
     public Rule HexNumeral() {
         return Sequence(FirstOf("0x", "0X"), OneOrMore(HexDigit()));
     }
@@ -964,7 +966,7 @@ public class JavaParser extends BaseParser<Object> {
         return FirstOf(CharRange('a', 'f'), CharRange('A', 'F'), CharRange('0', '9'));
     }
 
-    @Leaf
+    @SuppressSubnodes
     public Rule OctalNumeral() {
         return Sequence('0', OneOrMore(CharRange('0', '7')));
     }
@@ -973,7 +975,7 @@ public class JavaParser extends BaseParser<Object> {
         return FirstOf(HexFloat(), DecimalFloat());
     }
 
-    @Leaf
+    @SuppressSubnodes
     public Rule DecimalFloat() {
         return FirstOf(
                 Sequence(OneOrMore(Digit()), '.', ZeroOrMore(Digit()), Optional(Exponent()), Optional(CharSet("fFdD"))),
@@ -991,7 +993,7 @@ public class JavaParser extends BaseParser<Object> {
         return CharRange('0', '9');
     }
 
-    @Leaf
+    @SuppressSubnodes
     public Rule HexFloat() {
         return Sequence(HexSignificant(), BinaryExponent(), Optional(CharSet("fFdD")));
     }
@@ -1007,12 +1009,14 @@ public class JavaParser extends BaseParser<Object> {
         return Sequence(CharSet("pP"), Optional(CharSet("+-")), OneOrMore(Digit()));
     }
 
-    @Leaf
     public Rule CharLiteral() {
-        return Sequence('\'', FirstOf(Escape(), Sequence(TestNot(CharSet("'\\")), Any())), '\'');
+        return Sequence(
+                '\'',
+                FirstOf(Escape(), Sequence(TestNot(CharSet("'\\")), Any())).suppressSubnodes(),
+                '\''
+        );
     }
 
-    @Leaf
     public Rule StringLiteral() {
         return Sequence(
                 '"',
@@ -1021,13 +1025,13 @@ public class JavaParser extends BaseParser<Object> {
                                 Escape(),
                                 Sequence(TestNot(CharSet("\r\n\"\\")), Any())
                         )
-                ),
+                ).suppressSubnodes(),
                 '"'
         );
     }
 
     public Rule Escape() {
-        return Sequence('\\', FirstOf('b', 't', 'n', 'f', 'r', '"', '\'', '\\', OctalEscape(), UnicodeEscape()));
+        return Sequence('\\', FirstOf(CharSet("btnfr\"\'\\"), OctalEscape(), UnicodeEscape()));
     }
 
     public Rule OctalEscape() {
@@ -1101,14 +1105,20 @@ public class JavaParser extends BaseParser<Object> {
     //  helper methods
     //-------------------------------------------------------------------------
 
-    @Leaf
-    public Rule Terminal(String string) {
-        return Sequence(string, Optional(Spacing())).label('\'' + string + '\'');
+    @Override
+    protected Rule FromCharLiteral(char c) {
+        // turn of creation of parse tree nodes for single characters
+        return super.FromCharLiteral(c).suppressNode();
     }
 
-    @Leaf
+    @SuppressNode
+    public Rule Terminal(String string) {
+        return Sequence(string, Spacing()).label('\'' + string + '\'');
+    }
+
+    @SuppressNode
     public Rule Terminal(String string, Rule mustNotFollow) {
-        return Sequence(string, TestNot(mustNotFollow), Optional(Spacing())).label('\'' + string + '\'');
+        return Sequence(string, TestNot(mustNotFollow), Spacing()).label('\'' + string + '\'');
     }
 
 }

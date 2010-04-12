@@ -29,8 +29,8 @@ public class Filters {
 
     public static <V> Filter<Node<V>> skipEmptyOptionalsAndZeroOrMores() {
         return new Filter<Node<V>>() {
-            private Filter<Node<V>> skipEmptyOptionals = skipEmptyOptionals();
-            private Filter<Node<V>> skipEmptyZeroOrMores = skipEmptyZeroOrMores();
+            private final Filter<Node<V>> skipEmptyOptionals = skipEmptyOptionals();
+            private final Filter<Node<V>> skipEmptyZeroOrMores = skipEmptyZeroOrMores();
 
             public Printability apply(Node<V> node) {
                 return skipEmptyOptionals.apply(node) == Printability.Skip ||
@@ -62,7 +62,7 @@ public class Filters {
 
     public static <V> Filter<Matcher<V>> preventLoops() {
         return new Filter<Matcher<V>>() {
-            private Set<Matcher<V>> visited = new HashSet<Matcher<V>>();
+            private final Set<Matcher<V>> visited = new HashSet<Matcher<V>>();
 
             public Printability apply(Matcher<V> node) {
                 node = ProxyMatcher.unwrap(node);

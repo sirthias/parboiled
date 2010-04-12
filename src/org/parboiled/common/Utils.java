@@ -241,8 +241,8 @@ public final class Utils {
         return new Iterable<Map.Entry<K, V>>() {
             public Iterator<Map.Entry<K, V>> iterator() {
                 return new Iterator<Map.Entry<K, V>>() {
-                    private Iterator<K> keyIterator = keys.iterator();
-                    private Iterator<V> valueIterator = values.iterator();
+                    private final Iterator<K> keyIterator = keys.iterator();
+                    private final Iterator<V> valueIterator = values.iterator();
 
                     public boolean hasNext() {
                         return keyIterator.hasNext() && valueIterator.hasNext();

@@ -16,7 +16,7 @@
 
 package org.parboiled;
 
-import org.parboiled.support.Label;
+import org.parboiled.annotations.Label;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 

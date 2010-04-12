@@ -114,7 +114,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
     private static class MD5Digester extends EmptyVisitor {
         private static MessageDigest digest;
         private static ByteBuffer buffer;
-        private List<Label> labels = new ArrayList<Label>();
+        private final List<Label> labels = new ArrayList<Label>();
 
         public MD5Digester() {
             if (digest == null) {

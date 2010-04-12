@@ -75,7 +75,7 @@ public class MatcherContext<V> implements Context<V> {
     private V nodeValue;
     private boolean hasError;
     private int intTag;
-    private boolean belowLeafLevel;
+    private boolean nodeSuppressed;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
                           @NotNull List<ParseError> parseErrors, @NotNull MatchHandler<V> matchHandler,
@@ -84,6 +84,7 @@ public class MatcherContext<V> implements Context<V> {
         this.startLocation = startLocation;
         this.currentLocation = startLocation;
         this.matcher = ProxyMatcher.unwrap(matcher);
+        this.nodeSuppressed = matcher.isNodeSuppressed();
     }
 
     private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
@@ -190,8 +191,8 @@ public class MatcherContext<V> implements Context<V> {
         return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
     }
 
-    public boolean isBelowLeafLevel() {
-        return belowLeafLevel;
+    public boolean isNodeSuppressed() {
+        return nodeSuppressed;
     }
 
     public boolean hasError() {
@@ -229,50 +230,32 @@ public class MatcherContext<V> implements Context<V> {
         if (parent != null) parent.markError();
     }
 
-    public void clearBelowLeafLevelMarker() {
-        belowLeafLevel = false;
-        if (parent != null) parent.clearBelowLeafLevelMarker();
+    public void clearNodeSuppression() {
+        nodeSuppressed = false;
+        if (parent != null) parent.clearNodeSuppression();
     }
 
     public void createNode() {
-        if (belowLeafLevel || matcher instanceof TestMatcher) {
-            return;
+        if (!nodeSuppressed) {
+            node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, getTreeValue(), hasError);
+            if (parent != null) parent.addChildNode(node);
+            lastNodeRef.setTarget(node);
         }
-        node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, getTreeValue(), hasError);
-        if (parent != null) parent.addChildNode(node);
-        lastNodeRef.setTarget(node);
     }
 
     @SuppressWarnings({"fallthrough"})
     public void addChildNode(@NotNull Node<V> node) {
-        switch (subNodes.size()) {
-            case 0:
-                subNodes = ImmutableList.of(node);
-                break;
-            case 1:
-                subNodes = ImmutableList.of(subNodes.get(0), node);
-                break;
-            case 2:
-                subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), node);
-                break;
-            case 3:
-                subNodes = ImmutableList.of(subNodes.get(0), subNodes.get(1), subNodes.get(2), node);
-                break;
-            case 4:
-                Node<V> node0 = subNodes.get(0);
-                Node<V> node1 = subNodes.get(1);
-                Node<V> node2 = subNodes.get(2);
-                Node<V> node3 = subNodes.get(3);
-                subNodes = new ArrayList<Node<V>>();
-                subNodes.add(node0);
-                subNodes.add(node1);
-                subNodes.add(node2);
-                subNodes.add(node3);
-                // fall-through
-            default:
-                subNodes.add(node);
-                break;
+        int size = subNodes.size();
+        if (size == 0) {
+            subNodes = ImmutableList.of(node);
+            return;
         }
+        if (size == 1) {
+            Node<V> node0 = subNodes.get(0);
+            subNodes = new ArrayList<Node<V>>(4);
+            subNodes.add(node0);
+        }
+        subNodes.add(node);
     }
 
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
@@ -282,15 +265,15 @@ public class MatcherContext<V> implements Context<V> {
         }
 
         // normally just reuse the existing subContext instance
-        subContext.matcher = ProxyMatcher.unwrap(matcher);
-        subContext.startLocation = currentLocation;
-        subContext.currentLocation = currentLocation;
-        subContext.node = null;
-        subContext.subNodes = ImmutableList.of();
-        subContext.nodeValue = null;
-        subContext.belowLeafLevel = belowLeafLevel || this.matcher.isLeaf();
-        subContext.hasError = false;
-        return subContext;
+        MatcherContext<V> sc = subContext;
+        sc.matcher = ProxyMatcher.unwrap(matcher);
+        sc.startLocation = sc.currentLocation = currentLocation;
+        sc.node = null;
+        sc.subNodes = ImmutableList.of();
+        sc.nodeValue = null;
+        sc.nodeSuppressed = nodeSuppressed || this.matcher.areSubnodesSuppressed() || matcher.isNodeSuppressed();
+        sc.hasError = false;
+        return sc;
     }
 
     public boolean runMatcher() {

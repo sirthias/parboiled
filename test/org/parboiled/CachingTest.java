@@ -16,9 +16,9 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.Label;
 import org.parboiled.matchers.FirstOfMatcher;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.Label;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 

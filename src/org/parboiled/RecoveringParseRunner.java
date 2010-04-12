@@ -271,13 +271,13 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             while (isErrorLocation(context)) {
                 context.advanceInputLocation();
             }
-            if (!context.getSubContext(new TestMatcher<V>((Rule) context.getMatcher())).runMatcher()) {
+            if (!context.getSubContext(new TestMatcher<V>(context.getMatcher())).runMatcher()) {
                 // if we wouldn't succeed with the match do not swallow the ERROR char
                 context.setCurrentLocation(preSkipLocation);
                 return false;
             }
             context.setStartLocation(context.getCurrentLocation());
-            context.clearBelowLeafLevelMarker();
+            context.clearNodeSuppression();
             if (preSkipLocation.getChar() == Characters.INS_ERROR) {
                 context.markError();
             } else {
@@ -287,7 +287,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         }
 
         protected boolean resynchronize(MatcherContext<V> context) {
-            context.clearBelowLeafLevelMarker();
+            context.clearNodeSuppression();
             context.markError();
 
             // create a node for the failed Sequence, taking ownership of all sub nodes created so far

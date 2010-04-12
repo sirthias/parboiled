@@ -17,7 +17,7 @@
 package org.parboiled.examples.calculators;
 
 import org.parboiled.Rule;
-import org.parboiled.support.Leaf;
+import org.parboiled.annotations.SuppressNode;
 
 /**
  * A calculator parser keeping calculation results directly in the value field of the parse tree nodes.
@@ -82,11 +82,11 @@ public class CalculatorParser2 extends CalculatorParser<Integer> {
         );
     }
     
-    @Leaf
     public Rule Digits() {
         return OneOrMore(Digit());
     }
 
+    @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
     }

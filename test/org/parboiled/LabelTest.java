@@ -17,7 +17,7 @@
 package org.parboiled;
 
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.Label;
+import org.parboiled.annotations.Label;
 import org.parboiled.support.ToStringFormatter;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;

@@ -41,7 +41,7 @@ public class ReturnInstructionUnifierTest extends TransformationTest {
     @Test
     public void testReturnInstructionUnification() throws Exception {
         assertTraceDumpEquality(processMethod("RuleWith2Returns", processors), "" +
-                "  @Lorg/parboiled/support/Label;()\n" +
+                "  @Lorg/parboiled/annotations/Label;()\n" +
                 "    ILOAD 1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +

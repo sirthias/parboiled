@@ -18,8 +18,8 @@ package org.parboiled.examples.calculators;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
+import org.parboiled.annotations.SuppressNode;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
-import org.parboiled.support.Leaf;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
@@ -91,11 +91,11 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         );
     }
 
-    @Leaf
     public Rule Digits() {
         return OneOrMore(Digit());
     }
 
+    @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
     }

@@ -18,9 +18,13 @@ package org.parboiled;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.annotations.Cached;
+import org.parboiled.annotations.Label;
+import org.parboiled.annotations.SuppressNode;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
-import org.parboiled.support.*;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Checks;
 
 import static com.google.common.collect.ObjectArrays.concat;
 import static org.parboiled.common.StringUtils.escape;
@@ -152,7 +156,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = Ch(characters[i]);
         }
-        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
+        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').suppressNode();
     }
 
     /**
@@ -182,7 +186,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = CharIgnoreCase(characters[i]);
         }
-        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').asLeaf();
+        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').suppressNode();
     }
 
     /**
@@ -277,6 +281,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Creates a new rule that acts as a syntactic predicate, i.e. tests the given subrule against the current
      * input position without actually matching any characters. Succeeds if the subrule succeeds and fails if the
      * subrule rails. Since this rule does not actually consume any input it will never create a parse tree node.
+     * Also it carries a {@link SuppressNode} annotation, which means all subnodes will also never create a parse
+     * tree node. This can be important for actions contained in subrules of this rule that otherwise expect the
+     * presence of certain parse tree structures in their context.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -284,6 +291,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @SuppressNode
     public Rule Test(Object rule) {
         Rule subMatcher = ToRule(rule);
         return new TestMatcher(subMatcher).label("&(" + subMatcher + ")");
@@ -293,6 +301,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * Creates a new rule that acts as an inverse syntactic predicate, i.e. tests the given subrule against the current
      * input position without actually matching any characters. Succeeds if the subrule fails and fails if the
      * subrule succeeds. Since this rule does not actually consume any input it will never create a parse tree node.
+     * Also it carries a {@link SuppressNode} annotation, which means all subnodes will also never create a parse
+     * tree node. This can be important for actions contained in subrules of this rule that otherwise expect the
+     * presence of certain parse tree structures in their context.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -300,6 +311,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @SuppressNode
     public Rule TestNot(Object rule) {
         Rule subMatcher = ToRule(rule);
         return new TestNotMatcher(subMatcher).label("!(" + subMatcher + ")");
@@ -337,7 +349,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Label("ANY")
     public Rule Any() {
-        return new CharactersMatcher<V>(Characters.allBut(Characters.EOI));
+        return new AnyMatcher<V>();
     }
 
     /**

@@ -87,7 +87,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     @Override
-    public Rule asLeaf() {
+    public Rule suppressNode() {
         throw new GrammarException("Actions cannot be leaf rules");
     }
 

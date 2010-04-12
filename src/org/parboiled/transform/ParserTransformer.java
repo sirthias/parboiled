@@ -77,7 +77,7 @@ public class ParserTransformer {
                 new RuleMethodRewriter(),
                 new SuperCallRewriter(),
                 new LabellingGenerator(),
-                new LeafingGenerator(),
+                new SuppressNodeGenerator(),
                 new CachingGenerator()
         );
     }

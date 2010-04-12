@@ -29,11 +29,12 @@ import java.util.List;
  *
  * @param <V> the type of the value field of a parse tree node
  */
-public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
+public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
     private Matcher<V> target;
     private String label;
-    private boolean leaf;
+    private boolean nodeSuppressed;
+    private boolean subnodesSuppressed;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
@@ -51,9 +52,14 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         return target.getLabel();
     }
 
-    public boolean isLeaf() {
+    public boolean isNodeSuppressed() {
         apply();
-        return target.isLeaf();
+        return target.isNodeSuppressed();
+    }
+
+    public boolean areSubnodesSuppressed() {
+        apply();
+        return target.areSubnodesSuppressed();
     }
 
     public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
@@ -71,7 +77,8 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
     private void apply() {
         Preconditions.checkState(target != null);
         if (label != null) label(label);
-        if (leaf) asLeaf();
+        if (nodeSuppressed) suppressNode();
+        if (subnodesSuppressed) suppressSubnodes();
     }
 
     @SuppressWarnings({"unchecked"})
@@ -92,25 +99,40 @@ public class ProxyMatcher<V> implements Rule, Matcher<V>, Cloneable {
         }
 
         // we already have a target to which we can directly apply the label
-        Rule inner = (Rule) unwrap(target);
+        Rule inner = unwrap(target);
         target = (Matcher<V>) inner.label(label); // since relabelling might change the instance we have to update it
         this.label = null;
-        return (Rule) target;
+        return target;
     }
 
     @SuppressWarnings({"unchecked"})
-    public Rule asLeaf() {
+    public Rule suppressNode() {
         if (target == null) {
-            // if we have no target yet we need to save the leaf marker and "apply" it later
-            leaf = true;
+            // if we have no target yet we need to save the marker and "apply" it later
+            nodeSuppressed = true;
             return this;
         }
 
-        // we already have a target to which we can directly apply the leaf marker
-        Rule inner = (Rule) unwrap(target);
-        target = (Matcher<V>) inner.asLeaf(); // since leaf marking might change the instance we have to update it
-        leaf = false;
-        return (Rule) target;
+        // we already have a target to which we can directly apply the marker
+        Rule inner = unwrap(target);
+        target = (Matcher<V>) inner.suppressNode(); // since this might change the instance we have to update it
+        nodeSuppressed = false;
+        return target;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule suppressSubnodes() {
+        if (target == null) {
+            // if we have no target yet we need to save the marker and "apply" it later
+            subnodesSuppressed = true;
+            return this;
+        }
+
+        // we already have a target to which we can directly apply the marker
+        Rule inner = unwrap(target);
+        target = (Matcher<V>) inner.suppressSubnodes(); // since this might change the instance we have to update it
+        subnodesSuppressed = false;
+        return target;
     }
 
     /**

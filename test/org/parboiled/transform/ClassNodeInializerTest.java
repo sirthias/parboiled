@@ -86,7 +86,7 @@ public class ClassNodeInializerTest extends TransformationTest {
 
         assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.hasLeafAnnotation();
+                return method.hasSuppressNodeAnnotation();
             }
         }), "RuleWithLeaf");
     }

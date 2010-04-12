@@ -29,6 +29,10 @@ public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
         return true;
     }
 
+    public Boolean visit(AnyMatcher<V> matcher) {
+        return false;
+    }
+
     public Boolean visit(CharactersMatcher<V> matcher) {
         return false;
     }

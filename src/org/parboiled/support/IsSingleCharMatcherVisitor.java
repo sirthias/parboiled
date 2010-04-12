@@ -29,6 +29,10 @@ public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean>
         return false;
     }
 
+    public Boolean visit(AnyMatcher<V> matcher) {
+        return true;
+    }
+
     public Boolean visit(CharactersMatcher<V> matcher) {
         return true;
     }

@@ -18,16 +18,17 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.trees.GraphNode;
 
 /**
  * A Matcher instance is responsible for "executing" a specific Rule instance, i.e. it implements the actual
  * rule type specific matching logic.
- * Since it extends the {@link GraphNode} interface it can have sub matchers.
+ * Since it extends the {@link GraphNode} interface it can have submatchers.
  *
  * @param <V> the type of the value field of a parse tree node
  */
-public interface Matcher<V> extends GraphNode<Matcher<V>> {
+public interface Matcher<V> extends Rule, GraphNode<Matcher<V>> {
 
     /**
      * @return the label of the matcher (which is identical to the label of the Rule this matcher matches)
@@ -35,9 +36,14 @@ public interface Matcher<V> extends GraphNode<Matcher<V>> {
     String getLabel();
 
     /**
-     * @return true if this matcher has been marked as a leaf matcher
+     * @return true if this matcher has been marked with @SuppressNode
      */
-    boolean isLeaf();
+    boolean isNodeSuppressed();
+
+    /**
+     * @return true if this matcher has been marked with @SuppressSubnodes
+     */
+    boolean areSubnodesSuppressed();
 
     /**
      * Tries a match on the given MatcherContext.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,12 +22,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parser methods returning {@link org.parboiled.Rule}s.
- * Instructs parboiled to automatically label the created rules with the given label or the method name
- * (if no explicit annotation value is given).
+ * Annotation that can be used on parser methods returning {@link org.parboiled.Rule} objects or the
+ * parser class itself. Instructs parboiled to not automatically label the created rules.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface Label {
-    String value() default "";
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface DontLabel {
 }

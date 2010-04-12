@@ -195,11 +195,12 @@ public interface Context<V> {
     boolean inPredicate();
 
     /**
-     * Returns true if the current context is running below a context for a matcher marked @Leaf
+     * Returns true if the current context is for or below a rule marked @SuppressNode or below one
+     * marked @SuppressSubnodes.
      *
-     * @return true if the current context is running below a context for a matcher marked @Leaf
+     * @return true or false
      */
-    boolean isBelowLeafLevel();
+    boolean isNodeSuppressed();
 
     /**
      * Returns true if this context or any sub node recorded a parse error.

@@ -22,11 +22,12 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
 import org.parboiled.trees.Filter;
-import static org.parboiled.trees.GraphUtils.hasChildren;
-import static org.parboiled.trees.GraphUtils.printTree;
 
 import java.util.Collection;
 import java.util.List;
+
+import static org.parboiled.trees.GraphUtils.hasChildren;
+import static org.parboiled.trees.GraphUtils.printTree;
 
 /**
  * General utility methods for operating on parse trees.
@@ -255,10 +256,34 @@ public final class ParseTreeUtils {
             return String.valueOf(node.getStartLocation().getChar());
         } else {
             StringBuilder sb = new StringBuilder();
+            InputLocation location = node.getStartLocation();
             for (Node<V> child : node.getChildren()) {
+                if (location.getIndex() < child.getStartLocation().getIndex()) {
+                    addInputLocations(sb, location, child.getStartLocation());
+                }
                 sb.append(getNodeText(child, inputBuffer));
+                location = child.getEndLocation();
+            }
+            if (location.getIndex() < node.getEndLocation().getIndex()) {
+                addInputLocations(sb, location, node.getEndLocation());
             }
             return sb.toString();
+        }
+    }
+
+    private static void addInputLocations(StringBuilder sb, InputLocation from, InputLocation to) {
+        while (from != to) {
+            char c = from.getChar();
+            switch (c) {
+                case Characters.DEL_ERROR:
+                case Characters.INS_ERROR:
+                    break;
+                case Characters.RESYNC:
+                    return;
+                default:
+                    sb.append(c);
+            }
+            from = from.getNext();
         }
     }
 

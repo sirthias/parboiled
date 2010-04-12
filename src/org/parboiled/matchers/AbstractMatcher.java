@@ -26,23 +26,24 @@ import org.parboiled.trees.ImmutableGraphNode;
  *
  * @param <V> the type of the value field of a parse tree node
  */
-public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Rule, Matcher<V>, Cloneable {
+public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Matcher<V>, Cloneable {
 
     private String label;
     private boolean locked;
-    private boolean leaf;
+    private boolean nodeSuppressed;
+    private boolean subnodesSuppressed;
 
-    protected AbstractMatcher() {
+    AbstractMatcher() {
         this(new Rule[0]);
     }
 
     @SuppressWarnings({"unchecked"})
-    protected AbstractMatcher(@NotNull Rule subRule) {
+    AbstractMatcher(@NotNull Rule subRule) {
         this(new Rule[] {subRule});
     }
 
     @SuppressWarnings({"unchecked"})
-    protected AbstractMatcher(@NotNull Rule[] subRules) {
+    AbstractMatcher(@NotNull Rule[] subRules) {
         super(ImmutableList.<Matcher<V>>of(toMatchers(subRules)));
     }
 
@@ -63,8 +64,12 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         locked = true;
     }
 
-    public boolean isLeaf() {
-        return leaf;
+    public boolean isNodeSuppressed() {
+        return nodeSuppressed;
+    }
+
+    public boolean areSubnodesSuppressed() {
+        return subnodesSuppressed;
     }
 
     public String getLabel() {
@@ -85,15 +90,22 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     }
 
     @SuppressWarnings({"unchecked"})
-    public Rule asLeaf() {
-        if (isLeaf()) return this;
+    public Rule suppressNode() {
+        if (nodeSuppressed) return this;
         AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
-        matcher.leaf = true;
+        matcher.nodeSuppressed = true;
+        return matcher;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule suppressSubnodes() {
+        if (subnodesSuppressed) return this;
+        AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
+        matcher.subnodesSuppressed = true;
         return matcher;
     }
 
     // creates a shallow copy
-
     @SuppressWarnings({"unchecked"})
     private AbstractMatcher<V> createClone() {
         try {

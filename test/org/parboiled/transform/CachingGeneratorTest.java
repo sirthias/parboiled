@@ -30,7 +30,7 @@ public class CachingGeneratorTest extends TransformationTest {
     private final List<RuleMethodProcessor> processors = ImmutableList.<RuleMethodProcessor>of(
             new SuperCallRewriter(),
             new LabellingGenerator(),
-            new LeafingGenerator(),
+            new SuppressNodeGenerator(),
             new CachingGenerator()
     );
 
@@ -81,7 +81,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    ARETURN\n");
 
         assertTraceDumpEquality(processMethod("RuleWithNamedLabel", processors), "" +
-                "  @Lorg/parboiled/support/Label;(value=\"harry\")\n" +
+                "  @Lorg/parboiled/annotations/Label;(value=\"harry\")\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser$$parboiled.cache$RuleWithNamedLabel : Lorg/parboiled/Rule;\n" +
                 "    DUP\n" +
@@ -143,7 +143,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "   L1\n" +
                 "    DUP\n" +
                 "    IFNULL L2\n" +
-                "    INVOKEINTERFACE org/parboiled/Rule.asLeaf ()Lorg/parboiled/Rule;\n" +
+                "    INVOKEINTERFACE org/parboiled/Rule.suppressNode ()Lorg/parboiled/Rule;\n" +
                 "   L2\n" +
                 "    DUP\n" +
                 "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +

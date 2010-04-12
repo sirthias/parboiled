@@ -364,13 +364,14 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Returns true if the current rule is running below a rule marked @Leaf.
+     * Returns true if the current context is for or below a rule marked @SuppressNode or below one
+     * marked @SuppressSubnodes.
      *
-     * @return true if in a below a leaf rule
+     * @return true or false
      */
-    public boolean belowLeafLevel() {
+    public boolean nodeSuppressed() {
         check();
-        return context.isBelowLeafLevel();
+        return context.isNodeSuppressed();
     }
 
     /**

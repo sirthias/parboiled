@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,14 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be used on parser rule methods (i.e. methods returning a {@link org.parboiled.Rule} or the
- * parser class itself.
- * Instructs parboiled to not perform implicit action expression wrapping, i.e. not treat expressions that form
- * parameters to Boolean.valueOf(boolean) calls as action expressions.
- * Instead only expressions wrapped by explicit calls to {@link org.parboiled.BaseParser#ACTION(boolean)} will be
- * treated as action expressions.
+ * Annotation that can be used on parser methods returning {@link org.parboiled.Rule}s and having parameters.
+ * Instructs parboiled to automatically cache the method return value for the parameters it was created with.
+ * Note that all parser methods returning {@link org.parboiled.Rule} objects and <b>not</b> taking any parameter are
+ * automatically cached and are therefore not allowed to carry this annotation.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-public @interface ExplicitActionsOnly {
+@Target({ElementType.METHOD})
+public @interface Cached {
 }

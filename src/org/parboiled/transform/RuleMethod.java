@@ -49,7 +49,8 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasCachedAnnotation;
     private boolean hasLabelAnnotation;
-    private boolean hasLeafAnnotation;
+    private boolean hasSuppressNodeAnnotation;
+    private boolean hasSuppressSubnodesAnnotation;
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
@@ -100,8 +101,12 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return hasLabelAnnotation;
     }
 
-    public boolean hasLeafAnnotation() {
-        return hasLeafAnnotation;
+    public boolean hasSuppressNodeAnnotation() {
+        return hasSuppressNodeAnnotation;
+    }
+
+    public boolean hasSuppressSubnodesAnnotation() {
+        return hasSuppressSubnodesAnnotation;
     }
 
     public int getNumberOfReturns() {
@@ -146,13 +151,17 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
             hasCachedAnnotation = true;
             return null; // we do not need to record this annotation
         }
-        if (LEAF_DESC.equals(desc)) {
-            hasLeafAnnotation = true;
+        if (SUPPRESS_NODE_DESC.equals(desc)) {
+            hasSuppressNodeAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (SUPPRESS_SUBNODES_DESC.equals(desc)) {
+            hasSuppressSubnodesAnnotation = true;
             return null; // we do not need to record this annotation
         }
         if (DONT_LABEL_DESC.equals(desc)) {
             hasLabelAnnotation = false;
-            return null;
+            return null; // we do not need to record this annotation
         }
         if (LABEL_DESC.equals(desc)) {
             hasLabelAnnotation = true;

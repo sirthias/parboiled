@@ -19,10 +19,10 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Capture;
 import org.parboiled.Rule;
-import org.parboiled.support.Cached;
-import org.parboiled.support.ExplicitActionsOnly;
-import org.parboiled.support.Label;
-import org.parboiled.support.Leaf;
+import org.parboiled.annotations.Cached;
+import org.parboiled.annotations.ExplicitActionsOnly;
+import org.parboiled.annotations.Label;
+import org.parboiled.annotations.SuppressNode;
 
 import static java.lang.Integer.parseInt;
 import static org.parboiled.common.StringUtils.isEmpty;
@@ -42,7 +42,7 @@ class TestParser extends BaseParser<Integer> {
         return Sequence('a', 'b');
     }
 
-    @Leaf
+    @SuppressNode
     public Rule RuleWithLeaf() {
         return Sequence('a', 'b');
     }
@@ -118,7 +118,7 @@ class TestParser extends BaseParser<Integer> {
 
     public Rule NumberRule() {
         return Sequence(
-                OneOrMore(CharRange('0', '9')).asLeaf(),
+                OneOrMore(CharRange('0', '9')).suppressNode(),
                 set(parseInt(isEmpty(lastText()) ? "0" : lastText()))
         );
     }

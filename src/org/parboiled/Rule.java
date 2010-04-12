@@ -30,12 +30,19 @@ public interface Rule {
     Rule label(String label);
 
     /**
-     * Marks this rule as a leaf rule. The parse tree nodes created by this rule will be leaf nodes in the parse tree,
-     * i.e. sub rules will not create parse tree nodes.
-     * Leaf rules can be parsed significantly faster than ordinary, parse tree node creating rules.
+     * Instructs parboiled to not create a parse tree node for this rule <b>and all subrules</b>,
+     * which can significantly increase parsing performance.
      *
      * @return this Rule
      */
-    Rule asLeaf();
+    Rule suppressNode();
+
+    /**
+     * Instructs parboiled to not create parse tree nodes for the subrules of this rule,
+     * which can significantly increase parsing performance.
+     *
+     * @return this Rule
+     */
+    Rule suppressSubnodes();
 
 }

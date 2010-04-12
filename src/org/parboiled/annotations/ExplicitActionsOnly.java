@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Mathias Doenitz
+ * Copyright (C) 2009 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,10 +22,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parser methods returning {@link org.parboiled.Rule} objects.
- * Instructs parboiled to automatically mark the created rules as leaf rules.
+ * Annotation that can be used on parser rule methods (i.e. methods returning a {@link org.parboiled.Rule} or the
+ * parser class itself.
+ * Instructs parboiled to not perform implicit action expression wrapping, i.e. not treat expressions that form
+ * parameters to Boolean.valueOf(boolean) calls as action expressions.
+ * Instead only expressions wrapped by explicit calls to {@link org.parboiled.BaseParser#ACTION(boolean)} will be
+ * treated as action expressions.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface Leaf {
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface ExplicitActionsOnly {
 }

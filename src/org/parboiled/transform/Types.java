@@ -18,10 +18,10 @@ package org.parboiled.transform;
 
 import org.objectweb.asm.Type;
 import org.parboiled.*;
+import org.parboiled.annotations.*;
 import org.parboiled.matchers.AbstractMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.support.*;
 
 interface Types {
 
@@ -37,7 +37,8 @@ interface Types {
     static final Type DONT_LABEL = Type.getType(DontLabel.class);
     static final Type EXPLICIT_ACTIONS_ONLY = Type.getType(ExplicitActionsOnly.class);
     static final Type LABEL = Type.getType(Label.class);
-    static final Type LEAF = Type.getType(Leaf.class);
+    static final Type SUPPRESS_NODE = Type.getType(SuppressNode.class);
+    static final Type SUPPRESS_SUBNODES = Type.getType(SuppressSubnodes.class);
     static final Type MATCHER = Type.getType(Matcher.class);
     static final Type PROXY_MATCHER = Type.getType(ProxyMatcher.class);
     static final Type RULE = Type.getType(Rule.class);
@@ -48,7 +49,8 @@ interface Types {
     static final String DONT_LABEL_DESC = DONT_LABEL.getDescriptor();
     static final String EXPLICIT_ACTIONS_ONLY_DESC = EXPLICIT_ACTIONS_ONLY.getDescriptor();
     static final String LABEL_DESC = LABEL.getDescriptor();
-    static final String LEAF_DESC = LEAF.getDescriptor();
+    static final String SUPPRESS_NODE_DESC = SUPPRESS_NODE.getDescriptor();
+    static final String SUPPRESS_SUBNODES_DESC = SUPPRESS_SUBNODES.getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();
 }

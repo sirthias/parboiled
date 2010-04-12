@@ -30,6 +30,10 @@ public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
         return defaultValue(matcher);
     }
 
+    public R visit(AnyMatcher<V> matcher) {
+        return defaultValue(matcher);
+    }
+
     public R visit(CharactersMatcher<V> matcher) {
         return defaultValue(matcher);
     }

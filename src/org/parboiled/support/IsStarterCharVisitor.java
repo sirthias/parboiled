@@ -36,6 +36,10 @@ public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
         return false;
     }
 
+    public Boolean visit(AnyMatcher<V> matcher) {
+        return starterChar != Characters.EOI;
+    }
+
     public Boolean visit(CharactersMatcher<V> matcher) {
         return matcher.characters.contains(starterChar);
     }
