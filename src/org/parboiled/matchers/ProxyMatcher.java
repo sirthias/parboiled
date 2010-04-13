@@ -16,7 +16,6 @@
 
 package org.parboiled.matchers;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
@@ -35,50 +34,81 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
     private String label;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
+    private boolean nodeSkipped;
+    private boolean dirty;
 
     @NotNull
     public List<Matcher<V>> getChildren() {
-        apply();
+        if (dirty) apply();
         return target.getChildren();
     }
 
+    public void setLabel(String label) {
+        this.label = label;
+        updateDirtyFlag();
+    }
+
+    public void setNodeSuppressed(boolean nodeSuppressed) {
+        this.nodeSuppressed = nodeSuppressed;
+        updateDirtyFlag();
+    }
+
+    public void setSubnodesSuppressed(boolean subnodesSuppressed) {
+        this.subnodesSuppressed = subnodesSuppressed;
+        updateDirtyFlag();
+    }
+
+    public void setNodeSkipped(boolean nodeSkipped) {
+        this.nodeSkipped = nodeSkipped;
+        updateDirtyFlag();
+    }
+
+    private void updateDirtyFlag() {
+        dirty = label != null || nodeSuppressed || subnodesSuppressed || nodeSkipped;
+    }
+
     public boolean match(@NotNull MatcherContext<V> context) {
-        apply();
+        if (dirty) apply();
         return target.match(context);
     }
 
     public String getLabel() {
-        apply();
+        if (dirty) apply();
         return target.getLabel();
     }
 
     public boolean isNodeSuppressed() {
-        apply();
+        if (dirty) apply();
         return target.isNodeSuppressed();
     }
 
     public boolean areSubnodesSuppressed() {
-        apply();
+        if (dirty) apply();
         return target.areSubnodesSuppressed();
     }
 
+    public boolean isNodeSkipped() {
+        if (dirty) apply();
+        return target.isNodeSkipped();
+    }
+
     public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
-        apply();
+        if (dirty) apply();
         return target.accept(visitor);
     }
 
     @Override
     public String toString() {
         if (target == null) return super.toString();
-        apply();
+        if (dirty) apply();
         return target.toString();
     }
 
     private void apply() {
-        Preconditions.checkState(target != null);
         if (label != null) label(label);
         if (nodeSuppressed) suppressNode();
         if (subnodesSuppressed) suppressSubnodes();
+        if (nodeSkipped) skipNode();
     }
 
     @SuppressWarnings({"unchecked"})
@@ -86,14 +116,14 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
         if (target == null) {
             // if we have no target yet we need to save the label and "apply" it later
             if (this.label == null) {
-                this.label = label;
+                setLabel(label);
                 return this;
             }
 
             // this proxy matcher is already waiting for its label application opportunity,
             // so we need to create another proxy level
             ProxyMatcher<V> anotherProxy = createClone();
-            anotherProxy.label = label;
+            anotherProxy.setLabel(label);
             anotherProxy.arm(this);
             return anotherProxy;
         }
@@ -101,7 +131,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
         // we already have a target to which we can directly apply the label
         Rule inner = unwrap(target);
         target = (Matcher<V>) inner.label(label); // since relabelling might change the instance we have to update it
-        this.label = null;
+        setLabel(null);
         return target;
     }
 
@@ -109,14 +139,14 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
     public Rule suppressNode() {
         if (target == null) {
             // if we have no target yet we need to save the marker and "apply" it later
-            nodeSuppressed = true;
+            setNodeSuppressed(true);
             return this;
         }
 
         // we already have a target to which we can directly apply the marker
         Rule inner = unwrap(target);
         target = (Matcher<V>) inner.suppressNode(); // since this might change the instance we have to update it
-        nodeSuppressed = false;
+        setNodeSuppressed(false);
         return target;
     }
 
@@ -124,14 +154,29 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
     public Rule suppressSubnodes() {
         if (target == null) {
             // if we have no target yet we need to save the marker and "apply" it later
-            subnodesSuppressed = true;
+            setSubnodesSuppressed(true);
             return this;
         }
 
         // we already have a target to which we can directly apply the marker
         Rule inner = unwrap(target);
         target = (Matcher<V>) inner.suppressSubnodes(); // since this might change the instance we have to update it
-        subnodesSuppressed = false;
+        setSubnodesSuppressed(false);
+        return target;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Rule skipNode() {
+        if (target == null) {
+            // if we have no target yet we need to save the marker and "apply" it later
+            setNodeSkipped(true);
+            return this;
+        }
+
+        // we already have a target to which we can directly apply the marker
+        Rule inner = unwrap(target);
+        target = (Matcher<V>) inner.skipNode(); // since this might change the instance we have to update it
+        setNodeSkipped(false);
         return target;
     }
 
@@ -155,13 +200,14 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
     public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
         if (matcher instanceof ProxyMatcher) {
             ProxyMatcher<V> proxyMatcher = (ProxyMatcher<V>) matcher;
-            proxyMatcher.apply();
+            if (proxyMatcher.dirty) proxyMatcher.apply();
             return proxyMatcher.target;
         }
         return matcher;
     }
 
     // creates a shallow copy
+
     @SuppressWarnings({"unchecked"})
     private ProxyMatcher<V> createClone() {
         try {

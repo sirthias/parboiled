@@ -46,6 +46,11 @@ public interface Matcher<V> extends Rule, GraphNode<Matcher<V>> {
     boolean areSubnodesSuppressed();
 
     /**
+     * @return true if this matcher has been marked with @SkipNode
+     */
+    boolean isNodeSkipped();
+
+    /**
      * Tries a match on the given MatcherContext.
      *
      * @param context the MatcherContext

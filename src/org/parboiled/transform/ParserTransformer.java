@@ -78,6 +78,7 @@ public class ParserTransformer {
                 new SuperCallRewriter(),
                 new LabellingGenerator(),
                 new SuppressNodeGenerator(),
+                new SkipNodeGenerator(),
                 new CachingGenerator()
         );
     }

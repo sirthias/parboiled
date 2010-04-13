@@ -226,36 +226,34 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void markError() {
-        hasError = true;
-        if (parent != null) parent.markError();
+        if (!hasError) {
+            hasError = true;
+            if (parent != null) parent.markError();
+        }
     }
 
     public void clearNodeSuppression() {
-        nodeSuppressed = false;
-        if (parent != null) parent.clearNodeSuppression();
+        if (nodeSuppressed) {
+            nodeSuppressed = false;
+            if (parent != null) parent.clearNodeSuppression();
+        }
     }
 
+    @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
-        if (!nodeSuppressed) {
+        if (!nodeSuppressed && !matcher.isNodeSkipped()) {
             node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, getTreeValue(), hasError);
-            if (parent != null) parent.addChildNode(node);
+
+            MatcherContext<V> nodeParentContext = parent;
+            if (nodeParentContext != null) {
+                while (nodeParentContext.getMatcher().isNodeSkipped()) {
+                    nodeParentContext = nodeParentContext.getParent();
+                    Checks.ensure(nodeParentContext != null, "Root rule must not be marked @SkipNode");
+                }
+                nodeParentContext.addChildNode(node);
+            }
             lastNodeRef.setTarget(node);
         }
-    }
-
-    @SuppressWarnings({"fallthrough"})
-    public void addChildNode(@NotNull Node<V> node) {
-        int size = subNodes.size();
-        if (size == 0) {
-            subNodes = ImmutableList.of(node);
-            return;
-        }
-        if (size == 1) {
-            Node<V> node0 = subNodes.get(0);
-            subNodes = new ArrayList<Node<V>>(4);
-            subNodes.add(node0);
-        }
-        subNodes.add(node);
     }
 
     public MatcherContext<V> getSubContext(Matcher<V> matcher) {
@@ -293,5 +291,22 @@ public class MatcherContext<V> implements Context<V> {
                             StringUtils.escape(String.format("Error while parsing %s '%s' at input position",
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer));
         }
+    }
+
+    //////////////////////////////// PRIVATE ////////////////////////////////////
+
+    @SuppressWarnings({"fallthrough"})
+    private void addChildNode(@NotNull Node<V> node) {
+        int size = subNodes.size();
+        if (size == 0) {
+            subNodes = ImmutableList.of(node);
+            return;
+        }
+        if (size == 1) {
+            Node<V> node0 = subNodes.get(0);
+            subNodes = new ArrayList<Node<V>>(4);
+            subNodes.add(node0);
+        }
+        subNodes.add(node);
     }
 }

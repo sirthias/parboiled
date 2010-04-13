@@ -51,6 +51,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean hasLabelAnnotation;
     private boolean hasSuppressNodeAnnotation;
     private boolean hasSuppressSubnodesAnnotation;
+    private boolean hasSkipNodeAnnotation;
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
@@ -109,6 +110,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return hasSuppressSubnodesAnnotation;
     }
 
+    public boolean hasSkipNodeAnnotation() {
+        return hasSkipNodeAnnotation;
+    }
+
     public int getNumberOfReturns() {
         return numberOfReturns;
     }
@@ -157,6 +162,14 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         }
         if (SUPPRESS_SUBNODES_DESC.equals(desc)) {
             hasSuppressSubnodesAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (SUPPRESS_SUBNODES_DESC.equals(desc)) {
+            hasSuppressSubnodesAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (SKIP_NODE_DESC.equals(desc)) {
+            hasSkipNodeAnnotation = true;
             return null; // we do not need to record this annotation
         }
         if (DONT_LABEL_DESC.equals(desc)) {

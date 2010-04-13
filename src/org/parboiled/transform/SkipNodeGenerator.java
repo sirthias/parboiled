@@ -16,19 +16,17 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import org.parboiled.common.StringUtils;
 
 /**
- * Adds automatic labelling code before the return instruction.
+ * Adds a skipNode() call before the return instruction.
  */
-class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
+class SkipNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.hasLabelAnnotation();
+        return method.hasSkipNodeAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
@@ -39,33 +37,17 @@ class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
             current = current.getPrevious();
         }
 
-        LabelNode isNullLabel = new LabelNode();
         // stack: <rule>
         instructions.insertBefore(current, new InsnNode(DUP));
         // stack: <rule> :: <rule>
+        LabelNode isNullLabel = new LabelNode();
         instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
-        instructions.insertBefore(current, new LdcInsnNode(getLabelText(method)));
-        // stack: <rule> :: <labelText>
         instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
-                "label", "(Ljava/lang/String;)" + RULE_DESC));
+                "skipNode", "()" + RULE.getDescriptor()));
         // stack: <rule>
         instructions.insertBefore(current, isNullLabel);
         // stack: <rule>
-    }
-
-    public String getLabelText(RuleMethod method) {
-        if (method.visibleAnnotations != null) {
-            for (Object annotationObj : method.visibleAnnotations) {
-                AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(LABEL.getDescriptor()) && annotation.values != null) {
-                    Preconditions.checkState("value".equals(annotation.values.get(0)));
-                    String labelValue = (String) annotation.values.get(1);
-                    return StringUtils.isEmpty(labelValue) ? method.name : labelValue;
-                }
-            }
-        }
-        return method.name;
     }
 
 }

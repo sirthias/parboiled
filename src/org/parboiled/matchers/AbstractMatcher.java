@@ -31,6 +31,7 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     private String label;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
+    private boolean nodeSkipped;
 
     AbstractMatcher() {
         this(new Rule[0]);
@@ -62,6 +63,10 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return subnodesSuppressed;
     }
 
+    public boolean isNodeSkipped() {
+        return nodeSkipped;
+    }
+
     public String getLabel() {
         return label;
     }
@@ -71,7 +76,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return getLabel();
     }
 
-    @SuppressWarnings({"unchecked"})
     public AbstractMatcher<V> label(@NotNull String label) {
         if (label.equals(this.label)) return this;
         AbstractMatcher<V> clone = createClone();
@@ -79,7 +83,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return clone;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule suppressNode() {
         if (nodeSuppressed) return this;
         AbstractMatcher<V> clone = createClone();
@@ -87,7 +90,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return clone;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule suppressSubnodes() {
         if (subnodesSuppressed) return this;
         AbstractMatcher<V> clone = createClone();
@@ -95,7 +97,15 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return clone;
     }
 
+    public Rule skipNode() {
+        if (nodeSkipped) return this;
+        AbstractMatcher<V> clone = createClone();
+        clone.nodeSkipped = true;
+        return clone;
+    }
+
     // creates a shallow copy
+
     @SuppressWarnings({"unchecked"})
     private AbstractMatcher<V> createClone() {
         try {

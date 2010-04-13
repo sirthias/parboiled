@@ -21,7 +21,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 /**
- * Adds automatic leaf marking code before the return instruction.
+ * Adds a suppressNode() / suppressSubnodes() call before the return instruction.
  */
 class SuppressNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
 
@@ -31,10 +31,10 @@ class SuppressNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         InsnList instructions = method.instructions;
-        AbstractInsnNode current = instructions.getFirst();
+        AbstractInsnNode current = instructions.getLast();
 
         while (current.getOpcode() != ARETURN) {
-            current = current.getNext();
+            current = current.getPrevious();
         }
 
         // stack: <rule>

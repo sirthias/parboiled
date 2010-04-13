@@ -23,6 +23,7 @@ public interface Rule {
 
     /**
      * Attaches a label to this Rule.
+     * Corresponds to the {@link org.parboiled.annotations.Label} annotation.
      *
      * @param label the label
      * @return this Rule
@@ -32,6 +33,7 @@ public interface Rule {
     /**
      * Instructs parboiled to not create a parse tree node for this rule <b>and all subrules</b>,
      * which can significantly increase parsing performance.
+     * Corresponds to the {@link org.parboiled.annotations.SuppressNode} annotation.
      *
      * @return this Rule
      */
@@ -40,9 +42,23 @@ public interface Rule {
     /**
      * Instructs parboiled to not create parse tree nodes for the subrules of this rule,
      * which can significantly increase parsing performance.
+     * Corresponds to the {@link org.parboiled.annotations.SuppressSubnodes} annotation.
      *
      * @return this Rule
      */
     Rule suppressSubnodes();
+
+    /**
+     * Instructs parboiled to not create a parse tree node for this rule. The parse tree nodes of all subrules are
+     * directly attached to the parent of this rule (or more correctly: the first ancestor not having been marked
+     * skipNode().
+     * Note that, even though a rule marked as skipNode() does not create a parse tree node of its own and is
+     * therefore "invisible" in the parse tree, the rule still exists as a regular rule in the rule tree and is
+     * accompanied by a "regular" rule {@link org.parboiled.Context} during rule matching.
+     * Corresponds to the {@link org.parboiled.annotations.SkipNode} annotation.
+     *
+     * @return this Rule
+     */
+    Rule skipNode();
 
 }
