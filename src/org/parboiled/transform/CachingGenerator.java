@@ -57,7 +57,6 @@ class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
         generateCacheHitReturn();
         generateStoreNewProxyMatcher();
         seekToReturnInstruction();
-        generateLock();
         generateArmProxyMatcher();
         generateStoreInCache();
     }
@@ -257,28 +256,6 @@ class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
         while (current.getOpcode() != ARETURN) {
             current = current.getNext();
         }
-    }
-
-    // if (<rule> instanceof AbstractMatcher) {
-    //    <rule>.lock();
-    // }
-    private void generateLock() {
-        // stack: <proxyMatcher> :: <rule>
-        insert(new InsnNode(DUP));
-        // stack: <proxyMatcher> :: <rule> :: <rule>
-        insert(new TypeInsnNode(INSTANCEOF, ABSTRACT_MATCHER.getInternalName()));
-        // stack: <proxyMatcher> :: <rule> :: <0 or 1>
-        LabelNode elseLabel = new LabelNode();
-        insert(new JumpInsnNode(IFEQ, elseLabel));
-        // stack: <proxyMatcher> :: <rule>
-        insert(new TypeInsnNode(CHECKCAST, ABSTRACT_MATCHER.getInternalName()));
-        // stack: <proxyMatcher> :: <abstractMatcher>
-        insert(new InsnNode(DUP));
-        // stack: <proxyMatcher> :: <abstractMatcher> :: <abstractMatcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, ABSTRACT_MATCHER.getInternalName(), "lock", "()V"));
-        // stack: <proxyMatcher> :: <abstractMatcher>
-        insert(elseLabel);
-        // stack: <proxyMatcher> :: <rule>
     }
 
     // <proxyMatcher>.arm(<rule>)

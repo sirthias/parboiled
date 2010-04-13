@@ -29,7 +29,6 @@ import org.parboiled.trees.ImmutableGraphNode;
 public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Matcher<V>, Cloneable {
 
     private String label;
-    private boolean locked;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
 
@@ -55,15 +54,6 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return matchers;
     }
 
-    public boolean isLocked() {
-        return locked;
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void lock() {
-        locked = true;
-    }
-
     public boolean isNodeSuppressed() {
         return nodeSuppressed;
     }
@@ -84,25 +74,25 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
     @SuppressWarnings({"unchecked"})
     public AbstractMatcher<V> label(@NotNull String label) {
         if (label.equals(this.label)) return this;
-        AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
-        matcher.label = label;
-        return matcher;
+        AbstractMatcher<V> clone = createClone();
+        clone.label = label;
+        return clone;
     }
 
     @SuppressWarnings({"unchecked"})
     public Rule suppressNode() {
         if (nodeSuppressed) return this;
-        AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
-        matcher.nodeSuppressed = true;
-        return matcher;
+        AbstractMatcher<V> clone = createClone();
+        clone.nodeSuppressed = true;
+        return clone;
     }
 
     @SuppressWarnings({"unchecked"})
     public Rule suppressSubnodes() {
         if (subnodesSuppressed) return this;
-        AbstractMatcher<V> matcher = isLocked() ? createClone() : this;
-        matcher.subnodesSuppressed = true;
-        return matcher;
+        AbstractMatcher<V> clone = createClone();
+        clone.subnodesSuppressed = true;
+        return clone;
     }
 
     // creates a shallow copy

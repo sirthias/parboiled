@@ -64,13 +64,6 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    LDC \"RuleWithoutAction\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
                 "   L1\n" +
-                "    DUP\n" +
-                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
-                "    IFEQ L2\n" +
-                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
-                "    DUP\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.lock ()V\n" +
-                "   L2\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)V\n" +
@@ -103,13 +96,6 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    LDC \"harry\"\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
                 "   L1\n" +
-                "    DUP\n" +
-                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
-                "    IFEQ L2\n" +
-                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
-                "    DUP\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.lock ()V\n" +
-                "   L2\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)V\n" +
@@ -145,13 +131,6 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    IFNULL L2\n" +
                 "    INVOKEINTERFACE org/parboiled/Rule.suppressNode ()Lorg/parboiled/Rule;\n" +
                 "   L2\n" +
-                "    DUP\n" +
-                "    INSTANCEOF org/parboiled/matchers/AbstractMatcher\n" +
-                "    IFEQ L3\n" +
-                "    CHECKCAST org/parboiled/matchers/AbstractMatcher\n" +
-                "    DUP\n" +
-                "    INVOKEVIRTUAL org/parboiled/matchers/AbstractMatcher.lock ()V\n" +
-                "   L3\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
                 "    INVOKEVIRTUAL org/parboiled/matchers/ProxyMatcher.arm (Lorg/parboiled/matchers/Matcher;)V\n" +
