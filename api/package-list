@@ -1,4 +1,5 @@
 org.parboiled
+org.parboiled.annotations
 org.parboiled.common
 org.parboiled.errors
 org.parboiled.matchers
