@@ -8,6 +8,8 @@ Version 0.9.6.0 (2010-04-14)
   - Renamed all helper method defined in BaseActions class from all uppercase to "regular" Java method names
   - Renamed @Leaf to @SuppressSubnodes
 - Significantly improved parser extension logic for speed and memory requirements
+- Added support for action expressions in rule methods with parameters
+- Added support for accessing local variables and methods parameters from within action expressions
 - Added new overloads taking char[] for CharSet, String and StringIgnoreCase rule creators
 - Added BaseParser.FromCharArray(...)
 - Added support for explicit action expressions via BaseParser.ACTION(...)
