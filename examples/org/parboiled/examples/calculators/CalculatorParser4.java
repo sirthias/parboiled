@@ -135,8 +135,9 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     // we redefine the rule creation for character literals to also match trailing whitespace this way we don't have
-    // to insert extra whitespace() rules after each character literal however, we now have to wrap character matching
-    // rules we don't want to be "space swallowing" with the Ch(...) rule creator
+    // to insert extra whitespace() rules after each character literal
+    // however, we now have to wrap character matching rules we don't want to be "space swallowing"
+    // with the Ch(...) rule creator
 
     @Override
     protected Rule FromCharLiteral(char c) {

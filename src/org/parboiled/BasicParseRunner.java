@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The most basic of all {@link ParseRunner}s. It runs a rule against a given input text and builds a corresponding
- * {@link ParsingResult} instance. However, it does not report any parse errors nor recover from them. Instead it
- * simply marks the ParsingResult as "unmatched" if the input is not valid with regard to the rule grammar.
+ * The most basic of all {@link ParseRunner} implementations. It runs a rule against a given input text and builds a
+ * corresponding {@link ParsingResult} instance. However, it does not report any parse errors nor recover from them.
+ * Instead it simply marks the ParsingResult as "unmatched" if the input is not valid with regard to the rule grammar.
  * It never causes the parser to perform more than one parsing run and is the fastest way to determine
  * whether a given input conforms to the rule grammar.
  *

@@ -44,7 +44,7 @@ import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
  * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
  * <p>The MatcherContext delegates to a given {@link MatchHandler} to call {@link Matcher#match(MatcherContext)},
  * passing itself to the Matcher which executes its logic, potentially calling sub matchers.
- * For each sub matcher the matcher creates/initializes a sub context with {@link #getSubContext(org.parboiled.matchers.Matcher)}
+ * For each sub matcher the matcher creates/initializes a sub context with {@link #getSubContext(Matcher)}
  * and then calls {@link #runMatcher()} on it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as companion objects to the matchers, providing them with support for building the

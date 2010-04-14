@@ -33,7 +33,7 @@ import static org.parboiled.trees.GraphUtils.printTree;
 
 /**
  * Base class of all calculator parsers in the org.parboiled.examples.calculators package.
- * Simply add the public static main entry point.
+ * Simply adds the public static main entry point.
  *
  * @param <V>
  */

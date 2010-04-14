@@ -1,6 +1,28 @@
+Version 0.9.6.0 (2010-04-14)
+----------------------------
+- Fixed serious performance problem in construction of parse tree nodes with many subnodes
+- Fixed ClassCastException on caching of rule creating methods with primitive array parameters
+- Fixed smaller problems in Java parser example
+- MAJOR BREAKING CHANGES:
+  - Renamed all methods returning Rule instances to begin with an uppercase character
+  - Renamed all helper method defined in BaseActions class from all uppercase to "regular" Java method names
+  - Renamed @Leaf to @SuppressSubnodes
+- Significantly improved parser extension logic for speed and memory requirements
+- Added new overloads taking char[] for CharSet, String and StringIgnoreCase rule creators
+- Added BaseParser.FromCharArray(...)
+- Added support for explicit action expressions via BaseParser.ACTION(...)
+- Added UP2, UP3, UP4, UP5, UP6 and DOWN2, DOWN3, DOWN4, DOWN5, DOWN6 context switching helpers
+- Added @DontLabel annotation preventing the automatic labelling of rules created by parameterless rule methods
+- Added @SuppressNode and @SkipNode annotations and logic
+- Added CustomMatcher base class for custom matcher implementations
+- Added Context.lookAhead(int)
+- Added support for Captures (special closure-like constructs simplifying certain rule creation scenarios)
+- Improved Calculator examples
+- Smaller bug fixes and other improvements
+
 Version 0.9.5.1 (2010-03-16)
 ----------------------------
-- Fixed classLoader issue triggering an java.io.IOException(Class not found) exception in some environments
+- Fixed classLoader issue triggering an IOException(Class not found) exception in some environments
 - Added org.parboiled.examples.pegtranslator.PegTranslator example, thanks to Radu Vlasov for the contribution
 - Replaced BaseActions.NO_ERROR() with the inversed BaseActions.HAS_ERROR()
 - Small Javadoc improvements and other cosmetic changes

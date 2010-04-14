@@ -35,16 +35,18 @@ public class TimeParser extends BaseParser<Object> {
     }
 
     // hh:mm(:ss)?
+
     public Rule Time_HH_MM_SS() {
         return Sequence(
                 OneOrTwoDigits().label("hours"), ':',
                 TwoDigits().label("minutes"),
                 Optional(Sequence(':', TwoDigits().label("seconds"))),
-                Test(Eoi())
+                Eoi()
         );
     }
 
     // hh(mm(ss)?)?
+
     public Rule Time_HHMMSS() {
         return Sequence(
                 TwoDigits().label("hours"),
@@ -54,16 +56,17 @@ public class TimeParser extends BaseParser<Object> {
                                 Optional(TwoDigits().label("seconds"))
                         )
                 ),
-                Test(Eoi())
+                Eoi()
         );
     }
 
     // h(mm)?
+
     public Rule Time_HMM() {
         return Sequence(
                 OneDigit().label("hours"),
                 Optional(TwoDigits().label("minutes")),
-                Test(Eoi())
+                Eoi()
         );
     }
 
