@@ -111,7 +111,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
         List<InstructionGraphNode> dependents = getDependents(node);
         if (dependents.size() != 1) return false;
 
-        // this dependent instruction must be method call
+        // this dependent instruction must be rule method call
         InstructionGraphNode dependent = dependents.get(0);
         return isObjectArgumentToRuleCreatingMethodCall(node, dependent) || isStoredIntoObjectArray(dependent);
     }

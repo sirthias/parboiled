@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.annotations.Cached;
 import org.parboiled.annotations.Label;
 import org.parboiled.annotations.SuppressNode;
+import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.Characters;
@@ -150,13 +151,14 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @SuppressSubnodes
     public Rule String(char... characters) {
         if (characters.length == 1) return Ch(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = Ch(characters[i]);
         }
-        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').suppressNode();
+        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"');
     }
 
     /**
@@ -180,13 +182,14 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @SuppressSubnodes
     public Rule StringIgnoreCase(char... characters) {
         if (characters.length == 1) return CharIgnoreCase(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = CharIgnoreCase(characters[i]);
         }
-        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"').suppressNode();
+        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"');
     }
 
     /**
@@ -518,7 +521,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Explicitly marks the wrapped expression as an capture expression.
+     * Marks the wrapped expression as a capture expression.
      * parboiled transforms the wrapped expression into a {@link Capture} instance during parser construction.
      *
      * @param expression the expression to turn into a Capture
