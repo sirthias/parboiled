@@ -227,7 +227,7 @@ public final class Utils {
             }
             return constructor;
         }
-        throw new GrammarException("No constructor found for class %s and the given %s arguments", type, args.length);
+        throw new GrammarException("No constructor found for %s and the given %s arguments", type, args.length);
     }
 
     /**
