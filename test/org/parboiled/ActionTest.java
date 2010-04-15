@@ -39,7 +39,8 @@ public class ActionTest extends AbstractTest {
             return Sequence(
                     'a',
                     set(42),
-                    B(18)
+                    B(18),
+                    stringAction("lastText:"+ lastText())
             );
         }
 
@@ -72,6 +73,10 @@ public class ActionTest extends AbstractTest {
                     UP(set(i)),
                     actions.addOne()
             );
+        }
+
+        public boolean stringAction(String string) {
+            return "lastText:bcd".equals(string);
         }
 
         // ************* ACTIONS **************

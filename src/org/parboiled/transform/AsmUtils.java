@@ -37,6 +37,7 @@ import org.parboiled.Rule;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,9 +123,24 @@ class AsmUtils {
                 current = current.getSuperclass();
                 if (Object.class.equals(current)) {
                     throw new RuntimeException("Method '" + methodName + "' with descriptor '" +
-                            methodDesc + "' not found in class '" + clazz + "\' or any superclass", e);
+                            methodDesc + "' not found in '" + clazz + "\' or any superclass", e);
                 }
             }
+        }
+    }
+
+    public static Constructor getClassConstructor(@NotNull String classInternalName, @NotNull String constructorDesc) {
+        Class<?> clazz = getClassForInternalName(classInternalName);
+        Type[] types = Type.getArgumentTypes(constructorDesc);
+        Class<?>[] argTypes = new Class<?>[types.length];
+        for (int i = 0; i < types.length; i++) {
+            argTypes[i] = getClassForType(types[i]);
+        }
+        try {
+            return clazz.getConstructor(argTypes);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Constructor with descriptor '" + constructorDesc + "' not found in '" +
+                    clazz, e);
         }
     }
 

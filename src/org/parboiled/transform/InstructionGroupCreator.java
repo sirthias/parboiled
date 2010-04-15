@@ -33,8 +33,7 @@ import org.parboiled.support.Checks;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static org.parboiled.transform.AsmUtils.getClassField;
-import static org.parboiled.transform.AsmUtils.getClassMethod;
+import static org.parboiled.transform.AsmUtils.*;
 
 class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
 
@@ -143,7 +142,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
             case INVOKESPECIAL:
             case INVOKEINTERFACE:
                 MethodInsnNode calledMethod = (MethodInsnNode) node.getInstruction();
-                Checks.ensure(!isPrivateMethod(calledMethod.owner, calledMethod.name, calledMethod.desc),
+                Checks.ensure(!isPrivate(calledMethod.owner, calledMethod.name, calledMethod.desc),
                         "Rule method '%s' contains an illegal call to private method '%s'.\nMark '%s' protected or " +
                                 "package-private if you want to prevent public access!",
                         method.name, calledMethod.name, calledMethod.name);
@@ -170,11 +169,34 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         return Modifier.isPrivate(modifiers);
     }
 
+    private boolean isPrivate(String owner, String name, String desc) {
+        return "<init>".equals(name) ? isPrivateInstantiation(owner, desc) : isPrivateMethod(owner, name, desc);
+    }
+
     private boolean isPrivateMethod(String owner, String name, String desc) {
         String key = owner + '#' + name + '#' + desc;
         Integer modifiers = memberModifiers.get(key);
         if (modifiers == null) {
             modifiers = getClassMethod(owner, name, desc).getModifiers();
+            memberModifiers.put(key, modifiers);
+        }
+        return Modifier.isPrivate(modifiers);
+    }
+
+    private boolean isPrivateInstantiation(String owner, String desc) {
+        // first check whether the class is private
+        Integer modifiers = memberModifiers.get(owner);
+        if (modifiers == null) {
+            modifiers = getClassForInternalName(owner).getModifiers();
+            memberModifiers.put(owner, modifiers);
+        }
+        if (Modifier.isPrivate(modifiers)) return true;
+
+        // then check whether the selected constructor is private
+        String key = owner + "#<init>#" + desc;
+        modifiers = memberModifiers.get(key);
+        if (modifiers == null) {
+            modifiers = getClassConstructor(owner, desc).getModifiers();
             memberModifiers.put(key, modifiers);
         }
         return Modifier.isPrivate(modifiers);
