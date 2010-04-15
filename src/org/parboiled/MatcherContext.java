@@ -76,6 +76,7 @@ public class MatcherContext<V> implements Context<V> {
     private boolean hasError;
     private int intTag;
     private boolean nodeSuppressed;
+    private Node<V> putNode;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
                           @NotNull List<ParseError> parseErrors, @NotNull MatchHandler<V> matchHandler,
@@ -197,6 +198,14 @@ public class MatcherContext<V> implements Context<V> {
 
     public boolean hasError() {
         return hasError;
+    }
+
+    public void put(Node<V> putNode) {
+        this.putNode = putNode;
+    }
+
+    public Node<V> get() {
+        return putNode;
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////

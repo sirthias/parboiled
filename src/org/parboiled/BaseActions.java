@@ -337,6 +337,41 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
+     * Puts the last node created during the current parsing run into the temporary node field of the current
+     * Context (see {@link Context#put(Node)}. Equivalent to <code>put(lastNode())</code>.
+     *
+     * @return true
+     */
+    public boolean put() {
+        return put(lastNode());
+    }
+
+    /**
+     * Puts the given node reference into the temporary node field of the current Context (see {@link Context#put(Node)}.
+     *
+     * @param node the node reference to store in the Context
+     * @return true
+     */
+    public boolean put(Node<V> node) {
+        check();
+        context.put(node);
+        return true;
+    }
+
+    /**
+     * Retrieves the node reference previously stored in the current Context with the {@link #put(Node)} method.
+     * Caution: For performance reasons the returned value is not guaranteed to be null if no reference has been
+     * previously set with the {@link #put(Node)} method!
+     *
+     * @return the node reference previously put, undefined if {@link #put(Node)} was not previously called on the
+     *         current Context
+     */
+    public Node<V> get() {
+        check();
+        return context.get();
+    }
+
+    /**
      * Returns the next input character about to be matched.
      *
      * @return the next input character about to be matched
