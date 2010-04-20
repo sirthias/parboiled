@@ -39,6 +39,20 @@ import static org.parboiled.common.StringUtils.escape;
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
+     * Creates a new instance of this parsers class using the no-arg constructor. If no no-arg constructor
+     * exists this method will fail with a java.lang.NoSuchMethodError.
+     * Using this method is faster than using {@link Parboiled#createParser(Class, Object...)} for creating
+     * new parser instances since this method does not use reflection.
+     *
+     * @param <P> the parser class
+     * @return a new parser instance
+     */
+    public <P extends BaseParser<V>> P newInstance() {
+        throw new UnsupportedOperationException(
+                "Illegal parser instance, you have to use Parboiled.createParser(...) to create your parser instance!");
+    }
+
+    /**
      * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
      * directly in you rule description. However, if you don't want to go through {@link #FromCharLiteral(char)},
      * e.g. because you redefined it, you can also use this wrapper.

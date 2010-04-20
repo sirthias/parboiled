@@ -35,7 +35,9 @@ public class Parboiled {
      * <p>Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
      * Also your parser class has to be derived from {@link BaseParser}. If you want to use a non-default constructor
-     * you can provide its arguments to this method.</p>
+     * you can provide its arguments to this method. Make sure your non-default constructor does not use primitive
+     * type parameters (like "int") but rather their boxed counterparts (like "Integer"), otherwise the constructor
+     * will not be found.</p>
      * <p>Performing the rule analysis and extending the parser class is an expensive process (time-wise) and can
      * take up to several hundred milliseconds for large grammars. However, this cost is only incurred once per
      * parser class and class loader. Subsequent calls to this method are therefore fast once the initial extension

@@ -29,6 +29,8 @@ import java.util.List;
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 
 public class Main {
+
+    @SuppressWarnings({"ConstantConditions"})
     public static void main(String[] args) {
         System.out.println("parboiled Java parser, performance test");
         System.out.println("---------------------------------------");
@@ -38,9 +40,19 @@ public class Main {
         Parboiled.createParser(JavaParser.class);
         time(start);
 
-        System.out.print("Creating parser again... :");
+        System.out.print("Creating 100 more parser instances... :");
+        JavaParser parser = null;
         start = System.currentTimeMillis();
-        JavaParser parser = Parboiled.createParser(JavaParser.class);
+        for (int i = 0; i < 100; i++) {
+            parser = Parboiled.createParser(JavaParser.class);
+        }
+        time(start);
+
+        System.out.print("Creating 100 more parser instances using BaseParser.newInstance() ... :");
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 100; i++) {
+            parser = parser.newInstance();
+        }
         time(start);
 
         start = System.currentTimeMillis();

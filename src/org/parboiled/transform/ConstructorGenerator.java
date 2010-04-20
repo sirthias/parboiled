@@ -18,10 +18,7 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 import org.parboiled.support.Checks;
 
 import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
@@ -39,6 +36,8 @@ class ConstructorGenerator implements Opcodes, Types {
         for (MethodNode constructor : classNode.getConstructors()) {
             createConstuctor(classNode, constructor);
         }
+
+        createNewInstanceMethod(classNode);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -47,13 +46,27 @@ class ConstructorGenerator implements Opcodes, Types {
                 new MethodNode(ACC_PUBLIC, constructor.name, constructor.desc, constructor.signature,
                         (String[]) constructor.exceptions.toArray(new String[constructor.exceptions.size()]));
 
-        newConstructor.instructions.add(new VarInsnNode(ALOAD, 0));
-        newConstructor.instructions.add(createArgumentLoaders(constructor.desc));
-        newConstructor.instructions.add(new MethodInsnNode(INVOKESPECIAL,
+        InsnList instructions = newConstructor.instructions;
+        instructions.add(new VarInsnNode(ALOAD, 0));
+        instructions.add(createArgumentLoaders(constructor.desc));
+        instructions.add(new MethodInsnNode(INVOKESPECIAL,
                 classNode.getParentType().getInternalName(), "<init>", constructor.desc));
-        newConstructor.instructions.add(new InsnNode(RETURN));
+        instructions.add(new InsnNode(RETURN));
 
         classNode.methods.add(newConstructor);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void createNewInstanceMethod(ParserClassNode classNode) {
+        MethodNode method = new MethodNode(ACC_PUBLIC, "newInstance", "()L" + BASE_PARSER.getInternalName() + ';',
+                null, null);
+        InsnList instructions = method.instructions;
+        instructions.add(new TypeInsnNode(NEW, classNode.name));
+        instructions.add(new InsnNode(DUP));
+        instructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.name, "<init>", "()V"));
+        instructions.add(new InsnNode(ARETURN));
+
+        classNode.methods.add(method);
     }
 
 }
