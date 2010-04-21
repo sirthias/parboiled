@@ -137,7 +137,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return Ch(characters.getChars()[0]);
         }
-        return new CharactersMatcher<V>(characters).label(characters.toString());
+        return new CharSetMatcher<V>(characters).label(characters.toString());
     }
 
     /**

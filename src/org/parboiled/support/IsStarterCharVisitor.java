@@ -40,10 +40,6 @@ public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
         return starterChar != Characters.EOI;
     }
 
-    public Boolean visit(CharactersMatcher<V> matcher) {
-        return matcher.characters.contains(starterChar);
-    }
-
     public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
         return matcher.charLow == starterChar || matcher.charUp == starterChar;
     }
@@ -54,6 +50,10 @@ public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
 
     public Boolean visit(CharRangeMatcher<V> matcher) {
         return matcher.cLow <= starterChar && starterChar <= matcher.cHigh;
+    }
+
+    public Boolean visit(CharSetMatcher<V> matcher) {
+        return matcher.characters.contains(starterChar);
     }
 
     public Boolean visit(CustomMatcher<V> matcher) {

@@ -29,8 +29,6 @@ public interface MatcherVisitor<V, R> {
 
     R visit(AnyMatcher<V> matcher);
 
-    R visit(CharactersMatcher<V> matcher);
-
     R visit(CharIgnoreCaseMatcher<V> matcher);
 
     R visit(CharMatcher<V> matcher);
@@ -38,6 +36,8 @@ public interface MatcherVisitor<V, R> {
     R visit(CustomMatcher<V> matcher);
 
     R visit(CharRangeMatcher<V> matcher);
+
+    R visit(CharSetMatcher<V> matcher);
 
     R visit(EmptyMatcher<V> matcher);
 

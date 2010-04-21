@@ -34,10 +34,6 @@ public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
         return defaultValue(matcher);
     }
 
-    public R visit(CharactersMatcher<V> matcher) {
-        return defaultValue(matcher);
-    }
-
     public R visit(CharIgnoreCaseMatcher<V> matcher) {
         return defaultValue(matcher);
     }
@@ -47,6 +43,10 @@ public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
     }
 
     public R visit(CharRangeMatcher<V> matcher) {
+        return defaultValue(matcher);
+    }
+
+    public R visit(CharSetMatcher<V> matcher) {
         return defaultValue(matcher);
     }
 

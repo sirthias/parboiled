@@ -68,6 +68,50 @@ public class CachingTest extends AbstractTest {
 
         assertEquals(countAllDistinct(matcher1), 5);
         assertEquals(countAllDistinct(matcher2), 6);
+
+        assertEquals(ParserStatistics.<Object>generateFor(parser.Rule1()).toString(), "" +
+                "Parser statistics for rule 'Rule1':\n" +
+                "    Total rules       : 5\n" +
+                "        Actions       : 0\n" +
+                "        Any           : 0\n" +
+                "        CharIgnoreCase: 0\n" +
+                "        Char          : 2\n" +
+                "        Custom        : 0\n" +
+                "        CharRange     : 1\n" +
+                "        CharSet       : 0\n" +
+                "        Empty         : 0\n" +
+                "        FirstOf       : 1\n" +
+                "        OneOrMore     : 0\n" +
+                "        Optional      : 0\n" +
+                "        Sequence      : 1\n" +
+                "        Test          : 0\n" +
+                "        TestNot       : 0\n" +
+                "        ZeroOrMore    : 0\n" +
+                "\n" +
+                "    Action Classes    : 0\n" +
+                "    Proxy Matchers    : 0\n");
+
+        assertEquals(ParserStatistics.<Object>generateFor(parser.Rule2()).toString(), "" +
+                "Parser statistics for rule 'Rule2':\n" +
+                "    Total rules       : 6\n" +
+                "        Actions       : 0\n" +
+                "        Any           : 0\n" +
+                "        CharIgnoreCase: 0\n" +
+                "        Char          : 2\n" +
+                "        Custom        : 0\n" +
+                "        CharRange     : 1\n" +
+                "        CharSet       : 0\n" +
+                "        Empty         : 0\n" +
+                "        FirstOf       : 2\n" +
+                "        OneOrMore     : 0\n" +
+                "        Optional      : 0\n" +
+                "        Sequence      : 1\n" +
+                "        Test          : 0\n" +
+                "        TestNot       : 0\n" +
+                "        ZeroOrMore    : 0\n" +
+                "\n" +
+                "    Action Classes    : 0\n" +
+                "    Proxy Matchers    : 0\n");
     }
 
 }

@@ -17,6 +17,7 @@
 package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
+import org.parboiled.ParserStatistics;
 import org.parboiled.RecoveringParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.common.StringUtils;
@@ -28,6 +29,7 @@ import org.testng.annotations.Test;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public class JavaTest {
@@ -37,6 +39,29 @@ public class JavaTest {
         String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTest.java");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.CompilationUnit();
+
+        assertEquals(ParserStatistics.<Object>generateFor(compilationUnit).toString(), "" +
+                "Parser statistics for rule 'CompilationUnit':\n" +
+                "    Total rules       : 681\n" +
+                "        Actions       : 0\n" +
+                "        Any           : 1\n" +
+                "        CharIgnoreCase: 0\n" +
+                "        Char          : 85\n" +
+                "        Custom        : 0\n" +
+                "        CharRange     : 9\n" +
+                "        CharSet       : 16\n" +
+                "        Empty         : 0\n" +
+                "        FirstOf       : 68\n" +
+                "        OneOrMore     : 7\n" +
+                "        Optional      : 41\n" +
+                "        Sequence      : 390\n" +
+                "        Test          : 0\n" +
+                "        TestNot       : 13\n" +
+                "        ZeroOrMore    : 51\n" +
+                "\n" +
+                "    Action Classes    : 0\n" +
+                "    Proxy Matchers    : 14\n");
+
         ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +

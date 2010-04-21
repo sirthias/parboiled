@@ -33,10 +33,6 @@ public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
         return false;
     }
 
-    public Boolean visit(CharactersMatcher<V> matcher) {
-        return false;
-    }
-
     public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
         return false;
     }
@@ -46,6 +42,10 @@ public class CanMatchEmptyVisitor<V> implements MatcherVisitor<V, Boolean> {
     }
 
     public Boolean visit(CharRangeMatcher<V> matcher) {
+        return false;
+    }
+
+    public Boolean visit(CharSetMatcher<V> matcher) {
         return false;
     }
 

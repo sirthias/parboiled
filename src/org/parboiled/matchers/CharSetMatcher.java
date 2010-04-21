@@ -26,11 +26,11 @@ import org.parboiled.support.Characters;
  *
  * @param <V> the type of the value field of a parse tree node
  */
-public class CharactersMatcher<V> extends AbstractMatcher<V> {
+public class CharSetMatcher<V> extends AbstractMatcher<V> {
 
     public final Characters characters;
 
-    public CharactersMatcher(@NotNull Characters characters) {
+    public CharSetMatcher(@NotNull Characters characters) {
         Preconditions.checkArgument(!characters.equals(Characters.NONE));
         this.characters = characters;
     }

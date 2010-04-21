@@ -33,10 +33,6 @@ public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean>
         return true;
     }
 
-    public Boolean visit(CharactersMatcher<V> matcher) {
-        return true;
-    }
-
     public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
         return true;
     }
@@ -46,6 +42,10 @@ public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean>
     }
 
     public Boolean visit(CharRangeMatcher<V> matcher) {
+        return true;
+    }
+
+    public Boolean visit(CharSetMatcher<V> matcher) {
         return true;
     }
 

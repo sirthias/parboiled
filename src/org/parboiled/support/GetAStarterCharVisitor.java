@@ -19,7 +19,7 @@ package org.parboiled.support;
 import org.parboiled.matchers.CharIgnoreCaseMatcher;
 import org.parboiled.matchers.CharMatcher;
 import org.parboiled.matchers.CharRangeMatcher;
-import org.parboiled.matchers.CharactersMatcher;
+import org.parboiled.matchers.CharSetMatcher;
 
 import java.util.Random;
 
@@ -32,7 +32,7 @@ import java.util.Random;
 public class GetAStarterCharVisitor<V> extends DefaultMatcherVisitor<V, Character> {
 
     @Override
-    public Character visit(CharactersMatcher<V> matcher) {
+    public Character visit(CharSetMatcher<V> matcher) {
         Characters characters = matcher.characters;
         if (!characters.isSubtractive()) {
             return characters.getChars()[0];
