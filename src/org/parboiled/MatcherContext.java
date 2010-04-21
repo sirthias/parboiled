@@ -23,10 +23,7 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.errors.BasicParseError;
 import org.parboiled.errors.ParseError;
 import org.parboiled.errors.ParserRuntimeException;
-import org.parboiled.matchers.ActionMatcher;
-import org.parboiled.matchers.Matcher;
-import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.matchers.TestMatcher;
+import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
 import java.util.ArrayList;
@@ -189,7 +186,8 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public boolean inPredicate() {
-        return matcher instanceof TestMatcher || parent != null && parent.inPredicate();
+        return matcher instanceof TestMatcher || matcher instanceof TestNotMatcher ||
+                parent != null && parent.inPredicate();
     }
 
     public boolean isNodeSuppressed() {
