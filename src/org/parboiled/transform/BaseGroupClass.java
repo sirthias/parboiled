@@ -21,95 +21,64 @@ import org.parboiled.Context;
 import org.parboiled.support.Checks;
 
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class BaseGroupClass<V> {
+public abstract class BaseGroupClass {
 
     public final String name;
-    protected Context<V> context;
 
     protected BaseGroupClass(@NotNull String name) {
         this.name = name;
     }
 
-    protected final void UP() {
-        Context<V> parentContext = context.getParent();
+    protected final Context UP(Context context) {
+        Context parentContext = context.getParent();
         Checks.ensure(parentContext != null, "Illegal UP() call in '%s', already at root level", this);
-        this.context = parentContext;
+        return parentContext;
     }
 
-    protected final void UP2() {
-        UP();
-        UP();
+    protected final Context UP2(Context context) {
+        return UP(UP(context));
     }
 
-    protected final void UP3() {
-        UP();
-        UP();
-        UP();
+    protected final Context UP3(Context context) {
+        return UP(UP(UP(context)));
     }
 
-    protected final void UP4() {
-        UP();
-        UP();
-        UP();
-        UP();
+    protected final Context UP4(Context context) {
+        return UP(UP(UP(UP(context))));
     }
 
-    protected final void UP5() {
-        UP();
-        UP();
-        UP();
-        UP();
-        UP();
+    protected final Context UP5(Context context) {
+        return UP(UP(UP(UP(UP(context)))));
     }
 
-    protected final void UP6() {
-        UP();
-        UP();
-        UP();
-        UP();
-        UP();
-        UP();
+    protected final Context UP6(Context context) {
+        return UP(UP(UP(UP(UP(UP(context))))));
     }
 
-    protected final void DOWN() {
-        Context<V> subContext = context.getSubContext();
+    protected final Context DOWN(Context context) {
+        Context subContext = context.getSubContext();
         Checks.ensure(subContext != null, "Illegal DOWN() call in '%s', already at leaf level", this);
-        this.context = subContext;
+        return subContext;
     }
 
-    protected final void DOWN2() {
-        DOWN();
-        DOWN();
+    protected final Context DOWN2(Context context) {
+        return DOWN(DOWN(context));
     }
 
-    protected final void DOWN3() {
-        DOWN();
-        DOWN();
-        DOWN();
+    protected final Context DOWN3(Context context) {
+        return DOWN(DOWN(DOWN(context)));
     }
 
-    protected final void DOWN4() {
-        DOWN();
-        DOWN();
-        DOWN();
-        DOWN();
+    protected final Context DOWN4(Context context) {
+        return DOWN(DOWN(DOWN(DOWN(context))));
     }
 
-    protected final void DOWN5() {
-        DOWN();
-        DOWN();
-        DOWN();
-        DOWN();
-        DOWN();
+    protected final Context DOWN5(Context context) {
+        return DOWN(DOWN(DOWN(DOWN(DOWN(context)))));
     }
 
-    protected final void DOWN6() {
-        DOWN();
-        DOWN();
-        DOWN();
-        DOWN();
-        DOWN();
-        DOWN();
+    protected final Context DOWN6(Context context) {
+        return DOWN(DOWN(DOWN(DOWN(DOWN(DOWN(context))))));
     }
 
     @Override

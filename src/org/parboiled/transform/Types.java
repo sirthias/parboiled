@@ -44,4 +44,6 @@ interface Types {
     static final String SKIP_NODE_DESC = Type.getType(SkipNode.class).getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();
+
+    static final String CONTEXT_SWITCH_DESC = '(' + CONTEXT_DESC + ')' + CONTEXT_DESC;
 }

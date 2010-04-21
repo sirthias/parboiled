@@ -79,9 +79,6 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "  // access flags 1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
-                "    ALOAD 1\n" +
-                "    PUTFIELD org/parboiled/transform/BaseAction.context : Lorg/parboiled/Context;\n" +
-                "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$0 : I\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$1 : I\n" +
@@ -132,9 +129,6 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "\n" +
                 "  // access flags 1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
-                "    ALOAD 0\n" +
-                "    ALOAD 1\n" +
-                "    PUTFIELD org/parboiled/transform/BaseAction.context : Lorg/parboiled/Context;\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Action$ZtTW8WICJeWWcGjq.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
@@ -191,11 +185,12 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
                 "    ALOAD 1\n" +
-                "    PUTFIELD org/parboiled/transform/BaseAction.context : Lorg/parboiled/Context;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.UP3 (Lorg/parboiled/Context;)Lorg/parboiled/Context;\n" +
+                "    ASTORE 1\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.UP3 ()V\n" +
-                "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN2 ()V\n" +
+                "    ALOAD 1\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN2 (Lorg/parboiled/Context;)Lorg/parboiled/Context;\n" +
+                "    ASTORE 1\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
@@ -203,8 +198,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
-                "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.context : Lorg/parboiled/Context;\n" +
+                "    ALOAD 1\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.action ()Z\n" +
                 "    IFEQ L0\n" +
@@ -215,9 +209,13 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "   L1\n" +
                 "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.UP2 ()V\n" +
+                "    ALOAD 1\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.UP2 (Lorg/parboiled/Context;)Lorg/parboiled/Context;\n" +
+                "    ASTORE 1\n" +
                 "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN3 ()V\n" +
+                "    ALOAD 1\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN3 (Lorg/parboiled/Context;)Lorg/parboiled/Context;\n" +
+                "    ASTORE 1\n" +
                 "    INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z\n" +
                 "    IRETURN\n" +
                 "    MAXSTACK = 3\n" +

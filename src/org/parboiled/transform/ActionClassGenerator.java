@@ -45,11 +45,6 @@ class ActionClassGenerator extends GroupClassGenerator {
     protected void generateMethod(InstructionGroup group, ClassWriter cw) {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", '(' + CONTEXT_DESC + ")Z", null, null);
 
-        // store Context parameter in protected field
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitFieldInsn(PUTFIELD, BASE_ACTION.getInternalName(), "context", CONTEXT_DESC);
-
         fixContextSwitches(group);
         insertSetContextCalls(group, 1);
         convertXLoads(group);

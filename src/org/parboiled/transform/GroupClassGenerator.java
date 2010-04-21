@@ -124,18 +124,25 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
 
             // insert context switch
             String contextSwitchType = ((MethodInsnNode) node.getInstruction()).name;
-            AbstractInsnNode firstInsn = getFirstOfSubtree(instructions, node, new HashSet<InstructionGraphNode>())
-                    .getInstruction();
-            instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 0));
-            instructions.insertBefore(firstInsn, new MethodInsnNode(INVOKEVIRTUAL,
-                    getBaseType().getInternalName(), contextSwitchType, "()V"));
+            insertContextSwitch(instructions, getFirstOfSubtree(instructions, node, new HashSet<InstructionGraphNode>())
+                    .getInstruction(), contextSwitchType);
 
-            // replace original context-switching call with the opposite one, reversing the context switch done before
-            instructions.insertBefore(node.getInstruction(), new VarInsnNode(ALOAD, 0));
-            instructions.set(node.getInstruction(), new MethodInsnNode(INVOKEVIRTUAL,
-                    getBaseType().getInternalName(), contextSwitchType.startsWith("UP") ? contextSwitchType
-                            .replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP"), "()V"));
+            // insert inverse context switch, reversing the context switch done before
+            String reverse = contextSwitchType.startsWith("UP") ?
+                    contextSwitchType.replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP");
+            insertContextSwitch(instructions, node.getInstruction(), reverse);
+
+            // remove original call
+            instructions.remove(node.getInstruction());
         }
+    }
+
+    private void insertContextSwitch(InsnList instructions, AbstractInsnNode firstInsn, String contextSwitchType) {
+        instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 0));
+        instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 1));
+        instructions.insertBefore(firstInsn, new MethodInsnNode(INVOKEVIRTUAL,
+                getBaseType().getInternalName(), contextSwitchType, CONTEXT_SWITCH_DESC));
+        instructions.insertBefore(firstInsn, new VarInsnNode(ASTORE, 1));
     }
 
     protected void insertSetContextCalls(InstructionGroup group, int localVarIx) {
@@ -157,18 +164,14 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
                     // skip the storing and loading of the invocation target
                     instructions.insertBefore(insn, new InsnNode(DUP));
                 }
-                instructions.insertBefore(insn, new VarInsnNode(ALOAD, 0));
-                instructions.insertBefore(insn, new FieldInsnNode(GETFIELD,
-                        group.getGroupClassType().getInternalName(), "context", CONTEXT_DESC));
+                instructions.insertBefore(insn, new VarInsnNode(ALOAD, 1));
                 instructions.insertBefore(insn, new MethodInsnNode(INVOKEINTERFACE,
                         CONTEXT_AWARE.getInternalName(), "setContext", "(" + CONTEXT_DESC + ")V"));
             } else if (node.isCaptureGet()) {
                 // calls to Capture.get() are easier to fix:
                 // we simply change to call to Capture.get() to a call to Capture.get(Context)
                 MethodInsnNode insn = (MethodInsnNode) node.getInstruction();
-                instructions.insertBefore(insn, new VarInsnNode(ALOAD, 0));
-                instructions.insertBefore(insn, new FieldInsnNode(GETFIELD,
-                        group.getGroupClassType().getInternalName(), "context", CONTEXT_DESC));
+                instructions.insertBefore(insn, new VarInsnNode(ALOAD, 1));
                 insn.desc = '(' + CONTEXT_DESC + ")Ljava/lang/Object;";
             }
         }

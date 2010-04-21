@@ -27,11 +27,9 @@ import org.parboiled.Action;
 
 /**
  * Base class of generated classes wrapping action expressions.
- *
- * @param <V> the type of the value field of a parse tree node
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class BaseAction<V> extends BaseGroupClass<V> implements Action<V> {
+public abstract class BaseAction extends BaseGroupClass implements Action {
 
     protected BaseAction(@NotNull String name) {
         super(name);

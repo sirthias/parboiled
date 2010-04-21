@@ -70,22 +70,19 @@ public class CaptureClassGeneratorTest extends TransformationTest {
                 "    MAXLOCALS = 2\n" +
                 "\n" +
                 "  // access flags 1\n" +
-                "  public get()Ljava/lang/Object;\n" +
-                "    ALOAD 0\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/BaseCapture.checkContext ()V\n" +
+                "  public evaluate(Lorg/parboiled/Context;)Ljava/lang/Object;\n" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
-                "    ASTORE 1\n" +
+                "    ASTORE 2\n" +
                 "    LDC \"a\"\n" +
+                "    ALOAD 2\n" +
                 "    ALOAD 1\n" +
-                "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO.context : Lorg/parboiled/Context;\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/TestParser.text (Ljava/lang/String;)Ljava/lang/String;\n" +
                 "    ARETURN\n" +
                 "    MAXSTACK = 4\n" +
-                "    MAXLOCALS = 2\n" +
+                "    MAXLOCALS = 3\n" +
                 "}\n");
     }
 

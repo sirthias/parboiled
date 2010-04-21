@@ -43,14 +43,11 @@ class CaptureClassGenerator extends GroupClassGenerator {
 
     @Override
     protected void generateMethod(InstructionGroup group, ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get", "()Ljava/lang/Object;", null, null);
-
-        // check the context
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKEVIRTUAL, BASE_CAPTURE.getInternalName(), "checkContext", "()V");
+        MethodVisitor mv = cw
+                .visitMethod(ACC_PUBLIC, "evaluate", '(' + CONTEXT_DESC + ")Ljava/lang/Object;", null, null);
 
         fixContextSwitches(group);
-        insertSetContextCalls(group, 0);
+        insertSetContextCalls(group, 1);
         convertXLoads(group);
 
         group.getInstructions().accept(mv);

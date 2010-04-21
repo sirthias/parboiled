@@ -26,11 +26,9 @@ import org.parboiled.matchers.ActionMatcher;
 
 /**
  * Base class of generated classes wrapping capture expressions.
- *
- * @param <V> the type of the value field of a parse tree node
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class BaseCapture<V> extends BaseGroupClass<V> implements Capture {
+public abstract class BaseCapture extends BaseGroupClass implements Capture {
 
     // the Rule created by the method the Capture creation was an argument of
     public Rule contextRule;
@@ -39,10 +37,13 @@ public abstract class BaseCapture<V> extends BaseGroupClass<V> implements Captur
         super(name);
     }
 
+    public Object get() {
+        throw new UnsupportedOperationException(String.format("Illegal capture evaluation in '%s': " +
+                "Outside of action expressions you have to use the get(Context) overload", this));
+    }
+
     @SuppressWarnings({"unchecked"})
     public Object get(@NotNull Context context) {
-        this.context = context;
-
         // find the context of the captured expression somewhere up in the current context stack
         Preconditions.checkState(contextRule != null);
 
@@ -51,27 +52,25 @@ public abstract class BaseCapture<V> extends BaseGroupClass<V> implements Captur
             // however, in the case the contextRule is an ActionMatcher there can't be any sub contexts (since
             // Actions do not contain other rules) and the the ActionMatcher does not create its own sub context,
             // therefore the right context for capture evaluation is already the one passed in
-            while (this.context.getMatcher() != contextRule) {
-                up();
+            while (context.getMatcher() != contextRule) {
+                context = up(context);
             }
-            up(); // go up one level more since the right context is the parent of the rule the Capture was an argument of
+            // go up one level more since the right context is the parent of the rule the Capture was an argument of
+            context = up(context);
         }
 
-        return get(); // call the generated get() method wrapping the captured expression
+        return evaluate(context); // call the generated evaluate() method wrapping the captured expression
     }
 
-    private void up() {
+    private Context up(Context context) {
         context = context.getParent();
         if (context == null) {
             throw new ParserRuntimeException("Illegal capture evaluation in '%s': " +
                     "Captured context could not be found", this);
         }
+        return context;
     }
 
-    protected void checkContext() {
-        if (context == null) {
-            throw new ParserRuntimeException("Illegal capture evaluation in '%s': " +
-                    "Outside of action expressions you have to use the get(Context) overload", this);
-        }
-    }
+    protected abstract Object evaluate(Context context);
+
 }
