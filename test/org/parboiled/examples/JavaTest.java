@@ -60,7 +60,8 @@ public class JavaTest {
                 "        ZeroOrMore    : 51\n" +
                 "\n" +
                 "    Action Classes    : 0\n" +
-                "    Proxy Matchers    : 14\n");
+                "    ProxyMatchers     : 14\n" +
+                "    VarFramingMatchers: 0\n");
 
         ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {

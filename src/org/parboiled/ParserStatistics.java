@@ -24,7 +24,7 @@ import java.util.*;
 
 public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> {
 
-    private final Rule rootRule;
+    private final Matcher<V> root;
     private int totalRules;
     private final Set<AnyMatcher<V>> anyMatchers = new HashSet<AnyMatcher<V>>();
     private final Set<CharIgnoreCaseMatcher<V>> charIgnoreCaseMatchers = new HashSet<CharIgnoreCaseMatcher<V>>();
@@ -44,18 +44,21 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
     private final Set<Action<V>> actions = new HashSet<Action<V>>();
     private final Set<Class<?>> actionClasses = new HashSet<Class<?>>();
     private final Set<ProxyMatcher<V>> proxyMatchers = new HashSet<ProxyMatcher<V>>();
+    private final Set<VarFramingMatcher<V>> varFramingMatchers = new HashSet<VarFramingMatcher<V>>();
 
     @SuppressWarnings({"unchecked"})
     public static <V> ParserStatistics<V> generateFor(@NotNull Rule rule) {
-        return ((Matcher<V>) rule).accept(new ParserStatistics<V>(rule));
+        Matcher<V> matcher = (Matcher<V>) rule;
+        return matcher.accept(new ParserStatistics<V>(matcher));
     }
 
-    private ParserStatistics(Rule rootRule) {
-        this.rootRule = rootRule;
+    private ParserStatistics(Matcher<V> root) {
+        this.root = root;
+        countSpecials(root);
     }
 
     public Rule getRootRule() {
-        return rootRule;
+        return root;
     }
 
     public int getTotalRules() {
@@ -130,6 +133,10 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
         return proxyMatchers;
     }
 
+    public Set<VarFramingMatcher<V>> getVarFramingMatchers() {
+        return varFramingMatchers;
+    }
+
     // MatcherVisitor interface
 
     public ParserStatistics<V> visit(ActionMatcher<V> matcher) {
@@ -202,18 +209,24 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
             totalRules++;
             set.add(matcher);
             for (Matcher<V> child : matcher.getChildren()) {
-                if (child instanceof ProxyMatcher) {
-                    proxyMatchers.add((ProxyMatcher<V>) child);
-                }
+                countSpecials(child);
                 child.accept(this);
             }
         }
         return this;
     }
 
+    private void countSpecials(Matcher<V> matcher) {
+        if (matcher instanceof ProxyMatcher) {
+            proxyMatchers.add((ProxyMatcher<V>) matcher);
+        } else if (matcher instanceof VarFramingMatcher) {
+            varFramingMatchers.add((VarFramingMatcher<V>) matcher);
+        }
+    }
+
     @Override
     public String toString() {
-        return new StringBuilder("Parser statistics for rule '").append(rootRule).append("':\n")
+        return new StringBuilder("Parser statistics for rule '").append(root).append("':\n")
                 .append("    Total rules       : ").append(totalRules).append('\n')
                 .append("        Actions       : ").append(actions.size()).append('\n')
                 .append("        Any           : ").append(anyMatchers.size()).append('\n')
@@ -232,13 +245,14 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
                 .append("        ZeroOrMore    : ").append(zeroOrMoreMatchers.size()).append('\n')
                 .append('\n')
                 .append("    Action Classes    : ").append(actionClasses.size()).append('\n')
-                .append("    Proxy Matchers    : ").append(proxyMatchers.size()).append('\n')
+                .append("    ProxyMatchers     : ").append(proxyMatchers.size()).append('\n')
+                .append("    VarFramingMatchers: ").append(varFramingMatchers.size()).append('\n')
                 .toString();
     }
 
     public String printActionClassInstances() {
         StringBuilder sb = new StringBuilder("Action classes and their instances for rule '")
-                .append(rootRule).append("':\n");
+                .append(root).append("':\n");
 
         for (String line : printActionClassLines()) {
             sb.append("    ").append(line).append('\n');

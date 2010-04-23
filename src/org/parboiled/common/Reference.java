@@ -23,25 +23,25 @@ package org.parboiled.common;
  */
 public class Reference<T> {
 
-    private T target;
+    private T value;
 
     /**
-     * Create a new Reference with a null target.
+     * Create a new Reference with a null value.
      */
     public Reference() {
     }
 
     /**
-     * Create a new Reference to the given target.
+     * Create a new Reference to the given value object.
      *
-     * @param target the target object
+     * @param value the value object
      */
-    public Reference(T target) {
-        this.target = target;
+    public Reference(T value) {
+        this.value = value;
     }
 
     /**
-     * Sets the target to null.
+     * Sets this references value field to null.
      *
      * @return true
      */
@@ -50,48 +50,59 @@ public class Reference<T> {
     }
 
     /**
-     * Retrieves the previously set target.
+     * Sets this references value object to the given instance.
      *
-     * @return the target
-     */
-    public T get() {
-        return target;
-    }
-
-    /**
-     * Retrieves the previously set target instance and clears this reference.
-     *
-     * @return the target
-     */
-    public T getAndClear() {
-        T t = target;
-        clear();
-        return t;
-    }
-
-    /**
-     * Sets the references target object to the given instance.
-     *
-     * @param target the target
+     * @param value the value
      * @return true
      */
-    public boolean set(T target) {
-        this.target = target;
+    public boolean set(T value) {
+        this.value = value;
         return true;
     }
 
     /**
-     * @return true if this Reference holds a non-null target
+     * Retrieves this references value object.
+     *
+     * @return the target
      */
-    public boolean isSet() {
-        return target != null;
+    public T get() {
+        return value;
     }
 
     /**
-     * @return true if this Reference is cleared
+     * Retrieves this references value field and clears it.
+     * Equivalent to exchange(null).
+     *
+     * @return the target
+     */
+    public T getAndClear() {
+        return exchange(null);
+    }
+
+    /**
+     * Replaces this references value with the given one.
+     *
+     * @param value the new value
+     * @return the previous value
+     */
+    public T exchange(T value) {
+        T t = this.value;
+        this.value = value;
+        return t;
+    }
+
+    /**
+     * @return true if this Reference holds a non-null value
+     */
+    public boolean isSet() {
+        return value != null;
+    }
+
+    /**
+     * @return true if this Reference holds a null value
      */
     public boolean isNotSet() {
-        return target != null;
+        return value != null;
     }
 
 }

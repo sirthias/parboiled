@@ -75,6 +75,7 @@ public class ParserTransformer {
                 new CaptureClassGenerator(false),
                 new ActionClassGenerator(false),
                 new RuleMethodRewriter(),
+                new VarFramingGenerator(),
                 new SuperCallRewriter(),
                 new LabellingGenerator(),
                 new SuppressNodeGenerator(),

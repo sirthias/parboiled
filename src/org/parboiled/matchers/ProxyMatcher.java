@@ -208,7 +208,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
     public MatcherContext<V> getSubContext(MatcherContext<V> context) {
         if (dirty) apply();
-        return unwrap(target).getSubContext(context);
+        return target.getSubContext(context);
     }
 
     // creates a shallow copy

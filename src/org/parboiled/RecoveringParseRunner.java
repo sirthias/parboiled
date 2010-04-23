@@ -271,7 +271,8 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             while (isErrorLocation(context)) {
                 context.advanceInputLocation();
             }
-            if (!context.getSubContext(new TestMatcher<V>(context.getMatcher())).runMatcher()) {
+            TestMatcher<V> testMatcher = new TestMatcher<V>(context.getMatcher());
+            if (!testMatcher.getSubContext(context).runMatcher()) {
                 // if we wouldn't succeed with the match do not swallow the ERROR char
                 context.setCurrentLocation(preSkipLocation);
                 return false;

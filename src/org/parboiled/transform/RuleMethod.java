@@ -28,9 +28,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
+import org.parboiled.Var;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +57,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
+    private List<LocalVariableNode> localVarVariables;
 
     public RuleMethod(int access, String name, String desc, String signature, String[] exceptions,
                       boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnnotation) {
@@ -128,6 +131,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public List<InstructionGraphNode> getGraphNodes() {
         return graphNodes;
+    }
+
+    public List<LocalVariableNode> getLocalVarVariables() {
+        return localVarVariables;
     }
 
     public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
@@ -215,7 +222,11 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        // do not add local variables
+        // only remember the local variables of Type org.parboiled.Var
+        if (Var.class.isAssignableFrom(getClassForType(Type.getType(desc)))) {
+            if (localVarVariables == null) localVarVariables = new ArrayList<LocalVariableNode>();
+            localVarVariables.add(new LocalVariableNode(name, desc, null, null, null, index));
+        }
     }
 
     @Override

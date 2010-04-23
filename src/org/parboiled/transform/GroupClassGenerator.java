@@ -193,7 +193,7 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
         }
     }
 
-    public static InstructionGraphNode getFirstOfSubtree(InsnList instructions, InstructionGraphNode node,
+    private static InstructionGraphNode getFirstOfSubtree(InsnList instructions, InstructionGraphNode node,
                                                          HashSet<InstructionGraphNode> covered) {
         InstructionGraphNode first = node;
         if (!covered.contains(node)) {

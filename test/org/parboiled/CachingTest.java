@@ -89,7 +89,8 @@ public class CachingTest extends AbstractTest {
                 "        ZeroOrMore    : 0\n" +
                 "\n" +
                 "    Action Classes    : 0\n" +
-                "    Proxy Matchers    : 0\n");
+                "    ProxyMatchers     : 0\n" +
+                "    VarFramingMatchers: 0\n");
 
         assertEquals(ParserStatistics.<Object>generateFor(parser.Rule2()).toString(), "" +
                 "Parser statistics for rule 'Rule2':\n" +
@@ -111,7 +112,8 @@ public class CachingTest extends AbstractTest {
                 "        ZeroOrMore    : 0\n" +
                 "\n" +
                 "    Action Classes    : 0\n" +
-                "    Proxy Matchers    : 0\n");
+                "    ProxyMatchers     : 0\n" +
+                "    VarFramingMatchers: 0\n");
     }
 
 }

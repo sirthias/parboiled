@@ -33,24 +33,24 @@ class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         InsnList instructions = method.instructions;
-        AbstractInsnNode current = instructions.getLast();
-
-        while (current.getOpcode() != ARETURN) {
-            current = current.getPrevious();
+        
+        AbstractInsnNode ret = instructions.getLast();
+        while (ret.getOpcode() != ARETURN) {
+            ret = ret.getPrevious();
         }
 
         LabelNode isNullLabel = new LabelNode();
         // stack: <rule>
-        instructions.insertBefore(current, new InsnNode(DUP));
+        instructions.insertBefore(ret, new InsnNode(DUP));
         // stack: <rule> :: <rule>
-        instructions.insertBefore(current, new JumpInsnNode(IFNULL, isNullLabel));
+        instructions.insertBefore(ret, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
-        instructions.insertBefore(current, new LdcInsnNode(getLabelText(method)));
+        instructions.insertBefore(ret, new LdcInsnNode(getLabelText(method)));
         // stack: <rule> :: <labelText>
-        instructions.insertBefore(current, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
+        instructions.insertBefore(ret, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
                 "label", "(Ljava/lang/String;)" + RULE_DESC));
         // stack: <rule>
-        instructions.insertBefore(current, isNullLabel);
+        instructions.insertBefore(ret, isNullLabel);
         // stack: <rule>
     }
 

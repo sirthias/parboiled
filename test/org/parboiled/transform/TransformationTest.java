@@ -19,7 +19,7 @@ package org.parboiled.transform;
 import java.io.IOException;
 import java.util.List;
 
-public class TransformationTest {
+abstract class TransformationTest {
 
     protected ParserClassNode classNode;
 

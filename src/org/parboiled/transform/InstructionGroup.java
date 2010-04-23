@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A group of instructions belongig to a CAPTURE or ACTION
+ * A group of instructions belonging to a CAPTURE or ACTION
  */
 class InstructionGroup {
 

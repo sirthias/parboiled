@@ -19,6 +19,7 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Capture;
 import org.parboiled.Rule;
+import org.parboiled.Var;
 import org.parboiled.annotations.Cached;
 import org.parboiled.annotations.ExplicitActionsOnly;
 import org.parboiled.annotations.Label;
@@ -77,10 +78,10 @@ class TestParser extends BaseParser<Integer> {
 
     public Rule RuleWithComplexActionSetup(int param) {
         int i = 26, j = 18;
-        String string = "text";
+        Var<String> string = new Var<String>("text");
         i += param;
         j -= i;
-        return Sequence('a' + i, i > param + j, string, ACTION(integer + param < string.length() - i - j));
+        return Sequence('a' + i, i > param + j, string, ACTION(integer + param < string.get().length() - i - j));
     }
 
     public Rule RuleWithCapture() {

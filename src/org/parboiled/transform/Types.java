@@ -21,6 +21,7 @@ import org.parboiled.*;
 import org.parboiled.annotations.*;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
+import org.parboiled.matchers.VarFramingMatcher;
 
 interface Types {
 
@@ -32,6 +33,8 @@ interface Types {
     static final Type MATCHER = Type.getType(Matcher.class);
     static final Type PROXY_MATCHER = Type.getType(ProxyMatcher.class);
     static final Type RULE = Type.getType(Rule.class);
+    static final Type VAR = Type.getType(Var.class);
+    static final Type VAR_FRAMING_MATCHER = Type.getType(VarFramingMatcher.class);
 
     static final String ACTION_DESC = Type.getType(Action.class).getDescriptor();
     static final String CACHED_DESC = Type.getType(Cached.class).getDescriptor();
@@ -44,6 +47,7 @@ interface Types {
     static final String SKIP_NODE_DESC = Type.getType(SkipNode.class).getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();
+    static final String VAR_DESC = VAR.getDescriptor();
 
     static final String CONTEXT_SWITCH_DESC = '(' + CONTEXT_DESC + ')' + CONTEXT_DESC;
 }

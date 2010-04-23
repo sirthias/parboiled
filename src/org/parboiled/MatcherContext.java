@@ -41,7 +41,7 @@ import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
  * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
  * <p>The MatcherContext delegates to a given {@link MatchHandler} to call {@link Matcher#match(MatcherContext)},
  * passing itself to the Matcher which executes its logic, potentially calling sub matchers.
- * For each sub matcher the matcher creates/initializes a sub context with {@link #getSubContext(Matcher)}
+ * For each submatcher the matcher creates/initializes a sub context with {@link Matcher#getSubContext(MatcherContext)}
  * and then calls {@link #runMatcher()} on it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as companion objects to the matchers, providing them with support for building the
@@ -209,7 +209,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     private void checkPrevCall() {
-        Checks.ensure(matcher instanceof SequenceMatcher &&
+        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(matcher)) instanceof SequenceMatcher &&
                 intTag > 0 &&
                 subContext.matcher instanceof ActionMatcher &&
                 subContext.subContext.matcher == null,
@@ -217,6 +217,10 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
+
+    public void setMatcher(Matcher<V> matcher) {
+        this.matcher = matcher;
+    }
 
     public void setStartLocation(InputLocation startLocation) {
         this.startLocation = startLocation;
@@ -274,17 +278,19 @@ public class MatcherContext<V> implements Context<V> {
         }
     }
 
-    public MatcherContext<V> getBasicSubContext(Matcher<V> matcher) {
-        if (subContext == null) {
-            // introduce a new level
-            subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this, level + 1);
-        }
-        subContext.matcher = matcher;
-        return subContext;
+    public final MatcherContext<V> getBasicSubContext() {
+        return subContext == null ?
+
+                // init new level
+                subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this, level + 1) :
+
+                // reuse existing instance
+                subContext;
     }
 
-    public MatcherContext<V> getSubContext(Matcher<V> matcher) {
-        MatcherContext<V> sc = getBasicSubContext(matcher);
+    public final MatcherContext<V> getSubContext(Matcher<V> matcher) {
+        MatcherContext<V> sc = getBasicSubContext();
+        sc.matcher = matcher;
         sc.startLocation = sc.currentLocation = currentLocation;
         sc.node = null;
         sc.subNodes = ImmutableList.of();
