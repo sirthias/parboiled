@@ -100,7 +100,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
             for (int i = getIndexOfFirstInsn(group), max = getIndexOfLastInsn(group); i < max; i++) {
                 InstructionGraphNode node = method.getGraphNodes().get(i);
                 if (node.getGroup() == null) {
-                    node.setGroup(group);
+                    markGroup(node, group);
                     sort(group);
                     continue while_;
                 }

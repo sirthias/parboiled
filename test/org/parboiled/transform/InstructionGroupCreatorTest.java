@@ -46,10 +46,10 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 2163082022L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 918191821L);
         //renderToGraphViz(dotSource);
 
-        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 1172289281L);
+        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 1254939476L);
         //renderToGraphViz(dotSource);
     }
 
@@ -96,7 +96,8 @@ public class InstructionGroupCreatorTest extends TransformationTest {
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isActionRoot() ?
-                            "style=filled,fillcolor=skyblue," : "")
+                            "style=filled,fillcolor=\"/gnbu8/" + (method.getGroups()
+                                    .indexOf(node.getGroup()) + 1) + "\"," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isCaptureRoot() ?
                             "style=filled,fillcolor=pink," : "")
                     .append("fontcolor=black];\n");
