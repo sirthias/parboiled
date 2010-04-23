@@ -173,7 +173,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public Node<V> getLastNode() {
-        return lastNodeRef.getTarget();
+        return lastNodeRef.get();
     }
 
     @NotNull
@@ -259,7 +259,7 @@ public class MatcherContext<V> implements Context<V> {
                 }
                 nodeParentContext.addChildNode(node);
             }
-            lastNodeRef.setTarget(node);
+            lastNodeRef.set(node);
         }
     }
 

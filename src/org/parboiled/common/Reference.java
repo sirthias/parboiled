@@ -25,22 +25,72 @@ public class Reference<T> {
 
     private T target;
 
+    /**
+     * Create a new Reference with a null target.
+     */
     public Reference() {
     }
 
+    /**
+     * Create a new Reference to the given target.
+     *
+     * @param target the target object
+     */
     public Reference(T target) {
         this.target = target;
     }
 
-    public T getTarget() {
+    /**
+     * Sets the target to null.
+     *
+     * @return true
+     */
+    public boolean clear() {
+        return set(null);
+    }
+
+    /**
+     * Retrieves the previously set target.
+     *
+     * @return the target
+     */
+    public T get() {
         return target;
     }
 
-    public void setTarget(T target) {
-        this.target = target;
+    /**
+     * Retrieves the previously set target instance and clears this reference.
+     *
+     * @return the target
+     */
+    public T getAndClear() {
+        T t = target;
+        clear();
+        return t;
     }
 
-    public boolean hasTarget() {
+    /**
+     * Sets the references target object to the given instance.
+     *
+     * @param target the target
+     * @return true
+     */
+    public boolean set(T target) {
+        this.target = target;
+        return true;
+    }
+
+    /**
+     * @return true if this Reference holds a non-null target
+     */
+    public boolean isSet() {
+        return target != null;
+    }
+
+    /**
+     * @return true if this Reference is cleared
+     */
+    public boolean isNotSet() {
         return target != null;
     }
 
