@@ -68,6 +68,12 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         }
     }
 
+    @Override
+    public MatcherContext<V> getSubContext(MatcherContext<V> context) {
+        MatcherContext<V> subContext = context.getBasicSubContext(this);
+        return subContext.getCurrentLocation() != null ? subContext : context.getSubContext(this);
+    }
+
     public boolean match(@NotNull MatcherContext<V> context) {
         // actions need to run in the parent context
         context = context.getParent();

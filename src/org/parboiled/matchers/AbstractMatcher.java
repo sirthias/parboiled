@@ -18,6 +18,7 @@ package org.parboiled.matchers;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.trees.ImmutableGraphNode;
 
@@ -104,8 +105,12 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return clone;
     }
 
-    // creates a shallow copy
+    // default implementation is to simply delegate to the context
+    public MatcherContext<V> getSubContext(MatcherContext<V> context) {
+        return context.getSubContext(this);
+    }
 
+    // creates a shallow copy
     @SuppressWarnings({"unchecked"})
     private AbstractMatcher<V> createClone() {
         try {

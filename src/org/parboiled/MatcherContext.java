@@ -197,6 +197,25 @@ public class MatcherContext<V> implements Context<V> {
         return hasError;
     }
 
+    public V getPrevValue() {
+        checkPrevCall();
+        return subContext.nodeValue;
+    }
+
+    public String getPrevText() {
+        checkPrevCall();
+        return hasError ? getNodeText(getLastNode()) : inputBuffer
+                .extract(subContext.getStartLocation().getIndex(), subContext.getCurrentLocation().getIndex());
+    }
+
+    private void checkPrevCall() {
+        Checks.ensure(matcher instanceof SequenceMatcher &&
+                intTag > 0 &&
+                subContext.matcher instanceof ActionMatcher &&
+                subContext.subContext.matcher == null,
+                "Illegal getPrevValue() call, only valid in Sequence rule actions that are not in first position");
+    }
+
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
     public void setStartLocation(InputLocation startLocation) {
@@ -239,8 +258,9 @@ public class MatcherContext<V> implements Context<V> {
 
     @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
+        nodeValue = getTreeValue();
         if (!nodeSuppressed && !matcher.isNodeSkipped()) {
-            node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, getTreeValue(), hasError);
+            node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, nodeValue, hasError);
 
             MatcherContext<V> nodeParentContext = parent;
             if (nodeParentContext != null) {
@@ -254,15 +274,17 @@ public class MatcherContext<V> implements Context<V> {
         }
     }
 
-    public MatcherContext<V> getSubContext(Matcher<V> matcher) {
+    public MatcherContext<V> getBasicSubContext(Matcher<V> matcher) {
         if (subContext == null) {
             // introduce a new level
             subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this, level + 1);
         }
+        subContext.matcher = matcher;
+        return subContext;
+    }
 
-        // normally just reuse the existing subContext instance
-        MatcherContext<V> sc = subContext;
-        sc.matcher = ProxyMatcher.unwrap(matcher);
+    public MatcherContext<V> getSubContext(Matcher<V> matcher) {
+        MatcherContext<V> sc = getBasicSubContext(matcher);
         sc.startLocation = sc.currentLocation = currentLocation;
         sc.node = null;
         sc.subNodes = ImmutableList.of();

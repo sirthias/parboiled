@@ -42,7 +42,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> {
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
 
-            if (!context.getSubContext(matcher).runMatcher()) {
+            if (!matcher.getSubContext(context).runMatcher()) {
                 return false;
             }
         }

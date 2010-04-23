@@ -38,7 +38,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
         int size = children.size();
         for (int i = 0; i < size; i++) {
             Matcher<V> matcher = children.get(i);
-            if (context.getSubContext(matcher).runMatcher()) {
+            if (matcher.getSubContext(context).runMatcher()) {
                 context.createNode();
                 return true;
             }

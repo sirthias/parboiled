@@ -209,5 +209,27 @@ public interface Context<V> {
      */
     boolean hasError();
 
+    /**
+     * Returns the value object of the context immediately preceeding the action expression that is currently being
+     * evaluated. Only valid on the deepest currently active context in the context stack, which must be for a
+     * SequenceMatcher and the action currently being run must not be the first rule of this Sequence.
+     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.
+     *
+     * @return the value object of the immediately preceeding sub context
+     */
+    V getPrevValue();
+
+    /**
+     * Returns the input text matched by the context immediately preceeding the action expression that is currently
+     * being evaluated. Only valid on the deepest currently active context in the context stack, which must be for a
+     * SequenceMatcher and the action currently being run must not be the first rule of this Sequence.
+     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.
+     *
+     * @return the input text matched by the immediately preceeding sub context
+     */
+    String getPrevText();
+
 }
 

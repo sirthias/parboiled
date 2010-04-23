@@ -38,12 +38,12 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        boolean matched = context.getSubContext(subMatcher).runMatcher();
+        boolean matched = subMatcher.getSubContext(context).runMatcher();
         if (!matched) return false;
 
         // collect all further matches as well
         InputLocation lastLocation = context.getCurrentLocation();
-        while (context.getSubContext(subMatcher).runMatcher()) {
+        while (subMatcher.getSubContext(context).runMatcher()) {
             InputLocation currentLocation = context.getCurrentLocation();
             if (currentLocation == lastLocation) {
                 throw new GrammarException("The inner rule of OneOrMore rule '%s' must not allow empty matches",

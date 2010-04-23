@@ -314,6 +314,48 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
+     * Returns the value object of the rule immediately preceeding the action expression that is currently being
+     * evaluated. Only valid on the deepest currently active context in the context stack, which must be for a
+     * Sequence rule and the action currently being run must not be the first rule of this Sequence.
+     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.
+     *
+     * @return the value object of the immediately preceeding subrule
+     */
+    public V prevValue() {
+        check();
+        return context.getPrevValue();
+    }
+
+    /**
+     * Returns the input text matched by the rule immediately preceeding the action expression that is currently
+     * being evaluated. Only valid on the deepest currently active context in the context stack, which must be for a
+     * SequenceMatcher and the action currently being run must not be the first rule of this Sequence.
+     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.
+     *
+     * @return the input text matched by the immediately preceeding subrule
+     */
+    public String prevText() {
+        check();
+        return context.getPrevText();
+    }
+
+    /**
+     * Returns the first character of the input text matched by the rule immediately preceeding the action expression
+     * that is currently being evaluated. Only valid on the deepest currently active context in the context stack,
+     * which must be for a SequenceMatcher and the action currently being run must not be the first rule of this Sequence.
+     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.
+     *
+     * @return the input text matched by the immediately preceeding subrule
+     */
+    public Character prevChar() {
+        String text = prevText();
+        return StringUtils.isEmpty(text) ? null : text.charAt(0);
+    }
+
+    /**
      * Sets the value of the parse tree node to be created for the current context
      * scope to the value of the last node created during the current parsing run.
      * Equivalent to <code>set(lastValue())</code>.

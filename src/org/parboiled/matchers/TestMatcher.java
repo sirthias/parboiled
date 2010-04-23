@@ -38,7 +38,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         InputLocation lastLocation = context.getCurrentLocation();
-        if (context.getSubContext(subMatcher).runMatcher()) {
+        if (subMatcher.getSubContext(context).runMatcher()) {
             context.setCurrentLocation(lastLocation); // reset location, Test matchers never advance
             return true;
         }

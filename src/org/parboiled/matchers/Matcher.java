@@ -51,6 +51,14 @@ public interface Matcher<V> extends Rule, GraphNode<Matcher<V>> {
     boolean isNodeSkipped();
 
     /**
+     * Creates a context for the matching of this matcher using the given parent context.
+     *
+     * @param context the parent context
+     * @return the context this matcher is to be run in
+     */
+    MatcherContext<V> getSubContext(MatcherContext<V> context);
+
+    /**
      * Tries a match on the given MatcherContext.
      *
      * @param context the MatcherContext
