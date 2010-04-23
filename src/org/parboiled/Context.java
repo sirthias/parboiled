@@ -209,23 +209,5 @@ public interface Context<V> {
      */
     boolean hasError();
 
-    /**
-     * Stores the given node in the Contexts temporary node field. The stored node reference can be retrieved with
-     * the {@link #get} method.
-     *
-     * @param node the node to store
-     */
-    void put(Node<V> node);
-
-    /**
-     * Retrieves the node reference previously stored in the Context with the {@link #put(Node)} method.
-     * Caution: For performance reasons the returned value is not guaranteed to be null if no reference has been
-     * previously set with the {@link #put(Node)} method!
-     *
-     * @return the node reference previously put, undefined if {@link #put(Node)} was not previously called on this
-     *         Context instance
-     */
-    Node<V> get();
-
 }
 
