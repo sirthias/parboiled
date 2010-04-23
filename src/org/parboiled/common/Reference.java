@@ -102,7 +102,7 @@ public class Reference<T> {
      * @return true if this Reference holds a null value
      */
     public boolean isNotSet() {
-        return value != null;
+        return value == null;
     }
 
 }
