@@ -145,7 +145,7 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "70     BIPUSH 0\n" +
                 "71     ALOAD 4\n" +
                 "72     DUP\n" +
-                "73     LDC \"string\"\n" +
+                "73     LDC \"RuleWithComplexActionSetup:string\"\n" +
                 "74     INVOKEVIRTUAL org/parboiled/Var.setName (Ljava/lang/String;)V\n" +
                 "75     AASTORE\n" +
                 "76     INVOKESPECIAL org/parboiled/matchers/VarFramingMatcher.<init> (Lorg/parboiled/Rule;[Lorg/parboiled/Var;)V\n" +

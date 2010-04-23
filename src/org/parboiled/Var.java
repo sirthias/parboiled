@@ -22,6 +22,7 @@ import java.util.LinkedList;
 
 public class Var<T> extends Reference<T> {
 
+    private T initialValue;
     private LinkedList<T> stack;
     private int level;
     private String name;
@@ -30,6 +31,7 @@ public class Var<T> extends Reference<T> {
      * Initializes a new Var with a null value.
      */
     public Var() {
+        this(null);
     }
 
     /**
@@ -39,6 +41,7 @@ public class Var<T> extends Reference<T> {
      */
     public Var(T value) {
         super(value);
+        initialValue = value;
     }
 
     /**
@@ -78,6 +81,7 @@ public class Var<T> extends Reference<T> {
             if (stack == null) stack = new LinkedList<T>();
             stack.add(getAndClear());
         }
+        set(initialValue);
     }
 
     /**
