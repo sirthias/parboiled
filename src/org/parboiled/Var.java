@@ -24,6 +24,7 @@ public class Var<T> extends Reference<T> {
 
     private LinkedList<T> stack;
     private int level;
+    private String name;
 
     /**
      * Initializes a new Var with a null value.
@@ -38,6 +39,24 @@ public class Var<T> extends Reference<T> {
      */
     public Var(T value) {
         super(value);
+    }
+
+    /**
+     * Gets the name of this Var.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of this Var.
+     *
+     * @param name the name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -71,4 +90,9 @@ public class Var<T> extends Reference<T> {
         }
     }
 
+    @Override
+    public String toString() {
+        return name != null ? name : super.toString();
+    }
+    
 }

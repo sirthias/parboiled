@@ -144,9 +144,12 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "69     DUP\n" +
                 "70     BIPUSH 0\n" +
                 "71     ALOAD 4\n" +
-                "72     AASTORE\n" +
-                "73     INVOKESPECIAL org/parboiled/matchers/VarFramingMatcher.<init> (Lorg/parboiled/Rule;[Lorg/parboiled/Var;)V\n" +
-                "74     ARETURN\n");
+                "72     DUP\n" +
+                "73     LDC \"string\"\n" +
+                "74     INVOKEVIRTUAL org/parboiled/Var.setName (Ljava/lang/String;)V\n" +
+                "75     AASTORE\n" +
+                "76     INVOKESPECIAL org/parboiled/matchers/VarFramingMatcher.<init> (Lorg/parboiled/Rule;[Lorg/parboiled/Var;)V\n" +
+                "77     ARETURN\n");
 
         assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithCapture", processors)), "" +
                 "Method 'RuleWithCapture':\n" +

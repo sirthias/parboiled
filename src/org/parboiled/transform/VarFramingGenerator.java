@@ -62,12 +62,20 @@ class VarFramingGenerator implements RuleMethodProcessor, Opcodes, Types {
         instructions.insertBefore(ret, new TypeInsnNode(ANEWARRAY, VAR.getInternalName()));
         // stack: <array>
         for (int i = 0; i < count; i++) {
+            LocalVariableNode var = method.getLocalVarVariables().get(i);
             // stack: <array>
             instructions.insertBefore(ret, new InsnNode(DUP));
             // stack: <array> :: <array>
             instructions.insertBefore(ret, new IntInsnNode(BIPUSH, i));
             // stack: <array> :: <array> :: <index>
-            instructions.insertBefore(ret, new VarInsnNode(ALOAD, method.getLocalVarVariables().get(i).index));
+            instructions.insertBefore(ret, new VarInsnNode(ALOAD, var.index));
+            // stack: <array> :: <array> :: <index> :: <var>
+            instructions.insertBefore(ret, new InsnNode(DUP));
+            // stack: <array> :: <array> :: <index> :: <var> :: <var>
+            instructions.insertBefore(ret, new LdcInsnNode(var.name));
+            // stack: <array> :: <array> :: <index> :: <var> :: <var> :: <varName>
+            instructions.insertBefore(ret, new MethodInsnNode(INVOKEVIRTUAL, VAR.getInternalName(), "setName",
+                    "(Ljava/lang/String;)V"));
             // stack: <array> :: <array> :: <index> :: <var>
             instructions.insertBefore(ret, new InsnNode(AASTORE));
             // stack: <array>
