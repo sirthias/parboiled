@@ -71,12 +71,12 @@ public class Reference<T> {
 
     /**
      * Retrieves this references value field and clears it.
-     * Equivalent to exchange(null).
+     * Equivalent to getAndSet(null).
      *
      * @return the target
      */
     public T getAndClear() {
-        return exchange(null);
+        return getAndSet(null);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Reference<T> {
      * @param value the new value
      * @return the previous value
      */
-    public T exchange(T value) {
+    public T getAndSet(T value) {
         T t = this.value;
         this.value = value;
         return t;
