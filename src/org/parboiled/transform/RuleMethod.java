@@ -195,6 +195,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
             hasSkipActionsInPredicatesAnnotation = true;
             return null; // we do not need to record this annotation
         }
+        if (DONT_SKIP_ACTIONS_IN_PREDICATES_DESC.equals(desc)) {
+            hasSkipActionsInPredicatesAnnotation = false;
+            return null; // we do not need to record this annotation
+        }
         if (DONT_LABEL_DESC.equals(desc)) {
             hasLabelAnnotation = false;
             return null; // we do not need to record this annotation
