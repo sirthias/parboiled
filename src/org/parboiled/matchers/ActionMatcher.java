@@ -84,15 +84,22 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         if (skipInPredicates && context.inPredicate()) return true;
 
         // actions need to run in the parent context
-        context = context.getParent();
+        MatcherContext<V> parentContext = context.getParent();
         if (!contextAwares.isEmpty()) {
             for (ContextAware<V> contextAware : contextAwares) {
-                contextAware.setContext(context);
+                contextAware.setContext(parentContext);
             }
         }
 
         try {
-            return action.run(context);
+            if (!action.run(parentContext)) return false;
+
+            // since we initialize the actions own context only partially in getSubContext(MatcherContext)
+            // (in order to be able to still access the previous subcontexts values in action expressions)
+            // we need to make sure to not accidentally advance the current location marker of our parent
+            // with some old location marker from a previous subcontext, so we explicitly set the marker here
+            context.setCurrentLocation(parentContext.getCurrentLocation());
+            return true;
         } catch (ActionException e) {
             context.getParseErrors().add(
                     new ActionError<V>(context.getCurrentLocation(), e.getMessage(), context.getPath(), e));
