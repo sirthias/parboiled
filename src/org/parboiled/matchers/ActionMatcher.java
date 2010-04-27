@@ -109,7 +109,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
 
     @Override
     public Rule suppressNode() {
-        throw new GrammarException("Actions cannot be leaf rules");
+        throw new GrammarException("Actions cannot be marked with @SuppressNode or @SuppressSubnodes");
     }
 
     public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {

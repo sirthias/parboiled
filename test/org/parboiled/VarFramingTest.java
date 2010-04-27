@@ -26,11 +26,14 @@ public class VarFramingTest extends AbstractTest {
 
     static class Parser extends BaseParser<Integer> {
 
+        int count = 1;
+        
         @SuppressWarnings({"InfiniteRecursion"})
         public Rule Clause() {
-            Var<Integer> a = new Var<Integer>();
+            Var<Integer> a = new Var<Integer>(-1);
             return Sequence(
                     Digits(), a.set(prevValue()),
+                    SomeRule(a),
                     Optional(
                             Sequence(
                                     '+',
@@ -47,6 +50,10 @@ public class VarFramingTest extends AbstractTest {
                     set(Integer.parseInt(prevText()))
             );
         }
+        
+        public Rule SomeRule(Var<Integer> var) {
+            return ToRule(var.get() == count++);
+        }
 
     }
 
@@ -58,8 +65,8 @@ public class VarFramingTest extends AbstractTest {
         ParserStatistics<Object> stats = ParserStatistics.generateFor(rule);
         assertEquals(stats.toString(), "" +
                 "Parser statistics for rule 'Clause':\n" +
-                "    Total rules       : 10\n" +
-                "        Actions       : 3\n" +
+                "    Total rules       : 11\n" +
+                "        Actions       : 4\n" +
                 "        Any           : 0\n" +
                 "        CharIgnoreCase: 0\n" +
                 "        Char          : 1\n" +
@@ -75,11 +82,11 @@ public class VarFramingTest extends AbstractTest {
                 "        TestNot       : 0\n" +
                 "        ZeroOrMore    : 0\n" +
                 "\n" +
-                "    Action Classes    : 3\n" +
+                "    Action Classes    : 4\n" +
                 "    ProxyMatchers     : 1\n" +
                 "    VarFramingMatchers: 1\n");
 
-        test(rule, "1+2+3", "" +
+        testWithoutRecovery(rule, "1+2+3", "" +
                 "[Clause, {1}] '1+2+3'\n" +
                 "    [Optional, {1}] '+2+3'\n" +
                 "        [Sequence, {1}] '+2+3'\n" +

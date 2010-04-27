@@ -16,19 +16,28 @@
 
 package org.parboiled.test;
 
-import org.parboiled.Rule;
 import org.parboiled.RecoveringParseRunner;
+import org.parboiled.ReportingParseRunner;
+import org.parboiled.Rule;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.trees.Filter;
+
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import org.parboiled.support.ParsingResult;
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import org.parboiled.trees.Filter;
 import static org.testng.Assert.fail;
 
 public abstract class AbstractTest {
 
     public <V> ParsingResult<V> test(Rule rule, String input, String expectedTree) {
-        ParsingResult<V> result = RecoveringParseRunner.run(rule, input);
+        return test(RecoveringParseRunner.<V>run(rule, input), expectedTree);
+    }
+    
+    public <V> ParsingResult<V> testWithoutRecovery(Rule rule, String input, String expectedTree) {
+        return test(ReportingParseRunner.<V>run(rule, input), expectedTree);
+    }
+    
+    private <V> ParsingResult<V> test(ParsingResult<V> result, String expectedTree) {
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     printParseErrors(result.parseErrors, result.inputBuffer) +

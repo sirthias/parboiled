@@ -45,6 +45,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private final List<InstructionGroup> groups = new ArrayList<InstructionGroup>();
     private final List<LabelNode> usedLabels = new ArrayList<LabelNode>();
 
+    private int parameterCount;
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
     private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
@@ -65,9 +66,9 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
                       boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
 
-        boolean parameterless = Type.getArgumentTypes(desc).length == 0;
-        hasCachedAnnotation = parameterless;
-        hasLabelAnnotation = parameterless && !hasDontLabelAnnotation;
+        parameterCount = Type.getArgumentTypes(desc).length;
+        hasCachedAnnotation = parameterCount == 0;
+        hasLabelAnnotation = parameterCount == 0 && !hasDontLabelAnnotation;
         hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnno;
         hasSkipActionsInPredicatesAnnotation = hasSkipActionsInPredicates;
     }
@@ -78,6 +79,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public List<LabelNode> getUsedLabels() {
         return usedLabels;
+    }
+
+    public int getParameterCount() {
+        return parameterCount;
     }
 
     public boolean containsImplicitActions() {
@@ -233,8 +238,8 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        // only remember the local variables of Type org.parboiled.Var
-        if (Var.class.isAssignableFrom(getClassForType(Type.getType(desc)))) {
+        // only remember the local variables of Type org.parboiled.Var that are not parameters
+        if (index > parameterCount && Var.class.isAssignableFrom(getClassForType(Type.getType(desc)))) {
             if (localVarVariables == null) localVarVariables = new ArrayList<LocalVariableNode>();
             localVarVariables.add(new LocalVariableNode(name, desc, null, null, null, index));
         }
