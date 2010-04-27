@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.SkipActionsInPredicates;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
@@ -27,11 +28,11 @@ public class InPredicateTest extends AbstractTest {
         public int count = 0;
 
         public Rule Number() {
-            return OneOrMore(Digit());
+            return Sequence(OneOrMore(Digit()), Eoi());
         }
 
         public Rule Digit() {
-            return Sequence(Test(FirstOf(Five(), Six())), CharRange('0', '9'));
+            return Sequence(Test(FirstOf(Five(), Six(), Seven())), CharRange('0', '9'));
         }
 
         public Rule Five() {
@@ -40,6 +41,11 @@ public class InPredicateTest extends AbstractTest {
 
         public Rule Six() {
             return Sequence('6', count2());
+        }
+
+        @SkipActionsInPredicates
+        public Rule Seven() {
+            return Sequence('7', count2());
         }
 
         // ********* ACTION *******
@@ -58,14 +64,20 @@ public class InPredicateTest extends AbstractTest {
     @Test
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
-        test(parser.Number(), "565", "" +
-                "[Number] '565'\n" +
-                "    [Digit] '5'\n" +
-                "        [0..9] '5'\n" +
-                "    [Digit] '6'\n" +
-                "        [0..9] '6'\n" +
-                "    [Digit] '5'\n" +
-                "        [0..9] '5'\n");
+        test(parser.Number(), "56577", "" +
+                "[Number] '56577'\n" +
+                "    [OneOrMore] '56577'\n" +
+                "        [Digit] '5'\n" +
+                "            [0..9] '5'\n" +
+                "        [Digit] '6'\n" +
+                "            [0..9] '6'\n" +
+                "        [Digit] '5'\n" +
+                "            [0..9] '5'\n" +
+                "        [Digit] '7'\n" +
+                "            [0..9] '7'\n" +
+                "        [Digit] '7'\n" +
+                "            [0..9] '7'\n" +
+                "    [EOI]\n");
         assertEquals(parser.count, 1);
     }
 

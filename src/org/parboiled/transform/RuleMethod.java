@@ -54,19 +54,22 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean hasSuppressNodeAnnotation;
     private boolean hasSuppressSubnodesAnnotation;
     private boolean hasSkipNodeAnnotation;
+    private boolean hasSkipActionsInPredicatesAnnotation;
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
     private List<LocalVariableNode> localVarVariables;
 
     public RuleMethod(int access, String name, String desc, String signature, String[] exceptions,
-                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnnotation) {
+                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnnotation,
+                      boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
 
         boolean parameterless = Type.getArgumentTypes(desc).length == 0;
         hasCachedAnnotation = parameterless;
         hasLabelAnnotation = parameterless && !hasDontLabelAnnotation;
         hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnno;
+        hasSkipActionsInPredicatesAnnotation = hasSkipActionsInPredicates;
     }
 
     public List<InstructionGroup> getGroups() {
@@ -111,6 +114,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public boolean hasSuppressSubnodesAnnotation() {
         return hasSuppressSubnodesAnnotation;
+    }
+
+    public boolean hasSkipActionsInPredicatesAnnotation() {
+        return hasSkipActionsInPredicatesAnnotation;
     }
 
     public boolean hasSkipNodeAnnotation() {
@@ -177,6 +184,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         }
         if (SKIP_NODE_DESC.equals(desc)) {
             hasSkipNodeAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (SKIP_ACTIONS_IN_PREDICATES_DESC.equals(desc)) {
+            hasSkipActionsInPredicatesAnnotation = true;
             return null; // we do not need to record this annotation
         }
         if (DONT_LABEL_DESC.equals(desc)) {

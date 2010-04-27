@@ -39,30 +39,35 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
 
     public final Action<V> action;
     public final List<ContextAware<V>> contextAwares = new ArrayList<ContextAware<V>>();
+    public final boolean skipInPredicates;
 
     @SuppressWarnings({"unchecked"})
     public ActionMatcher(@NotNull Action<V> action) {
         this.action = action;
 
         // Base Actions take care of their context setting need themselves, so we do not need to analyze fields, etc.
-        if (!(action instanceof BaseAction)) {
-            if (action instanceof ContextAware) {
-                contextAwares.add((ContextAware<V>) action);
-            }
-            // in order to make anonymous inner classes and other member classes work seamlessly
-            // we collect the synthetic references to the outer parent classes and inform them of
-            // the current parsing context if they implement ContextAware
-            for (Field field : action.getClass().getDeclaredFields()) {
-                if (field.isSynthetic() && ContextAware.class.isAssignableFrom(field.getType())) {
-                    field.setAccessible(true);
-                    try {
-                        ContextAware<V> contextAware = (ContextAware<V>) field.get(action);
-                        if (contextAware != null) contextAwares.add(contextAware);
-                    } catch (IllegalAccessException e) {
-                        // ignore
-                    } finally {
-                        field.setAccessible(false);
-                    }
+        if (action instanceof BaseAction) {
+            skipInPredicates = ((BaseAction)action).skipInPredicates();
+            return;
+        }
+        skipInPredicates = false;
+
+        if (action instanceof ContextAware) {
+            contextAwares.add((ContextAware<V>) action);
+        }
+        // in order to make anonymous inner classes and other member classes work seamlessly
+        // we collect the synthetic references to the outer parent classes and inform them of
+        // the current parsing context if they implement ContextAware
+        for (Field field : action.getClass().getDeclaredFields()) {
+            if (field.isSynthetic() && ContextAware.class.isAssignableFrom(field.getType())) {
+                field.setAccessible(true);
+                try {
+                    ContextAware<V> contextAware = (ContextAware<V>) field.get(action);
+                    if (contextAware != null) contextAwares.add(contextAware);
+                } catch (IllegalAccessException e) {
+                    // ignore
+                } finally {
+                    field.setAccessible(false);
                 }
             }
         }
@@ -76,6 +81,8 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
+        if (skipInPredicates && context.inPredicate()) return true;
+
         // actions need to run in the parent context
         context = context.getParent();
         if (!contextAwares.isEmpty()) {

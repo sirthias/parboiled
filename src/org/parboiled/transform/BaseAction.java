@@ -31,8 +31,17 @@ import org.parboiled.Action;
 @SuppressWarnings({"UnusedDeclaration"})
 public abstract class BaseAction extends BaseGroupClass implements Action {
 
+    private boolean skipInPredicates;
+
     protected BaseAction(@NotNull String name) {
         super(name);
     }
-    
+
+    public boolean skipInPredicates() {
+        return skipInPredicates;
+    }
+
+    public void setSkipInPredicates() {
+        this.skipInPredicates = true;
+    }
 }

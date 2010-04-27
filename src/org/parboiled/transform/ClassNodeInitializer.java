@@ -42,10 +42,13 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
     private Class<?> ownerClass;
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasDontLabelAnnotation;
+    private boolean hasSkipActionsInPredicates;
 
     public void process(@NotNull ParserClassNode classNode) throws IOException {
         this.classNode = classNode;
         hasExplicitActionOnlyAnnotation = false;
+        hasDontLabelAnnotation = false;
+        hasSkipActionsInPredicates = false;
 
         // walk up the parser parent class chain
         ownerClass = classNode.getParentClass();
@@ -80,6 +83,11 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
         }
         if (DONT_LABEL_DESC.equals(desc)) {
             hasDontLabelAnnotation = true;
+            return null;
+        }
+
+        if (SKIP_ACTIONS_IN_PREDICATES_DESC.equals(desc)) {
+            hasSkipActionsInPredicates = true;
             return null;
         }
 
@@ -122,7 +130,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
         Checks.ensure((access & ACC_FINAL) == 0, "Rule method '%s' must not be final.", name);
 
         RuleMethod method = new RuleMethod(access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation,
-                hasDontLabelAnnotation);
+                hasDontLabelAnnotation, hasSkipActionsInPredicates);
         classNode.getRuleMethods().add(method);
         return method; // return the newly created method in order to have it "filled" with the supers code
     }

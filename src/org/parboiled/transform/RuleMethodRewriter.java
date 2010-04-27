@@ -79,6 +79,11 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
                 (group.getRoot().isActionRoot() ? "_Action" + ++actionNr : "_Capture" + ++captureNr))
         );
         insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+
+        if (method.hasSkipActionsInPredicatesAnnotation()) {
+            insert(new InsnNode(DUP));
+            insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
+        }
     }
 
     private void initializeFields() {

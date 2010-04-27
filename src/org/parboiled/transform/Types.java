@@ -44,6 +44,7 @@ interface Types {
     static final String LABEL_DESC = LABEL.getDescriptor();
     static final String SUPPRESS_NODE_DESC = Type.getType(SuppressNode.class).getDescriptor();
     static final String SUPPRESS_SUBNODES_DESC = Type.getType(SuppressSubnodes.class).getDescriptor();
+    static final String SKIP_ACTIONS_IN_PREDICATES_DESC = Type.getType(SkipActionsInPredicates.class).getDescriptor();
     static final String SKIP_NODE_DESC = Type.getType(SkipNode.class).getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();
