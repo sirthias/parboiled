@@ -314,11 +314,13 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Returns the value object of the rule immediately preceeding the action expression that is currently being
-     * evaluated. Only valid on the deepest currently active context in the context stack, which must be for a
-     * Sequence rule and the action currently being run must not be the first rule of this Sequence.
-     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.
+     * <p>Returns the value object of the rule immediately preceeding the action expression that is currently being
+     * evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first position
+     * in this Sequence.</p>
+     * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
+     * and will always return the same result.</p> 
+     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the value object of the immediately preceeding subrule
      */
@@ -328,11 +330,13 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Returns the input text matched by the rule immediately preceeding the action expression that is currently
-     * being evaluated. Only valid on the deepest currently active context in the context stack, which must be for a
-     * SequenceMatcher and the action currently being run must not be the first rule of this Sequence.
-     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.
+     * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
+     * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
+     * position in this Sequence.</p>
+     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the input text matched by the immediately preceeding subrule
      */
@@ -356,14 +360,15 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * Sets the value of the parse tree node to be created for the current context
-     * scope to the value of the last node created during the current parsing run.
-     * Equivalent to <code>set(lastValue())</code>.
+     * Sets the value of the parse tree node to be created for the current context scope to the value of the
+     * immediately preceeding rule that just matched.
+     * Equivalent to <code>set(prevValue())</code>.
+     * Check {@link #prevValue()} for constraints and further information.
      *
      * @return true
      */
     public boolean set() {
-        return set(lastValue());
+        return set(prevValue());
     }
 
     /**

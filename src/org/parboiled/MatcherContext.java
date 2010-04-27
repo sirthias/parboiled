@@ -198,22 +198,32 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public V getPrevValue() {
-        checkPrevCall();
-        return subContext.nodeValue;
+        MatcherContext<V> sequenceContext = getPrevContext();
+        return sequenceContext.subContext.nodeValue;
     }
 
     public String getPrevText() {
-        checkPrevCall();
-        return hasError ? getNodeText(getLastNode()) : inputBuffer
-                .extract(subContext.getStartLocation().getIndex(), subContext.getCurrentLocation().getIndex());
+        MatcherContext<V> sequenceContext = getPrevContext();
+        MatcherContext<V> prevContext = sequenceContext.subContext;
+        return sequenceContext.hasError ? sequenceContext.getNodeText(getLastNode()) : inputBuffer
+                .extract(prevContext.startLocation.getIndex(), prevContext.currentLocation.getIndex());
     }
 
-    private void checkPrevCall() {
-        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(matcher)) instanceof SequenceMatcher &&
-                intTag > 0 &&
-                subContext.matcher instanceof ActionMatcher &&
-                subContext.subContext.matcher == null,
+    private MatcherContext<V> getPrevContext() {
+        MatcherContext<V> actionContext = this;
+        
+        // we need to find the deepest currently active context
+        while (actionContext.subContext != null && actionContext.subContext.matcher != null) {
+            actionContext = actionContext.subContext;
+        }
+        MatcherContext<V> sequenceContext = actionContext.getParent();
+        
+        // make sure all the constraints are met
+        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(sequenceContext.matcher)) instanceof SequenceMatcher &&
+                sequenceContext.intTag > 0 &&
+                actionContext.matcher instanceof ActionMatcher,
                 "Illegal getPrevValue() call, only valid in Sequence rule actions that are not in first position");
+        return sequenceContext;
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
