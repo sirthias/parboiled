@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.support;
 
 import org.parboiled.common.Reference;
 
 import java.util.LinkedList;
 
+/**
+ * <p>This class provides a "local variable"-like construct for action expressions in parser rule methods.
+ * Var<T> objects wrap an internal value of an arbitrary (reference) type, can have an initial value,
+ * allow read/write access to their values and can be passed around as parameters to nested rule methods.
+ * Each rule invocation (i.e. rule matching attempt) receives its own Var<T> scope (which is automatically
+ * initialized with the initial value), so actions in recursive rules work just like expected.</p>
+ * <p>Var<T> objects generally behave just like local variables with one exception:<br/>
+ * When rule method A() passes a Var defined in its scope to another rule method B() as a parameter and an action
+ * in rule method B() writes to this Var all actions in rule method A() running after B() will "see" this newly written
+ * value. If unintended, this behavior can be prevented by inserting {@link #enterFrame()} and {@link #exitFrame()}
+ * calls before and after the call to rule method B() respectively.</p>
+ *
+ * @param <T> the type wrapped by this Var
+ */
 public class Var<T> extends Reference<T> {
 
     private T initialValue;
@@ -28,14 +42,14 @@ public class Var<T> extends Reference<T> {
     private String name;
 
     /**
-     * Initializes a new Var with a null value.
+     * Initializes a new Var with a null initial value.
      */
     public Var() {
         this(null);
     }
 
     /**
-     * Initializes a new Var with the given value.
+     * Initializes a new Var with the given initial value.
      *
      * @param value the value
      */
@@ -75,28 +89,33 @@ public class Var<T> extends Reference<T> {
      * Provides a new frame for the variable.
      * Potentially existing previous frames are saved.
      * Normally you do not have to call this method manually as parboiled provides for automatic Var frame management.
+     *
+     * @return true
      */
-    public void enterFrame() {
+    public boolean enterFrame() {
         if (level++ > 0) {
             if (stack == null) stack = new LinkedList<T>();
             stack.add(getAndClear());
         }
-        set(initialValue);
+        return set(initialValue);
     }
 
     /**
      * Exits a frame previously entered with {@link #enterFrame()}.
      * Normally you do not have to call this method manually as parboiled provides for automatic Var frame management.
+     *
+     * @return true
      */
-    public void exitFrame() {
+    public boolean exitFrame() {
         if (--level > 0) {
             set(stack.removeLast());
         }
+        return true;
     }
 
     @Override
     public String toString() {
         return name != null ? name : super.toString();
     }
-    
+
 }

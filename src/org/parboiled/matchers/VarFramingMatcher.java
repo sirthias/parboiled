@@ -19,7 +19,7 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.Var;
+import org.parboiled.support.Var;
 
 import java.util.List;
 

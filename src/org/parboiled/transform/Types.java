@@ -22,6 +22,7 @@ import org.parboiled.annotations.*;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
 import org.parboiled.matchers.VarFramingMatcher;
+import org.parboiled.support.Var;
 
 interface Types {
 

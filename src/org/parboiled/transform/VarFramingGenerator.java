@@ -19,11 +19,10 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import org.parboiled.Var;
 
 /**
  * Inserts code for wrapping the created rule into a VarFramingMatcher if the method contains local variables
- * assignable to {@link Var}.
+ * assignable to {@link org.parboiled.support.Var}.
  */
 class VarFramingGenerator implements RuleMethodProcessor, Opcodes, Types {
 

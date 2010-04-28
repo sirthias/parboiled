@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.parboiled.annotations.SuppressNode;
+import org.parboiled.support.Var;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 

@@ -32,7 +32,7 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
-import org.parboiled.Var;
+import org.parboiled.support.Var;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -242,7 +242,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        // only remember the local variables of Type org.parboiled.Var that are not parameters
+        // only remember the local variables of Type org.parboiled.support.Var that are not parameters
         if (index > parameterCount && Var.class.isAssignableFrom(getClassForType(Type.getType(desc)))) {
             if (localVarVariables == null) localVarVariables = new ArrayList<LocalVariableNode>();
             localVarVariables.add(new LocalVariableNode(name, desc, null, null, null, index));

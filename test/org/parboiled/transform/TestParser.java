@@ -19,7 +19,7 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Capture;
 import org.parboiled.Rule;
-import org.parboiled.Var;
+import org.parboiled.support.Var;
 import org.parboiled.annotations.Cached;
 import org.parboiled.annotations.ExplicitActionsOnly;
 import org.parboiled.annotations.Label;
