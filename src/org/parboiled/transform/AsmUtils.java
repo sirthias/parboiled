@@ -100,10 +100,17 @@ class AsmUtils {
 
     public static Field getClassField(@NotNull String classInternalName, @NotNull String fieldName) {
         Class<?> clazz = getClassForInternalName(classInternalName);
-        try {
-            return clazz.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("Could not get field '" + fieldName + "' of class '" + clazz + '\'', e);
+        Class<?> current = clazz;
+        while (true) {
+            try {
+                return current.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                current = current.getSuperclass();
+                if (Object.class.equals(current)) {
+                    throw new RuntimeException(
+                            "Field '" + fieldName + "' not found in '" + clazz + "\' or any superclass", e);
+                }
+            }
         }
     }
 
