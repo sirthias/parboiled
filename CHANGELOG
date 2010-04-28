@@ -1,3 +1,19 @@
+Version 0.9.7.0 (2010-04-28)
+----------------------------          
+- Fixed exception during parser creation when parser contains action/capture expressions with constructor calls
+- Fixed NoSuchFieldError occuring in some scenarios with similar actions in derived parser classes
+- Fixed "Couldn't get field" exception during parser extension occuring in parsers accessing parent fields
+- Fixed bug in parser extension causing java.lang.VerifyError in some scenarios
+- Fixed Context.inPredicate() not working underneath TestNotMatchers
+- Fixed illegal context issue in action expressions recursing into themselves
+- Fixed problem in MutableTreeNodeImpl preventing the addition of new child nodes
+- Fixed unintended @SuppressNode on String/StringIgnoreCase rules (now:@SuppressSubnodes)
+- Added support for action variables (org.parboiled.support.Var<T>)
+- Added prevValue(), prevText() and prevChar() functionality for parse tree less AST node building
+- Added support for parser statistics (class org.parboiled.ParserStatistics)
+- Added @SkipActionsInPredicates and @DontSkipActionsInPredicates
+- Added BaseParser.newInstance()
+
 Version 0.9.6.0 (2010-04-14)
 ----------------------------
 - Fixed serious performance problem in construction of parse tree nodes with many subnodes
