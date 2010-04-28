@@ -45,6 +45,17 @@ public class PrevCallsTest extends AbstractTest {
 
         public Rule Digits() {
             return Sequence(
+                    Digits2(),
+                    debug()
+            );
+        }
+
+        boolean debug() {
+            return true;
+        }
+
+        public Rule Digits2() {
+            return Sequence(
                     OneOrMore(CharRange('0', '9')),
                     set(Integer.parseInt(prevText()))
             );

@@ -70,8 +70,9 @@ public class MatcherContext<V> implements Context<V> {
     private Node<V> node;
     private List<Node<V>> subNodes = ImmutableList.of();
     private V nodeValue;
-    private boolean hasError;
+    private V treeValue;
     private int intTag;
+    private boolean hasError;
     private boolean nodeSuppressed;
 
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull InputLocation startLocation,
@@ -155,12 +156,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public V getTreeValue() {
-        V treeValue = nodeValue;
-        int i = subNodes.size();
-        while (treeValue == null && i-- > 0) {
-            treeValue = subNodes.get(i).getValue();
-        }
-        return treeValue;
+        return nodeValue != null ? nodeValue : treeValue;
     }
 
     public Node<V> getNodeByPath(String path) {
@@ -273,6 +269,9 @@ public class MatcherContext<V> implements Context<V> {
     @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
         nodeValue = getTreeValue();
+        if (nodeValue != null && parent != null) {
+            parent.treeValue = nodeValue;
+        }
         if (!nodeSuppressed && !matcher.isNodeSkipped()) {
             node = new NodeImpl<V>(matcher, subNodes, startLocation, currentLocation, nodeValue, hasError);
 
@@ -305,6 +304,7 @@ public class MatcherContext<V> implements Context<V> {
         sc.node = null;
         sc.subNodes = ImmutableList.of();
         sc.nodeValue = null;
+        sc.treeValue = null;
         sc.nodeSuppressed = nodeSuppressed || this.matcher.areSubnodesSuppressed() || matcher.isNodeSuppressed();
         sc.hasError = false;
         return sc;

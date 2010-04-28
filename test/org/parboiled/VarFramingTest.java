@@ -95,7 +95,7 @@ public class VarFramingTest extends AbstractTest {
                 "                [Optional, {2}] '+3'\n" +
                 "                    [Sequence, {2}] '+3'\n" +
                 "                        ['+'] '+'\n" +
-                "                        [Clause] '3'\n" +
+                "                        [Clause, {3}] '3'\n" +
                 "                            [Optional]\n");
     }
 
