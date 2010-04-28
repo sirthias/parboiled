@@ -54,7 +54,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
         for (InstructionGroup group : method.getGroups()) {
             extractInstructions(group);
             extractFields(group);
-            name(group);
+            name(group, classNode);
         }
     }
 
@@ -99,10 +99,10 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
     }
 
     // set a group name base on the hash across all group instructions
-    private void name(InstructionGroup group) {
+    private void name(InstructionGroup group, ParserClassNode classNode) {
         synchronized (lock) {
             // generate an MD5 hash across the buffer, use only the first 96 bit
-            MD5Digester digester = new MD5Digester();
+            MD5Digester digester = new MD5Digester(classNode.name);
             group.getInstructions().accept(digester);
             byte[] hash = digester.getMD5Hash();
             byte[] hash96 = new byte[12];
@@ -119,8 +119,10 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
         private static MessageDigest digest;
         private static ByteBuffer buffer;
         private final List<Label> labels = new ArrayList<Label>();
+        private final String parserClassName;
 
-        public MD5Digester() {
+        public MD5Digester(String parserClassName) {
+            this.parserClassName = parserClassName;
             if (digest == null) {
                 try {
                     digest = MessageDigest.getInstance("MD5");
@@ -149,6 +151,10 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
         public void visitVarInsn(int opcode, int var) {
             update(opcode);
             update(var);
+            if (opcode == ALOAD && var == 0) {
+                // make sure the names of identical actions differ if they are defined in different parent classes
+                update(parserClassName);
+            }
         }
 
         @Override

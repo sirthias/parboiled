@@ -30,6 +30,8 @@ import java.lang.annotation.Target;
  * Note that this annotation only affects action expressions (explicit or implicit)! Custom action objects, be them
  * anonymous actions or instances of some other class implementing the {@link org.parboiled.Action} interface still
  * need to take care of their predicate sensitivities themselves.
+ * If you use this annotation on the parser class itself you can override it on specific rule methods with the
+ * {@link org.parboiled.annotations.DontSkipActionsInPredicates} annotation.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

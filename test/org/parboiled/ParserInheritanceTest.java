@@ -23,7 +23,6 @@ public class ParserInheritanceTest extends AbstractTest {
 
     public static class Actions extends BaseActions<Object> {
         public boolean dummyAction() {
-            System.out.println("Dummy New node action");
             return true;
         }
     }
@@ -52,13 +51,16 @@ public class ParserInheritanceTest extends AbstractTest {
                 "    [\"cd\"] 'cd'\n");
         
         DerivedParser derivedParser = Parboiled.createParser(DerivedParser.class);
-        test(derivedParser.Abcds(), "abcdabcd", "" +
-                "[Clause] '1+5'\n" +
-                "    [Digit] '1'\n" +
-                "    [Operator] '+'\n" +
-                "        ['+'] '+'\n" +
-                "    [Digit] '5'\n" +
-                "    [EOI]\n");
+        Rule rule = derivedParser.Abcds();
+        test(rule, "abcdabcd", "" +
+                "[Abcds] 'abcdabcd'\n" +
+                "    [OneOrMore] 'abcdabcd'\n" +
+                "        [Abcd] 'abcd'\n" +
+                "            [\"ab\"] 'ab'\n" +
+                "            [\"cd\"] 'cd'\n" +
+                "        [Abcd] 'abcd'\n" +
+                "            [\"ab\"] 'ab'\n" +
+                "            [\"cd\"] 'cd'\n");
     }
 
 }

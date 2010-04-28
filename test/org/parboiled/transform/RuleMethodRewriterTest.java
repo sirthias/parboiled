@@ -47,7 +47,7 @@ public class RuleMethodRewriterTest extends TransformationTest {
     }
 
     @Test(dependsOnGroups = "primary")
-    public void testActionClassGeneration() throws Exception {
+    public void testRuleMethodRewriting() throws Exception {
         assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithIndirectImplicitAction", processors)), "" +
                 "Method 'RuleWithIndirectImplicitAction':\n" +
                 " 0     ALOAD 0\n" +
@@ -59,13 +59,13 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 " 6     ANEWARRAY java/lang/Object\n" +
                 " 7     DUP\n" +
                 " 8     ICONST_0\n" +
-                " 9     NEW org/parboiled/transform/Action$T3ibjgjNOs8QKeHY\n" +
+                " 9     NEW org/parboiled/transform/Action$aqänW6YöJ6yk7FhN\n" +
                 "10     DUP\n" +
                 "11     LDC \"RuleWithIndirectImplicitAction_Action1\"\n" +
-                "12     INVOKESPECIAL org/parboiled/transform/Action$T3ibjgjNOs8QKeHY.<init> (Ljava/lang/String;)V\n" +
+                "12     INVOKESPECIAL org/parboiled/transform/Action$aqänW6YöJ6yk7FhN.<init> (Ljava/lang/String;)V\n" +
                 "13     DUP\n" +
                 "14     ALOAD 0\n" +
-                "15     PUTFIELD org/parboiled/transform/Action$T3ibjgjNOs8QKeHY.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "15     PUTFIELD org/parboiled/transform/Action$aqänW6YöJ6yk7FhN.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "16     AASTORE\n" +
                 "17     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "18     ARETURN\n");
@@ -115,25 +115,25 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "40     AASTORE\n" +
                 "41     DUP\n" +
                 "42     ICONST_1\n" +
-                "43     NEW org/parboiled/transform/Action$BSOäsb7lcGxm9QqI\n" +
+                "43     NEW org/parboiled/transform/Action$7etidWTLuzScF7Ro\n" +
                 "44     DUP\n" +
                 "45     LDC \"RuleWithComplexActionSetup_Action2\"\n" +
-                "46     INVOKESPECIAL org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.<init> (Ljava/lang/String;)V\n" +
+                "46     INVOKESPECIAL org/parboiled/transform/Action$7etidWTLuzScF7Ro.<init> (Ljava/lang/String;)V\n" +
                 "47     DUP\n" +
                 "48     ALOAD 0\n" +
-                "49     PUTFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "49     PUTFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "50     DUP\n" +
                 "51     ILOAD 1\n" +
-                "52     PUTFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$1 : I\n" +
+                "52     PUTFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$1 : I\n" +
                 "53     DUP\n" +
                 "54     ALOAD 4\n" +
-                "55     PUTFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$2 : Lorg/parboiled/Var;\n" +
+                "55     PUTFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$2 : Lorg/parboiled/Var;\n" +
                 "56     DUP\n" +
                 "57     ILOAD 2\n" +
-                "58     PUTFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$3 : I\n" +
+                "58     PUTFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$3 : I\n" +
                 "59     DUP\n" +
                 "60     ILOAD 3\n" +
-                "61     PUTFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$4 : I\n" +
+                "61     PUTFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$4 : I\n" +
                 "62     AASTORE\n" +
                 "63     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "64     NEW org/parboiled/matchers/VarFramingMatcher\n" +
@@ -163,20 +163,20 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 " 7     DUP\n" +
                 " 8     ICONST_0\n" +
                 " 9     ALOAD 0\n" +
-                "10     NEW org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO\n" +
+                "10     NEW org/parboiled/transform/Capture$RRä3HOYSfqVyRda2\n" +
                 "11     DUP\n" +
                 "12     LDC \"RuleWithCapture_Capture1\"\n" +
-                "13     INVOKESPECIAL org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO.<init> (Ljava/lang/String;)V\n" +
+                "13     INVOKESPECIAL org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.<init> (Ljava/lang/String;)V\n" +
                 "14     DUP\n" +
                 "15     ALOAD 0\n" +
-                "16     PUTFIELD org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "16     PUTFIELD org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "17     DUP\n" +
                 "18     ASTORE 1\n" +
                 "19     INVOKEVIRTUAL org/parboiled/transform/TestParser.RuleWithCaptureParameter (Lorg/parboiled/Capture;)Lorg/parboiled/Rule;\n" +
                 "20     DUP\n" +
                 "21     ALOAD 1\n" +
                 "22     SWAP\n" +
-                "23     PUTFIELD org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO.contextRule : Lorg/parboiled/Rule;\n" +
+                "23     PUTFIELD org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.contextRule : Lorg/parboiled/Rule;\n" +
                 "24     AASTORE\n" +
                 "25     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "26     ARETURN\n");

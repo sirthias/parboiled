@@ -54,7 +54,7 @@ public class CaptureClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO extends org/parboiled/transform/BaseCapture  {\n" +
+                "public final class org/parboiled/transform/Capture$RRä3HOYSfqVyRda2 extends org/parboiled/transform/BaseCapture  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -72,7 +72,7 @@ public class CaptureClassGeneratorTest extends TransformationTest {
                 "  // access flags 1\n" +
                 "  public evaluate(Lorg/parboiled/Context;)Ljava/lang/Object;\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Capture$J1eAEQUTQ4wVSMEO.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
                 "    ASTORE 2\n" +
                 "    LDC \"a\"\n" +

@@ -130,13 +130,13 @@ public class ActionTest extends AbstractTest {
 
         assertEquals(stats.printActionClassInstances(), "" +
                 "Action classes and their instances for rule 'A':\n" +
-                "    Action$26v2zgu0mt39t9Oä : D_Action1\n" +
-                "    Action$4XIP43NSAsV9yk3d : B_Action1\n" +
-                "    Action$7MnwChxVHD33TpLn : B_Action2, C_Action1\n" +
-                "    Action$7jKZbcöfQRThImBV : D_Action3\n" +
-                "    Action$AiIc8P8G0N8qeyX5 : A_Action2\n" +
-                "    Action$Zvt3p5cXPY79KxMJ : D_Action2\n" +
-                "    Action$tARpxBFUGHOSörOj : A_Action1\n" +
+                "    Action$0giyIxDX7Mk6g1wT : A_Action1\n" +
+                "    Action$EhPxB8PLI074kxTD : A_Action2\n" +
+                "    Action$WxwT85eöxHtQh4qk : B_Action1\n" +
+                "    Action$eGe2AFydnE95kf3g : D_Action2\n" +
+                "    Action$j9fDPvQwCYftylRy : D_Action3\n" +
+                "    Action$rWBC0msöENfoebYi : D_Action1\n" +
+                "    Action$rg9Tdät0tagVQXdX : B_Action2, C_Action1\n" +
                 "    and 1 anonymous instance(s)\n");
     }
 

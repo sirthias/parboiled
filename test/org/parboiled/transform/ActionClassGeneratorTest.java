@@ -100,7 +100,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Action$BSOäsb7lcGxm9QqI extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$7etidWTLuzScF7Ro extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -130,21 +130,21 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "  // access flags 1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$1 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$1 : I\n" +
                 "    IADD\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$2 : Lorg/parboiled/Var;\n" +
+                "    GETFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$2 : Lorg/parboiled/Var;\n" +
                 "    INVOKEVIRTUAL org/parboiled/Var.get ()Ljava/lang/Object;\n" +
                 "    CHECKCAST java/lang/String\n" +
                 "    INVOKEVIRTUAL java/lang/String.length ()I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$3 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$3 : I\n" +
                 "    ISUB\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$BSOäsb7lcGxm9QqI.field$4 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$7etidWTLuzScF7Ro.field$4 : I\n" +
                 "    ISUB\n" +
                 "    IF_ICMPGE L0\n" +
                 "    ICONST_1\n" +
@@ -168,7 +168,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Action$4keN2urdHg0w1kKä extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$1äEdi4BlbELGUöfs extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -194,11 +194,11 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    INVOKEVIRTUAL org/parboiled/transform/BaseAction.DOWN2 (Lorg/parboiled/Context;)Lorg/parboiled/Context;\n" +
                 "    ASTORE 1\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$1äEdi4BlbELGUöfs.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
                 "    IFGE L0\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$4keN2urdHg0w1kKä.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$1äEdi4BlbELGUöfs.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    DUP\n" +
                 "    ALOAD 1\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
