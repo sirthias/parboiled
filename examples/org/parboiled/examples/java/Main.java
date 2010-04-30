@@ -19,6 +19,7 @@ package org.parboiled.examples.java;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
 import org.parboiled.ReportingParseRunner;
+import org.parboiled.Rule;
 import org.parboiled.support.ParsingResult;
 
 import java.io.*;
@@ -61,14 +62,15 @@ public class Main {
         time(start);
 
         System.out.printf("Parsing all %s parboiled java sources", sources.size());
+        Rule rootRule = parser.CompilationUnit().suppressSubnodes(); // we want to see the parse-tree-less performance
         start = System.currentTimeMillis();
         int lines = 0, characters = 0;
         for (File sourceFile : sources) {
             long dontCountStart = System.currentTimeMillis();
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
-
-            ParsingResult<Object> result = ReportingParseRunner.run(parser.CompilationUnit(), sourceText);
+            
+            ParsingResult<Object> result = ReportingParseRunner.run(rootRule, sourceText);
             if (!result.matched) {
                 System.out.printf("\nParse error(s) in file '%s':\n%s",
                         sourceFile,
