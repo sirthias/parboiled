@@ -18,15 +18,18 @@ package org.parboiled.examples.calculators;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
+import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.examples.calculators.CalculatorParser4.CalcNode;
+import org.parboiled.support.Var;
 
 /**
- * A calculator parser defining the same language as the CalculatorParser4 but using a rule building helper methods
- * to Factor out common constructs.
+ * A calculator parser defining the same language as the CalculatorParser5 but relying completely on parse-tree-less
+ * parsing and action variables for maximized performance.
  */
-public class CalculatorParser5 extends CalculatorParser<CalcNode> {
+public class CalculatorParser6 extends CalculatorParser<CalcNode> {
 
     @Override
+    @SuppressSubnodes // putting this annotation on the root rule of the grammar "turns on" parse-tree-less parsing
     public Rule InputLine() {
         return Sequence(Expression(), Eoi());
     }
@@ -45,13 +48,17 @@ public class CalculatorParser5 extends CalculatorParser<CalcNode> {
     }
 
     public Rule OperatorRule(Rule subRule, Rule operatorRule) {
+        Var<Character> operator = new Var<Character>();
         return Sequence(
                 subRule, set(), // run the subRule and set its value on the Sequence
                 ZeroOrMore(
                         Sequence(
-                                operatorRule.label("Op"),
-                                subRule,
-                                UP2(set(new CalcNode(DOWN2(character("Op")), value(), lastValue())))
+                                // match the operator and save it in the action variable
+                                operatorRule, operator.set(prevChar()),
+                                
+                                // match the second subrule and update the value of the outer sequence with a
+                                // newly creates AST node for the operation
+                                subRule, UP2(set(new CalcNode(operator.get(), value(), prevValue())))
                         )
                 )
         );
@@ -62,7 +69,7 @@ public class CalculatorParser5 extends CalculatorParser<CalcNode> {
     }
 
     public Rule SquareRoot() {
-        return Sequence("SQRT", Parens(), set(new CalcNode('R', lastValue(), null)));
+        return Sequence("SQRT", Parens(), set(new CalcNode('R', prevValue(), null)));
     }
 
     public Rule Parens() {
@@ -70,13 +77,15 @@ public class CalculatorParser5 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Number() {
-        return Sequence(
+        return Sequence( 
                 Sequence(
+                        // we use another Sequence to group the inner rules so we can access the input text matched
+                        // by all of them in one go
                         Optional(Ch('-')),
                         OneOrMore(Digit()),
                         Optional(Sequence(Ch('.'), OneOrMore(Digit())))
                 ),
-                set(new CalcNode(Double.parseDouble(lastText()))),
+                set(new CalcNode(Double.parseDouble(prevText()))),
                 WhiteSpace()
         );
     }
@@ -102,6 +111,6 @@ public class CalculatorParser5 extends CalculatorParser<CalcNode> {
     //**************** MAIN ****************
 
     public static void main(String[] args) {
-        main(CalculatorParser5.class);
+        main(CalculatorParser6.class);
     }
 }

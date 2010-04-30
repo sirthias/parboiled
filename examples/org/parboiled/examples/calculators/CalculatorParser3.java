@@ -47,7 +47,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                                 // - the operator that matched (which is two levels underneath the "Expression")
                                 // - the old value of the "Expression" as left child
                                 // - the value of the preceding "Term" as right child
-                                UP2(set(createAst(DOWN2(character("Op")), value(), lastValue())))
+                                UP2(set(new CalcNode(DOWN2(character("Op")), value(), lastValue())))
                         )
                 )
         );
@@ -67,7 +67,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                                 // - the operator that matched (which is two levels underneath the "Term")
                                 // - the old value of the "Term" as left child
                                 // - the value of the preceding "Factor" as right child
-                                UP2(set(createAst(DOWN2(character("Op")), value(), lastValue())))
+                                UP2(set(new CalcNode(DOWN2(character("Op")), value(), lastValue())))
                         )
                 )
         );
@@ -87,7 +87,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
                 // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
                 // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
-                set(createAst(Integer.parseInt(lastText())))
+                set(new CalcNode(Integer.parseInt(lastText())))
         );
     }
 
@@ -98,16 +98,6 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
-    }
-
-    //**************** ACTIONS ****************
-
-    public CalcNode createAst(Integer value) {
-        return new CalcNode(value);
-    }
-
-    public CalcNode createAst(Character type, CalcNode left, CalcNode right) {
-        return new CalcNode(type, left, right);
     }
 
     //****************************************************************

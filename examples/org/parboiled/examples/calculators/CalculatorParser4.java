@@ -24,8 +24,8 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
 /**
  * A calculator parser building an AST representing the expression structure before performing the actual calculation.
  * The value field of the parse tree nodes is used for AST nodes.
- * As opposed to the CalculatorParser3 this parser also supports floating point operations and negative numbers as
- * well as a "power" and a "SQRT" operation.
+ * As opposed to the CalculatorParser3 this parser also supports floating point operations, negative numbers, a "power"
+ * and a "SQRT" operation as well as optional whitespace between the various expressions components.
  */
 public class CalculatorParser4 extends CalculatorParser<CalcNode> {
 
@@ -49,7 +49,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                                 // - the operator that matched (which is two levels underneath the "Expression")
                                 // - the old value of the "Expression" as left child
                                 // - the value of the preceding "Term" as right child
-                                UP2(set(createAst(DOWN2(character("op")), value(), lastValue())))
+                                UP2(set(new CalcNode(DOWN2(character("op")), value(), lastValue())))
                         )
                 )
         );
@@ -70,7 +70,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                                 // - the operator that matched (which is two levels underneath the "Term")
                                 // - the old value of the "Term" as left child
                                 // - the value of the preceding "Factor" as right child
-                                UP2(set(createAst(DOWN2(character("op")), value(), lastValue())))
+                                UP2(set(new CalcNode(DOWN2(character("op")), value(), lastValue())))
                         )
                 )
         );
@@ -88,7 +88,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                                 // "Factor" rule, the node contains the operator ('^'), the old
                                 // "Factor" value as left child and the value of the "Atom" following
                                 // the operator as right child
-                                UP2(set(createAst('^', value(), lastValue())))
+                                UP2(set(new CalcNode('^', value(), lastValue())))
                         )
                 )
         );
@@ -104,7 +104,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                 Parens(),
 
                 // create a new AST node with a special operator 'R' and only one child
-                set(createAst('R', lastValue(), null))
+                set(new CalcNode('R', lastValue(), null))
         );
     }
 
@@ -121,7 +121,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                         OneOrMore(Digit()),
                         Optional(Sequence(Ch('.'), OneOrMore(Digit())))
                 ),
-                set(createAst(Double.parseDouble(lastText()))),
+                set(new CalcNode(Double.parseDouble(lastText()))),
                 WhiteSpace()
         );
     }
@@ -149,16 +149,6 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     @Override
     protected Rule FromStringLiteral(@NotNull String string) {
         return Sequence(String(string), WhiteSpace());
-    }
-
-    //**************** ACTIONS ****************
-
-    public CalcNode createAst(double value) {
-        return new CalcNode(value);
-    }
-
-    public CalcNode createAst(Character type, CalcNode left, CalcNode right) {
-        return new CalcNode(type, left, right);
     }
 
     //****************************************************************

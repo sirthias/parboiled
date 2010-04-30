@@ -39,6 +39,8 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                 Term(),
                 ZeroOrMore(
                         Sequence(
+                                // we label the CharSet rule so we can later
+                                // conveniently address the parse tree node created by it
                                 CharSet("+-").label("Op"),
                                 Term()
                         )

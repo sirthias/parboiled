@@ -164,6 +164,13 @@ public class CalculatorsTest extends AbstractTest {
     public void testCalculator5() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser5.class);
         runBasicCalculationTests(parser, ".0");
+        runExtendedCalculationTests(parser);        
+    }
+    
+    @Test
+    public void testCalculator6() {
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser6.class);
+        runBasicCalculationTests(parser, ".0");
         runExtendedCalculationTests(parser);
     }
 

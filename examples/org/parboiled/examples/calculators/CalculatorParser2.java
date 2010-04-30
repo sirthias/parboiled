@@ -32,7 +32,7 @@ public class CalculatorParser2 extends CalculatorParser<Integer> {
 
     public Rule Expression() {
         return Sequence(
-                Term(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Term"
+                Term(), set(), // the set() sets the value of the preceding Term on the current rule (the "Expression")
                 ZeroOrMore(
                         FirstOf(
                                 // the action that is run after the '+' and the "Term" have been matched
