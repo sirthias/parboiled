@@ -29,8 +29,7 @@ import java.util.LinkedList;
  * <p>Var<T> objects generally behave just like local variables with one exception:<br/>
  * When rule method A() passes a Var defined in its scope to another rule method B() as a parameter and an action
  * in rule method B() writes to this Var all actions in rule method A() running after B() will "see" this newly written
- * value. If unintended, this behavior can be prevented by inserting {@link #enterFrame()} and {@link #exitFrame()}
- * calls before and after the call to rule method B() respectively.</p>
+ * value.</p>
  *
  * @param <T> the type wrapped by this Var
  */

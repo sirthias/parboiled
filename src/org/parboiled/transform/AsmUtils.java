@@ -144,7 +144,7 @@ class AsmUtils {
             argTypes[i] = getClassForType(types[i]);
         }
         try {
-            return clazz.getConstructor(argTypes);
+            return clazz.getDeclaredConstructor(argTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Constructor with descriptor '" + constructorDesc + "' not found in '" +
                     clazz, e);
