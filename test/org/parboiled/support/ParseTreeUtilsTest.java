@@ -16,21 +16,20 @@
 
 package org.parboiled.support;
 
+import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
-import org.parboiled.matchers.Matcher;
 import org.parboiled.common.StringUtils;
-import static org.parboiled.support.ParseTreeUtils.*;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.trees.ImmutableTreeNode;
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.base.Predicate;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import static org.parboiled.support.ParseTreeUtils.*;
+import static org.testng.Assert.assertEquals;
 
 public class ParseTreeUtilsTest {
 
@@ -45,7 +44,7 @@ public class ParseTreeUtilsTest {
 
         @NotNull
         public Matcher<String> getMatcher() {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
 
         public String getLabel() {

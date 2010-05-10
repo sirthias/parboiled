@@ -23,7 +23,7 @@
 
     <target name="compile.main" description="Compile main sources">
         <mkdir dir="build/main"/>
-        <javacn debug="on" destdir="build/main" source="1.5" target="1.5" encoding="utf8">
+        <javacn debug="on" destdir="build/main" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
             <src location="src"/>
             <classpath refid="compile.classpath"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
@@ -32,7 +32,7 @@
 
     <target name="compile.examples" depends="compile.main" description="Compile example sources">
         <mkdir dir="build/examples"/>
-        <javacn debug="on" destdir="build/examples" source="1.5" target="1.5" encoding="utf8">
+        <javacn debug="on" destdir="build/examples" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
             <src location="examples"/>
             <classpath refid="compile.classpath"/>
             <classpath location="build/main"/>
@@ -42,7 +42,7 @@
 
     <target name="compile.tests" depends="compile.examples" description="Compile test sources">
         <mkdir dir="build/tests"/>
-        <javacn debug="on" destdir="build/tests" source="1.5" target="1.5" encoding="utf8">
+        <javacn debug="on" destdir="build/tests" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
             <src location="test"/>
             <classpath refid="compile.classpath"/>
             <classpath location="build/main"/>

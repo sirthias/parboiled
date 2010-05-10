@@ -21,9 +21,9 @@ import org.parboiled.Rule;
 
 /**
  * A parser for the classic non-context free language example { a^n b^n c^n : n >= 1 }
- * S ← &(A c) a+ B !(a|b|c)
- * A ← a A? b
- * B ← b B? c
+ * S <- &(A c) a+ B !(a|b|c)
+ * A <- a A? b
+ * B <- b B? c
  */
 @SuppressWarnings({"InfiniteRecursion"})
 public class AbcParser extends BaseParser<Object> {
