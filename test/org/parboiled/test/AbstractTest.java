@@ -40,7 +40,7 @@ public abstract class AbstractTest {
     private <V> ParsingResult<V> test(ParsingResult<V> result, String expectedTree) {
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
-                    printParseErrors(result.parseErrors, result.inputBuffer) +
+                    printParseErrors(result) +
                     "\n--- ParseTree ---\n" +
                     printNodeTree(result)
             );
@@ -64,7 +64,7 @@ public abstract class AbstractTest {
 
     public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors) {
         ParsingResult<V> result = RecoveringParseRunner.run(rule, input);
-        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), expectedErrors);
+        assertEqualsMultiline(printParseErrors(result), expectedErrors);
         return result;
     }
 

@@ -203,7 +203,7 @@ public class CalculatorsTest extends AbstractTest {
         ParsingResult result = ReportingParseRunner.run(parser.InputLine(), input);
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
-                    printParseErrors(result.parseErrors, result.inputBuffer) +
+                    printParseErrors(result) +
                     "\n--- ParseTree ---\n" +
                     printNodeTree(result)
             );

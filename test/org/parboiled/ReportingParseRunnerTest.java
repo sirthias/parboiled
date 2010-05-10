@@ -71,7 +71,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         for (int i = 0; i < inputs.length; i++) {
             ParsingResult<Integer> result = ReportingParseRunner.run(rule, inputs[i]);
             assertEquals(result.parseErrors.size(), 1);
-            assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), errorMessages[i]);
+            assertEqualsMultiline(printParseErrors(result), errorMessages[i]);
         }
     }
 
@@ -90,7 +90,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         Rule rule = parser.CompilationUnit();
         ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
-        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
+        assertEqualsMultiline(printParseErrors(result), "" +
                 "Invalid input ';', expected Spacing, Expression or ')' (line 5, pos 32):\n" +
                 "        String name = toString(;\n" +
                 "                               ^\n");
@@ -111,7 +111,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         Rule rule = parser.CompilationUnit();
         ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
-        assertEqualsMultiline(printParseErrors(result.parseErrors, result.inputBuffer), "" +
+        assertEqualsMultiline(printParseErrors(result), "" +
                 "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
                 "        String name  toString();\n" +
                 "                     ^\n");

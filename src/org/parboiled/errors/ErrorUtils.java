@@ -20,10 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
-import org.parboiled.support.DefaultMatcherVisitor;
-import org.parboiled.support.InputBuffer;
-import org.parboiled.support.InputLocation;
-import org.parboiled.support.MatcherPath;
+import org.parboiled.support.*;
 
 import java.util.List;
 
@@ -40,7 +37,7 @@ public final class ErrorUtils {
      *
      * @param failedMatcherPath the path to the failed matcher
      * @param lastMatchPath     the path of the last match
-     * @param <V> the type of the value field of a parse tree node
+     * @param <V>               the type of the value field of a parse tree node
      * @return the matcher whose label is best for presentation in "expected" strings
      */
     public static <V> Matcher<V> findProperLabelMatcher(@NotNull MatcherPath<V> failedMatcherPath,
@@ -143,6 +140,16 @@ public final class ErrorUtils {
         sb.append("\n");
 
         return sb.toString();
+    }
+
+    /**
+     * Pretty prints the given parse errors showing their location in the given input buffer.
+     *
+     * @param parsingResult the parsing result
+     * @return the pretty print text
+     */
+    public static String printParseErrors(@NotNull ParsingResult<?> parsingResult) {
+        return printParseErrors(parsingResult.parseErrors, parsingResult.inputBuffer);
     }
 
     /**

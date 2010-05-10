@@ -72,9 +72,7 @@ public class Main {
             
             ParsingResult<Object> result = ReportingParseRunner.run(rootRule, sourceText);
             if (!result.matched) {
-                System.out.printf("\nParse error(s) in file '%s':\n%s",
-                        sourceFile,
-                        printParseErrors(result.parseErrors, result.inputBuffer));
+                System.out.printf("\nParse error(s) in file '%s':\n%s", sourceFile, printParseErrors(result));
                 System.exit(1);
             } else {
                 System.out.print('.');

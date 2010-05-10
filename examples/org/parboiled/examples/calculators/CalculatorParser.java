@@ -53,7 +53,7 @@ public abstract class CalculatorParser<V> extends BaseParser<V> {
             ParsingResult<?> result = RecoveringParseRunner.run(parser.InputLine(), input);
 
             if (result.hasErrors()) {
-                System.out.println("\nParse Errors:\n" + printParseErrors(result.parseErrors, result.inputBuffer));
+                System.out.println("\nParse Errors:\n" + printParseErrors(result));
             }
 
             Object value = result.parseTreeRoot.getValue();
