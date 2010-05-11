@@ -57,7 +57,7 @@ public class CalculatorParser6 extends CalculatorParser<CalcNode> {
                                 operatorRule, operator.set(prevChar()),
                                 
                                 // match the second subrule and update the value of the outer sequence with a
-                                // newly creates AST node for the operation
+                                // newly created AST node for the operation
                                 subRule, UP2(set(new CalcNode(operator.get(), value(), prevValue())))
                         )
                 )

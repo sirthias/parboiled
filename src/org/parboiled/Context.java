@@ -234,6 +234,32 @@ public interface Context<V> {
      * @return the input text matched by the immediately preceeding subcontext
      */
     String getPrevText();
+    
+    /**
+     * <p>Returns the start location of the context immediately preceeding the action expression that is currently
+     * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
+     * position in this Sequence.</p>
+     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.</p>
+     *
+     * @return the input text matched by the immediately preceeding subcontext
+     */
+    InputLocation getPrevStartLocation();
+    
+    /**
+     * <p>Returns the end location of the context immediately preceeding the action expression that is currently
+     * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
+     * position in this Sequence.</p>
+     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.</p>
+     *
+     * @return the input text matched by the immediately preceeding subcontext
+     */
+    InputLocation getPrevEndLocation();
 
 }
 

@@ -194,18 +194,28 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public V getPrevValue() {
-        MatcherContext<V> sequenceContext = getPrevContext();
+        MatcherContext<V> sequenceContext = getPrevSequenceContext();
         return sequenceContext.subContext.nodeValue;
     }
 
     public String getPrevText() {
-        MatcherContext<V> sequenceContext = getPrevContext();
+        MatcherContext<V> sequenceContext = getPrevSequenceContext();
         MatcherContext<V> prevContext = sequenceContext.subContext;
         return sequenceContext.hasError ? sequenceContext.getNodeText(getLastNode()) : inputBuffer
                 .extract(prevContext.startLocation.getIndex(), prevContext.currentLocation.getIndex());
     }
 
-    private MatcherContext<V> getPrevContext() {
+    public InputLocation getPrevStartLocation() {
+        MatcherContext<V> sequenceContext = getPrevSequenceContext();
+        return sequenceContext.subContext.startLocation;
+    }
+
+    public InputLocation getPrevEndLocation() {
+        MatcherContext<V> sequenceContext = getPrevSequenceContext();
+        return sequenceContext.subContext.currentLocation;
+    }
+
+    private MatcherContext<V> getPrevSequenceContext() {
         MatcherContext<V> actionContext = this;
         
         // we need to find the deepest currently active context

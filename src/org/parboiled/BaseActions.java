@@ -19,6 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Checks;
+import org.parboiled.support.InputLocation;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
 
@@ -357,6 +358,38 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     public Character prevChar() {
         String text = prevText();
         return StringUtils.isEmpty(text) ? null : text.charAt(0);
+    }
+    
+    /**
+     * <p>Returns the start location of the matched rule immediately preceeding the action expression that is currently
+     * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
+     * position in this Sequence.</p>
+     * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
+     * and will always return the same result.</p> 
+     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.</p>
+     *
+     * @return the value object of the immediately preceeding subrule
+     */
+    public InputLocation prevStart() {
+        check();
+        return context.getPrevStartLocation();
+    }
+    
+    /**
+     * <p>Returns the end location of the matched rule immediately preceeding the action expression that is currently
+     * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
+     * position in this Sequence.</p>
+     * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
+     * and will always return the same result.</p> 
+     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
+     * grammar where parse tree node creation is suppressed.</p>
+     *
+     * @return the value object of the immediately preceeding subrule
+     */
+    public InputLocation prevEnd() {
+        check();
+        return context.getPrevEndLocation();
     }
 
     /**
