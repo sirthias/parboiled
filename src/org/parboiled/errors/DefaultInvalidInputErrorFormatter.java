@@ -36,11 +36,12 @@ public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidIn
     public String format(InvalidInputError<V> error) {
         if (error == null) return "";
 
-        return String.format("Invalid input '%s%s', expected %s",
+        String errorMessage = String.format("Invalid input '%s%s'",
                 StringUtils.escape(String.valueOf(error.getErrorLocation().getChar())),
-                error.getErrorCharCount() > 1 ? "..." : "",
-                getExpectedString(error)
+                error.getErrorCharCount() > 1 ? "..." : ""
         );
+        String expectedString = getExpectedString(error);
+        return StringUtils.isEmpty(expectedString) ? errorMessage : errorMessage + ", expected " + expectedString;
     }
 
     public String getExpectedString(InvalidInputError<V> error) {

@@ -130,7 +130,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         ParsingResult<Object> result = ReportingParseRunner.run(rule, "Text;;Something");
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result), "" +
-                "Invalid input ';', expected  (line 1, pos 6):\n" +
+                "Invalid input ';' (line 1, pos 6):\n" +
                 "Text;;Something\n" +
                 "     ^\n");
     }
