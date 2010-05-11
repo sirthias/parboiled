@@ -19,6 +19,7 @@ package org.parboiled;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
+import org.parboiled.matchers.TestNotMatcher;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParsingResult;
 
@@ -120,7 +121,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
 
         public boolean match(MatcherContext<V> context) {
             if (inner.match(context)) {
-                if (errorLocation.getIndex() < context.getCurrentLocation().getIndex()) {
+                if (errorLocation.getIndex() < context.getCurrentLocation().getIndex() && notTestNot(context)) {
                     errorLocation = context.getCurrentLocation();
                 }
                 return true;
@@ -128,6 +129,10 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
             return false;
         }
 
+        private boolean notTestNot(MatcherContext<V> context) {
+            return !(context.getMatcher() instanceof TestNotMatcher) &&
+                    (context.getParent() == null || notTestNot(context.getParent()));
+        }
     }
 
 }

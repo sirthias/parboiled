@@ -18,7 +18,6 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
-import org.parboiled.matchers.TestNotMatcher;
 import org.parboiled.support.InputLocation;
 import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.MatcherPath;
@@ -133,17 +132,11 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
                     lastMatch = context.getPath();
                     seeking = false;
                 }
-                if (!matched && !seeking && context.getMatcher().accept(isSingleCharMatcherVisitor) &&
-                        notTestNot(context)) {
+                if (!matched && !seeking && context.getMatcher().accept(isSingleCharMatcherVisitor)) {
                     failedMatchers.add(context.getPath());
                 }
             }
             return matched;
-        }
-
-        private boolean notTestNot(MatcherContext<V> context) {
-            return !(context.getMatcher() instanceof TestNotMatcher) &&
-                    (context.getParent() == null || notTestNot(context.getParent()));
         }
 
     }

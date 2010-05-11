@@ -116,5 +116,23 @@ public class ReportingParseRunnerTest extends AbstractTest {
                 "        String name  toString();\n" +
                 "                     ^\n");
     }
+    
+    public static class Parser extends BaseParser<Object> {
+        Rule Line() {
+            return Sequence("Text;", OneOrMore(Sequence(TestNot(';'), Any())), ';', Eoi());
+        }
+    }
+    
+    @Test
+    public void testErrorLocation() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        Rule rule = parser.Line();
+        ParsingResult<Object> result = ReportingParseRunner.run(rule, "Text;;Something");
+        assertEquals(result.parseErrors.size(), 1);
+        assertEqualsMultiline(printParseErrors(result), "" +
+                "Invalid input ';', expected  (line 1, pos 6):\n" +
+                "Text;;Something\n" +
+                "     ^\n");
+    }
 
 }
