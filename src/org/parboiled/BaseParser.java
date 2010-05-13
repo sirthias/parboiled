@@ -18,10 +18,7 @@ package org.parboiled;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.annotations.Cached;
-import org.parboiled.annotations.Label;
-import org.parboiled.annotations.SuppressNode;
-import org.parboiled.annotations.SuppressSubnodes;
+import org.parboiled.annotations.*;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.Characters;
@@ -63,6 +60,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @DontLabel
     public Rule Ch(char c) {
         return new CharMatcher(c).label("\'" + escape(c) + '\'');
     }
@@ -76,6 +74,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @DontLabel
     public Rule CharIgnoreCase(char c) {
         if (Character.isLowerCase(c) == Character.isUpperCase(c)) {
             return Ch(c);
@@ -94,6 +93,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @DontLabel
     public Rule CharRange(char cLow, char cHigh) {
         return cLow == cHigh ? Ch(cLow) :
                 new CharRangeMatcher(cLow, cHigh).label(escape(cLow) + ".." + escape(cHigh));
@@ -107,6 +107,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param characters the characters
      * @return a new rule
      */
+    @DontLabel
     public Rule CharSet(@NotNull String characters) {
         return CharSet(characters.toCharArray());
     }
@@ -119,6 +120,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param characters the characters
      * @return a new rule
      */
+    @DontLabel
     public Rule CharSet(@NotNull char... characters) {
         Preconditions.checkArgument(characters.length > 0);
         return characters.length == 1 ? Ch(characters[0]) : CharSet(Characters.of(characters));
@@ -133,6 +135,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
+    @DontLabel
     public Rule CharSet(@NotNull Characters characters) {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return Ch(characters.getChars()[0]);
@@ -150,6 +153,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the String to match
      * @return a new rule
      */
+    @DontLabel
     public Rule String(@NotNull String string) {
         return String(string.toCharArray());
     }
@@ -166,6 +170,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @SuppressSubnodes
+    @DontLabel
     public Rule String(char... characters) {
         if (characters.length == 1) return Ch(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
@@ -183,6 +188,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string to match
      * @return a new rule
      */
+    @DontLabel
     public Rule StringIgnoreCase(@NotNull String string) {
         return StringIgnoreCase(string.toCharArray());
     }
@@ -197,6 +203,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @SuppressSubnodes
+    @DontLabel
     public Rule StringIgnoreCase(char... characters) {
         if (characters.length == 1) return CharIgnoreCase(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
@@ -217,6 +224,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
+    @DontLabel
     public Rule FirstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
         return FirstOf(concat(rule, concat(rule2, moreRules)));
     }
@@ -276,6 +284,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param moreRules the other subrules
      * @return a new rule
      */
+    @DontLabel
     public Rule Sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
         return Sequence(concat(rule, concat(rule2, moreRules)));
     }
@@ -555,6 +564,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param c the character
      * @return the rule
      */
+    @DontLabel
     protected Rule FromCharLiteral(char c) {
         return Ch(c);
     }
@@ -567,6 +577,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string
      * @return the rule
      */
+    @DontLabel
     protected Rule FromStringLiteral(@NotNull String string) {
         return FromCharArray(string.toCharArray());
     }
@@ -579,6 +590,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param array the char array
      * @return the rule
      */
+    @DontLabel
     protected Rule FromCharArray(@NotNull char[] array) {
         return String(array);
     }
@@ -605,6 +617,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule corresponding to the given object
      */
     @SuppressWarnings({"unchecked"})
+    @DontLabel
     public Rule ToRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
         if (obj instanceof Character) return FromCharLiteral((Character) obj);

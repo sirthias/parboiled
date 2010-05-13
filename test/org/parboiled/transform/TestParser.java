@@ -19,11 +19,8 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Capture;
 import org.parboiled.Rule;
+import org.parboiled.annotations.*;
 import org.parboiled.support.Var;
-import org.parboiled.annotations.Cached;
-import org.parboiled.annotations.ExplicitActionsOnly;
-import org.parboiled.annotations.Label;
-import org.parboiled.annotations.SuppressNode;
 
 import static java.lang.Integer.parseInt;
 import static org.parboiled.common.StringUtils.isEmpty;
@@ -92,7 +89,7 @@ class TestParser extends BaseParser<Integer> {
         return Sequence('a', "harry".equals(capture.get()));
     }
 
-    @Label
+    @DontLabel
     public Rule RuleWith2Returns(int param) {
         if (param == integer) {
             return Sequence('a', ACTION(action()));

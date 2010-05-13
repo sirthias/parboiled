@@ -22,15 +22,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be used on parser methods returning {@link org.parboiled.Rule}s.
- * Instructs parboiled to automatically label the created rules with the given label or the method name
- * (if no explicit annotation value is given).
- * Note that parameterless Rule creating methods are automatically labeled with the method name if not {@link DontLabel}
- * annotation is present on the method or the parser class. You can however still apply @Label to set a label thats
- * different from the method name.
+ * Annotation that can be used on parser methods returning {@link org.parboiled.Rule} objects.
+ * Instructs parboiled to automatically label the created rules with the given label.
+ * If this annotation is not present on a rule method parboiled automatically names the created rules with the
+ * method name, unless a {@link DontLabel} annotation is present on the method or the parser class.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface Label {
-    String value() default "";
+    String value();
 }

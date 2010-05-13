@@ -51,7 +51,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasCachedAnnotation;
-    private boolean hasLabelAnnotation;
+    private boolean hasDontLabelAnnotation;
     private boolean hasSuppressNodeAnnotation;
     private boolean hasSuppressSubnodesAnnotation;
     private boolean hasSkipNodeAnnotation;
@@ -62,13 +62,13 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private List<LocalVariableNode> localVarVariables;
 
     public RuleMethod(int access, String name, String desc, String signature, String[] exceptions,
-                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnnotation,
+                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno,
                       boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
 
         parameterCount = Type.getArgumentTypes(desc).length;
         hasCachedAnnotation = parameterCount == 0;
-        hasLabelAnnotation = parameterCount == 0 && !hasDontLabelAnnotation;
+        hasDontLabelAnnotation = hasDontLabelAnno;
         hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnno;
         hasSkipActionsInPredicatesAnnotation = hasSkipActionsInPredicates;
     }
@@ -109,8 +109,8 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return hasCachedAnnotation;
     }
 
-    public boolean hasLabelAnnotation() {
-        return hasLabelAnnotation;
+    public boolean hasDontLabelAnnotation() {
+        return hasDontLabelAnnotation;
     }
 
     public boolean hasSuppressNodeAnnotation() {
@@ -200,11 +200,8 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
             return null; // we do not need to record this annotation
         }
         if (DONT_LABEL_DESC.equals(desc)) {
-            hasLabelAnnotation = false;
+            hasDontLabelAnnotation = true;
             return null; // we do not need to record this annotation
-        }
-        if (LABEL_DESC.equals(desc)) {
-            hasLabelAnnotation = true;
         }
         return visible ? super.visitAnnotation(desc, true) : null; // only keep visible annotations
     }

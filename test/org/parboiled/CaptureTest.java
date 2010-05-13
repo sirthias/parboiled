@@ -16,7 +16,6 @@
 
 package org.parboiled;
 
-import org.parboiled.annotations.Label;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
@@ -28,12 +27,10 @@ public class CaptureTest extends AbstractTest {
             return Sequence('a', set(1), B(CAPTURE(value())));
         }
 
-        @Label
         public Rule B(Capture<Integer> captureA) {
             return Sequence('b', set(2), C(captureA, CAPTURE(UP(value())), CAPTURE(value())));
         }
 
-        @Label
         public Rule C(Capture<Integer> captureA, Capture<Integer> captureBUp1, Capture<Integer> captureB) {
             return Sequence('c', set(3),
                     testCaptures(captureA, captureBUp1, captureB, CAPTURE(UP2(value())), CAPTURE(UP(value())),

@@ -46,7 +46,6 @@ public class ActionTest extends AbstractTest {
             );
         }
 
-        @Label
         public Rule B(int i) {
             int j = i + 1;
             return Sequence(
@@ -70,7 +69,7 @@ public class ActionTest extends AbstractTest {
             );
         }
 
-        @Label
+        @Label("Last")
         public Rule D(int i) {
             return Sequence(
                     'd', set(UP3(value())),
@@ -101,7 +100,7 @@ public class ActionTest extends AbstractTest {
                 "        ['b'] 'b'\n" +
                 "        [C, {1}] 'cd'\n" +
                 "            ['c'] 'c'\n" +
-                "            [D, {43}] 'd'\n" +
+                "            [Last, {43}] 'd'\n" +
                 "                ['d'] 'd'\n");
 
         ParserStatistics<Object> stats = ParserStatistics.generateFor(parser.A());

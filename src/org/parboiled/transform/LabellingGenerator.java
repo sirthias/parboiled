@@ -28,7 +28,7 @@ import org.parboiled.common.StringUtils;
 class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public boolean appliesTo(@NotNull RuleMethod method) {
-        return method.hasLabelAnnotation();
+        return !method.hasDontLabelAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
@@ -58,7 +58,7 @@ class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
         if (method.visibleAnnotations != null) {
             for (Object annotationObj : method.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;
-                if (annotation.desc.equals(LABEL.getDescriptor()) && annotation.values != null) {
+                if (annotation.desc.equals(LABEL_DESC) && annotation.values != null) {
                     Preconditions.checkState("value".equals(annotation.values.get(0)));
                     String labelValue = (String) annotation.values.get(1);
                     return StringUtils.isEmpty(labelValue) ? method.name : labelValue;

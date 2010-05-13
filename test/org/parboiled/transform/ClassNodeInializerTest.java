@@ -76,7 +76,7 @@ public class ClassNodeInializerTest extends TransformationTest {
 
         assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.hasLabelAnnotation();
+                return method.hasDontLabelAnnotation();
             }
         }), "RuleWithoutAction,RuleWithLabel,RuleWithNamedLabel,RuleWithLeaf,RuleWithDirectImplicitAction," +
                 "RuleWithIndirectImplicitAction,RuleWithDirectExplicitAction,RuleWithIndirectExplicitAction," +

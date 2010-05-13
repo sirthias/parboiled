@@ -39,6 +39,7 @@ package org.parboiled.examples.java;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.DontLabel;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
 
@@ -924,6 +925,7 @@ public class JavaParser extends BaseParser<Object> {
     public final Rule WHILE = Keyword("while");
 
     @SuppressNode
+    @DontLabel
     public Rule Keyword(String keyword) {
         return Terminal(keyword, LetterOrDigit());
     }
@@ -1112,11 +1114,13 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     @SuppressNode
+    @DontLabel
     public Rule Terminal(String string) {
         return Sequence(string, Spacing()).label('\'' + string + '\'');
     }
 
     @SuppressNode
+    @DontLabel
     public Rule Terminal(String string, Rule mustNotFollow) {
         return Sequence(string, TestNot(mustNotFollow), Spacing()).label('\'' + string + '\'');
     }
