@@ -26,7 +26,7 @@ import org.parboiled.support.ParsingResult;
 /**
  * A {@link ParseRunner} implementation that records the location of the first {@link InvalidInputError} found,
  * without actually creating a {@link InvalidInputError} instance and adding it to the list of ParseErrors.
- * It never causes the parser to perform more than one parsing run and it rarely used directly. Instead its functionality
+ * It never causes the parser to perform more than one parsing run and is rarely used directly. Instead its functionality
  * is relied upon by the {@link ReportingParseRunner} and {@link RecoveringParseRunner} classes.
  *
  * @param <V> the type of the value field of a parse tree node

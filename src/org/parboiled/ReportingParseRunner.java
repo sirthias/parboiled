@@ -29,8 +29,8 @@ import java.util.List;
 /**
  * A {@link ParseRunner} implementation that properly reports the first {@link InvalidInputError} if the input
  * does not conform to the rule grammar.
- * It initiates at most one parsing rerun (in the case that the input is invalid) and is only a few percent slower
- * than the {@link BasicParseRunner} on valid input.
+ * It performs exactly as the {@link BasicParseRunner} on valid input, however, on invalid input two more parsing
+ * runs are initiated: one for recording the first parse error and one for collecting the error report information.
  *
  * @param <V> the type of the value field of a parse tree node
  */
@@ -61,11 +61,15 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
     @SuppressWarnings({"SimplifiableIfStatement"})
     @Override
     protected boolean runRootContext() {
-        RecordingParseRunner.Handler<V> handler = new RecordingParseRunner.Handler<V>();
+        MatchHandler<V> handler = new BasicParseRunner.Handler<V>();
         if (runRootContext(handler)) {
             return true;
         }
-        return runRootContext(new Handler<V>(handler.getErrorLocation()));
+        RecordingParseRunner.Handler<V> recordingHandler = new RecordingParseRunner.Handler<V>();
+        if (runRootContext(recordingHandler)) {
+            throw new IllegalStateException(); // we failed before so we must fail again
+        }
+        return runRootContext(new Handler<V>(recordingHandler.getErrorLocation()));
     }
 
     /**

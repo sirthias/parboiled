@@ -35,9 +35,9 @@ import java.util.List;
  * determined and the parsing process resynchronized, so that parsing can still continue.
  * In this way the RecoveringParseRunner is able to completely parse most input texts. Only if the parser cannot even
  * start matching the root rule will it return an unmatched {@link ParsingResult}.
- * If the input is error free this {@link ParseRunner} implementation will only perform one parsing run.
- * However, if there are {@link InvalidInputError}s in the input potentially many more runs are performed to properly
- * report all errors and test the various recovery strategies.
+ * If the input is error free this {@link ParseRunner} implementation will only perform one parsing run, with the same
+ * speed as the {@link BasicParseRunner}. However, if there are {@link InvalidInputError}s in the input potentially
+ * many more runs are performed to properly report all errors and test the various recovery strategies.
  *
  * @param <V> the type of the value field of a parse tree node
  */
@@ -70,14 +70,19 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     @Override
     protected boolean runRootContext() {
-        if (!attemptRecordingMatch()) {
-            do {
-                performErrorReportingRun();
-                if (!fixError(errorLocation)) {
-                    return false;
-                }
-            } while (errorLocation != null);
+        MatchHandler<V> handler = new BasicParseRunner.Handler<V>();
+        if (runRootContext(handler)) {
+            return true;
         }
+        if (attemptRecordingMatch()) {
+            throw new IllegalStateException(); // we failed before so we must fail again
+        }
+        do {
+            performErrorReportingRun();
+            if (!fixError(errorLocation)) {
+                return false;
+            }
+        } while (errorLocation != null);
         return true;
     }
 
@@ -141,6 +146,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     // skip over all illegal chars that we cannot start a root match with
+
     protected boolean fixIllegalStarterChars() {
         int count = 0;
         while (errorLocation.getChar() != Characters.EOI &&
