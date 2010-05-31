@@ -25,6 +25,7 @@ public class ArrayBuilderTest {
     @Test
     public void testAdd() throws Exception {
         assertEquals(new ArrayBuilder<Integer>().add(1, 2).add(3).add(4, 5, 6).get(), new Integer[] {1, 2, 3, 4, 5, 6});
+        assertEquals(new ArrayBuilder<Integer>().add(1, 2).addNonNulls(3, null, 4, null).get(), new Integer[] {1, 2, 3, 4});
     }
 
 }

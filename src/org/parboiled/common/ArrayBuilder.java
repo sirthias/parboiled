@@ -48,4 +48,29 @@ public class ArrayBuilder<T> {
         return this;
     }
 
+    @SuppressWarnings({"unchecked"})
+    public ArrayBuilder<T> addNonNulls(T... elements) {
+        if (elements == null) return this;
+        if (array == null) {
+            array = elements;
+            return this;
+        }
+        int nonNulls = 0;
+        for (T element : elements) {
+            if (element != null) nonNulls++;
+        }
+        if (nonNulls == 0) return this;
+
+        T[] newArray = (T[]) Array.newInstance(array.getClass().getComponentType(), array.length + nonNulls);
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        for (int i = 0, j = array.length; i < elements.length; i++) {
+            T element = elements[i];
+            if (element != null) {
+                newArray[j++] = element;
+            }
+        }
+        array = newArray;
+        return this;
+    }
+
 }
