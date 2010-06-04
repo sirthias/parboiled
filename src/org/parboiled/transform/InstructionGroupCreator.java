@@ -56,6 +56,13 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
             markUngroupedEnclosedNodes(group);
             verify(group);
         }
+
+        // check all non-group node for illegal accesses
+        for (InstructionGraphNode node : method.getGraphNodes()) {
+            if (node.getGroup() == null) {
+                verifyAccess(node);
+            }
+        }
     }
 
     private void createActionAndCaptureGroups() {
@@ -116,17 +123,17 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         // verify all instruction except for the last one (which must be the root)
         Preconditions.checkState(nodes.get(sizeMinus1) == group.getRoot());
         for (int i = 0; i < sizeMinus1; i++) {
-            verify(nodes.get(i));
+            InstructionGraphNode node = nodes.get(i);
+            Checks.ensure(!node.isXStore(), "An ACTION or CAPTURE in rule method '%s' contains illegal writes to a " +
+                    "local variable or parameter", method.name);
+            verifyAccess(node);
         }
 
         Checks.ensure(getIndexOfLastInsn(group) - getIndexOfFirstInsn(group) == sizeMinus1,
                 "Error during bytecode analysis of rule method '%s': Incontinuous group block", method.name);
     }
 
-    private void verify(InstructionGraphNode node) {
-        Checks.ensure(!node.isXStore(), "An ACTION or CAPTURE in rule method '%s' contains illegal writes to a " +
-                "local variable or parameter", method.name);
-
+    private void verifyAccess(InstructionGraphNode node) {
         switch (node.getInstruction().getOpcode()) {
             case GETFIELD:
             case GETSTATIC:
