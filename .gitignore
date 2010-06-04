@@ -1,6 +1,5 @@
-parboiled.ipr
-parboiled.iws
 parboiled.iml
-/build
-/classes
-/test-output
+.idea/
+build/
+classes/
+test-output/
