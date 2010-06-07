@@ -54,6 +54,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
     private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
+    private boolean containsVars; // calls to Var.<init>(T)
     private boolean containsPotentialSuperCalls;
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasCachedAnnotation;
@@ -117,6 +118,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public boolean containsCaptures() {
         return containsCaptures;
+    }
+
+    public boolean containsVars() {
+        return containsVars;
     }
 
     public boolean containsPotentialSuperCalls() {
@@ -239,17 +244,26 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-        if (!hasExplicitActionOnlyAnnotation && opcode == INVOKESTATIC && isBooleanValueOfZ(owner, name, desc)) {
-            containsImplicitActions = true;
-        }
-        if (opcode == INVOKESTATIC && isActionRoot(owner, name)) {
-            containsExplicitActions = true;
-        }
-        if (opcode == INVOKESTATIC && isCaptureRoot(owner, name)) {
-            containsCaptures = true;
-        }
-        if (opcode == INVOKESPECIAL && !"<init>".equals(name) && isAssignableTo(owner, BaseParser.class)) {
-            containsPotentialSuperCalls = true;
+        switch (opcode) {
+            case INVOKESTATIC:
+                if (!hasExplicitActionOnlyAnnotation && isBooleanValueOfZ(owner, name, desc)) {
+                    containsImplicitActions = true;
+                } else if (isActionRoot(owner, name)) {
+                    containsExplicitActions = true;
+                } else if (isCaptureRoot(owner, name)) {
+                    containsCaptures = true;
+                }
+                break;
+
+            case INVOKESPECIAL:
+                if ("<init>".equals(name)) {
+                    if (isVarRoot(owner, name, desc)) {
+                        containsVars = true;
+                    }
+                } else if (isAssignableTo(owner, BaseParser.class)) {
+                    containsPotentialSuperCalls = true;
+                }
+                break;
         }
         super.visitMethodInsn(opcode, owner, name, desc);
     }

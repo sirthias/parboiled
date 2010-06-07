@@ -35,8 +35,9 @@ public class RuleMethodRewriterTest extends TransformationTest {
             new ImplicitActionsConverter(),
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
-            new CaptureClassGenerator(true),
             new ActionClassGenerator(true),
+            new CaptureClassGenerator(true),
+            new VarInitClassGenerator(true),
             new RuleMethodRewriter(),
             new VarFramingGenerator()
     );
@@ -78,78 +79,81 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 " 3     ISTORE 3\n" +
                 " 4     NEW org/parboiled/support/Var\n" +
                 " 5     DUP\n" +
-                " 6     LDC \"text\"\n" +
-                " 7     INVOKESPECIAL org/parboiled/support/Var.<init> (Ljava/lang/Object;)V\n" +
-                " 8     ASTORE 4\n" +
-                " 9     ILOAD 2\n" +
-                "10     ILOAD 1\n" +
-                "11     IADD\n" +
-                "12     ISTORE 2\n" +
-                "13     ILOAD 3\n" +
-                "14     ILOAD 2\n" +
-                "15     ISUB\n" +
-                "16     ISTORE 3\n" +
-                "17     ALOAD 0\n" +
-                "18     BIPUSH 97\n" +
-                "19     ILOAD 2\n" +
-                "20     IADD\n" +
-                "21     INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
-                "22     NEW org/parboiled/transform/Action$HCsAlhftW7cYn1dT\n" +
-                "23     DUP\n" +
-                "24     LDC \"RuleWithComplexActionSetup_Action1\"\n" +
-                "25     INVOKESPECIAL org/parboiled/transform/Action$HCsAlhftW7cYn1dT.<init> (Ljava/lang/String;)V\n" +
+                " 6     NEW org/parboiled/transform/VarInit$ojjPlntz5r61YBBm\n" +
+                " 7     DUP\n" +
+                " 8     LDC \"RuleWithComplexActionSetup_VarInit1\"\n" +
+                " 9     INVOKESPECIAL org/parboiled/transform/VarInit$ojjPlntz5r61YBBm.<init> (Ljava/lang/String;)V\n" +
+                "10     INVOKESPECIAL org/parboiled/support/Var.<init> (Lorg/parboiled/common/Factory;)V\n" +
+                "11     ASTORE 4\n" +
+                "12     ILOAD 2\n" +
+                "13     ILOAD 1\n" +
+                "14     IADD\n" +
+                "15     ISTORE 2\n" +
+                "16     ILOAD 3\n" +
+                "17     ILOAD 2\n" +
+                "18     ISUB\n" +
+                "19     ISTORE 3\n" +
+                "20     ALOAD 0\n" +
+                "21     BIPUSH 97\n" +
+                "22     ILOAD 2\n" +
+                "23     IADD\n" +
+                "24     INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
+                "25     NEW org/parboiled/transform/Action$HCsAlhftW7cYn1dT\n" +
                 "26     DUP\n" +
-                "27     ILOAD 2\n" +
-                "28     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$0 : I\n" +
+                "27     LDC \"RuleWithComplexActionSetup_Action1\"\n" +
+                "28     INVOKESPECIAL org/parboiled/transform/Action$HCsAlhftW7cYn1dT.<init> (Ljava/lang/String;)V\n" +
                 "29     DUP\n" +
-                "30     ILOAD 1\n" +
-                "31     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$1 : I\n" +
+                "30     ILOAD 2\n" +
+                "31     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$0 : I\n" +
                 "32     DUP\n" +
-                "33     ILOAD 3\n" +
-                "34     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$2 : I\n" +
-                "35     ICONST_2\n" +
-                "36     ANEWARRAY java/lang/Object\n" +
-                "37     DUP\n" +
-                "38     ICONST_0\n" +
-                "39     ALOAD 4\n" +
-                "40     AASTORE\n" +
-                "41     DUP\n" +
-                "42     ICONST_1\n" +
-                "43     NEW org/parboiled/transform/Action$ARäVEaFtWytNAZGB\n" +
+                "33     ILOAD 1\n" +
+                "34     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$1 : I\n" +
+                "35     DUP\n" +
+                "36     ILOAD 3\n" +
+                "37     PUTFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$2 : I\n" +
+                "38     ICONST_2\n" +
+                "39     ANEWARRAY java/lang/Object\n" +
+                "40     DUP\n" +
+                "41     ICONST_0\n" +
+                "42     ALOAD 4\n" +
+                "43     AASTORE\n" +
                 "44     DUP\n" +
-                "45     LDC \"RuleWithComplexActionSetup_Action2\"\n" +
-                "46     INVOKESPECIAL org/parboiled/transform/Action$ARäVEaFtWytNAZGB.<init> (Ljava/lang/String;)V\n" +
+                "45     ICONST_1\n" +
+                "46     NEW org/parboiled/transform/Action$ARäVEaFtWytNAZGB\n" +
                 "47     DUP\n" +
-                "48     ALOAD 0\n" +
-                "49     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "48     LDC \"RuleWithComplexActionSetup_Action2\"\n" +
+                "49     INVOKESPECIAL org/parboiled/transform/Action$ARäVEaFtWytNAZGB.<init> (Ljava/lang/String;)V\n" +
                 "50     DUP\n" +
-                "51     ILOAD 1\n" +
-                "52     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$1 : I\n" +
+                "51     ALOAD 0\n" +
+                "52     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "53     DUP\n" +
-                "54     ALOAD 4\n" +
-                "55     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$2 : Lorg/parboiled/support/Var;\n" +
+                "54     ILOAD 1\n" +
+                "55     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$1 : I\n" +
                 "56     DUP\n" +
-                "57     ILOAD 2\n" +
-                "58     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$3 : I\n" +
+                "57     ALOAD 4\n" +
+                "58     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$2 : Lorg/parboiled/support/Var;\n" +
                 "59     DUP\n" +
-                "60     ILOAD 3\n" +
-                "61     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$4 : I\n" +
-                "62     AASTORE\n" +
-                "63     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "64     NEW org/parboiled/matchers/VarFramingMatcher\n" +
-                "65     DUP_X1\n" +
-                "66     SWAP\n" +
-                "67     BIPUSH 1\n" +
-                "68     ANEWARRAY org/parboiled/support/Var\n" +
-                "69     DUP\n" +
-                "70     BIPUSH 0\n" +
-                "71     ALOAD 4\n" +
+                "60     ILOAD 2\n" +
+                "61     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$3 : I\n" +
+                "62     DUP\n" +
+                "63     ILOAD 3\n" +
+                "64     PUTFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$4 : I\n" +
+                "65     AASTORE\n" +
+                "66     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "67     NEW org/parboiled/matchers/VarFramingMatcher\n" +
+                "68     DUP_X1\n" +
+                "69     SWAP\n" +
+                "70     BIPUSH 1\n" +
+                "71     ANEWARRAY org/parboiled/support/Var\n" +
                 "72     DUP\n" +
-                "73     LDC \"RuleWithComplexActionSetup:string\"\n" +
-                "74     INVOKEVIRTUAL org/parboiled/support/Var.setName (Ljava/lang/String;)V\n" +
-                "75     AASTORE\n" +
-                "76     INVOKESPECIAL org/parboiled/matchers/VarFramingMatcher.<init> (Lorg/parboiled/Rule;[Lorg/parboiled/support/Var;)V\n" +
-                "77     ARETURN\n");
+                "73     BIPUSH 0\n" +
+                "74     ALOAD 4\n" +
+                "75     DUP\n" +
+                "76     LDC \"RuleWithComplexActionSetup:string\"\n" +
+                "77     INVOKEVIRTUAL org/parboiled/support/Var.setName (Ljava/lang/String;)V\n" +
+                "78     AASTORE\n" +
+                "79     INVOKESPECIAL org/parboiled/matchers/VarFramingMatcher.<init> (Lorg/parboiled/Rule;[Lorg/parboiled/support/Var;)V\n" +
+                "80     ARETURN\n");
 
         assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithCapture", processors)), "" +
                 "Method 'RuleWithCapture':\n" +

@@ -44,26 +44,34 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
     private InstructionGroup group;
     private int actionNr;
     private int captureNr;
+    private int varInitNr;
     private Map<InstructionGraphNode, Integer> captureVarIndices;
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.containsExplicitActions() || method.containsCaptures();
+        return method.containsExplicitActions() || method.containsCaptures() || method.containsVars();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         this.method = method;
         actionNr = 0;
         captureNr = 0;
+        varInitNr = 0;
         captureVarIndices = null;
 
         for (InstructionGroup group : method.getGroups()) {
             this.group = group;
             createNewGroupClassInstance();
             initializeFields();
-            if (group.getRoot().isCaptureRoot()) {
+
+            InstructionGraphNode root = group.getRoot();
+            if (root.isActionRoot()) {
+                removeGroupRootInstruction();
+            } else if (root.isCaptureRoot()) {
                 insertStoreCapture();
+                removeGroupRootInstruction();
+            } else { // if (root.isVarInitRoot())
+                ((MethodInsnNode)root.getInstruction()).desc = "(Lorg/parboiled/common/Factory;)V";
             }
-            removeGroupRootInstruction();
         }
 
         if (method.containsCaptures()) {
@@ -75,14 +83,16 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
 
     private void createNewGroupClassInstance() {
         String internalName = group.getGroupClassType().getInternalName();
+        InstructionGraphNode root = group.getRoot();
         insert(new TypeInsnNode(NEW, internalName));
         insert(new InsnNode(DUP));
         insert(new LdcInsnNode(method.name +
-                (group.getRoot().isActionRoot() ? "_Action" + ++actionNr : "_Capture" + ++captureNr))
+                (root.isActionRoot() ? "_Action" + ++actionNr :
+                        root.isCaptureRoot() ? "_Capture" + ++captureNr : "_VarInit" + ++varInitNr))
         );
         insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
 
-        if (method.hasSkipActionsInPredicatesAnnotation()) {
+        if ((root.isActionRoot() || root.isCaptureRoot()) && method.hasSkipActionsInPredicatesAnnotation()) {
             insert(new InsnNode(DUP));
             insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
         }

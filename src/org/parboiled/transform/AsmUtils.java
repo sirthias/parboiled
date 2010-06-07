@@ -34,6 +34,7 @@ import org.parboiled.BaseParser;
 import org.parboiled.Capture;
 import org.parboiled.ContextAware;
 import org.parboiled.Rule;
+import org.parboiled.support.Var;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -280,6 +281,18 @@ class AsmUtils {
 
     public static boolean isCaptureRoot(@NotNull String methodOwner, @NotNull String methodName) {
         return "CAPTURE".equals(methodName) && isAssignableTo(methodOwner, BaseParser.class);
+    }
+
+    public static boolean isVarRoot(@NotNull AbstractInsnNode insn) {
+        if (insn.getOpcode() != Opcodes.INVOKESPECIAL) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        return isVarRoot(mi.owner, mi.name, mi.desc);
+    }
+
+    public static boolean isVarRoot(@NotNull String methodOwner, @NotNull String methodName,
+                                    @NotNull String methodDesc) {
+        return "<init>".equals(methodName) && "(Ljava/lang/Object;)V".equals(methodDesc) &&
+                isAssignableTo(methodOwner, Var.class);
     }
 
     public static boolean isContextSwitch(@NotNull AbstractInsnNode insn) {

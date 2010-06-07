@@ -36,7 +36,8 @@ public class ActionClassGeneratorTest extends TransformationTest {
             new ImplicitActionsConverter(),
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
-            new ActionClassGenerator(true)
+            new ActionClassGenerator(true),
+            new VarInitClassGenerator(true)
     );
 
 
@@ -49,9 +50,33 @@ public class ActionClassGeneratorTest extends TransformationTest {
     public void testActionClassGeneration() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 
-        assertEquals(method.getGroups().size(), 2);
+        assertEquals(method.getGroups().size(), 3);
 
         InstructionGroup group = method.getGroups().get(0);
+        assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
+                "// class version 49.0 (49)\n" +
+                "// access flags 17\n" +
+                "public final class org/parboiled/transform/VarInit$ojjPlntz5r61YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
+                "\n" +
+                "\n" +
+                "  // access flags 1\n" +
+                "  public <init>(Ljava/lang/String;)V\n" +
+                "    ALOAD 0\n" +
+                "    ALOAD 1\n" +
+                "    INVOKESPECIAL org/parboiled/transform/BaseVarInit.<init> (Ljava/lang/String;)V\n" +
+                "    RETURN\n" +
+                "    MAXSTACK = 2\n" +
+                "    MAXLOCALS = 2\n" +
+                "\n" +
+                "  // access flags 1\n" +
+                "  public create()Ljava/lang/Object;\n" +
+                "    LDC \"text\"\n" +
+                "    ARETURN\n" +
+                "    MAXSTACK = 1\n" +
+                "    MAXLOCALS = 1\n" +
+                "}\n");
+
+        group = method.getGroups().get(1);
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
@@ -96,7 +121,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    MAXLOCALS = 2\n" +
                 "}\n");
 
-        group = method.getGroups().get(1);
+        group = method.getGroups().get(2);
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +

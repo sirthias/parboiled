@@ -46,10 +46,10 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 2884448266L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 1331400893L);
         //renderToGraphViz(dotSource);
 
-        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 1254939476L);
+        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 81866456L);
         //renderToGraphViz(dotSource);
     }
 
@@ -76,22 +76,24 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         // legend
         sb.append(" Action [penwidth=2.0,style=filled,fillcolor=skyblue];\n");
         sb.append(" Capture [penwidth=2.0,style=filled,fillcolor=pink];\n");
+        sb.append(" VarInit [penwidth=2.0,style=filled,fillcolor=grey];\n");
         sb.append(" ContextSwitch [penwidth=2.0,color=green];\n");
         sb.append(" XLoad [penwidth=2.0,color=orange];\n");
         sb.append(" XStore [penwidth=2.0,color=red];\n");
         sb.append(" CallOnContextAware [penwidth=2.0];\n");
-        sb.append(" Action -> Capture -> ContextSwitch -> XLoad -> XStore -> CallOnContextAware;\n");
+        sb.append(" Action -> Capture -> VarInit -> ContextSwitch -> XLoad -> XStore -> CallOnContextAware;\n");
 
         for (int i = 0; i < method.getGraphNodes().size(); i++) {
             InstructionGraphNode node = method.getGraphNodes().get(i);
             // generate node
-            boolean isSpecial = node.isActionRoot() || node.isCaptureRoot() || node.isContextSwitch() ||
-                    node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
+            boolean isSpecial = node.isActionRoot() || node.isCaptureRoot() || node.isVarInitRoot() ||
+                    node.isContextSwitch() || node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
             sb.append(" ").append(i)
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
                     .append(node.isActionRoot() ? "color=skyblue," : "")
                     .append(node.isCaptureRoot() ? "color=pink," : "")
+                    .append(node.isVarInitRoot() ? "color=grey," : "")
                     .append(node.isContextSwitch() ? "color=green," : "")
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")
@@ -100,6 +102,8 @@ public class InstructionGroupCreatorTest extends TransformationTest {
                                     .indexOf(node.getGroup()) + 1) + "\"," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isCaptureRoot() ?
                             "style=filled,fillcolor=pink," : "")
+                    .append(node.getGroup() != null && node.getGroup().getRoot().isVarInitRoot() ?
+                            "style=filled,fillcolor=grey," : "")
                     .append("fontcolor=black];\n");
 
             // generate edges
@@ -114,8 +118,8 @@ public class InstructionGroupCreatorTest extends TransformationTest {
 
     @SuppressWarnings({"UnusedDeclaration"})
     private static void renderToGraphViz(String dotSource) throws Exception {
-        String command = "C:\\Program Files\\Graphviz2.26\\bin\\dot.exe -Tpng";
-        String output = "C:\\3\\graph.png";
+        String command = "/opt/local/bin/dot -Tpng";
+        String output = "/Users/mathias/Downloads/graph.png";
 
         final Process process = Runtime.getRuntime().exec(command);
         FileUtils.copyAll(new ByteArrayInputStream(dotSource.getBytes("UTF-8")), process.getOutputStream());

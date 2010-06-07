@@ -45,16 +45,16 @@ public class InstructionGroupPreparerTest extends TransformationTest {
     public void testRuleWithComplexActionSetup() throws Exception {
         RuleMethod method = processMethod("RuleWithComplexActionSetup", processors);
 
-        assertEquals(method.getGroups().size(), 2);
+        assertEquals(method.getGroups().size(), 3);
 
-        InstructionGroup group = method.getGroups().get(0);
+        InstructionGroup group = method.getGroups().get(1);
         assertEquals(group.getName(), "Action$HCsAlhftW7cYn1dT");
         assertEquals(group.getFields().size(), 3);
         assertEquals(group.getFields().get(0).desc, "I");
         assertEquals(group.getFields().get(1).desc, "I");
         assertEquals(group.getFields().get(2).desc, "I");
 
-        group = method.getGroups().get(1);
+        group = method.getGroups().get(2);
         assertEquals(group.getName(), "Action$ARäVEaFtWytNAZGB");
         assertEquals(group.getFields().size(), 5);
         assertEquals(group.getFields().get(0).desc, "Lorg/parboiled/transform/TestParser$$parboiled;");

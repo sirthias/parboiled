@@ -41,14 +41,14 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
     private RuleMethod method;
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.containsExplicitActions() || method.containsCaptures();
+        return method.containsExplicitActions() || method.containsCaptures() || method.containsVars();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         this.method = method;
 
         // create groups
-        createActionAndCaptureGroups();
+        createGroups();
 
         // prepare groups for later stages
         for (InstructionGroup group : method.getGroups()) {
@@ -65,9 +65,9 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         }
     }
 
-    private void createActionAndCaptureGroups() {
+    private void createGroups() {
         for (InstructionGraphNode node : method.getGraphNodes()) {
-            if (node.isActionRoot() || node.isCaptureRoot()) {
+            if (node.isActionRoot() || node.isCaptureRoot() || node.isVarInitRoot()) {
                 InstructionGroup group = new InstructionGroup(node);
                 markGroup(node, group);
                 method.getGroups().add(group);
@@ -76,15 +76,22 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
     }
 
     private void markGroup(InstructionGraphNode node, InstructionGroup group) {
-        Checks.ensure(node == group.getRoot() || (!node.isCaptureRoot() && !node.isActionRoot()),
-                "Method '%s' contains illegal nesting of ACTION(...) and/or CAPTURE(...) constructs", method.name);
+        Checks.ensure(
+                node == group.getRoot() || (!node.isCaptureRoot() && !node.isActionRoot() && !node.isVarInitRoot()),
+                "Method '%s' contains illegal nesting of ACTION, CAPTURE and/or Var initializer constructs",
+                method.name);
 
         if (node.getGroup() != null) return; // already visited
 
         node.setGroup(group);
         if (!node.isXLoad()) {
-            for (InstructionGraphNode pred : node.getPredecessors()) {
-                markGroup(pred, group);
+            if (node.isVarInitRoot()) {
+                Preconditions.checkState(node.getPredecessors().size() == 2);
+                markGroup(node.getPredecessors().get(1), group); // only color the second predecessor branch
+            } else {
+                for (InstructionGraphNode pred : node.getPredecessors()) {
+                    markGroup(pred, group);
+                }
             }
         }
     }
@@ -124,8 +131,8 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         Preconditions.checkState(nodes.get(sizeMinus1) == group.getRoot());
         for (int i = 0; i < sizeMinus1; i++) {
             InstructionGraphNode node = nodes.get(i);
-            Checks.ensure(!node.isXStore(), "An ACTION or CAPTURE in rule method '%s' contains illegal writes to a " +
-                    "local variable or parameter", method.name);
+            Checks.ensure(!node.isXStore(), "An ACTION, CAPTURE or Var initializer in rule method '%s' " +
+                    "contains illegal writes to a local variable or parameter", method.name);
             verifyAccess(node);
         }
 

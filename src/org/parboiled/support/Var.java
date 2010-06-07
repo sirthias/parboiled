@@ -16,6 +16,8 @@
 
 package org.parboiled.support;
 
+import org.jetbrains.annotations.NotNull;
+import org.parboiled.common.Factory;
 import org.parboiled.common.Reference;
 
 import java.util.LinkedList;
@@ -35,7 +37,7 @@ import java.util.LinkedList;
  */
 public class Var<T> extends Reference<T> {
 
-    private T initialValue;
+    private Factory<T> initialValueFactory;
     private LinkedList<T> stack;
     private int level;
     private String name;
@@ -44,7 +46,7 @@ public class Var<T> extends Reference<T> {
      * Initializes a new Var with a null initial value.
      */
     public Var() {
-        this(null);
+        this((T) null);
     }
 
     /**
@@ -52,9 +54,23 @@ public class Var<T> extends Reference<T> {
      *
      * @param value the value
      */
-    public Var(T value) {
+    public Var(final T value) {
         super(value);
-        initialValue = value;
+        initialValueFactory = new Factory<T>() {
+            public T create() {
+                return value;
+            }
+        };
+    }
+
+    /**
+     * Initializes a new Var. The given factory will be used to create the initial value for each "execution frame"
+     * of the enclosing rule.
+     *
+     * @param initialValueFactory the factory used to create the initial value for a rule execution frame
+     */
+    public Var(@NotNull Factory<T> initialValueFactory) {
+        this.initialValueFactory = initialValueFactory;
     }
 
     /**
@@ -96,7 +112,7 @@ public class Var<T> extends Reference<T> {
             if (stack == null) stack = new LinkedList<T>();
             stack.add(getAndClear());
         }
-        return set(initialValue);
+        return set(initialValueFactory.create());
     }
 
     /**

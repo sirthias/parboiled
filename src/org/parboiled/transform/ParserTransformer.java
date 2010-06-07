@@ -78,8 +78,9 @@ public class ParserTransformer {
                 new ImplicitActionsConverter(),
                 new InstructionGroupCreator(),
                 new InstructionGroupPreparer(),
-                new CaptureClassGenerator(false),
                 new ActionClassGenerator(false),
+                new CaptureClassGenerator(false),
+                new VarInitClassGenerator(false),
 
                 new RuleMethodRewriter(),
                 new SuperCallRewriter(),

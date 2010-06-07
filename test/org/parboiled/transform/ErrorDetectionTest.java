@@ -54,7 +54,7 @@ public class ErrorDetectionTest extends TransformationTest {
             fail();
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Method 'RuleWithCaptureInAction' contains illegal nesting of " +
-                    "ACTION(...) and/or CAPTURE(...) constructs");
+                    "ACTION, CAPTURE and/or Var initializer constructs");
         }
     }
 

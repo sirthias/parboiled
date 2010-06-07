@@ -31,7 +31,8 @@ import org.objectweb.asm.tree.analysis.Analyzer;
 class InstructionGraphCreator implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.containsImplicitActions() || method.containsExplicitActions() || method.containsCaptures();
+        return method.containsImplicitActions() || method.containsExplicitActions() ||
+                method.containsCaptures() || method.containsVars();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
