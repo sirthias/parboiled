@@ -16,6 +16,7 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -25,11 +26,13 @@ import org.objectweb.asm.tree.*;
  */
 class SuppressNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.hasSuppressNodeAnnotation() || method.hasSuppressSubnodesAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
+        
         InsnList instructions = method.instructions;
 
         AbstractInsnNode ret = instructions.getLast();

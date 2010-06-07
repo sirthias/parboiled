@@ -40,7 +40,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
     private RuleMethod method;
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsExplicitActions() || method.containsCaptures();
     }
 

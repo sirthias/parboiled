@@ -43,7 +43,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
 
     private RuleMethod method;
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsExplicitActions() || method.containsCaptures();
     }
 

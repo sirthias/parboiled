@@ -22,7 +22,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
@@ -41,20 +41,20 @@ public class ClassNodeInializerTest extends TransformationTest {
 
         assertEqualsMultiline(join(classNode.getConstructors(), null), "<init>");
 
-        assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
+        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
                 return method.containsExplicitActions();
             }
         }), "RuleWithDirectExplicitAction,RuleWithIndirectExplicitAction,RuleWithIndirectExplicitDownAction," +
                 "RuleWithIndirectExplicit2ParamAction,RuleWith2Returns,RuleWithCaptureInAction");
 
-        assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
+        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
                 return method.containsCaptures();
             }
         }), "RuleWithCapture1,RuleWithCapture2,RuleWithCaptureInAction");
 
-        assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
+        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
                 return method.containsImplicitActions();
             }
@@ -63,7 +63,7 @@ public class ClassNodeInializerTest extends TransformationTest {
                 "RuleWithCachedAnd2Params,RuleWithCaptureParameter,RuleWithIllegalImplicitAction," +
                 "RuleWithActionAccessingPrivateField,RuleWithActionAccessingPrivateMethod");
 
-        assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
+        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
                 return method.hasCachedAnnotation();
             }
@@ -74,7 +74,7 @@ public class ClassNodeInializerTest extends TransformationTest {
                 "RuleWithActionAccessingPrivateMethod,Ch,CharIgnoreCase,CharRange,CharSet,String,StringIgnoreCase," +
                 "FirstOf,OneOrMore,Optional,Sequence,Test,TestNot,ZeroOrMore,Eoi,Any,Empty");
 
-        assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
+        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
                 return method.hasDontLabelAnnotation();
             }
@@ -84,14 +84,14 @@ public class ClassNodeInializerTest extends TransformationTest {
                 "RuleWithCaptureInAction,RuleWithActionAccessingPrivateField,RuleWithActionAccessingPrivateMethod," +
                 "Eoi,Any,Empty");
 
-        assertEqualsMultiline(join(classNode.getRuleMethods(), new Predicate<RuleMethod>() {
+        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
                 return method.hasSuppressNodeAnnotation();
             }
         }), "RuleWithLeaf");
     }
 
-    private <T extends MethodNode> String join(List<T> methods, Predicate<T> predicate) {
+    private <T extends MethodNode> String join(Collection<T> methods, Predicate<T> predicate) {
         StringBuilder sb = new StringBuilder();
         for (T method : methods) {
             if (predicate == null || predicate.apply(method)) {

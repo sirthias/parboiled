@@ -54,13 +54,19 @@ public class ParserTransformer {
     @SuppressWarnings({"unchecked"})
     private static void runMethodTransformers(ParserClassNode classNode) throws Exception {
         List<RuleMethodProcessor> methodProcessors = createRuleMethodProcessors();
-        for (RuleMethod ruleMethod : classNode.getRuleMethods()) {
+
+        // iterate through all rule methods
+        // since the ruleMethods map on the classnode is a treemap we get the methods sorted by name which puts
+        // all super methods first (since they are prefixed with one or more '$')
+        for (RuleMethod ruleMethod : classNode.getRuleMethods().values()) {
             for (RuleMethodProcessor methodProcessor : methodProcessors) {
-                if (methodProcessor.appliesTo(ruleMethod)) {
+                if (methodProcessor.appliesTo(classNode, ruleMethod)) {
                     methodProcessor.process(classNode, ruleMethod);
                 }
             }
-            classNode.methods.add(ruleMethod);
+            if (!ruleMethod.isGenerationSkipped()) {
+                classNode.methods.add(ruleMethod);
+            }
         }
     }
 
@@ -74,9 +80,11 @@ public class ParserTransformer {
                 new InstructionGroupPreparer(),
                 new CaptureClassGenerator(false),
                 new ActionClassGenerator(false),
+
                 new RuleMethodRewriter(),
-                new VarFramingGenerator(),
                 new SuperCallRewriter(),
+                new BodyWithSuperCallReplacer(),
+                new VarFramingGenerator(),
                 new LabellingGenerator(),
                 new SuppressNodeGenerator(),
                 new SkipNodeGenerator(),

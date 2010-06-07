@@ -46,7 +46,7 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
     private int captureNr;
     private Map<InstructionGraphNode, Integer> captureVarIndices;
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsExplicitActions() || method.containsCaptures();
     }
 
@@ -69,6 +69,8 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
         if (method.containsCaptures()) {
             finalizeCaptureSetup();
         }
+
+        method.setBodyRewritten();
     }
 
     private void createNewGroupClassInstance() {

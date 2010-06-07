@@ -31,7 +31,7 @@ abstract class TransformationTest {
     public RuleMethod processMethod(String methodName, List<RuleMethodProcessor> methodProcessors) throws Exception {
         RuleMethod method = method(methodName);
         for (RuleMethodProcessor processor : methodProcessors) {
-            if (processor.appliesTo(method)) {
+            if (processor.appliesTo(classNode, method)) {
                 processor.process(classNode, method);
             }
         }
@@ -39,7 +39,7 @@ abstract class TransformationTest {
     }
 
     public RuleMethod method(String name) {
-        for (RuleMethod method : classNode.getRuleMethods()) {
+        for (RuleMethod method : classNode.getRuleMethods().values()) {
             if (name.equals(method.name)) return method;
         }
         throw new IllegalArgumentException("Method '" + name + "' not found");

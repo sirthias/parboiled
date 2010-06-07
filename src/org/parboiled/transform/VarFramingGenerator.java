@@ -26,7 +26,7 @@ import org.objectweb.asm.tree.*;
  */
 class VarFramingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.getLocalVarVariables() != null;
     }
 
@@ -50,6 +50,8 @@ class VarFramingGenerator implements RuleMethodProcessor, Opcodes, Types {
         instructions.insertBefore(ret, new MethodInsnNode(INVOKESPECIAL, VAR_FRAMING_MATCHER.getInternalName(),
                 "<init>", '(' + RULE_DESC + '[' + VAR_DESC + ")V"));
         // stack: <VarFramingMatcher>
+
+        method.setBodyRewritten();
     }
 
     private void createVarFieldArray(RuleMethod method, InsnList instructions, AbstractInsnNode ret) {

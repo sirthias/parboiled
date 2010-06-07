@@ -22,6 +22,8 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -32,6 +34,8 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
+import org.parboiled.BaseParser;
+import org.parboiled.common.StringUtils;
 import org.parboiled.support.Var;
 
 import java.util.ArrayList;
@@ -45,10 +49,12 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private final List<InstructionGroup> groups = new ArrayList<InstructionGroup>();
     private final List<LabelNode> usedLabels = new ArrayList<LabelNode>();
 
+    private final Class<?> ownerClass;
     private int parameterCount;
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
     private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
+    private boolean containsPotentialSuperCalls;
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasCachedAnnotation;
     private boolean hasDontLabelAnnotation;
@@ -60,17 +66,21 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
     private List<LocalVariableNode> localVarVariables;
+    private boolean bodyRewritten;
+    private boolean skipGeneration;
 
-    public RuleMethod(int access, String name, String desc, String signature, String[] exceptions,
+    public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature, String[] exceptions,
                       boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno,
                       boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
+        this.ownerClass = ownerClass;
 
         parameterCount = Type.getArgumentTypes(desc).length;
         hasCachedAnnotation = parameterCount == 0;
         hasDontLabelAnnotation = hasDontLabelAnno;
         hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnno;
         hasSkipActionsInPredicatesAnnotation = hasSkipActionsInPredicates;
+        skipGeneration = isSuperMethod();
     }
 
     public List<InstructionGroup> getGroups() {
@@ -79,6 +89,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public List<LabelNode> getUsedLabels() {
         return usedLabels;
+    }
+
+    public Class<?> getOwnerClass() {
+        return ownerClass;
     }
 
     public int getParameterCount() {
@@ -103,6 +117,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public boolean containsCaptures() {
         return containsCaptures;
+    }
+
+    public boolean containsPotentialSuperCalls() {
+        return containsPotentialSuperCalls;
     }
 
     public boolean hasCachedAnnotation() {
@@ -147,6 +165,19 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public List<LocalVariableNode> getLocalVarVariables() {
         return localVarVariables;
+    }
+
+    public boolean isBodyRewritten() {
+        return bodyRewritten;
+    }
+
+    public void setBodyRewritten() {
+        this.bodyRewritten = true;
+    }
+
+    public boolean isSuperMethod() {
+        Preconditions.checkState(StringUtils.isNotEmpty(name));
+        return name.charAt(0) == '$';
     }
 
     public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
@@ -217,6 +248,9 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         if (opcode == INVOKESTATIC && isCaptureRoot(owner, name)) {
             containsCaptures = true;
         }
+        if (opcode == INVOKESPECIAL && !"<init>".equals(name) && isAssignableTo(owner, BaseParser.class)) {
+            containsPotentialSuperCalls = true;
+        }
         super.visitMethodInsn(opcode, owner, name, desc);
     }
 
@@ -251,4 +285,24 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return name;
     }
 
+    public void moveFlagsTo(@NotNull RuleMethod overridingMethod) {
+        overridingMethod.hasCachedAnnotation |= hasCachedAnnotation;
+        overridingMethod.hasDontLabelAnnotation |= hasDontLabelAnnotation;
+        overridingMethod.hasSuppressNodeAnnotation |= hasSuppressNodeAnnotation;
+        overridingMethod.hasSuppressSubnodesAnnotation |= hasSuppressSubnodesAnnotation;
+        overridingMethod.hasSkipNodeAnnotation |= hasSkipNodeAnnotation;
+        hasCachedAnnotation = false;
+        hasDontLabelAnnotation = true;
+        hasSuppressNodeAnnotation = false;
+        hasSuppressSubnodesAnnotation = false;
+        hasSkipNodeAnnotation = false;
+    }
+
+    public boolean isGenerationSkipped() {
+        return skipGeneration;
+    }
+
+    public void dontSkipGeneration() {
+        skipGeneration = false;
+    }
 }

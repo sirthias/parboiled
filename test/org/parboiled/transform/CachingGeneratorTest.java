@@ -28,7 +28,7 @@ import static org.parboiled.transform.AsmTestUtils.assertTraceDumpEquality;
 public class CachingGeneratorTest extends TransformationTest {
 
     private final List<RuleMethodProcessor> processors = ImmutableList.<RuleMethodProcessor>of(
-            new SuperCallRewriter(),
+            new BodyWithSuperCallReplacer(),
             new LabellingGenerator(),
             new SuppressNodeGenerator(),
             new CachingGenerator()

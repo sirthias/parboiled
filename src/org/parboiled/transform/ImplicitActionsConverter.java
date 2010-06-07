@@ -39,7 +39,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
     private final Set<InstructionGraphNode> covered = new HashSet<InstructionGraphNode>();
     private RuleMethod method;
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsImplicitActions();
     }
 

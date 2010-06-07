@@ -30,7 +30,7 @@ import org.objectweb.asm.tree.analysis.Analyzer;
  */
 class InstructionGraphCreator implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsImplicitActions() || method.containsExplicitActions() || method.containsCaptures();
     }
 

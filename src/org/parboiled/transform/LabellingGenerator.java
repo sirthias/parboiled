@@ -27,13 +27,15 @@ import org.parboiled.common.StringUtils;
  */
 class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return !method.hasDontLabelAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
+
         InsnList instructions = method.instructions;
-        
+
         AbstractInsnNode ret = instructions.getLast();
         while (ret.getOpcode() != ARETURN) {
             ret = ret.getPrevious();

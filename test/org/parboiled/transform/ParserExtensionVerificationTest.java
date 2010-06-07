@@ -32,7 +32,7 @@ public class ParserExtensionVerificationTest {
         verifyIntegrity(classNode.name, classNode.getClassCode());
 
         Set<String> validGroups = new HashSet<String>();
-        for (RuleMethod method : classNode.getRuleMethods()) {
+        for (RuleMethod method : classNode.getRuleMethods().values()) {
             for (InstructionGroup group : method.getGroups()) {
                 String internalName = group.getGroupClassType().getInternalName();
                 byte[] classCode = group.getGroupClassCode();

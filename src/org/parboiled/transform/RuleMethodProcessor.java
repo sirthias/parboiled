@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 interface RuleMethodProcessor {
 
-    boolean appliesTo(@NotNull RuleMethod method);
+    boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method);
 
     void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception;
 

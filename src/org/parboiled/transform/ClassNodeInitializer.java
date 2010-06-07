@@ -46,16 +46,29 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
     public void process(@NotNull ParserClassNode classNode) throws IOException {
         this.classNode = classNode;
-        hasExplicitActionOnlyAnnotation = false;
-        hasDontLabelAnnotation = false;
-        hasSkipActionsInPredicates = false;
 
         // walk up the parser parent class chain
         ownerClass = classNode.getParentClass();
         while (!Object.class.equals(ownerClass)) {
+            hasExplicitActionOnlyAnnotation = false;
+            hasDontLabelAnnotation = false;
+            hasSkipActionsInPredicates = false;
+
             ClassReader classReader = createClassReader(ownerClass);
             classReader.accept(this, ClassReader.SKIP_FRAMES);
             ownerClass = ownerClass.getSuperclass();
+        }
+
+        // finally move all flags from the super methods to their overriding methods
+        for (RuleMethod method : classNode.getRuleMethods().values()) {
+            if (method.isSuperMethod()) {
+                RuleMethod overridingMethod = classNode.getRuleMethods().get(method.name.substring(1) + method.desc);
+                method.moveFlagsTo(overridingMethod);
+            } else {
+                // as soon as we see the first non-super method we can break since the methods are sorted so that
+                // the super methods precede all others
+                break;
+            }
         }
     }
 
@@ -113,26 +126,28 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
             return constructor; // return the newly created method in order to have it "filled" with the method code
         }
 
-        // only add methods returning Rules
-        if (!Type.getReturnType(desc).equals(RULE)) {
+        // only add non-native, non-abstract methods returning Rules
+        if (!Type.getReturnType(desc).equals(RULE) || (access & (ACC_NATIVE | ACC_ABSTRACT)) > 0) {
             return null;
         }
 
-        // check, whether we do not already have a method with that name and descriptor
-        // if we do we only keep the one we already have since that is the one furthest down in the overriding chain
-        for (RuleMethod method : classNode.getRuleMethods()) {
-            if (method.name.equals(name) && method.desc.equals(desc)) return null;
-        }
-
-        // ok, its a new Rule method, collect it
         Checks.ensure((access & ACC_PRIVATE) == 0, "Rule method '%s'must not be private.\n" +
-                        "Mark the method protected or package-private if you want to prevent public access!", name);
+                "Mark the method protected or package-private if you want to prevent public access!", name);
         Checks.ensure((access & ACC_FINAL) == 0, "Rule method '%s' must not be final.", name);
 
-        RuleMethod method = new RuleMethod(access, name, desc, signature, exceptions, hasExplicitActionOnlyAnnotation,
-                hasDontLabelAnnotation, hasSkipActionsInPredicates);
-        classNode.getRuleMethods().add(method);
-        return method; // return the newly created method in order to have it "filled" with the supers code
+        // check, whether we do not already have a method with that name and descriptor
+        // if we do we add the method with a "$" prefix in order to have it processed and be able to reference it
+        // later if we have to
+        String methodKey = name.concat(desc);
+        while (classNode.getRuleMethods().containsKey(methodKey)) {
+            name = '$' + name;
+            methodKey = name.concat(desc);
+        }
+
+        RuleMethod method = new RuleMethod(ownerClass, access, name, desc, signature, exceptions,
+                hasExplicitActionOnlyAnnotation, hasDontLabelAnnotation, hasSkipActionsInPredicates);
+        classNode.getRuleMethods().put(methodKey, method);
+        return method; // return the newly created method in order to have it "filled" with the actual method code
     }
 
     @Override

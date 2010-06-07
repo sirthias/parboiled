@@ -185,7 +185,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
      *
      * @param target the Matcher to delegate to
      */
-    public void arm(Matcher<V> target) {
+    public void arm(@NotNull Matcher<V> target) {
         this.target = target;
     }
 

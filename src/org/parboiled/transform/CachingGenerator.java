@@ -22,6 +22,7 @@
 
 package org.parboiled.transform;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -44,11 +45,13 @@ class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
     private AbstractInsnNode current;
     private String cacheFieldName;
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.hasCachedAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+        Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
+
         this.classNode = classNode;
         this.method = method;
         this.instructions = method.instructions;

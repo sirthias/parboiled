@@ -27,15 +27,14 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 class ParserClassNode extends ClassNode {
 
     private final Class<?> parentClass;
     private final Type parentType;
     private final List<MethodNode> constructors = new ArrayList<MethodNode>();
-    private final List<RuleMethod> ruleMethods = new ArrayList<RuleMethod>();
+    private final Map<String, RuleMethod> ruleMethods = new TreeMap<String, RuleMethod>();
     private byte[] classCode;
     private Class<?> extendedClass;
 
@@ -56,7 +55,7 @@ class ParserClassNode extends ClassNode {
         return constructors;
     }
 
-    public List<RuleMethod> getRuleMethods() {
+    public Map<String, RuleMethod> getRuleMethods() {
         return ruleMethods;
     }
 

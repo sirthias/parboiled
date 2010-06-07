@@ -51,7 +51,7 @@ public class AsmTestUtils {
         return stringWriter.toString();
     }
 
-    public static String getMethodInstructionList(MethodNode methodNode) {
+    public static String getMethodInstructionList(@NotNull MethodNode methodNode) {
         TraceMethodVisitor traceMethodVisitor = new NonMaxTraceVisitor();
         methodNode.accept(traceMethodVisitor);
         StringWriter stringWriter = new StringWriter();

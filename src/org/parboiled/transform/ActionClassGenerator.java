@@ -27,7 +27,7 @@ class ActionClassGenerator extends GroupClassGenerator {
         super(forceCodeBuilding);
     }
 
-    public boolean appliesTo(@NotNull RuleMethod method) {
+    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsExplicitActions();
     }
 
