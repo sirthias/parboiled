@@ -1,3 +1,19 @@
+Version 0.9.7.1 (2010-06-08)
+----------------------------
+- BREAKING CHANGE: Rule methods w/ parameters are now also automatically labelled, @Label now requires parameter!
+- Fixed action variable initializers not working as expected in certain scenarios
+- Fixed several bugs related to overriding of Rule methods in multi-level parser class hierarchies
+- Fixed "Constructor with descriptor '()V' not found" exception in certain action expressions
+- Fixed displaying of empty "expected" part in parse error messages caused by TestNot(...) failures
+- Fixed small problems with building against Java 6
+- Added missing field and method private access verification for non-action instructions
+- Added Context.getPrevStartLocation() and Context.getPrevEndLocation() and respective helpers
+- Added convenience overload ErrorUtils.printParseErrors(ParsingResult)
+- Improved error reporting of parse errors caused by TestNot(...) failures
+- Improved parsing performance of Reporting- and RecoveringParseRunner by 10+ % at the expense of one more parsing run on invalid input
+- Improved calculator examples, added new CalculatorParser6 example demonstrating parse-tree-less parsing and action variables
+- Changed java example to exercise parboileds parse-tree-less instead of the parse-tree-based parsing performance
+
 Version 0.9.7.0 (2010-04-28)
 ----------------------------          
 - Fixed exception during parser creation when parser contains action/capture expressions with constructor calls

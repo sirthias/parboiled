@@ -64,6 +64,9 @@ public class ParserTransformer {
                     methodProcessor.process(classNode, ruleMethod);
                 }
             }
+        }
+
+        for (RuleMethod ruleMethod : classNode.getRuleMethods().values()) {
             if (!ruleMethod.isGenerationSkipped()) {
                 classNode.methods.add(ruleMethod);
             }

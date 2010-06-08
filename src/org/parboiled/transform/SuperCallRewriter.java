@@ -54,7 +54,7 @@ class SuperCallRewriter implements RuleMethodProcessor, Opcodes {
         // since the super method is rewritten we do need to generate it
         superMethod.dontSkipGeneration();
 
-        // we have a call to a super method that was rewritten, so we need to change to call to the generated method
+        // we have a call to a super method that was rewritten, so we need to change the call to the generated method
         insn.setOpcode(INVOKEVIRTUAL);
         insn.name = superMethodName;
         insn.owner = classNode.name;
