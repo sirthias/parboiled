@@ -51,13 +51,11 @@ public class ParseTreeUtilsTest {
             return label;
         }
 
-        @NotNull
-        public InputLocation getStartLocation() {
+        public int getStartIndex() {
             throw new UnsupportedOperationException();
         }
 
-        @NotNull
-        public InputLocation getEndLocation() {
+        public int getEndIndex() {
             throw new UnsupportedOperationException();
         }
 

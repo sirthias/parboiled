@@ -47,7 +47,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
 
         // Base Actions take care of their context setting need themselves, so we do not need to analyze fields, etc.
         if (action instanceof BaseAction) {
-            skipInPredicates = ((BaseAction)action).skipInPredicates();
+            skipInPredicates = ((BaseAction) action).skipInPredicates();
             return;
         }
         skipInPredicates = false;
@@ -77,7 +77,9 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     public MatcherContext<V> getSubContext(MatcherContext<V> context) {
         MatcherContext<V> subContext = context.getBasicSubContext();
         subContext.setMatcher(this);
-        return subContext.getCurrentLocation() != null ? subContext : context.getSubContext(this);
+        // if the subcontext contains match data we use the existing subcontext without reinitializing
+        // this way we can access the match data of the previous match from this action
+        return subContext.getCurrentIndex() > 0 ? subContext : context.getSubContext(this);
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
@@ -96,13 +98,13 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
 
             // since we initialize the actions own context only partially in getSubContext(MatcherContext)
             // (in order to be able to still access the previous subcontexts values in action expressions)
-            // we need to make sure to not accidentally advance the current location marker of our parent
-            // with some old location marker from a previous subcontext, so we explicitly set the marker here
-            context.setCurrentLocation(parentContext.getCurrentLocation());
+            // we need to make sure to not accidentally advance the current index of our parent with some old
+            // index from a previous subcontext, so we explicitly set the marker here
+            context.setCurrentIndex(parentContext.getCurrentIndex());
             return true;
         } catch (ActionException e) {
-            context.getParseErrors().add(
-                    new ActionError<V>(context.getCurrentLocation(), e.getMessage(), context.getPath(), e));
+            context.getParseErrors().add(new ActionError<V>(context.getInputBuffer(), context.getCurrentIndex(),
+                    e.getMessage(), context.getPath(), e));
             return false;
         }
     }

@@ -37,8 +37,8 @@ public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidIn
         if (error == null) return "";
 
         String errorMessage = String.format("Invalid input '%s%s'",
-                StringUtils.escape(String.valueOf(error.getErrorLocation().getChar())),
-                error.getErrorCharCount() > 1 ? "..." : ""
+                StringUtils.escape(String.valueOf(error.getInputBuffer().charAt(error.getStartIndex()))),
+                error.getEndIndex() - error.getStartIndex() > 1 ? "..." : ""
         );
         String expectedString = getExpectedString(error);
         return StringUtils.isEmpty(expectedString) ? errorMessage : errorMessage + ", expected " + expectedString;

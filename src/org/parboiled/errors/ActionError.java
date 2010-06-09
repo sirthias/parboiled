@@ -17,7 +17,7 @@
 package org.parboiled.errors;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputLocation;
+import org.parboiled.support.InputBuffer;
 import org.parboiled.support.MatcherPath;
 
 /**
@@ -30,9 +30,9 @@ public class ActionError<V> extends BasicParseError {
     private final MatcherPath<V> errorPath;
     private final ActionException actionException;
 
-    public ActionError(@NotNull InputLocation errorLocation, String errorMessage,
+    public ActionError(@NotNull InputBuffer inputBuffer, int errorIndex, String errorMessage,
                        @NotNull MatcherPath<V> errorPath, @NotNull ActionException actionException) {
-        super(errorLocation, errorMessage);
+        super(inputBuffer, errorIndex, errorMessage);
         this.errorPath = errorPath;
         this.actionException = actionException;
     }

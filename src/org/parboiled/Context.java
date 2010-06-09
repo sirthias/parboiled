@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.InputBuffer;
-import org.parboiled.support.InputLocation;
 import org.parboiled.support.MatcherPath;
 
 import java.util.List;
@@ -63,18 +62,25 @@ public interface Context<V> {
     Matcher<V> getMatcher();
 
     /**
-     * Returns the input location where the matcher of this context started its match.
+     * Returns the index into the underlying input buffer where the matcher of this context started its match.
      *
-     * @return the start location
+     * @return the start index
      */
-    InputLocation getStartLocation();
+    int getStartIndex();
 
     /**
-     * Returns the current location in the input buffer.
+     * Returns the current index in the input buffer.
      *
-     * @return the current location
+     * @return the current index
      */
-    InputLocation getCurrentLocation();
+    int getCurrentIndex();
+
+    /**
+     * Returns the character at the current index..
+     *
+     * @return the current character
+     */
+    char getCurrentChar();
 
     /**
      * Returns the list of parse errors for the entire parsing run.
@@ -176,18 +182,6 @@ public interface Context<V> {
     List<Node<V>> getSubNodes();
 
     /**
-     * Returns the input character at the position with the given offset from the current input location.
-     * Note that this method works directly on the underlying InputBuffer and does not honor any virtual
-     * character removals or insertions (see {@link InputLocation#lookAhead(org.parboiled.support.InputBuffer, int)}
-     * If the offset position is outside of the valid range of input positions the method return
-     * {@link org.parboiled.support.Characters#EOI}.
-     *
-     * @param delta the positional offset
-     * @return the character at the offset position.
-     */
-    char lookAhead(int delta);
-
-    /**
      * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
      *
      * @return true if the current context has a parent which corresponds to a Test/TestNot rule
@@ -214,7 +208,7 @@ public interface Context<V> {
      * evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first position
      * in this Sequence.</p>
      * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
      * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.</p>
      *
@@ -227,39 +221,40 @@ public interface Context<V> {
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
      * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the input text matched by the immediately preceeding subcontext
      */
     String getPrevText();
-    
+
     /**
-     * <p>Returns the start location of the context immediately preceeding the action expression that is currently
+     * <p>Returns the start index of the context immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
      * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.</p>
      *
-     * @return the input text matched by the immediately preceeding subcontext
+     * @return the start index of the context immediately preceeding current action
      */
-    InputLocation getPrevStartLocation();
-    
+    int getPrevStartIndex();
+
     /**
-     * <p>Returns the end location of the context immediately preceeding the action expression that is currently
+     * <p>Returns the end index of the context immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
+     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
      * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.</p>
      *
-     * @return the input text matched by the immediately preceeding subcontext
+     * @return the end index of the context immediately preceeding current action, i.e. the index of the character
+     *         immediately following the last matched character
      */
-    InputLocation getPrevEndLocation();
+    int getPrevEndIndex();
 
 }
 

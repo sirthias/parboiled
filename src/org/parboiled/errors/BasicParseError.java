@@ -16,33 +16,66 @@
 
 package org.parboiled.errors;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputLocation;
+import org.parboiled.support.InputBuffer;
 
 /**
  * A basic {@link ParseError} implementation for a one-char parse error with an optional error message.
  */
 public class BasicParseError implements ParseError {
 
-    private final InputLocation errorLocation;
-    private final String errorMessage;
+    private final InputBuffer inputBuffer;
+    private int startIndex;
+    private int endIndex;
+    private String errorMessage;
 
-    public BasicParseError(@NotNull InputLocation errorLocation, String errorMessage) {
-        this.errorLocation = errorLocation;
+    public BasicParseError(@NotNull InputBuffer inputBuffer, int errorIndex, String errorMessage) {
+        this.inputBuffer = inputBuffer;
+        this.startIndex = errorIndex;
+        this.endIndex = errorIndex + 1;
         this.errorMessage = errorMessage;
     }
 
     @NotNull
-    public InputLocation getErrorLocation() {
-        return errorLocation;
+    public InputBuffer getInputBuffer() {
+        return inputBuffer;
     }
 
-    public int getErrorCharCount() {
-        return 1;
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    /**
+     * Sets the end index of this error. Must be greater than the start index.
+     *
+     * @param startIndex the start index
+     */
+    public void setStartIndex(int startIndex) {
+        Preconditions.checkArgument(startIndex >= 0);
+        this.startIndex = startIndex;
+    }
+
+    public int getEndIndex() {
+        return endIndex;
+    }
+
+    /**
+     * Sets the end index of this error. Must be greater than the start index.
+     *
+     * @param endIndex the end index
+     */
+    public void setEndIndex(int endIndex) {
+        Preconditions.checkArgument(endIndex > getStartIndex());
+        this.endIndex = endIndex;
     }
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
 }

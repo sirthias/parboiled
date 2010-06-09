@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,51 +19,42 @@ package org.parboiled.support;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Simple immutable wrapper around a char[] buffer providing basic access methods.
+ * Abstraction of a simple char[] buffer holding the input text to be parsed.
  */
-public class InputBuffer {
-
-    private final char[] buffer;
+public interface InputBuffer {
 
     /**
-     * The input text to create the InputBuffer from.
+     * Returns the number of characters in the buffer.
      *
-     * @param inputText the text
+     * @return the number of characters
      */
-    public InputBuffer(@NotNull String inputText) {
-        this.buffer = inputText.toCharArray();
-    }
+    int getLength();
 
     /**
-     * The input buffer to wrap.
-     * CAUTION: For performance reasons the given char array is not defensively copied.
-     *
-     * @param buffer the chars
-     */
-    public InputBuffer(@NotNull char[] buffer) {
-        this.buffer = buffer;
-    }
-
-    /**
-     * Returns the underlying buffer.
-     * CAUTION: For performance reasons the returned char array is not a defensive copy but the actual input buffer
-     * instance.
-     *
-     * @return the characters forming the input
-     */
-    public char[] getBuffer() {
-        return buffer;
-    }
-
-    /**
-     * Returns the character at the given index. If the index is invalid the method returns {@link Characters#EOI}.
+     * Returns the character at the given index. If the index is invalid the method returns {@link org.parboiled.support.Characters#EOI}.
      *
      * @param index the index
      * @return the character at the given index or Chars.EOI.
      */
-    public char charAt(int index) {
-        return index >= 0 && index < buffer.length ? buffer[index] : Characters.EOI;
-    }
+    char charAt(int index);
+
+    /**
+     * Returns the line and column number of the character with the given index encapsulated in a {@link org.parboiled.support.InputBuffer.Position}
+     * object. The very first character has the line number 1 and the column number 1.
+     *
+     * @param index the index of the character to get the line number of
+     * @return the line number
+     */
+    Position getPosition(int index);
+
+    /**
+     * Constructs a new {@link String} containing all characters with the given line number except for the trailing
+     * newline.
+     *
+     * @param lineNumber the line number to get
+     * @return the string
+     */
+    String extractLine(int lineNumber);
 
     /**
      * Constructs a new {@link String} from all character between the given indices.
@@ -74,12 +65,42 @@ public class InputBuffer {
      * @return a new String (non-interned)
      */
     @NotNull
-    public String extract(int start, int end) {
-        if (start < 0) start = 0;
-        if (end >= buffer.length) end = buffer.length;
-        if (end <= start) return "";
-        return new String(buffer, start, end - start);
+    String extract(int start, int end);
+
+    /**
+     * Simple container class for a line/column position in the input text.
+     */
+    public static class Position {
+        public final int line;
+        public final int column;
+
+        public Position(int line, int column) {
+            this.line = line;
+            this.column = column;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Position)) return false;
+            Position position = (Position) o;
+            return column == position.column && line == position.line;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = line;
+            result = 31 * result + column;
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Position{" +
+                    "line=" + line +
+                    ", column=" + column +
+                    '}';
+        }
     }
-
 }
-

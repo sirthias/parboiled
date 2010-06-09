@@ -121,21 +121,25 @@ public final class ErrorUtils {
     @SuppressWarnings({"unchecked"})
     public static <V> String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer,
                                              @NotNull Formatter<InvalidInputError<V>> formatter) {
-        InputLocation start = error.getErrorLocation();
+        int start = error.getStartIndex();
         String message = error.getErrorMessage() != null ? error.getErrorMessage() :
                 error instanceof InvalidInputError ?
                         formatter.format((InvalidInputError<V>) error) : error.getClass().getSimpleName();
 
+        DefaultInputBuffer.Position pos = inputBuffer.getPosition(start);
         StringBuilder sb = new StringBuilder(message);
-        sb.append(String.format(" (line %s, pos %s):", start.getRow() + 1, start.getColumn() + 1));
+        sb.append(String.format(" (line %s, pos %s):", pos.line, pos.column));
         sb.append('\n');
 
-        String line = StringUtils.getLine(inputBuffer.getBuffer(), start.getRow());
+        String line = inputBuffer.extractLine(pos.line);
         sb.append(line);
         sb.append('\n');
 
-        int charCount = Math.min(error.getErrorCharCount(), StringUtils.length(line) - start.getColumn() + 1);
-        for (int i = 0; i < start.getColumn(); i++) sb.append(' ');
+        int charCount = Math.min(
+                error.getEndIndex() - error.getStartIndex(),
+                StringUtils.length(line) - pos.column + 2
+        );
+        for (int i = 0; i < pos.column - 1; i++) sb.append(' ');
         for (int i = 0; i < charCount; i++) sb.append('^');
         sb.append("\n");
 

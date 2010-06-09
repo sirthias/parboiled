@@ -19,7 +19,6 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.support.InputLocation;
 
 /**
  * A special {@link Matcher} not actually matching any input but rather trying its sub matcher against the current input
@@ -37,12 +36,12 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        InputLocation lastLocation = context.getCurrentLocation();
+        int lastIndex = context.getCurrentIndex();
         if (subMatcher.getSubContext(context).runMatcher()) {
-            context.setCurrentLocation(lastLocation); // reset location, Test matchers never advance
+            context.setCurrentIndex(lastIndex); // reset location, Test matchers never advance
             return true;
         }
-        context.setCurrentLocation(lastLocation); // reset location, Test matchers never advance
+        context.setCurrentIndex(lastIndex); // reset location, Test matchers never advance
         return false;
     }
 

@@ -22,12 +22,12 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class NextCharTest extends AbstractTest {
+public class CurrentCharTest extends AbstractTest {
 
     public static class Parser extends BaseParser<Object> {
 
         public Rule Clause() {
-            return Sequence(nextChar() == 'a', Any(), Eoi());
+            return Sequence(currentChar() == 'a', Any(), Eoi());
         }
 
     }

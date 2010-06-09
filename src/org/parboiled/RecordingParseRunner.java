@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
-import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParsingResult;
 
 /**
@@ -64,14 +63,14 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
     }
 
     /**
-     * Returns the InputLocation of the first {@link InvalidInputError} in the input text.
+     * Returns the index of the first {@link InvalidInputError} in the input text.
      * Must not be called before the {@link #run()} has been called.
      *
-     * @return the InputLocation of the first parse error or null, if the input is error free.
+     * @return the index of the first parse error or -1, if the input is error free.
      */
-    public InputLocation getErrorLocation() {
-        Preconditions.checkState(handler != null, "getErrorLocation() called before run()");
-        return handler.getErrorLocation();
+    public int getErrorIndex() {
+        Preconditions.checkState(handler != null, "getErrorIndex() called before run()");
+        return handler.getErrorIndex();
     }
 
     /**
@@ -82,7 +81,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
      * @param <V> the type of the value field of a parse tree node
      */
     public static class Handler<V> implements MatchHandler<V> {
-        private InputLocation errorLocation;
+        private int errorIndex;
         private final MatchHandler<V> inner;
 
         /**
@@ -102,18 +101,18 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
         }
 
         /**
-         * Returns the InputLocation of the first {@link InvalidInputError} in the input text.
+         * Returns the index of the first {@link InvalidInputError} in the input text.
          *
-         * @return the InputLocation of the first parse error or null, if the input is error free.
+         * @return the index of the first parse error or -1, if the input is error free.
          */
-        public InputLocation getErrorLocation() {
-            return errorLocation;
+        public int getErrorIndex() {
+            return errorIndex;
         }
 
         public boolean matchRoot(MatcherContext<V> rootContext) {
-            errorLocation = rootContext.getCurrentLocation();
+            errorIndex = rootContext.getCurrentIndex();
             if (inner.matchRoot(rootContext)) {
-                errorLocation = null;
+                errorIndex = -1;
                 return true;
             }
             return false;
@@ -121,8 +120,8 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
 
         public boolean match(MatcherContext<V> context) {
             if (inner.match(context)) {
-                if (errorLocation.getIndex() < context.getCurrentLocation().getIndex() && notTestNot(context)) {
-                    errorLocation = context.getCurrentLocation();
+                if (errorIndex < context.getCurrentIndex() && notTestNot(context)) {
+                    errorIndex = context.getCurrentIndex();
                 }
                 return true;
             }

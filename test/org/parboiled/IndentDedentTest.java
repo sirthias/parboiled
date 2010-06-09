@@ -77,7 +77,7 @@ public class IndentDedentTest extends AbstractTest {
         assertEquals(parser.indents, 3);
         assertEquals(parser.dedents, 2);
         assertEquals(parser.currentIndent, 1);
-        assertEquals(result.totalRows, 9);
+        assertEquals(result.inputBuffer.getPosition(result.inputBuffer.getLength() - 1).line, 9);
     }
 
 }

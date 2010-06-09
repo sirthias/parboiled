@@ -18,7 +18,6 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
-import org.parboiled.support.InputLocation;
 import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
@@ -69,18 +68,18 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
         if (runRootContext(recordingHandler)) {
             throw new IllegalStateException(); // we failed before so we must fail again
         }
-        return runRootContext(new Handler<V>(recordingHandler.getErrorLocation()));
+        return runRootContext(new Handler<V>(recordingHandler.getErrorIndex()));
     }
 
     /**
-     * A {@link MatchHandler} implementation that reports the {@link InvalidInputError} at a given {@link InputLocation}.
+     * A {@link MatchHandler} implementation that reports the {@link InvalidInputError} at a given error index.
      * For the actual matching this handler relies on another, inner {@link MatchHandler} instance it delegates to.
      *
      * @param <V> the type of the value field of a parse tree node
      */
     public static class Handler<V> implements MatchHandler<V> {
         private final IsSingleCharMatcherVisitor<V> isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor<V>();
-        private final InputLocation errorLocation;
+        private final int errorIndex;
         private final MatchHandler<V> inner;
         private final List<MatcherPath<V>> failedMatchers = new ArrayList<MatcherPath<V>>();
         private MatcherPath<V> lastMatch;
@@ -88,25 +87,24 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
         private boolean seeking;
 
         /**
-         * Create a new handler that can report the {@link InvalidInputError} at the given {@link InputLocation}.
+         * Create a new handler that can report the {@link InvalidInputError} at the given error index.
          * It relies on a new {@link BasicParseRunner.Handler} instance for the actual matching.
          *
-         * @param errorLocation the InputLocation of the error to be reported
+         * @param errorIndex the InputLocation of the error to be reported
          */
-        public Handler(@NotNull InputLocation errorLocation) {
-            this(errorLocation, new BasicParseRunner.Handler<V>());
+        public Handler(int errorIndex) {
+            this(errorIndex, new BasicParseRunner.Handler<V>());
         }
 
         /**
-         * Create a new handler that can report the {@link InvalidInputError} at the given {@link InputLocation}.
+         * Create a new handler that can report the {@link InvalidInputError} at the given error index.
          * It relies on the given {@link MatchHandler} instance for the actual matching.
          *
-         * @param errorLocation the InputLocation of the error to be reported
+         * @param errorIndex the InputLocation of the error to be reported
          * @param inner         the inner MatchHandler to use
          */
-        public Handler(@NotNull InputLocation errorLocation,
-                       @NotNull MatchHandler<V> inner) {
-            this.errorLocation = errorLocation;
+        public Handler(int errorIndex, @NotNull MatchHandler<V> inner) {
+            this.errorIndex = errorIndex;
             this.inner = inner;
         }
 
@@ -121,17 +119,18 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
 
         public boolean matchRoot(MatcherContext<V> rootContext) {
             failedMatchers.clear();
-            seeking = errorLocation.getIndex() > 0;
+            seeking = errorIndex > 0;
             inner.matchRoot(rootContext);
 
-            parseError = new InvalidInputError<V>(errorLocation, lastMatch, failedMatchers, null);
+            parseError =
+                    new InvalidInputError<V>(rootContext.getInputBuffer(), errorIndex, lastMatch, failedMatchers, null);
             rootContext.getParseErrors().add(parseError);
             return false;
         }
 
         public boolean match(MatcherContext<V> context) {
             boolean matched = inner.match(context);
-            if (context.getCurrentLocation() == errorLocation) {
+            if (context.getCurrentIndex() == errorIndex) {
                 if (matched && seeking) {
                     lastMatch = context.getPath();
                     seeking = false;

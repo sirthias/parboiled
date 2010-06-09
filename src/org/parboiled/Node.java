@@ -18,7 +18,6 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.InputLocation;
 import org.parboiled.trees.TreeNode;
 
 /**
@@ -44,20 +43,19 @@ public interface Node<V> extends TreeNode<Node<V>> {
     String getLabel();
 
     /**
-     * Returns the start location of this nodes text in the underlying input buffer.
+     * Returns the start index of this nodes text in the underlying input buffer.
      *
-     * @return the start location
+     * @return the start index
      */
-    @NotNull
-    InputLocation getStartLocation();
+    int getStartIndex();
 
     /**
-     * Returns the end location of this nodes text in the underlying input buffer.
+     * Returns the end index of this nodes text in the underlying input buffer, i.e. the index of the character
+     * immediately following the last character matched by this node.
      *
-     * @return the end location
+     * @return the end index
      */
-    @NotNull
-    InputLocation getEndLocation();
+    int getEndIndex();
 
     /**
      * Returns the value object attached to this node.

@@ -36,8 +36,8 @@ public class CharSetMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (!characters.contains(context.getCurrentLocation().getChar())) return false;
-        context.advanceInputLocation();
+        if (!characters.contains(context.getCurrentChar())) return false;
+        context.advanceIndex();
         context.createNode();
         return true;
     }

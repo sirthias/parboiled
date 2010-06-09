@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
-import org.parboiled.support.InputLocation;
 
 /**
  * A {@link Matcher} that repeatedly tries its sub matcher against the input. Always succeeds.
@@ -37,14 +36,14 @@ public class ZeroOrMoreMatcher<V> extends AbstractMatcher<V> {
     }
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        InputLocation lastLocation = context.getCurrentLocation();
+        int lastIndex = context.getCurrentIndex();
         while (subMatcher.getSubContext(context).runMatcher()) {
-            InputLocation currentLocation = context.getCurrentLocation();
-            if (currentLocation == lastLocation) {
+            int currentLocation = context.getCurrentIndex();
+            if (currentLocation == lastIndex) {
                 throw new GrammarException("The inner rule of ZeroOrMore rule '%s' must not allow empty matches",
                         context.getPath());
             }
-            lastLocation = currentLocation;
+            lastIndex = currentLocation;
         }
 
         context.createNode();

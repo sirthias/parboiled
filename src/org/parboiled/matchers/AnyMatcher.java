@@ -28,8 +28,8 @@ import org.parboiled.support.Characters;
 public class AnyMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
-        if (context.getCurrentLocation().getChar() == Characters.EOI) return false;
-        context.advanceInputLocation();
+        if (context.getCurrentChar() == Characters.EOI) return false;
+        context.advanceIndex();
         context.createNode();
         return true;
     }

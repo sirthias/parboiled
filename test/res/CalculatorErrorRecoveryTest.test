@@ -1,9 +1,10 @@
 xyz
 ===
-Invalid input 'x', expected InputLine (line 1, pos 1):
+Invalid input 'x...', expected InputLine (line 1, pos 1):
 xyz
-^
+^^^
 ===
+[InputLine]E
 ###
 X1+2
 ===
@@ -11,12 +12,13 @@ Invalid input 'X', expected InputLine (line 1, pos 1):
 X1+2
 ^
 ===
-[InputLine, {3}] '1+2'
-    [Expression, {3}] '1+2'
-        [Term, {1}] '1'
-            [Factor, {1}] '1'
-                [Number, {1}] '1'
-                    [Digits] '1'
+[InputLine, {3}]E '1+2'
+    [Expression, {3}]E '1+2'
+        [Term, {1}]E '1'
+            [Factor, {1}]E '1'
+                [Number, {1}]E '1'
+                    [Digits]E '1'
+                        [Digit] '1'
             [ZeroOrMore]
         [ZeroOrMore, {2}] '+2'
             [FirstOf, {2}] '+2'
@@ -33,25 +35,9 @@ xyz1+2
 ===
 Invalid input 'x...', expected InputLine (line 1, pos 1):
 xyz1+2
-^^^
+^^^^^^
 ===
-[InputLine, {3}] '1+2'
-    [Expression, {3}] '1+2'
-        [Term, {1}] '1'
-            [Factor, {1}] '1'
-                [Number, {1}] '1'
-                    [Digits] '1'
-            [ZeroOrMore]
-        [ZeroOrMore, {2}] '+2'
-            [FirstOf, {2}] '+2'
-                [Sequence, {2}] '+2'
-                    ['+'] '+'
-                    [Term, {2}] '2'
-                        [Factor, {2}] '2'
-                            [Number, {2}] '2'
-                                [Digits] '2'
-                        [ZeroOrMore]
-    [EOI]
+[InputLine]E
 ###
 x1+*2
 ===
@@ -65,10 +51,11 @@ x1+*2
 ===
 [InputLine, {3}]E '1+2'
     [Expression, {3}]E '1+2'
-        [Term, {1}] '1'
-            [Factor, {1}] '1'
-                [Number, {1}] '1'
-                    [Digits] '1'
+        [Term, {1}]E '1'
+            [Factor, {1}]E '1'
+                [Number, {1}]E '1'
+                    [Digits]E '1'
+                        [Digit] '1'
             [ZeroOrMore]
         [ZeroOrMore, {2}]E '+2'
             [FirstOf, {2}]E '+2'

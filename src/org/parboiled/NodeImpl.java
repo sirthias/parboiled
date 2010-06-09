@@ -19,7 +19,6 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.InputLocation;
 import org.parboiled.trees.ImmutableTreeNode;
 
 import java.util.List;
@@ -32,17 +31,17 @@ import java.util.List;
 class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
 
     private final Matcher<V> matcher;
-    private final InputLocation startLocation;
-    private final InputLocation endLocation;
+    private final int startIndex;
+    private final int endIndex;
     private final V value;
     private final boolean hasError;
 
-    public NodeImpl(@NotNull Matcher<V> matcher, List<Node<V>> children, @NotNull InputLocation startLocation,
-                    @NotNull InputLocation endLocation, V value, boolean hasError) {
+    public NodeImpl(@NotNull Matcher<V> matcher, List<Node<V>> children, int startIndex,
+                    int endIndex, V value, boolean hasError) {
         super(children);
         this.matcher = matcher;
-        this.startLocation = startLocation;
-        this.endLocation = endLocation;
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
         this.value = value;
         this.hasError = hasError;
     }
@@ -56,14 +55,12 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
         return matcher.getLabel();
     }
 
-    @NotNull
-    public InputLocation getStartLocation() {
-        return startLocation;
+    public int getStartIndex() {
+        return startIndex;
     }
 
-    @NotNull
-    public InputLocation getEndLocation() {
-        return endLocation;
+    public int getEndIndex() {
+        return endIndex;
     }
 
     public V getValue() {

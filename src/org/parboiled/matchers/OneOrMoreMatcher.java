@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
-import org.parboiled.support.InputLocation;
 
 /**
  * A {@link Matcher} that repeatedly tries its sub matcher against the input.
@@ -42,14 +41,14 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> {
         if (!matched) return false;
 
         // collect all further matches as well
-        InputLocation lastLocation = context.getCurrentLocation();
+        int lastIndex = context.getCurrentIndex();
         while (subMatcher.getSubContext(context).runMatcher()) {
-            InputLocation currentLocation = context.getCurrentLocation();
-            if (currentLocation == lastLocation) {
+            int currentIndex = context.getCurrentIndex();
+            if (currentIndex == lastIndex) {
                 throw new GrammarException("The inner rule of OneOrMore rule '%s' must not allow empty matches",
                         context.getPath());
             }
-            lastLocation = currentLocation;
+            lastIndex = currentIndex;
         }
 
         context.createNode();

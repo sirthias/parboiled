@@ -19,8 +19,8 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.DefaultInputBuffer;
 import org.parboiled.support.InputBuffer;
-import org.parboiled.support.InputLocation;
 import org.parboiled.support.ParsingResult;
 
 import java.util.ArrayList;
@@ -40,7 +40,6 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     protected final InputBuffer inputBuffer;
     protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
     protected final Matcher<V> rootMatcher;
-    protected InputLocation startLocation;
     protected MatcherContext<V> rootContext;
     protected boolean matched;
 
@@ -65,8 +64,11 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     @SuppressWarnings({"unchecked"})
     public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
         this.rootMatcher = (Matcher<V>) rule;
-        this.inputBuffer = new InputBuffer(input);
-        this.startLocation = new InputLocation(inputBuffer);
+        this.inputBuffer = createInputBuffer(input);
+    }
+
+    protected InputBuffer createInputBuffer(String input) {
+        return new DefaultInputBuffer(input);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -74,8 +76,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
         if (rootContext == null) {
             matched = runRootContext();
         }
-        return new ParsingResult<V>(matched, rootContext.getNode(), parseErrors, inputBuffer,
-                rootContext.getCurrentLocation().getRow() + 1);
+        return new ParsingResult<V>(matched, rootContext.getNode(), parseErrors, inputBuffer);
     }
 
     protected boolean runRootContext() {
@@ -83,12 +84,8 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     }
 
     protected boolean runRootContext(MatchHandler<V> handler) {
-        createRootContext(handler);
+        rootContext = new MatcherContext<V>(inputBuffer, parseErrors, handler, rootMatcher);
         return handler.matchRoot(rootContext);
-    }
-
-    protected void createRootContext(MatchHandler<V> matchHandler) {
-        rootContext = new MatcherContext<V>(inputBuffer, startLocation, parseErrors, matchHandler, rootMatcher);
     }
 
     /**

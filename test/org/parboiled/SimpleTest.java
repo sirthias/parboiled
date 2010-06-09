@@ -41,7 +41,7 @@ public class SimpleTest extends AbstractTest {
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
-        test(rule, "1+5b", "" +
+        testWithoutRecovery(rule, "1+5b", "" +
                 "[Clause] '1+5b'\n" +
                 "    [Digit] '1'\n" +
                 "    [Operator] '+'\n" +

@@ -43,8 +43,9 @@ import java.util.List;
  */
 public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
-    private InputLocation errorLocation;
+    private int errorIndex;
     private InvalidInputError<V> currentError;
+    private MutableInputBuffer buffer;
 
     /**
      * Create a new RecoveringParseRunner instance with the given rule and input text and returns the result of
@@ -69,6 +70,12 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     @Override
+    protected InputBuffer createInputBuffer(String input) {
+        buffer = new MutableInputBuffer(new DefaultInputBuffer(input));
+        return buffer;
+    }
+
+    @Override
     protected boolean runRootContext() {
         MatchHandler<V> handler = new BasicParseRunner.Handler<V>();
         if (runRootContext(handler)) {
@@ -79,110 +86,77 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         }
         do {
             performErrorReportingRun();
-            if (!fixError(errorLocation)) {
+            if (!fixError(errorIndex)) {
                 return false;
             }
-        } while (errorLocation != null);
+        } while (errorIndex >= 0);
         return true;
     }
 
     protected boolean attemptRecordingMatch() {
         RecordingParseRunner.Handler<V> handler = new RecordingParseRunner.Handler<V>(getInnerHandler());
         boolean matched = runRootContext(handler);
-        errorLocation = handler.getErrorLocation();
+        errorIndex = handler.getErrorIndex();
         return matched;
     }
 
     protected void performErrorReportingRun() {
-        ReportingParseRunner.Handler<V> handler = new ReportingParseRunner.Handler<V>(errorLocation, getInnerHandler());
+        ReportingParseRunner.Handler<V> handler = new ReportingParseRunner.Handler<V>(errorIndex, getInnerHandler());
         runRootContext(handler);
         currentError = handler.getParseError();
     }
 
     protected MatchHandler<V> getInnerHandler() {
-        return errorLocation != null && errorLocation.getIndex() > 0 ?
-                new Handler<V>(currentError) : new BasicParseRunner.Handler<V>();
+        return errorIndex >= 0 ? new Handler<V>(currentError) : new BasicParseRunner.Handler<V>();
     }
 
-    protected boolean fixError(InputLocation fixLocation) {
-        if (errorLocation.getIndex() == 0) {
-            if (!fixIllegalStarterChars()) return false;
-            attemptRecordingMatch();
-            return true;
-        }
+    protected boolean fixError(int fixIndex) {
+        if (tryFixBySingleCharDeletion(fixIndex)) return true;
+        int nextErrorAfterDeletion = errorIndex;
 
-        InputLocation preFixLocation = findPreviousLocation(fixLocation);
-        fixLocation.advance(inputBuffer); // fetch the next input char, so the removal operation works
-
-        if (tryFixBySingleCharDeletion(preFixLocation)) return true;
-        InputLocation nextErrorAfterDeletion = errorLocation;
-
-        Character bestInsertionCharacter = findBestSingleCharInsertion(preFixLocation);
+        Character bestInsertionCharacter = findBestSingleCharInsertion(fixIndex);
         if (bestInsertionCharacter == null) return true;
-        InputLocation nextErrorAfterBestInsertion = errorLocation;
+        int nextErrorAfterBestInsertion = errorIndex;
 
-        int nextErrorAfterBestSingleCharFix = Math.max(
-                nextErrorAfterDeletion.getIndex(),
-                nextErrorAfterBestInsertion.getIndex()
-        );
-        if (nextErrorAfterBestSingleCharFix > fixLocation.getIndex()) {
+        int nextErrorAfterBestSingleCharFix = Math.max(nextErrorAfterDeletion, nextErrorAfterBestInsertion);
+        if (nextErrorAfterBestSingleCharFix > fixIndex) {
             // we are able to overcome the error with a single char fix, so apply the best one found
-            if (nextErrorAfterDeletion.getIndex() >= nextErrorAfterBestInsertion.getIndex()) {
-                preFixLocation.insertNext(Characters.DEL_ERROR);
-                preFixLocation.getNext().removeNext();
-                errorLocation = nextErrorAfterDeletion;
+            if (nextErrorAfterDeletion >= nextErrorAfterBestInsertion) {
+                buffer.insertChar(fixIndex, Characters.DEL_ERROR);
+                errorIndex = nextErrorAfterDeletion + 1;
+                shiftCurrentErrorIndicesBy(1);
             } else {
                 // we need to insert the characters in reverse order, since we insert twice on the same location
-                preFixLocation.insertNext(bestInsertionCharacter);
-                preFixLocation.insertNext(Characters.INS_ERROR);
-                errorLocation = nextErrorAfterBestInsertion;
+                buffer.insertChar(fixIndex, bestInsertionCharacter);
+                buffer.insertChar(fixIndex, Characters.INS_ERROR);
+                errorIndex = nextErrorAfterBestInsertion + 2;
+                shiftCurrentErrorIndicesBy(2);
             }
         } else {
             // we can't fix the error with a single char fix, so fall back to resynchronization
-            preFixLocation.insertNext(Characters.RESYNC);
+            buffer.insertChar(fixIndex, Characters.RESYNC);
+            shiftCurrentErrorIndicesBy(1);
             attemptRecordingMatch(); // find the next parse error
         }
         return true;
     }
 
-    // skip over all illegal chars that we cannot start a root match with
-
-    protected boolean fixIllegalStarterChars() {
-        int count = 0;
-        while (errorLocation.getChar() != Characters.EOI &&
-                !rootMatcher.accept(new IsStarterCharVisitor<V>(errorLocation.getChar()))) {
-            errorLocation = errorLocation.advance(inputBuffer);
-            count++;
-        }
-        if (count == 0 || errorLocation.getChar() == Characters.EOI) return false;
-        currentError.setErrorCharCount(count);
-        startLocation = errorLocation;
-        return true;
-    }
-
-    protected InputLocation findPreviousLocation(InputLocation fixLocation) {
-        InputLocation location = startLocation;
-        while (location != null && location.getNext() != fixLocation) {
-            location = location.getNext();
-        }
-        return location;
-    }
-
-    protected boolean tryFixBySingleCharDeletion(@NotNull InputLocation preFixLocation) {
-        preFixLocation.insertNext(Characters.DEL_ERROR);
-        InputLocation saved = preFixLocation.getNext().removeNext();
+    protected boolean tryFixBySingleCharDeletion(int fixIndex) {
+        buffer.insertChar(fixIndex, Characters.DEL_ERROR);
         boolean nowErrorFree = attemptRecordingMatch();
-        if (!nowErrorFree) {
-            preFixLocation.removeNext();
-            preFixLocation.insertNext(saved);
+        if (nowErrorFree) {
+            shiftCurrentErrorIndicesBy(1);
+        } else {
+            buffer.undoCharInsertion(fixIndex);
+            errorIndex = Math.max(errorIndex - 1, 0);
         }
         return nowErrorFree;
     }
 
     @SuppressWarnings({"ConstantConditions"})
-    protected Character findBestSingleCharInsertion(@NotNull InputLocation preFixLocation) {
+    protected Character findBestSingleCharInsertion(int fixIndex) {
         GetAStarterCharVisitor<V> getAStarterCharVisitor = new GetAStarterCharVisitor<V>();
-        InputLocation bestNextErrorLocation = startLocation; // initialize with the "worst" next error location
+        int bestNextErrorIndex = -1;
         Character bestChar = null;
         for (MatcherPath<V> failedMatcherPath : currentError.getFailedMatchers()) {
             Character starterChar = failedMatcherPath.getHead().accept(getAStarterCharVisitor);
@@ -190,40 +164,47 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             if (starterChar == Characters.EOI) {
                 continue; // we should never conjure up an EOI character (that would be cheating :)
             }
-            preFixLocation.insertNext(starterChar);
-            preFixLocation.insertNext(Characters.INS_ERROR);
+            buffer.insertChar(fixIndex, starterChar);
+            buffer.insertChar(fixIndex, Characters.INS_ERROR);
             if (attemptRecordingMatch()) {
+                shiftCurrentErrorIndicesBy(2);
                 return null; // success, exit immediately
             }
-            if (bestNextErrorLocation == null || bestNextErrorLocation.getIndex() < errorLocation.getIndex()) {
-                bestNextErrorLocation = errorLocation;
+            buffer.undoCharInsertion(fixIndex);
+            buffer.undoCharInsertion(fixIndex);
+            errorIndex = Math.max(errorIndex - 2, 0);
+
+            if (bestNextErrorIndex < errorIndex) {
+                bestNextErrorIndex = errorIndex;
                 bestChar = starterChar;
             }
-            preFixLocation.removeNext();
-            preFixLocation.removeNext();
         }
-        errorLocation = bestNextErrorLocation;
+        errorIndex = bestNextErrorIndex;
         return bestChar;
     }
 
+    private void shiftCurrentErrorIndicesBy(int delta) {
+        currentError.setStartIndex(currentError.getStartIndex() + delta);
+        currentError.setEndIndex(currentError.getEndIndex() + delta);
+    }
+
     /**
-     * A {@link MatchHandler} implementation that recognized the three special error recovery characters
-     * {@link Characters#DEL_ERROR}, {@link Characters#INS_ERROR} and {@link Characters#RESYNC} to overcome
-     * {@link InvalidInputError}s at the respective {@link InputLocation}s.
+     * A {@link MatchHandler} implementation that recognizes the special {@link Characters#RESYNC} character
+     * to overcome {@link InvalidInputError}s at the respective error indices.
      *
      * @param <V> the type of the value field of a parse tree node
      */
     public static class Handler<V> implements MatchHandler<V> {
         private final IsSingleCharMatcherVisitor<V> isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor<V>();
         private final InvalidInputError<V> currentError;
-        private InputLocation fringeLocation;
+        private int fringeIndex;
         private MatcherPath<V> lastMatchPath;
 
         /**
-         * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its errorCharCount
-         * to the correct number if the error corresponds to an error that can only be overcome by resynchronizing.
+         * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its endIndex
+         * to the correct index if the error corresponds to an error that can only be overcome by resynchronizing.
          *
-         * @param currentError an optional InvalidInputError whose errorCharCount to set during resyncing
+         * @param currentError an optional InvalidInputError whose endIndex is to set during resyncing
          */
         public Handler(InvalidInputError<V> currentError) {
             this.currentError = currentError;
@@ -236,11 +217,12 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         public boolean match(MatcherContext<V> context) {
             Matcher<V> matcher = context.getMatcher();
             if (matcher.accept(isSingleCharMatcherVisitor)) {
-                if (!isErrorLocation(context) || willMatchError(context)) {
-                    if (matcher.match(context)) {
-                        updateFringeLocation(context);
-                        return true;
+                if (prepareErrorLocation(context) && matcher.match(context)) {
+                    if (fringeIndex < context.getCurrentIndex()) {
+                        fringeIndex = context.getCurrentIndex();
+                        lastMatchPath = context.getPath();
                     }
+                    return true;
                 }
                 return false;
             }
@@ -252,45 +234,62 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             // if we didn't match we might have to resynchronize, however we only resynchronize
             // if we are at a RESYNC location and the matcher is a SequenceMatchers that has already
             // matched at least one character and that is a parent of the last match
-            return fringeLocation != null && fringeLocation.getChar() == Characters.RESYNC &&
-                    matcher instanceof SequenceMatcher &&
-                    context.getCurrentLocation() != context.getStartLocation() &&
-                    context.getPath().isPrefixOf(lastMatchPath) &&
+            return context.getInputBuffer().charAt(fringeIndex) == Characters.RESYNC &&
+                    qualifiesForResync(context, matcher) &&
                     resynchronize(context);
         }
 
-        protected void updateFringeLocation(MatcherContext<V> context) {
-            if (fringeLocation == null ||
-                    fringeLocation.getIndex() < context.getCurrentLocation().getIndex()) {
-                fringeLocation = context.getCurrentLocation();
-                lastMatchPath = context.getPath();
+        @SuppressWarnings({"SimplifiableIfStatement"})
+        private boolean qualifiesForResync(MatcherContext<V> context, Matcher<V> matcher) {
+            if (matcher instanceof SequenceMatcher && context.getCurrentIndex() > context.getStartIndex() &&
+                    context.getPath().isPrefixOf(lastMatchPath)) {
+                return true;
             }
+            return context.getParent() == null; // always resync on the root if there is nothing else
         }
 
-        protected boolean isErrorLocation(MatcherContext<V> context) {
-            char c = context.getCurrentLocation().getChar();
-            return c == Characters.DEL_ERROR || c == Characters.INS_ERROR;
-        }
-
-        protected boolean willMatchError(MatcherContext<V> context) {
-            InputLocation preSkipLocation = context.getCurrentLocation();
-            while (isErrorLocation(context)) {
-                context.advanceInputLocation();
-            }
-            TestMatcher<V> testMatcher = new TestMatcher<V>(context.getMatcher());
-            if (!testMatcher.getSubContext(context).runMatcher()) {
-                // if we wouldn't succeed with the match do not swallow the ERROR char
-                context.setCurrentLocation(preSkipLocation);
-                return false;
-            }
-            context.setStartLocation(context.getCurrentLocation());
-            context.clearNodeSuppression();
-            if (preSkipLocation.getChar() == Characters.INS_ERROR) {
-                context.markError();
-            } else {
-                if (context.getParent() != null) context.getParent().markError();
+        protected boolean prepareErrorLocation(MatcherContext<V> context) {
+            switch (context.getCurrentChar()) {
+                case Characters.DEL_ERROR:
+                    return willMatchDelError(context);
+                case Characters.INS_ERROR:
+                    return willMatchInsError(context);
             }
             return true;
+        }
+
+        protected boolean willMatchDelError(MatcherContext<V> context) {
+            int preSkipIndex = context.getCurrentIndex();
+            context.advanceIndex(); // skip del marker char
+            context.advanceIndex(); // skip illegal char
+            if (!runTestMatch(context)) {
+                // if we wouldn't succeed with the match do not swallow the ERROR char & Co
+                context.setCurrentIndex(preSkipIndex);
+                return false;
+            }
+            context.setStartIndex(context.getCurrentIndex());
+            context.clearNodeSuppression();
+            if (context.getParent() != null) context.getParent().markError();
+            return true;
+        }
+
+        protected boolean willMatchInsError(MatcherContext<V> context) {
+            int preSkipIndex = context.getCurrentIndex();
+            context.advanceIndex(); // skip ins marker char
+            if (!runTestMatch(context)) {
+                // if we wouldn't succeed with the match do not swallow the ERROR char
+                context.setCurrentIndex(preSkipIndex);
+                return false;
+            }
+            context.setStartIndex(context.getCurrentIndex());
+            context.clearNodeSuppression();
+            context.markError();
+            return true;
+        }
+
+        protected boolean runTestMatch(MatcherContext<V> context) {
+            TestMatcher<V> testMatcher = new TestMatcher<V>(context.getMatcher());
+            return testMatcher.getSubContext(context).runMatcher();
         }
 
         protected boolean resynchronize(MatcherContext<V> context) {
@@ -301,33 +300,31 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             context.createNode();
 
             // skip over all characters that are not legal followers of the failed Sequence
-            context.advanceInputLocation(); // gobble RESYNC marker
+            context.advanceIndex(); // gobble RESYNC marker
+            fringeIndex++;
             List<Matcher<V>> followMatchers = new FollowMatchersVisitor<V>().getFollowMatchers(context);
-            int resyncCharCount = gobbleIllegalCharacters(context, followMatchers);
+            int endIndex = gobbleIllegalCharacters(context, followMatchers);
 
-            if (currentError != null &&
-                    currentError.getErrorLocation().getIndex() == fringeLocation.getIndex() && resyncCharCount > 1) {
-                currentError.setErrorCharCount(resyncCharCount);
+            if (currentError != null && currentError.getStartIndex() == fringeIndex && endIndex - fringeIndex > 1) {
+                currentError.setEndIndex(endIndex);
             }
 
             return true;
         }
 
         protected int gobbleIllegalCharacters(MatcherContext<V> context, List<Matcher<V>> followMatchers) {
-            int count = 0;
             while_loop:
             while (true) {
-                char currentChar = context.getCurrentLocation().getChar();
+                char currentChar = context.getCurrentChar();
                 if (currentChar == Characters.EOI) break;
                 for (Matcher<V> followMatcher : followMatchers) {
                     if (followMatcher.accept(new IsStarterCharVisitor<V>(currentChar))) {
                         break while_loop;
                     }
                 }
-                context.advanceInputLocation();
-                count++;
+                context.advanceIndex();
             }
-            return count;
+            return context.getCurrentIndex();
         }
     }
 

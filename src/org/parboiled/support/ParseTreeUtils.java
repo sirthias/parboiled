@@ -253,29 +253,27 @@ public final class ParseTreeUtils {
         // if the node has a parse error we cannot simpy cut a string out of the underlying input buffer, since we
         // would also include illegal characters, so we need to build it bottom up
         if (node.getMatcher().accept(new IsSingleCharMatcherVisitor<V>())) {
-            return String.valueOf(node.getStartLocation().getChar());
+            return String.valueOf(inputBuffer.charAt(node.getStartIndex()));
         } else {
             StringBuilder sb = new StringBuilder();
-            InputLocation location = node.getStartLocation();
+            int index = node.getStartIndex();
             for (Node<V> child : node.getChildren()) {
-                if (location.getIndex() < child.getStartLocation().getIndex()) {
-                    addInputLocations(sb, location, child.getStartLocation());
-                }
+                addInputLocations(inputBuffer, sb, index, child.getStartIndex());
                 sb.append(getNodeText(child, inputBuffer));
-                location = child.getEndLocation();
+                index = child.getEndIndex();
             }
-            if (location.getIndex() < node.getEndLocation().getIndex()) {
-                addInputLocations(sb, location, node.getEndLocation());
-            }
+            addInputLocations(inputBuffer, sb, index, node.getEndIndex());
             return sb.toString();
         }
     }
 
-    private static void addInputLocations(StringBuilder sb, InputLocation from, InputLocation to) {
-        while (from != to) {
-            char c = from.getChar();
+    private static void addInputLocations(InputBuffer inputBuffer, StringBuilder sb, int start, int end) {
+        for (int i = start; i < end; i++) {
+            char c = inputBuffer.charAt(i);
             switch (c) {
                 case Characters.DEL_ERROR:
+                    i++;
+                    break;
                 case Characters.INS_ERROR:
                     break;
                 case Characters.RESYNC:
@@ -283,7 +281,6 @@ public final class ParseTreeUtils {
                 default:
                     sb.append(c);
             }
-            from = from.getNext();
         }
     }
 
@@ -295,8 +292,7 @@ public final class ParseTreeUtils {
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
     public static <V> String getRawNodeText(Node<V> node, @NotNull InputBuffer inputBuffer) {
-        return node == null ? null :
-                inputBuffer.extract(node.getStartLocation().getIndex(), node.getEndLocation().getIndex());
+        return node == null ? null : inputBuffer.extract(node.getStartIndex(), node.getEndIndex());
     }
 
     /**

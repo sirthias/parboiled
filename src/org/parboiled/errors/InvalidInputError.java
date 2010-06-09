@@ -16,9 +16,8 @@
 
 package org.parboiled.errors;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputLocation;
+import org.parboiled.support.InputBuffer;
 import org.parboiled.support.MatcherPath;
 
 import java.util.List;
@@ -33,28 +32,12 @@ public class InvalidInputError<V> extends BasicParseError {
 
     private final MatcherPath<V> lastMatch;
     private final List<MatcherPath<V>> failedMatchers;
-    private int errorCharCount = 1;
 
-    public InvalidInputError(@NotNull InputLocation errorLocation, MatcherPath<V> lastMatch,
+    public InvalidInputError(@NotNull InputBuffer inputBuffer, int startIndex, MatcherPath<V> lastMatch,
                              @NotNull List<MatcherPath<V>> failedMatchers, String errorMessage) {
-        super(errorLocation, errorMessage);
+        super(inputBuffer, startIndex, errorMessage);
         this.lastMatch = lastMatch;
         this.failedMatchers = failedMatchers;
-    }
-
-    @Override
-    public int getErrorCharCount() {
-        return errorCharCount;
-    }
-
-    /**
-     * Sets the number of characters covered by this error. Must be > 0.
-     *
-     * @param errorCharCount the number of chars (> 0)
-     */
-    public void setErrorCharCount(int errorCharCount) {
-        Preconditions.checkArgument(errorCharCount > 0);
-        this.errorCharCount = errorCharCount;
     }
 
     /**

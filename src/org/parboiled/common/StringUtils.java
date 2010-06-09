@@ -18,9 +18,6 @@ package org.parboiled.common;
 
 import org.parboiled.support.Characters;
 
-import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,8 +26,6 @@ import java.util.Iterator;
  * General utility methods for string manipulation.
  */
 public final class StringUtils {
-
-    public static final String NL = System.getProperty("line.separator");
 
     private StringUtils() {}
 
@@ -81,29 +76,6 @@ public final class StringUtils {
             default:
                 return String.valueOf(c);
         }
-    }
-
-    /**
-     * Gets the text of the line with the given number.
-     *
-     * @param text       the text to search through
-     * @param lineNumber the line number starting with 0 for the first line
-     * @return the text of the line or null, if the given line does not exist in the input
-     */
-    public static String getLine(char[] text, int lineNumber) {
-        String line = null;
-        if (text != null) {
-            LineNumberReader reader = new LineNumberReader(new CharArrayReader(text));
-            try {
-                while (reader.getLineNumber() <= lineNumber) {
-                    line = reader.readLine();
-                    if (line == null) return null;
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(); // we shouldn't get an IOException on a StringReader
-            }
-        }
-        return line;
     }
 
     /**

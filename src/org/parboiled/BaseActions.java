@@ -19,7 +19,6 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Checks;
-import org.parboiled.support.InputLocation;
 import org.parboiled.support.LabelPrefixPredicate;
 import org.parboiled.support.ParseTreeUtils;
 
@@ -353,7 +352,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.
      *
-     * @return the input text matched by the immediately preceeding subrule
+     * @return the first character of the input text matched by the immediately preceeding subrule
      */
     public Character prevChar() {
         String text = prevText();
@@ -361,7 +360,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
     
     /**
-     * <p>Returns the start location of the matched rule immediately preceeding the action expression that is currently
+     * <p>Returns the start index of the matched rule immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
@@ -369,11 +368,11 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.</p>
      *
-     * @return the value object of the immediately preceeding subrule
+     * @return the start index of the context immediately preceeding current action
      */
-    public InputLocation prevStart() {
+    public int prevStart() {
         check();
-        return context.getPrevStartLocation();
+        return context.getPrevStartIndex();
     }
     
     /**
@@ -385,11 +384,12 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
      * grammar where parse tree node creation is suppressed.</p>
      *
-     * @return the value object of the immediately preceeding subrule
+     * @return the end index of the context immediately preceeding current action, i.e. the index of the character
+     *         immediately following the last matched character
      */
-    public InputLocation prevEnd() {
+    public int prevEnd() {
         check();
-        return context.getPrevEndLocation();
+        return context.getPrevEndIndex();
     }
 
     /**
@@ -421,9 +421,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @return the next input character about to be matched
      */
-    public Character nextChar() {
+    public Character currentChar() {
         check();
-        return context.getCurrentLocation().getChar();
+        return context.getCurrentChar();
     }
 
     /**
