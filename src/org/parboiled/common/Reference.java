@@ -90,6 +90,16 @@ public class Reference<T> {
         this.value = value;
         return t;
     }
+    
+    /**
+     * Replaces this references value with the given one.
+     *
+     * @param value the new value
+     * @return the new value
+     */
+    public T setAndGet(T value) {
+        return this.value = value;
+    }
 
     /**
      * @return true if this Reference holds a non-null value

@@ -79,6 +79,25 @@ public final class StringUtils {
     }
 
     /**
+     * Creates a string consisting of n times the given character.
+     *
+     * @param c the char
+     * @param n the number of times to repeat
+     * @return the string
+     */
+    public static String repeat(char c, int n) {
+        char[] array = new char[n];
+        Arrays.fill(array, c);
+        return String.valueOf(array);
+    }
+
+    //***********************************************************************************************
+    //**                 THE FOLLOWING CODE IS A PARTIAL, VERBATIM COPY OF                         **
+    //**                       org.apache.commons.lang.StringUtils                                 **
+    //**                         which is licensed under ASF 2.0                                   **
+    //***********************************************************************************************
+
+    /**
      * <p>Joins the elements of the provided <code>Collection</code> into
      * a single String containing the provided elements.</p>
      * <p/>
@@ -287,16 +306,224 @@ public final class StringUtils {
     }
 
     /**
-     * Creates a string consisting of n times the given character.
+     * <p>Gets a substring from the specified String avoiding exceptions.</p>
+     * <p/>
+     * <p>A negative start position can be used to start <code>n</code>
+     * characters from the end of the String.</p>
+     * <p/>
+     * <p>A <code>null</code> String will return <code>null</code>.
+     * An empty ("") String will return "".</p>
+     * <p/>
+     * <pre>
+     * StringUtils.substring(null, *)   = null
+     * StringUtils.substring("", *)     = ""
+     * StringUtils.substring("abc", 0)  = "abc"
+     * StringUtils.substring("abc", 2)  = "c"
+     * StringUtils.substring("abc", 4)  = ""
+     * StringUtils.substring("abc", -2) = "bc"
+     * StringUtils.substring("abc", -4) = "abc"
+     * </pre>
      *
-     * @param c the char
-     * @param n the number of times to repeat
-     * @return the string
+     * @param str   the String to get the substring from, may be null
+     * @param start the position to start from, negative means
+     *              count back from the end of the String by this many characters
+     * @return substring from start position, <code>null</code> if null String input
      */
-    public static String repeat(char c, int n) {
-        char[] array = new char[n];
-        Arrays.fill(array, c);
-        return String.valueOf(array);
+    public static String substring(String str, int start) {
+        if (str == null) {
+            return null;
+        }
+
+        // handle negatives, which means last n characters
+        if (start < 0) {
+            start = str.length() + start; // remember start is negative
+        }
+
+        if (start < 0) {
+            start = 0;
+        }
+        if (start > str.length()) {
+            return "";
+        }
+
+        return str.substring(start);
+    }
+
+    /**
+     * <p>Gets a substring from the specified String avoiding exceptions.</p>
+     * <p/>
+     * <p>A negative start position can be used to start/end <code>n</code>
+     * characters from the end of the String.</p>
+     * <p/>
+     * <p>The returned substring starts with the character in the <code>start</code>
+     * position and ends before the <code>end</code> position. All position counting is
+     * zero-based -- i.e., to start at the beginning of the string use
+     * <code>start = 0</code>. Negative start and end positions can be used to
+     * specify offsets relative to the end of the String.</p>
+     * <p/>
+     * <p>If <code>start</code> is not strictly to the left of <code>end</code>, ""
+     * is returned.</p>
+     * <p/>
+     * <pre>
+     * StringUtils.substring(null, *, *)    = null
+     * StringUtils.substring("", * ,  *)    = "";
+     * StringUtils.substring("abc", 0, 2)   = "ab"
+     * StringUtils.substring("abc", 2, 0)   = ""
+     * StringUtils.substring("abc", 2, 4)   = "c"
+     * StringUtils.substring("abc", 4, 6)   = ""
+     * StringUtils.substring("abc", 2, 2)   = ""
+     * StringUtils.substring("abc", -2, -1) = "b"
+     * StringUtils.substring("abc", -4, 2)  = "ab"
+     * </pre>
+     *
+     * @param str   the String to get the substring from, may be null
+     * @param start the position to start from, negative means
+     *              count back from the end of the String by this many characters
+     * @param end   the position to end at (exclusive), negative means
+     *              count back from the end of the String by this many characters
+     * @return substring from start position to end positon,
+     *         <code>null</code> if null String input
+     */
+    public static String substring(String str, int start, int end) {
+        if (str == null) {
+            return null;
+        }
+
+        // handle negatives
+        if (end < 0) {
+            end = str.length() + end; // remember end is negative
+        }
+        if (start < 0) {
+            start = str.length() + start; // remember start is negative
+        }
+
+        // check length next
+        if (end > str.length()) {
+            end = str.length();
+        }
+
+        // if start is greater than end, return ""
+        if (start > end) {
+            return "";
+        }
+
+        if (start < 0) {
+            start = 0;
+        }
+        if (end < 0) {
+            end = 0;
+        }
+
+        return str.substring(start, end);
+    }
+
+    // Left/Right/Mid
+    //-----------------------------------------------------------------------
+
+    /**
+     * <p>Gets the leftmost <code>len</code> characters of a String.</p>
+     * <p/>
+     * <p>If <code>len</code> characters are not available, or the
+     * String is <code>null</code>, the String will be returned without
+     * an exception. An exception is thrown if len is negative.</p>
+     * <p/>
+     * <pre>
+     * StringUtils.left(null, *)    = null
+     * StringUtils.left(*, -ve)     = ""
+     * StringUtils.left("", *)      = ""
+     * StringUtils.left("abc", 0)   = ""
+     * StringUtils.left("abc", 2)   = "ab"
+     * StringUtils.left("abc", 4)   = "abc"
+     * </pre>
+     *
+     * @param str the String to get the leftmost characters from, may be null
+     * @param len the length of the required String, must be zero or positive
+     * @return the leftmost characters, <code>null</code> if null String input
+     */
+    public static String left(String str, int len) {
+        if (str == null) {
+            return null;
+        }
+        if (len < 0) {
+            return "";
+        }
+        if (str.length() <= len) {
+            return str;
+        }
+        return str.substring(0, len);
+    }
+
+    /**
+     * <p>Gets the rightmost <code>len</code> characters of a String.</p>
+     * <p/>
+     * <p>If <code>len</code> characters are not available, or the String
+     * is <code>null</code>, the String will be returned without an
+     * an exception. An exception is thrown if len is negative.</p>
+     * <p/>
+     * <pre>
+     * StringUtils.right(null, *)    = null
+     * StringUtils.right(*, -ve)     = ""
+     * StringUtils.right("", *)      = ""
+     * StringUtils.right("abc", 0)   = ""
+     * StringUtils.right("abc", 2)   = "bc"
+     * StringUtils.right("abc", 4)   = "abc"
+     * </pre>
+     *
+     * @param str the String to get the rightmost characters from, may be null
+     * @param len the length of the required String, must be zero or positive
+     * @return the rightmost characters, <code>null</code> if null String input
+     */
+    public static String right(String str, int len) {
+        if (str == null) {
+            return null;
+        }
+        if (len < 0) {
+            return "";
+        }
+        if (str.length() <= len) {
+            return str;
+        }
+        return str.substring(str.length() - len);
+    }
+
+    /**
+     * <p>Gets <code>len</code> characters from the middle of a String.</p>
+     * <p/>
+     * <p>If <code>len</code> characters are not available, the remainder
+     * of the String will be returned without an exception. If the
+     * String is <code>null</code>, <code>null</code> will be returned.
+     * An exception is thrown if len is negative.</p>
+     * <p/>
+     * <pre>
+     * StringUtils.mid(null, *, *)    = null
+     * StringUtils.mid(*, *, -ve)     = ""
+     * StringUtils.mid("", 0, *)      = ""
+     * StringUtils.mid("abc", 0, 2)   = "ab"
+     * StringUtils.mid("abc", 0, 4)   = "abc"
+     * StringUtils.mid("abc", 2, 4)   = "c"
+     * StringUtils.mid("abc", 4, 2)   = ""
+     * StringUtils.mid("abc", -2, 2)  = "ab"
+     * </pre>
+     *
+     * @param str the String to get the characters from, may be null
+     * @param pos the position to start from, negative treated as zero
+     * @param len the length of the required String, must be zero or positive
+     * @return the middle characters, <code>null</code> if null String input
+     */
+    public static String mid(String str, int pos, int len) {
+        if (str == null) {
+            return null;
+        }
+        if (len < 0 || pos > str.length()) {
+            return "";
+        }
+        if (pos < 0) {
+            pos = 0;
+        }
+        if (str.length() <= (pos + len)) {
+            return str.substring(pos);
+        }
+        return str.substring(pos, pos + len);
     }
 
 }
