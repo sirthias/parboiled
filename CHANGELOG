@@ -1,3 +1,11 @@
+Version 0.9.7.2 (2010-06-14)
+----------------------------
+- BREAKING CHANGE: Tracking of locations in input text is now purely done via integer indices (was: instances of
+  class org.parboiled.common.InputLocation) for a much reduced memory footprint and a significant performance increase,
+  especially for large input files and rather simple grammars
+  (most of the functionality of org.parboiled.common.InputLocation has been moved to org.parboiled.common.InputBuffer)
+- Added smaller extensions in a few support classes
+
 Version 0.9.7.1 (2010-06-08)
 ----------------------------
 - BREAKING CHANGE: Rule methods w/ parameters are now also automatically labelled, @Label now requires parameter!
