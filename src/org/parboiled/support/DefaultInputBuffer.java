@@ -73,7 +73,20 @@ public class DefaultInputBuffer implements InputBuffer {
     }
 
     public char charAt(int index) {
-        return 0 <= index && index < buffer.length ? buffer[index] : Characters.EOI;
+        return 0 <= index && index < length ? buffer[index] : Characters.EOI;
+    }
+
+    public boolean test(int index, char[] characters) {
+        int len = characters.length;
+        if (index < 0 || index > length - len) {
+            return false;
+        }
+
+        for (int i = 0; i < len; i++) {
+            if (buffer[index + i] != characters[i]) return false;
+        }
+
+        return true;
     }
 
     public Position getPosition(int index) {
@@ -95,7 +108,7 @@ public class DefaultInputBuffer implements InputBuffer {
     @NotNull
     public String extract(int start, int end) {
         if (start < 0) start = 0;
-        if (end >= buffer.length) end = buffer.length;
+        if (end >= length) end = length;
         if (end <= start) return "";
         return new String(buffer, start, end - start);
     }

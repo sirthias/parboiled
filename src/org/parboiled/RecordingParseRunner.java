@@ -59,7 +59,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
     @Override
     protected boolean runRootContext() {
         handler = new Handler<V>();
-        return runRootContext(handler);
+        return runRootContext(handler, false); // run without fast string matching to properly get the error location 
     }
 
     /**

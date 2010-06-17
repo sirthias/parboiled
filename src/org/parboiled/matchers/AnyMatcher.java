@@ -29,7 +29,7 @@ public class AnyMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         if (context.getCurrentChar() == Characters.EOI) return false;
-        context.advanceIndex();
+        context.advanceIndex(1);
         context.createNode();
         return true;
     }

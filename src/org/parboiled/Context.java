@@ -114,6 +114,20 @@ public interface Context<V> {
     int getLevel();
 
     /**
+     * <p>Returns true if fast string matching is enabled for this parsing run.</p>
+     * <p>Fast string matching "short-circuits" the default practice of treating string rules as simple Sequence of
+     * character rules. When fast string matching is enabled strings are matched at once, without relying on inner
+     * CharacterMatchers. Even though this can lead to significant increases of parsing performance it does not play
+     * well with error reporting and recovery, which relies on character level matches.
+     * Therefore the {@link ReportingParseRunner} and {@link RecoveringParseRunner} implementations only enable fast
+     * string matching during their basic first parsing run and disable it once the input has proven to contain errors.
+     * </p>
+     *
+     * @return true if fast string matching is enabled during the current parsing run
+     */
+    boolean fastStringMatching();
+
+    /**
      * <p>Returns the first node that matches the given path.
      * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a
      * description of the path argument.</p>

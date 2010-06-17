@@ -37,9 +37,9 @@ import java.util.List;
  */
 public class BasicParseRunner<V> implements ParseRunner<V> {
 
-    protected final InputBuffer inputBuffer;
     protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
     protected final Matcher<V> rootMatcher;
+    protected InputBuffer inputBuffer;
     protected MatcherContext<V> rootContext;
     protected boolean matched;
 
@@ -64,11 +64,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     @SuppressWarnings({"unchecked"})
     public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
         this.rootMatcher = (Matcher<V>) rule;
-        this.inputBuffer = createInputBuffer(input);
-    }
-
-    protected InputBuffer createInputBuffer(String input) {
-        return new DefaultInputBuffer(input);
+        this.inputBuffer = new DefaultInputBuffer(input);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -80,11 +76,11 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     }
 
     protected boolean runRootContext() {
-        return runRootContext(new Handler<V>());
+        return runRootContext(new Handler<V>(), true);
     }
 
-    protected boolean runRootContext(MatchHandler<V> handler) {
-        rootContext = new MatcherContext<V>(inputBuffer, parseErrors, handler, rootMatcher);
+    protected boolean runRootContext(MatchHandler<V> handler, boolean fastStringMatching) {
+        rootContext = new MatcherContext<V>(inputBuffer, parseErrors, handler, rootMatcher, fastStringMatching);
         return handler.matchRoot(rootContext);
     }
 

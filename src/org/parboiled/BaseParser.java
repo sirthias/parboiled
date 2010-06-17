@@ -177,7 +177,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = Ch(characters[i]);
         }
-        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"');
+        return new StringMatcher<V>(matchers, characters).label('"' + String.valueOf(characters) + '"');
     }
 
     /**

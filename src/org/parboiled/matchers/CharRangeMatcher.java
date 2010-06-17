@@ -40,7 +40,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         char c = context.getCurrentChar();
         if (c < cLow || c > cHigh) return false;
 
-        context.advanceIndex();
+        context.advanceIndex(1);
         context.createNode();
         return true;
     }

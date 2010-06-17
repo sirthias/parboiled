@@ -42,7 +42,7 @@ import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
  * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
  * <p>The MatcherContext delegates to a given {@link MatchHandler} to call {@link Matcher#match(MatcherContext)},
  * passing itself to the Matcher which executes its logic, potentially calling sub matchers.
- * For each submatcher the matcher creates/initializes a sub context with {@link Matcher#getSubContext(MatcherContext)}
+ * For each sub matcher the matcher creates/initializes a sub context with {@link Matcher#getSubContext(MatcherContext)}
  * and then calls {@link #runMatcher()} on it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as companion objects to the matchers, providing them with support for building the
@@ -63,6 +63,7 @@ public class MatcherContext<V> implements Context<V> {
     private final Reference<Node<V>> lastNodeRef;
     private final MatcherContext<V> parent;
     private final int level;
+    private final boolean fastStringMatching;
 
     private MatcherContext<V> subContext;
     private int startIndex;
@@ -77,9 +78,26 @@ public class MatcherContext<V> implements Context<V> {
     private boolean hasError;
     private boolean nodeSuppressed;
 
+    /**
+     * Initializes a new root MatcherContext.
+     *
+     * @param inputBuffer        the InputBuffer for the parsing run
+     * @param parseErrors        the parse error list to create ParseError objects in
+     * @param matchHandler       the MatcherHandler to use for the parsing run
+     * @param matcher            the root matcher
+     * @param fastStringMatching <p>Fast string matching "short-circuits" the default practice of treating string rules
+     *                           as simple Sequence of character rules. When fast string matching is enabled strings are
+     *                           matched at once, without relying on inner CharacterMatchers. Even though this can lead
+     *                           to significant increases of parsing performance it does not play well with error
+     *                           reporting and recovery, which relies on character level matches.
+     *                           Therefore the {@link ReportingParseRunner} and {@link RecoveringParseRunner}
+     *                           implementations only enable fast string matching during their basic first parsing run
+     *                           and disable it once the input has proven to contain errors.</p>
+     */
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                          @NotNull MatchHandler<V> matchHandler, @NotNull Matcher<V> matcher) {
-        this(inputBuffer, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0);
+                          @NotNull MatchHandler<V> matchHandler, @NotNull Matcher<V> matcher,
+                          boolean fastStringMatching) {
+        this(inputBuffer, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0, fastStringMatching);
         this.currentChar = inputBuffer.charAt(0);
         this.matcher = ProxyMatcher.unwrap(matcher);
         this.nodeSuppressed = matcher.isNodeSuppressed();
@@ -87,13 +105,14 @@ public class MatcherContext<V> implements Context<V> {
 
     private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
                            @NotNull MatchHandler<V> matchHandler, @NotNull Reference<Node<V>> lastNodeRef,
-                           MatcherContext<V> parent, int level) {
+                           MatcherContext<V> parent, int level, boolean fastStringMatching) {
         this.inputBuffer = inputBuffer;
         this.parseErrors = parseErrors;
         this.matchHandler = matchHandler;
         this.lastNodeRef = lastNodeRef;
         this.parent = parent;
         this.level = level;
+        this.fastStringMatching = fastStringMatching;
     }
 
     @Override
@@ -151,6 +170,9 @@ public class MatcherContext<V> implements Context<V> {
         return level;
     }
 
+    public boolean fastStringMatching() {
+        return fastStringMatching;
+    }
     public V getNodeValue() {
         return nodeValue;
     }
@@ -250,8 +272,8 @@ public class MatcherContext<V> implements Context<V> {
         currentChar = inputBuffer.charAt(currentIndex);
     }
 
-    public void advanceIndex() {
-        if (currentIndex < inputBuffer.getLength()) currentIndex++;
+    public void advanceIndex(int delta) {
+        if (currentIndex < inputBuffer.getLength()) currentIndex += delta;
         currentChar = inputBuffer.charAt(currentIndex);
     }
 
@@ -307,7 +329,7 @@ public class MatcherContext<V> implements Context<V> {
 
                 // init new level
                 subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this,
-                        level + 1) :
+                        level + 1, fastStringMatching) :
 
                 // reuse existing instance
                 subContext;

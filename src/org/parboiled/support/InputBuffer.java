@@ -39,6 +39,15 @@ public interface InputBuffer {
     char charAt(int index);
 
     /**
+     * Determines whether the characters starting at the given index match the ones from the given array (in order).
+     *
+     * @param index      the index into the input buffer where to start the comparison
+     * @param characters the characters to test against the input buffer
+     * @return true if matched
+     */
+    boolean test(int index, char[] characters);
+
+    /**
      * Returns the line and column number of the character with the given index encapsulated in a {@link org.parboiled.support.InputBuffer.Position}
      * object. The very first character has the line number 1 and the column number 1.
      *

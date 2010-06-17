@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,38 +20,31 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
-import java.util.List;
-
 /**
- * A {@link Matcher} that executes all of its sub matcher in sequence and only succeeds, if all sub matchers succeed.
+ * A {@link SequenceMatcher} specialization for sequences of CharMatchers. Performs fast string matching if the
+ * current context has it enabled.
  *
  * @param <V> the type of the value field of a parse tree node
  */
-public class SequenceMatcher<V> extends AbstractMatcher<V> {
+public class StringMatcher<V> extends SequenceMatcher<V> {
 
-    public SequenceMatcher(@NotNull Rule[] subRules) {
-        super(subRules);
+    private final char[] characters;
+
+    public StringMatcher(@NotNull Rule[] charMatchers, char[] characters) {
+        super(charMatchers);
+        this.characters = characters;
     }
 
+    @Override
     public boolean match(@NotNull MatcherContext<V> context) {
-        List<Matcher<V>> children = getChildren();
-        int size = children.size();
-        for (int i = 0; i < size; i++) {
-            Matcher<V> matcher = children.get(i);
-
-            // remember the current index in the context, so we can access it for building the current follower set
-            context.setIntTag(i);
-
-            if (!matcher.getSubContext(context).runMatcher()) {
-                return false;
-            }
+        if (!context.fastStringMatching()) {
+            return super.match(context);
         }
+
+        if (!context.getInputBuffer().test(context.getCurrentIndex(), characters)) return false;
+        context.advanceIndex(characters.length);
         context.createNode();
         return true;
-    }
-
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
-        return visitor.visit(this);
     }
 
 }

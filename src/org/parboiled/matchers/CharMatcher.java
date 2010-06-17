@@ -34,7 +34,7 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
 
     public boolean match(@NotNull MatcherContext<V> context) {
         if (context.getCurrentChar() != character) return false;
-        context.advanceIndex();
+        context.advanceIndex(1);
         context.createNode();
         return true;
     }

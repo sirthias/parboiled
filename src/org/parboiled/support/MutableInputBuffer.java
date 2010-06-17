@@ -47,6 +47,10 @@ public class MutableInputBuffer implements InputBuffer {
         return buffer.charAt(index + (j + 1));
     }
 
+    public boolean test(int index, char[] characters) {
+        throw new UnsupportedOperationException();
+    }
+
     public Position getPosition(int index) {
         return buffer.getPosition(fix(index));
     }

@@ -70,20 +70,20 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     @Override
-    protected InputBuffer createInputBuffer(String input) {
-        buffer = new MutableInputBuffer(new DefaultInputBuffer(input));
-        return buffer;
-    }
-
-    @Override
     protected boolean runRootContext() {
-        MatchHandler<V> handler = new BasicParseRunner.Handler<V>();
-        if (runRootContext(handler)) {
+        // run a basic match
+        if (super.runRootContext()) {
             return true;
         }
+
         if (attemptRecordingMatch()) {
             throw new IllegalStateException(); // we failed before so we must fail again
         }
+
+        // in order to be able to apply fixes we need to wrap the input buffer with a mutability wrapper
+        Preconditions.checkState(inputBuffer instanceof DefaultInputBuffer);
+        inputBuffer = buffer = new MutableInputBuffer(inputBuffer);
+
         do {
             performErrorReportingRun();
             if (!fixError(errorIndex)) {
@@ -95,14 +95,16 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     protected boolean attemptRecordingMatch() {
         RecordingParseRunner.Handler<V> handler = new RecordingParseRunner.Handler<V>(getInnerHandler());
-        boolean matched = runRootContext(handler);
+        boolean matched = runRootContext(handler, false);
         errorIndex = handler.getErrorIndex();
         return matched;
     }
 
     protected void performErrorReportingRun() {
         ReportingParseRunner.Handler<V> handler = new ReportingParseRunner.Handler<V>(errorIndex, getInnerHandler());
-        runRootContext(handler);
+        if (runRootContext(handler, false)) {
+            throw new IllegalStateException(); // we failed before so we should really be failing again
+        }
         currentError = handler.getParseError();
     }
 
@@ -260,8 +262,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
         protected boolean willMatchDelError(MatcherContext<V> context) {
             int preSkipIndex = context.getCurrentIndex();
-            context.advanceIndex(); // skip del marker char
-            context.advanceIndex(); // skip illegal char
+            context.advanceIndex(2); // skip del marker char and illegal char
             if (!runTestMatch(context)) {
                 // if we wouldn't succeed with the match do not swallow the ERROR char & Co
                 context.setCurrentIndex(preSkipIndex);
@@ -275,7 +276,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
         protected boolean willMatchInsError(MatcherContext<V> context) {
             int preSkipIndex = context.getCurrentIndex();
-            context.advanceIndex(); // skip ins marker char
+            context.advanceIndex(1); // skip ins marker char
             if (!runTestMatch(context)) {
                 // if we wouldn't succeed with the match do not swallow the ERROR char
                 context.setCurrentIndex(preSkipIndex);
@@ -300,7 +301,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             context.createNode();
 
             // skip over all characters that are not legal followers of the failed Sequence
-            context.advanceIndex(); // gobble RESYNC marker
+            context.advanceIndex(1); // gobble RESYNC marker
             fringeIndex++;
             List<Matcher<V>> followMatchers = new FollowMatchersVisitor<V>().getFollowMatchers(context);
             int endIndex = gobbleIllegalCharacters(context, followMatchers);
@@ -322,7 +323,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
                         break while_loop;
                     }
                 }
-                context.advanceIndex();
+                context.advanceIndex(1);
             }
             return context.getCurrentIndex();
         }

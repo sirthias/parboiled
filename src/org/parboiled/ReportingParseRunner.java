@@ -60,15 +60,24 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
     @SuppressWarnings({"SimplifiableIfStatement"})
     @Override
     protected boolean runRootContext() {
-        MatchHandler<V> handler = new BasicParseRunner.Handler<V>();
-        if (runRootContext(handler)) {
+        // run a basic match
+        if (super.runRootContext()) {
             return true;
         }
+
+        // ok, we have a parse error, so run again without fast string matching and with our recording handler
         RecordingParseRunner.Handler<V> recordingHandler = new RecordingParseRunner.Handler<V>();
-        if (runRootContext(recordingHandler)) {
-            throw new IllegalStateException(); // we failed before so we must fail again
+        if (runRootContext(recordingHandler, false)) {
+            throw new IllegalStateException(); // we failed before so we should really be failing again
         }
-        return runRootContext(new Handler<V>(recordingHandler.getErrorIndex()));
+
+        // finally perform a third, reporting run (now that we know the error location)
+        Handler<V> reportingHandler = new Handler<V>(recordingHandler.getErrorIndex());
+        if (runRootContext(reportingHandler, false)) {
+            throw new IllegalStateException(); // we failed before so we should really be failing again
+        }
+
+        return false;
     }
 
     /**
@@ -101,7 +110,7 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
          * It relies on the given {@link MatchHandler} instance for the actual matching.
          *
          * @param errorIndex the InputLocation of the error to be reported
-         * @param inner         the inner MatchHandler to use
+         * @param inner      the inner MatchHandler to use
          */
         public Handler(int errorIndex, @NotNull MatchHandler<V> inner) {
             this.errorIndex = errorIndex;
