@@ -1,3 +1,11 @@
+Version 0.9.7.3 (2010-07-09)
+----------------------------
+- Fixed several problems in parse error recovery
+- Added fast string matching (significant speed increase for languages relying on string matching)
+- Added additional error recovery strategy: Single character replacement
+- Added support for custom InputBuffer implementations
+- Removed superfluous CAPTURE constructs along with all related code
+
 Version 0.9.7.2 (2010-06-14)
 ----------------------------
 - BREAKING CHANGE: Tracking of locations in input text is now purely done via integer indices (was: instances of
