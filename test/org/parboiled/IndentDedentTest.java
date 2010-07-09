@@ -63,7 +63,7 @@ public class IndentDedentTest extends AbstractTest {
     public void test() {
         IndentDedentParser parser = Parboiled.createParser(IndentDedentParser.class);
         Rule rule = parser.File();
-        ParsingResult<?> result = RecoveringParseRunner.run(rule, "" +
+        String source = "" +
                 "a file containing\n" +
                 "  some\n" +
                 "     indents\n" +
@@ -72,12 +72,13 @@ public class IndentDedentTest extends AbstractTest {
                 "  they might dedent\n" +
                 "  stay there\n" +
                 "          go back big time\n" +
-                " and return"
+                " and return";
+        ParsingResult<?> result = RecoveringParseRunner.run(rule, source
         );
         assertEquals(parser.indents, 3);
         assertEquals(parser.dedents, 2);
         assertEquals(parser.currentIndent, 1);
-        assertEquals(result.inputBuffer.getPosition(result.inputBuffer.getLength() - 1).line, 9);
+        assertEquals(result.inputBuffer.getPosition(source.length() - 1).line, 9);
     }
 
 }

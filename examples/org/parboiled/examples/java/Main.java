@@ -77,8 +77,8 @@ public class Main {
             } else {
                 System.out.print('.');
             }
-            lines += result.inputBuffer.getPosition(result.inputBuffer.getLength() - 1).line;
-            characters += result.inputBuffer.getLength();
+            lines += result.inputBuffer.getPosition(sourceText.length() - 1).line;
+            characters += sourceText.length();
         }
         long time = time(start);
 

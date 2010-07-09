@@ -16,8 +16,10 @@
 
 package org.parboiled.errors;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
+import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
@@ -40,12 +42,14 @@ public final class ErrorUtils {
      * @param <V>               the type of the value field of a parse tree node
      * @return the matcher whose label is best for presentation in "expected" strings
      */
-    public static <V> Matcher<V> findProperLabelMatcher(@NotNull MatcherPath<V> failedMatcherPath,
+    public static <V> Matcher<V> findProperLabelMatcher(@NotNull final MatcherPath<V> failedMatcherPath,
                                                         MatcherPath<V> lastMatchPath) {
         int commonPrefixLength = failedMatcherPath.getCommonPrefixLength(lastMatchPath);
         if (lastMatchPath != null && commonPrefixLength == lastMatchPath.length()) {
             return failedMatcherPath.getHead();
         }
+
+        final Reference<Integer> ix = new Reference<Integer>();
 
         DefaultMatcherVisitor<V, Boolean> hasProperLabelVisitor = new DefaultMatcherVisitor<V, Boolean>() {
             @Override
@@ -76,7 +80,16 @@ public final class ErrorUtils {
 
             @Override
             public Boolean visit(SequenceMatcher<V> matcher) {
-                return !"Sequence".equals(matcher.getLabel());
+                // if the sequence only has the default label we never use it
+                if ("Sequence".equals(matcher.getLabel())) return false;
+
+                // a sequence should never be the deepest matcher of a failed matcher path
+                Preconditions.checkState(ix.get() + 1 < failedMatcherPath.length());
+
+                // we only accept the sequence name as a good label if the failed matcher is its first child
+                Matcher<V> failedSub = failedMatcherPath.get(ix.get() + 1);
+                Matcher<V> firstSub = ProxyMatcher.unwrap(matcher.getChildren().get(0));
+                return firstSub == failedSub;
             }
 
             @Override
@@ -91,6 +104,7 @@ public final class ErrorUtils {
         };
 
         for (int i = commonPrefixLength; i < failedMatcherPath.length(); i++) {
+            ix.set(i);
             Matcher<V> matcher = failedMatcherPath.get(i);
             if (matcher.accept(hasProperLabelVisitor)) {
                 return matcher;

@@ -37,10 +37,6 @@ public class MutableInputBuffer implements InputBuffer {
         this.buffer = buffer;
     }
 
-    public int getLength() {
-        return buffer.getLength() + chars.length;
-    }
-
     public char charAt(int index) {
         int j = Arrays.binarySearch(inserts, index);
         if (j >= 0) return chars[j];

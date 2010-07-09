@@ -31,7 +31,6 @@ public class MutableInputBufferTest {
                 "gh\n" +
                 "\n"
         ));
-        assertEquals(buf.getLength(), 14);
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(5), 'e');
         assertEquals(buf.charAt(8), '\n');
@@ -59,7 +58,6 @@ public class MutableInputBufferTest {
 
         // ************* INSERT FIRST CHAR ************
         buf.insertChar(6, 'X');
-        assertEquals(buf.getLength(), 15);
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(5), 'e');
         assertEquals(buf.charAt(6), 'X');
@@ -90,7 +88,6 @@ public class MutableInputBufferTest {
 
         // ************* INSERT SECOND CHAR ************
         buf.insertChar(13, 'Y');
-        assertEquals(buf.getLength(), 16);
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(5), 'e');
         assertEquals(buf.charAt(6), 'X');
@@ -123,7 +120,6 @@ public class MutableInputBufferTest {
 
         // ************* INSERT THIRD CHAR AT SAME POSITION AS FIRST CHAR************
         buf.insertChar(6, 'Z');
-        assertEquals(buf.getLength(), 17);
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(5), 'e');
         assertEquals(buf.charAt(6), 'Z');
@@ -158,7 +154,6 @@ public class MutableInputBufferTest {
 
         // ************* UNDO INSERTION OF FIRST CHAR************
         assertEquals(buf.undoCharInsertion(7), 'X');
-        assertEquals(buf.getLength(), 16);
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(5), 'e');
         assertEquals(buf.charAt(6), 'Z');

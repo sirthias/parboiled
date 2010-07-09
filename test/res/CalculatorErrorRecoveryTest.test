@@ -761,10 +761,6 @@ Invalid input '*', expected Term (line 1, pos 3):
 Invalid input '+', expected Term (line 1, pos 3):
 1+++2
   ^
----
-Invalid input '+', expected Term (line 1, pos 4):
-1+++2
-   ^
 ===
 [InputLine, {3}]E '1+0+2'
     [Expression, {3}]E '1+0+2'
@@ -783,14 +779,13 @@ Invalid input '+', expected Term (line 1, pos 4):
                                 [Digits]E '0'
                                     [Digit]E '0'
                         [ZeroOrMore]
-            [FirstOf, {2}]E '+2'
-                [Sequence, {2}]E '+2'
+            [FirstOf, {2}] '+2'
+                [Sequence, {2}] '+2'
                     ['+'] '+'
-                    [Term, {2}]E '2'
-                        [Factor, {2}]E '2'
-                            [Number, {2}]E '2'
-                                [Digits]E '2'
-                                    [Digit] '2'
+                    [Term, {2}] '2'
+                        [Factor, {2}] '2'
+                            [Number, {2}] '2'
+                                [Digits] '2'
                         [ZeroOrMore]
     [EOI]
 ###
@@ -902,24 +897,20 @@ Invalid input 'x', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 Invalid input 'y', expected '*', '/', '+', '-' or ')' (line 1, pos 11):
 (2+*(5-1x)y+1
           ^
----
-Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 14):
-(2+*(5-1x)y+1
-             ^
 ===
-[InputLine, {7}]E '(2+(5-1)+1)'
-    [Expression, {7}]E '(2+(5-1)+1)'
-        [Term, {7}]E '(2+(5-1)+1)'
-            [Factor, {7}]E '(2+(5-1)+1)'
-                [Parens, {7}]E '(2+(5-1)+1)'
+[InputLine, {7}]E '(2+(5-1))+1'
+    [Expression, {7}]E '(2+(5-1))+1'
+        [Term, {6}]E '(2+(5-1))'
+            [Factor, {6}]E '(2+(5-1))'
+                [Parens, {6}]E '(2+(5-1))'
                     ['('] '('
-                    [Expression, {7}]E '2+(5-1)+1'
+                    [Expression, {6}]E '2+(5-1)'
                         [Term, {2}] '2'
                             [Factor, {2}] '2'
                                 [Number, {2}] '2'
                                     [Digits] '2'
                             [ZeroOrMore]
-                        [ZeroOrMore, {1}]E '+(5-1)+1'
+                        [ZeroOrMore, {4}]E '+(5-1)'
                             [FirstOf, {4}]E '+(5-1)'
                                 [Sequence, {4}]E '+(5-1)'
                                     ['+'] '+'
@@ -944,17 +935,17 @@ Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 14):
                                                                     [ZeroOrMore]
                                                 [')'] ')'
                                         [ZeroOrMore]
-                            [FirstOf, {1}]E '+1'
-                                [Sequence, {1}]E '+1'
-                                    ['+'] '+'
-                                    [Term, {1}] '1'
-                                        [Factor, {1}] '1'
-                                            [Number, {1}] '1'
-                                                [Digits] '1'
-                                        [ZeroOrMore]
                     [')']E ')'
             [ZeroOrMore]
-        [ZeroOrMore]
+        [ZeroOrMore, {1}] '+1'
+            [FirstOf, {1}] '+1'
+                [Sequence, {1}] '+1'
+                    ['+'] '+'
+                    [Term, {1}] '1'
+                        [Factor, {1}] '1'
+                            [Number, {1}] '1'
+                                [Digits] '1'
+                        [ZeroOrMore]
     [EOI]
 ###
 (2*ab4-7
@@ -1002,10 +993,6 @@ Invalid input '+', expected Term (line 1, pos 4):
 (2++*(5-1xy)y+1
    ^
 ---
-Invalid input '*', expected Term (line 1, pos 5):
-(2++*(5-1xy)y+1
-    ^
----
 Invalid input 'x...', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 10):
 (2++*(5-1xy)y+1
          ^^
@@ -1014,51 +1001,49 @@ Invalid input 'y', expected '*', '/', '+', '-' or EOI (line 1, pos 13):
 (2++*(5-1xy)y+1
             ^
 ===
-[InputLine, {7}]E '(2+0+(5-1)+1'
-    [Expression, {7}]E '(2+0+(5-1)+1'
-        [Term, {6}]E '(2+0+(5-1)'
-            [Factor, {6}]E '(2+0+(5-1)'
-                [Parens, {6}]E '(2+0+(5-1)'
+[InputLine, {3}]E '(2+0*(5-1)+1'
+    [Expression, {3}]E '(2+0*(5-1)+1'
+        [Term, {2}]E '(2+0*(5-1)'
+            [Factor, {2}]E '(2+0*(5-1)'
+                [Parens, {2}]E '(2+0*(5-1)'
                     ['('] '('
-                    [Expression, {6}]E '2+0+(5-1'
+                    [Expression, {2}]E '2+0*(5-1'
                         [Term, {2}] '2'
                             [Factor, {2}] '2'
                                 [Number, {2}] '2'
                                     [Digits] '2'
                             [ZeroOrMore]
-                        [ZeroOrMore, {4}]E '+0+(5-1'
-                            [FirstOf, {0}]E '+0'
-                                [Sequence, {0}]E '+0'
+                        [ZeroOrMore, {0}]E '+0*(5-1'
+                            [FirstOf, {0}]E '+0*(5-1'
+                                [Sequence, {0}]E '+0*(5-1'
                                     ['+'] '+'
-                                    [Term, {0}]E '0'
+                                    [Term, {0}]E '0*(5-1'
                                         [Factor, {0}]E '0'
                                             [Number, {0}]E '0'
                                                 [Digits]E '0'
                                                     [Digit]E '0'
-                                        [ZeroOrMore]
-                            [FirstOf, {4}]E '+(5-1'
-                                [Sequence, {4}]E '+(5-1'
-                                    ['+'] '+'
-                                    [Term, {4}]E '(5-1'
-                                        [Factor, {4}]E '(5-1'
-                                            [Parens, {4}]E '(5-1'
-                                                ['('] '('
-                                                [Expression, {4}] '5-1'
-                                                    [Term, {5}] '5'
-                                                        [Factor, {5}] '5'
-                                                            [Number, {5}] '5'
-                                                                [Digits] '5'
-                                                        [ZeroOrMore]
-                                                    [ZeroOrMore, {1}] '-1'
-                                                        [FirstOf, {1}] '-1'
-                                                            [Sequence, {1}] '-1'
-                                                                ['-'] '-'
-                                                                [Term, {1}] '1'
-                                                                    [Factor, {1}] '1'
-                                                                        [Number, {1}] '1'
-                                                                            [Digits] '1'
+                                        [ZeroOrMore, {4}]E '*(5-1'
+                                            [FirstOf, {4}]E '*(5-1'
+                                                [Sequence, {4}]E '*(5-1'
+                                                    ['*'] '*'
+                                                    [Factor, {4}]E '(5-1'
+                                                        [Parens, {4}]E '(5-1'
+                                                            ['('] '('
+                                                            [Expression, {4}] '5-1'
+                                                                [Term, {5}] '5'
+                                                                    [Factor, {5}] '5'
+                                                                        [Number, {5}] '5'
+                                                                            [Digits] '5'
                                                                     [ZeroOrMore]
-                                        [ZeroOrMore]
+                                                                [ZeroOrMore, {1}] '-1'
+                                                                    [FirstOf, {1}] '-1'
+                                                                        [Sequence, {1}] '-1'
+                                                                            ['-'] '-'
+                                                                            [Term, {1}] '1'
+                                                                                [Factor, {1}] '1'
+                                                                                    [Number, {1}] '1'
+                                                                                        [Digits] '1'
+                                                                                [ZeroOrMore]
                     [')'] ')'
             [ZeroOrMore]
         [ZeroOrMore, {1}]E '+1'

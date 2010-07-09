@@ -24,13 +24,6 @@ import org.jetbrains.annotations.NotNull;
 public interface InputBuffer {
 
     /**
-     * Returns the number of characters in the buffer.
-     *
-     * @return the number of characters
-     */
-    int getLength();
-
-    /**
      * Returns the character at the given index. If the index is invalid the method returns {@link org.parboiled.support.Characters#EOI}.
      *
      * @param index the index

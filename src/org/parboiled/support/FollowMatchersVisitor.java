@@ -40,7 +40,7 @@ public class FollowMatchersVisitor<V> extends DefaultMatcherVisitor<V, Boolean> 
     @NotNull
     public List<Matcher<V>> getFollowMatchers(MatcherContext<V> currentContext) {
         followMatchers.clear();
-        context = currentContext;
+        context = currentContext.getParent();
         while (context != null) {
             boolean complete = context.getMatcher().accept(this);
             if (complete) return followMatchers;

@@ -90,7 +90,7 @@ public class DefaultInputBuffer implements InputBuffer {
     }
 
     public Position getPosition(int index) {
-        Preconditions.checkArgument(0 <= index && index <= length); // also allow index "length" for EOI
+        index = Math.min(Math.max(index, 0), length); // also allow index "length" for EOI
         int j = Arrays.binarySearch(newlines, index);
         int line = j >= 0 ? j : -(j + 1);
         int column = index - (line > 0 ? newlines[line - 1] : -1);

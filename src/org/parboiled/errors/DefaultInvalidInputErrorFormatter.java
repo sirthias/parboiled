@@ -59,6 +59,13 @@ public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidIn
         return join(labelList);
     }
 
+    /**
+     * Gets the labels corresponding to the given matcher, CharSetMatchers are treated specially in that their
+     * label is constructed as a list of their contents
+     *
+     * @param matcher the matcher
+     * @return the labels
+     */
     public String[] getLabels(Matcher<V> matcher) {
         if (matcher instanceof CharSetMatcher) {
             CharSetMatcher cMatcher = (CharSetMatcher) matcher;
