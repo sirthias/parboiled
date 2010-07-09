@@ -50,12 +50,6 @@ public class ClassNodeInializerTest extends TransformationTest {
 
         assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
             public boolean apply(RuleMethod method) {
-                return method.containsCaptures();
-            }
-        }), "RuleWithCapture1,RuleWithCapture2,RuleWithCaptureInAction");
-
-        assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {
-            public boolean apply(RuleMethod method) {
                 return method.containsImplicitActions();
             }
         }), "RuleWithDirectImplicitAction,RuleWithIndirectImplicitAction,RuleWithDirectImplicitUpAction," +

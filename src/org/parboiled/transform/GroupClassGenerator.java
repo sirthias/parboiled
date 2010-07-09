@@ -167,12 +167,6 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
                 instructions.insertBefore(insn, new VarInsnNode(ALOAD, 1));
                 instructions.insertBefore(insn, new MethodInsnNode(INVOKEINTERFACE,
                         CONTEXT_AWARE.getInternalName(), "setContext", "(" + CONTEXT_DESC + ")V"));
-            } else if (node.isCaptureGet()) {
-                // calls to Capture.get() are easier to fix:
-                // we simply change to call to Capture.get() to a call to Capture.get(Context)
-                MethodInsnNode insn = (MethodInsnNode) node.getInstruction();
-                instructions.insertBefore(insn, new VarInsnNode(ALOAD, 1));
-                insn.desc = '(' + CONTEXT_DESC + ")Ljava/lang/Object;";
             }
         }
     }

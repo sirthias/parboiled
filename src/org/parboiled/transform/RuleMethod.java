@@ -53,7 +53,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private int parameterCount;
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
-    private boolean containsCaptures; // calls to BaseParser.CAPTURE(boolean)
     private boolean containsVars; // calls to Var.<init>(T)
     private boolean containsPotentialSuperCalls;
     private boolean hasExplicitActionOnlyAnnotation;
@@ -114,10 +113,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public void setContainsExplicitActions(boolean containsExplicitActions) {
         this.containsExplicitActions = containsExplicitActions;
-    }
-
-    public boolean containsCaptures() {
-        return containsCaptures;
     }
 
     public boolean containsVars() {
@@ -250,8 +245,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
                     containsImplicitActions = true;
                 } else if (isActionRoot(owner, name)) {
                     containsExplicitActions = true;
-                } else if (isCaptureRoot(owner, name)) {
-                    containsCaptures = true;
                 }
                 break;
 

@@ -17,7 +17,6 @@
 package org.parboiled.transform;
 
 import org.parboiled.BaseParser;
-import org.parboiled.Capture;
 import org.parboiled.Rule;
 import org.parboiled.annotations.*;
 import org.parboiled.support.Var;
@@ -79,14 +78,6 @@ class TestParser extends BaseParser<Integer> {
         i += param;
         j -= i;
         return Sequence('a' + i, i > param + j, string, ACTION(integer + param < string.get().length() - i - j));
-    }
-
-    public Rule RuleWithCapture() {
-        return Sequence('a', 'b', RuleWithCaptureParameter(CAPTURE(text("a"))));
-    }
-
-    public Rule RuleWithCaptureParameter(Capture<String> capture) {
-        return Sequence('a', "harry".equals(capture.get()));
     }
 
     @DontLabel

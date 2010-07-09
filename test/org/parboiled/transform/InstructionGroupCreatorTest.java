@@ -46,10 +46,10 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 1331400893L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 1653576444L);
         //renderToGraphViz(dotSource);
 
-        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 81866456L);
+        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 2883729241L);
         //renderToGraphViz(dotSource);
     }
 
@@ -75,7 +75,6 @@ public class InstructionGroupCreatorTest extends TransformationTest {
 
         // legend
         sb.append(" Action [penwidth=2.0,style=filled,fillcolor=skyblue];\n");
-        sb.append(" Capture [penwidth=2.0,style=filled,fillcolor=pink];\n");
         sb.append(" VarInit [penwidth=2.0,style=filled,fillcolor=grey];\n");
         sb.append(" ContextSwitch [penwidth=2.0,color=green];\n");
         sb.append(" XLoad [penwidth=2.0,color=orange];\n");
@@ -86,13 +85,12 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         for (int i = 0; i < method.getGraphNodes().size(); i++) {
             InstructionGraphNode node = method.getGraphNodes().get(i);
             // generate node
-            boolean isSpecial = node.isActionRoot() || node.isCaptureRoot() || node.isVarInitRoot() ||
+            boolean isSpecial = node.isActionRoot() || node.isVarInitRoot() ||
                     node.isContextSwitch() || node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
             sb.append(" ").append(i)
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
                     .append(node.isActionRoot() ? "color=skyblue," : "")
-                    .append(node.isCaptureRoot() ? "color=pink," : "")
                     .append(node.isVarInitRoot() ? "color=grey," : "")
                     .append(node.isContextSwitch() ? "color=green," : "")
                     .append(node.isXLoad() ? "color=orange," : "")
@@ -100,8 +98,6 @@ public class InstructionGroupCreatorTest extends TransformationTest {
                     .append(node.getGroup() != null && node.getGroup().getRoot().isActionRoot() ?
                             "style=filled,fillcolor=\"/gnbu8/" + (method.getGroups()
                                     .indexOf(node.getGroup()) + 1) + "\"," : "")
-                    .append(node.getGroup() != null && node.getGroup().getRoot().isCaptureRoot() ?
-                            "style=filled,fillcolor=pink," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isVarInitRoot() ?
                             "style=filled,fillcolor=grey," : "")
                     .append("fontcolor=black];\n");

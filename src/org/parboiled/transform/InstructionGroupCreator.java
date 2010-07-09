@@ -41,7 +41,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
     private RuleMethod method;
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.containsExplicitActions() || method.containsCaptures() || method.containsVars();
+        return method.containsExplicitActions() || method.containsVars();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
@@ -67,7 +67,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
 
     private void createGroups() {
         for (InstructionGraphNode node : method.getGraphNodes()) {
-            if (node.isActionRoot() || node.isCaptureRoot() || node.isVarInitRoot()) {
+            if (node.isActionRoot() || node.isVarInitRoot()) {
                 InstructionGroup group = new InstructionGroup(node);
                 markGroup(node, group);
                 method.getGroups().add(group);
@@ -77,8 +77,8 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
 
     private void markGroup(InstructionGraphNode node, InstructionGroup group) {
         Checks.ensure(
-                node == group.getRoot() || (!node.isCaptureRoot() && !node.isActionRoot() && !node.isVarInitRoot()),
-                "Method '%s' contains illegal nesting of ACTION, CAPTURE and/or Var initializer constructs",
+                node == group.getRoot() || (!node.isActionRoot() && !node.isVarInitRoot()),
+                "Method '%s' contains illegal nesting of ACTION and/or Var initializer constructs",
                 method.name);
 
         if (node.getGroup() != null) return; // already visited
@@ -131,7 +131,7 @@ class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
         Preconditions.checkState(nodes.get(sizeMinus1) == group.getRoot());
         for (int i = 0; i < sizeMinus1; i++) {
             InstructionGraphNode node = nodes.get(i);
-            Checks.ensure(!node.isXStore(), "An ACTION, CAPTURE or Var initializer in rule method '%s' " +
+            Checks.ensure(!node.isXStore(), "An ACTION or Var initializer in rule method '%s' " +
                     "contains illegal writes to a local variable or parameter", method.name);
             verifyAccess(node);
         }

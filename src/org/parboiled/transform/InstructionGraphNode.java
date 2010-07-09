@@ -42,11 +42,9 @@ class InstructionGraphNode implements Value, Opcodes {
     private final BasicValue resultValue;
     private final List<InstructionGraphNode> predecessors = new ArrayList<InstructionGraphNode>();
     private boolean isActionRoot;
-    private final boolean isCaptureRoot;
     private final boolean isVarInitRoot;
     private final boolean isContextSwitch;
     private final boolean isCallOnContextAware;
-    private final boolean isCaptureGet;
     private final boolean isXLoad;
     private final boolean isXStore;
     private InstructionGroup group;
@@ -55,11 +53,9 @@ class InstructionGraphNode implements Value, Opcodes {
         this.instruction = instruction;
         this.resultValue = resultValue;
         this.isActionRoot = AsmUtils.isActionRoot(instruction);
-        this.isCaptureRoot = AsmUtils.isCaptureRoot(instruction);
         this.isVarInitRoot = AsmUtils.isVarRoot(instruction);
         this.isContextSwitch = AsmUtils.isContextSwitch(instruction);
         this.isCallOnContextAware = AsmUtils.isCallOnContextAware(instruction);
-        this.isCaptureGet = AsmUtils.isCaptureGet(instruction);
         this.isXLoad = ILOAD <= instruction.getOpcode() && instruction.getOpcode() < IALOAD;
         this.isXStore = ISTORE <= instruction.getOpcode() && instruction.getOpcode() < IASTORE;
     }
@@ -108,10 +104,6 @@ class InstructionGraphNode implements Value, Opcodes {
         isActionRoot = true;
     }
 
-    public boolean isCaptureRoot() {
-        return isCaptureRoot;
-    }
-
     public boolean isVarInitRoot() {
         return isVarInitRoot;
     }
@@ -122,10 +114,6 @@ class InstructionGraphNode implements Value, Opcodes {
 
     public boolean isCallOnContextAware() {
         return isCallOnContextAware;
-    }
-
-    public boolean isCaptureGet() {
-        return isCaptureGet;
     }
 
     public boolean isXLoad() {

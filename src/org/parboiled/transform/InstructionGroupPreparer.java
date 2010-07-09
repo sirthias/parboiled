@@ -44,7 +44,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
     private RuleMethod method;
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.containsExplicitActions() || method.containsCaptures() || method.containsVars();
+        return method.containsExplicitActions() || method.containsVars();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
@@ -109,8 +109,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
             System.arraycopy(hash, 0, hash96, 0, 12);
 
             // generate a name for the group based on the hash
-            String name = group.getRoot().isActionRoot() ? "Action$" :
-                    group.getRoot().isCaptureRoot() ? "Capture$" : "VarInit$";
+            String name = group.getRoot().isActionRoot() ? "Action$" : "VarInit$";
             name += CUSTOM_BASE64.encodeToString(hash96, false);
             group.setName(name);
         }

@@ -31,7 +31,6 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.parboiled.BaseParser;
-import org.parboiled.Capture;
 import org.parboiled.ContextAware;
 import org.parboiled.Rule;
 import org.parboiled.support.Var;
@@ -273,16 +272,6 @@ class AsmUtils {
         return "ACTION".equals(methodName) && isAssignableTo(methodOwner, BaseParser.class);
     }
 
-    public static boolean isCaptureRoot(@NotNull AbstractInsnNode insn) {
-        if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
-        MethodInsnNode mi = (MethodInsnNode) insn;
-        return isCaptureRoot(mi.owner, mi.name);
-    }
-
-    public static boolean isCaptureRoot(@NotNull String methodOwner, @NotNull String methodName) {
-        return "CAPTURE".equals(methodName) && isAssignableTo(methodOwner, BaseParser.class);
-    }
-
     public static boolean isVarRoot(@NotNull AbstractInsnNode insn) {
         if (insn.getOpcode() != Opcodes.INVOKESPECIAL) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
@@ -310,13 +299,6 @@ class AsmUtils {
         if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isAssignableTo(mi.owner, ContextAware.class);
-    }
-
-    public static boolean isCaptureGet(@NotNull AbstractInsnNode insn) {
-        if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
-        MethodInsnNode mi = (MethodInsnNode) insn;
-        return "get".equals(mi.name) && "()Ljava/lang/Object;".equals(mi.desc) &&
-                isAssignableTo(mi.owner, Capture.class);
     }
 
     public static boolean isCallToRuleCreationMethod(@NotNull AbstractInsnNode insn) {

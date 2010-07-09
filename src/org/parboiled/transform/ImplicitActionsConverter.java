@@ -64,7 +64,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
             method.setContainsExplicitActions(true);
             return;
         }
-        if (!node.isActionRoot() && !node.isCaptureRoot()) {
+        if (!node.isActionRoot()) {
             for (InstructionGraphNode predecessor : node.getPredecessors()) {
                 walkNode(predecessor);
             }

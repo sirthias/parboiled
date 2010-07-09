@@ -26,37 +26,27 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import org.parboiled.support.Checks;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import static org.parboiled.transform.AsmUtils.getLoadingOpcode;
 
 /**
- * Inserts action group class and capture group call instantiation code at the groups respective placeholders.
+ * Inserts action group class instantiation code at the groups respective placeholders.
  */
 class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
 
     private RuleMethod method;
     private InstructionGroup group;
     private int actionNr;
-    private int captureNr;
     private int varInitNr;
-    private Map<InstructionGraphNode, Integer> captureVarIndices;
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.containsExplicitActions() || method.containsCaptures() || method.containsVars();
+        return method.containsExplicitActions() || method.containsVars();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         this.method = method;
         actionNr = 0;
-        captureNr = 0;
         varInitNr = 0;
-        captureVarIndices = null;
 
         for (InstructionGroup group : method.getGroups()) {
             this.group = group;
@@ -66,16 +56,9 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
             InstructionGraphNode root = group.getRoot();
             if (root.isActionRoot()) {
                 removeGroupRootInstruction();
-            } else if (root.isCaptureRoot()) {
-                insertStoreCapture();
-                removeGroupRootInstruction();
             } else { // if (root.isVarInitRoot())
-                ((MethodInsnNode)root.getInstruction()).desc = "(Lorg/parboiled/common/Factory;)V";
+                ((MethodInsnNode) root.getInstruction()).desc = "(Lorg/parboiled/common/Factory;)V";
             }
-        }
-
-        if (method.containsCaptures()) {
-            finalizeCaptureSetup();
         }
 
         method.setBodyRewritten();
@@ -87,12 +70,10 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
         insert(new TypeInsnNode(NEW, internalName));
         insert(new InsnNode(DUP));
         insert(new LdcInsnNode(method.name +
-                (root.isActionRoot() ? "_Action" + ++actionNr :
-                        root.isCaptureRoot() ? "_Capture" + ++captureNr : "_VarInit" + ++varInitNr))
-        );
+                (root.isActionRoot() ? "_Action" + ++actionNr : "_VarInit" + ++varInitNr)));
         insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
 
-        if ((root.isActionRoot() || root.isCaptureRoot()) && method.hasSkipActionsInPredicatesAnnotation()) {
+        if (root.isActionRoot() && method.hasSkipActionsInPredicatesAnnotation()) {
             insert(new InsnNode(DUP));
             insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
         }
@@ -108,58 +89,12 @@ class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
         }
     }
 
-    private void insertStoreCapture() {
-        if (captureVarIndices == null) {
-            captureVarIndices = new HashMap<InstructionGraphNode, Integer>();
-        }
-        int index = method.maxLocals++;
-        captureVarIndices.put(group.getRoot(), index);
-
-        insert(new InsnNode(DUP));
-        insert(new VarInsnNode(ASTORE, index));
-    }
-
     private void insert(AbstractInsnNode insn) {
         method.instructions.insertBefore(group.getRoot().getInstruction(), insn);
     }
 
     private void removeGroupRootInstruction() {
         method.instructions.remove(group.getRoot().getInstruction());
-    }
-
-    private void finalizeCaptureSetup() {
-        Set<InstructionGroup> finalizedCaptureGroups = new HashSet<InstructionGroup>();
-        for (InstructionGraphNode node : method.getGraphNodes()) {
-            if (AsmUtils.isCallToRuleCreationMethod(node.getInstruction())) {
-                insertSetContextRuleOnCaptureArguments(node, finalizedCaptureGroups);
-            }
-        }
-        Checks.ensure(finalizedCaptureGroups.size() == captureVarIndices.size(), "Method '%s' contains illegal " +
-                "CAPTURE(...) constructs that are not direct arguments to rule creating methods", method.name);
-    }
-
-    private void insertSetContextRuleOnCaptureArguments(InstructionGraphNode ruleCreationCall,
-                                                        Set<InstructionGroup> finalizedCaptureGroups) {
-        for (InstructionGraphNode predecessor : ruleCreationCall.getPredecessors()) {
-            if (predecessor.isCaptureRoot()) {
-                insertSetContextRule(ruleCreationCall, predecessor);
-                finalizedCaptureGroups.add(predecessor.getGroup());
-            }
-        }
-    }
-
-    private void insertSetContextRule(InstructionGraphNode ruleCreationCall, InstructionGraphNode argument) {
-        String internalName = argument.getGroup().getGroupClassType().getInternalName();
-        AbstractInsnNode location = ruleCreationCall.getInstruction().getNext();
-        // stack: <Rule>
-        method.instructions.insertBefore(location, new InsnNode(DUP));
-        // stack: <Rule> :: <Rule>
-        method.instructions.insertBefore(location, new VarInsnNode(ALOAD, captureVarIndices.get(argument)));
-        // stack: <Rule> :: <Rule> :: <Capture>
-        method.instructions.insertBefore(location, new InsnNode(SWAP));
-        // stack: <Rule> :: <Capture> :: <Rule>
-        method.instructions.insertBefore(location, new FieldInsnNode(PUTFIELD, internalName, "contextRule", RULE_DESC));
-        // stack: <Rule>
     }
 
 }

@@ -36,7 +36,6 @@ public class RuleMethodRewriterTest extends TransformationTest {
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
             new ActionClassGenerator(true),
-            new CaptureClassGenerator(true),
             new VarInitClassGenerator(true),
             new RuleMethodRewriter(),
             new VarFramingGenerator()
@@ -154,36 +153,6 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "78     AASTORE\n" +
                 "79     INVOKESPECIAL org/parboiled/matchers/VarFramingMatcher.<init> (Lorg/parboiled/Rule;[Lorg/parboiled/support/Var;)V\n" +
                 "80     ARETURN\n");
-
-        assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithCapture", processors)), "" +
-                "Method 'RuleWithCapture':\n" +
-                " 0     ALOAD 0\n" +
-                " 1     BIPUSH 97\n" +
-                " 2     INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                " 3     BIPUSH 98\n" +
-                " 4     INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                " 5     ICONST_1\n" +
-                " 6     ANEWARRAY java/lang/Object\n" +
-                " 7     DUP\n" +
-                " 8     ICONST_0\n" +
-                " 9     ALOAD 0\n" +
-                "10     NEW org/parboiled/transform/Capture$RRä3HOYSfqVyRda2\n" +
-                "11     DUP\n" +
-                "12     LDC \"RuleWithCapture_Capture1\"\n" +
-                "13     INVOKESPECIAL org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.<init> (Ljava/lang/String;)V\n" +
-                "14     DUP\n" +
-                "15     ALOAD 0\n" +
-                "16     PUTFIELD org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
-                "17     DUP\n" +
-                "18     ASTORE 1\n" +
-                "19     INVOKEVIRTUAL org/parboiled/transform/TestParser.RuleWithCaptureParameter (Lorg/parboiled/Capture;)Lorg/parboiled/Rule;\n" +
-                "20     DUP\n" +
-                "21     ALOAD 1\n" +
-                "22     SWAP\n" +
-                "23     PUTFIELD org/parboiled/transform/Capture$RRä3HOYSfqVyRda2.contextRule : Lorg/parboiled/Rule;\n" +
-                "24     AASTORE\n" +
-                "25     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
-                "26     ARETURN\n");
     }
 
 }

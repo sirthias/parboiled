@@ -18,7 +18,6 @@ package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
 import org.parboiled.BaseParser;
-import org.parboiled.Capture;
 import org.parboiled.Rule;
 import org.testng.annotations.Test;
 
@@ -37,26 +36,9 @@ public class ErrorDetectionTest extends TransformationTest {
             new ImplicitActionsConverter(),
             new InstructionGroupCreator(),
             new InstructionGroupPreparer(),
-            new CaptureClassGenerator(true),
             new ActionClassGenerator(true),
             new RuleMethodRewriter()
     );
-
-    @Test
-    public synchronized void testRuleWithCaptureInAction() throws Exception {
-        setup(new BaseParser<Object>() {
-            public Rule RuleWithCaptureInAction() {
-                return Sequence('a', ACTION(5 == CAPTURE(nodes("a").size()).get()));
-            }
-        }.getClass());
-        try {
-            processMethod("RuleWithCaptureInAction", processors);
-            fail();
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Method 'RuleWithCaptureInAction' contains illegal nesting of " +
-                    "ACTION, CAPTURE and/or Var initializer constructs");
-        }
-    }
 
     @Test
     public synchronized void testRuleWithActionAccessingPrivateField() throws Exception {
@@ -97,41 +79,6 @@ public class ErrorDetectionTest extends TransformationTest {
             assertEquals(e.getMessage(),
                     "Rule method 'RuleWithActionAccessingPrivateMethod' contains an illegal call to private method 'privateAction'.\n" +
                             "Mark 'privateAction' protected or package-private if you want to prevent public access!");
-        }
-    }
-
-    @Test
-    public synchronized void testRuleWithIllegalCapture1() throws Exception {
-        setup(new BaseParser<Object>() {
-            public Rule RuleWithIllegalCapture1() {
-                Capture<String> capture = CAPTURE(text("a"));
-                return Sequence('a', 'b', capture.get());
-            }
-        }.getClass());
-
-        try {
-            processMethod("RuleWithIllegalCapture1", processors);
-            fail();
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Method 'RuleWithIllegalCapture1' contains illegal CAPTURE(...) constructs " +
-                    "that are not direct arguments to rule creating methods");
-        }
-    }
-
-    @Test
-    public synchronized void testRuleWithIllegalCapture2() throws Exception {
-        setup(new BaseParser<Object>() {
-            public Rule RuleWithIllegalCapture2() {
-                return Sequence('a', 'b', UP(CAPTURE(text("a"))));
-            }
-        }.getClass());
-
-        try {
-            processMethod("RuleWithIllegalCapture2", processors);
-            fail();
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Method 'RuleWithIllegalCapture2' contains illegal CAPTURE(...) constructs " +
-                    "that are not direct arguments to rule creating methods");
         }
     }
 
