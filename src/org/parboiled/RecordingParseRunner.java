@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
+import org.parboiled.support.InputBuffer;
 import org.parboiled.support.ParsingResult;
 
 /**
@@ -54,6 +55,16 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
      */
     public RecordingParseRunner(@NotNull Rule rule, @NotNull String input) {
         super(rule, input);
+    }
+
+    /**
+     * Creates a new RecordingParseRunner instance for the given rule and input buffer.
+     *
+     * @param rule        the parser rule
+     * @param inputBuffer the input buffer
+     */
+    public RecordingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
+        super(rule, inputBuffer);
     }
 
     @Override

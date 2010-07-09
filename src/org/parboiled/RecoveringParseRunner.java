@@ -69,6 +69,16 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         super(rule, input);
     }
 
+    /**
+     * Creates a new RecoveringParseRunner instance for the given rule and input buffer.
+     *
+     * @param rule        the parser rule
+     * @param inputBuffer the input buffer
+     */
+    public RecoveringParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
+        super(rule, inputBuffer);
+    }
+
     @Override
     protected boolean runRootContext() {
         // run a basic match

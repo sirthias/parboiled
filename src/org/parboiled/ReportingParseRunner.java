@@ -18,6 +18,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
+import org.parboiled.support.InputBuffer;
 import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
@@ -55,6 +56,16 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
      */
     public ReportingParseRunner(@NotNull Rule rule, @NotNull String input) {
         super(rule, input);
+    }
+
+    /**
+     * Creates a new ReportingParseRunner instance for the given rule and input buffer.
+     *
+     * @param rule        the parser rule
+     * @param inputBuffer the input buffer
+     */
+    public ReportingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
+        super(rule, inputBuffer);
     }
 
     @SuppressWarnings({"SimplifiableIfStatement"})

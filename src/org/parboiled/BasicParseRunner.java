@@ -63,8 +63,19 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      */
     @SuppressWarnings({"unchecked"})
     public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
+        this(rule, new DefaultInputBuffer(input));
+    }
+
+    /**
+     * Creates a new BasicParseRunner instance for the given rule and input buffer.
+     *
+     * @param rule        the parser rule
+     * @param inputBuffer the input buffer
+     */
+    @SuppressWarnings({"unchecked"})
+    public BasicParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
         this.rootMatcher = (Matcher<V>) rule;
-        this.inputBuffer = new DefaultInputBuffer(input);
+        this.inputBuffer = inputBuffer;
     }
 
     @SuppressWarnings({"unchecked"})
