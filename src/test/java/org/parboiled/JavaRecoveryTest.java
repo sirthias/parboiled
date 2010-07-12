@@ -16,18 +16,18 @@
 
 package org.parboiled;
 
-import org.parboiled.examples.calculators.CalculatorParser;
-import org.parboiled.examples.calculators.CalculatorParser2;
+import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.test.FileUtils;
+import org.parboiled.trees.Filters;
 import org.testng.annotations.Test;
 
-public class CalculatorRecoveryTest extends AbstractTest {
+public class JavaRecoveryTest extends AbstractTest {
 
     @Test
-    public void testCalculatorErrorRecovery() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser2.class);
-        String[] tests = FileUtils.readAllTextFromResource("res/CalculatorErrorRecoveryTest.test")
+    public void testJavaErrorRecovery() {
+        JavaParser parser = Parboiled.createParser(JavaParser.class);
+        String[] tests = FileUtils.readAllTextFromResource("JavaErrorRecoveryTest.test")
                 .split("###\r?\n");
 
         if (!runSingleTest(parser, tests)) {
@@ -39,7 +39,7 @@ public class CalculatorRecoveryTest extends AbstractTest {
     }
 
     // if there is a test with its input starting with '>>>' only run that one
-    private boolean runSingleTest(CalculatorParser parser, String[] tests) {
+    private boolean runSingleTest(JavaParser parser, String[] tests) {
         for (String test : tests) {
             if (test.startsWith(">>>")) {
                 runTest(parser, test.substring(3));
@@ -49,10 +49,10 @@ public class CalculatorRecoveryTest extends AbstractTest {
         return false;
     }
 
-    private void runTest(CalculatorParser parser, String test) {
+    private void runTest(JavaParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser.InputLine(), s[0].replaceAll("\r?\n", ""), s[1], s.length > 2 ? s[2] : "");
+            testFail(parser.CompilationUnit(), s[0], s[1], s[2], Filters.skipEmptyOptionalsAndZeroOrMores());
         }
     }
 

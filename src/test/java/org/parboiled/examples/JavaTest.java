@@ -36,7 +36,7 @@ public class JavaTest {
 
     @Test
     public void simpleJavaTest() {
-        String testSource = FileUtils.readAllText("test/org/parboiled/examples/JavaTest.java");
+        String testSource = FileUtils.readAllText("src/test/java/org/parboiled/examples/JavaTest.java");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.CompilationUnit();
 
@@ -73,7 +73,7 @@ public class JavaTest {
         }
         assertEqualsMultiline(
                 printNodeTree(parsingResult, Filters.skipEmptyOptionalsAndZeroOrMores()),
-                FileUtils.readAllTextFromResource("res/SimpleJavaTestParseTree.test")
+                FileUtils.readAllTextFromResource("SimpleJavaTestParseTree.test")
         );
     }
 

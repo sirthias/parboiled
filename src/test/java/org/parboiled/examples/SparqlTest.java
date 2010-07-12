@@ -76,7 +76,7 @@ public class SparqlTest {
         List<TextInfo> textInfos = new ArrayList<TextInfo>();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(
-                ClassLoader.getSystemClassLoader().getResourceAsStream("res/SparqlTest.test"),
+                ClassLoader.getSystemClassLoader().getResourceAsStream("SparqlTest.test"),
                 Charset.forName("UTF8")));
         while (in.ready()) {
             if (in.read() == '<' && in.ready() && in.read() == '<') {
