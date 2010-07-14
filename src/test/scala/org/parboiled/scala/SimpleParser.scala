@@ -6,19 +6,19 @@ class SimpleParser extends Parser {
     Expression & EOI
   }
 
-  def Expression = rule {
-    Term & (anyOf("+-") & Term) *
+  def Expression:Rule[Int] = rule {
+    Term & (anyOf("+-") & Term)*
   }
 
   def Term = rule {
-    Factor & (anyOf("*-") & Factor) *
+    Factor & (anyOf("*-") & Factor)*
   }
 
   def Factor = rule {
     Number | Parens
   }
 
-  def Parens: Rule[Nothing] = rule {
+  def Parens = rule {
     '(' & Expression & ')'
   }
 

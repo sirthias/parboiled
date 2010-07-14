@@ -5,49 +5,45 @@ import org.parboiled.{Rule => PRule}
 import org.parboiled.matchers._
 import java.lang.String
 
-abstract class Rule[+T](private var label:String) { rule =>
-  protected def toMatcher:PRule
-  def toRule = if (label != null) toMatcher.label(label) else toMatcher
+abstract class Rule[+T](var label:String) {
+  def toRule:PRule
   def withLabel(label:String) = { this.label = label; this }
-  def ? = new Rule[T]("Optional") {
-    def toMatcher = new OptionalMatcher(rule.toRule)
-  }
-  def * = new Rule[T]("ZeroOrMore") {
-    def toMatcher = new ZeroOrMoreMatcher(rule.toRule)
-  }
-  def + = new Rule[T]("OneOrMore") {
-    def toMatcher = new OneOrMoreMatcher(rule.toRule)
-  }
-  def &[S](other: Rule[S]):Rule[S] = new CompositeRule[S]("Sequence", List(other, this)) {
-    def toMatcher = new SequenceMatcher(subs.reverse.map(_.toRule).toArray)
-  }
-  def &(other: SimpleRule):Rule[T] = new CompositeRule[T]("Sequence", List(other, this)) {
-    def toMatcher = new SequenceMatcher(subs.reverse.map(_.toRule).toArray)
-  }
-  def |[S >: T](other: Rule[S]):Rule[S] = new CompositeRule[S]("FirstOf", List(other, this)) {
-    def toMatcher = new FirstOfMatcher(subs.reverse.map(_.toRule).toArray)
-  }
+  def ? = new StandardRule[T]("Optional", new OptionalMatcher(toRule))
+  def * = new StandardRule[T]("ZeroOrMore", new ZeroOrMoreMatcher(toRule))
+  def + = new StandardRule[T]("OneOrMore", new OneOrMoreMatcher(toRule))
+  def &(other: LeafRule):Rule[T] = new SequenceRule[T](List(other.toRule, toRule)) 
+  def &[S](other: Rule[S]):Rule[S] = new SequenceRule[S](List(other.toRule, toRule))
+  def |[S >: T](other: Rule[S]) = new FirstOfRule[S](List(other.toRule, toRule))
 }
 
-abstract class CompositeRule[+T](label:String, var subs:List[Rule[Any]]) extends Rule[T](label) {
-  override def &[S](other: Rule[S]):Rule[S] = { subs = other :: subs; this.asInstanceOf[Rule[S]] }
+class LeafRule(label:String, val rule:PRule) extends Rule[Nothing](label) {
+  def toRule = rule.label(label)
 }
 
-class SimpleRule(label:String, val rule:PRule) extends Rule[Nothing](label) {
-  protected def toMatcher = rule
+class StandardRule[+T](label:String, val rule:PRule) extends Rule[T](label) {
+  def toRule = rule.label(label)
 }
 
-class CharRule(val c:Char) extends SimpleRule('\'' + escape(c) + '\'', new CharMatcher(c)) {
-  def --(upperBound:Char):Rule[Nothing] = {
-    new SimpleRule(c + ".." + upperBound, new CharRangeMatcher(c, upperBound))
-  }
+class SequenceRule[+T](val subs:List[PRule]) extends Rule[T]("Sequence") {
+  def toRule = new SequenceMatcher(subs.reverse.toArray).label(label)
+  override def &(other: LeafRule):Rule[T] = new SequenceRule[T](other.toRule :: subs) 
+  override def &[S](other: Rule[S]):Rule[S] = new SequenceRule[S](other.toRule :: subs)
+}
+
+class FirstOfRule[+T](val subs:List[PRule]) extends Rule[T]("FirstOf") {
+  def toRule = new FirstOfMatcher(subs.reverse.toArray).label(label)
+  override def |[S >: T](other: Rule[S]) = new FirstOfRule[S](other.toRule :: subs)
+}
+
+class CharRule(val c:Char) extends LeafRule('\'' + escape(c) + '\'', new CharMatcher(c)) {
+  def --(upperBound:Char) = new LeafRule(c + ".." + upperBound, new CharRangeMatcher(c, upperBound))
 }
 
 class ProxyRule extends Rule[Any](null) {
   var inner:Rule[Any] = _
-  protected def toMatcher = {
+  def toRule = {
     require(inner != null)
-    inner.toRule
+    if (label != null) inner.toRule.label(label) else inner.toRule
   }
 }
 

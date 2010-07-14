@@ -8,9 +8,9 @@ trait Parser {
 
   private val cache = scala.collection.mutable.Map.empty[RuleMethod, Rule[Any]]
 
-  lazy val EMPTY = new SimpleRule("EMPTY", new EmptyMatcher())
-  lazy val ANY = new SimpleRule("ANY", new AnyMatcher())
-  lazy val EOI = new SimpleRule("EOI", new CharMatcher(Characters.EOI))
+  lazy val EMPTY = new LeafRule("EMPTY", new EmptyMatcher())
+  lazy val ANY = new LeafRule("ANY", new AnyMatcher())
+  lazy val EOI = new LeafRule("EOI", new CharMatcher(Characters.EOI))
 
   def rule[T <: Rule[_]](block: => T): T = {
     val ruleMethod = Support.getCurrentRuleMethod
@@ -47,7 +47,7 @@ trait Parser {
     if (!chars.isSubtractive && chars.getChars().length == 1)
       charToRule(chars.getChars()(0))
     else
-      new SimpleRule(chars.toString, new CharSetMatcher(chars))
+      new LeafRule(chars.toString, new CharSetMatcher(chars))
   }
 
   implicit def charToRule(c: Char) = new CharRule(c)
@@ -59,7 +59,7 @@ trait Parser {
   implicit def charArrayToRule(chars: Array[Char]) = chars.length match {
     case 0 => EMPTY
     case 1 => charToRule(chars(0))
-    case _ => new SimpleRule("\"" + chars + '"', new StringMatcher(chars.map(charToRule).map(_.toRule), chars))
+    case _ => new LeafRule("\"" + chars + '"', new StringMatcher(chars.map(charToRule).map(_.toRule), chars))
   }
 
 }
