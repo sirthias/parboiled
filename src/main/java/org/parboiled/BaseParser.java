@@ -62,7 +62,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @DontLabel
     public Rule Ch(char c) {
-        return new CharMatcher(c).label("\'" + escape(c) + '\'');
+        return new CharMatcher(c).label('\'' + escape(c) + '\'');
     }
 
     /**
