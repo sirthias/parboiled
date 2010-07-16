@@ -1,5 +1,7 @@
 package org.parboiled.scala
 
+import Parboiled._
+
 class SimpleParser extends Parser {
 
   def InputLine = rule {
@@ -27,7 +29,7 @@ class SimpleParser extends Parser {
   }
 
   def Digits = rule {
-    Digit +
+    Digit+
   }
 
   def Digit = rule {
