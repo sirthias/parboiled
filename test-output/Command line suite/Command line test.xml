@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Command line test" failures="1" tests="1" time="0.052" errors="0">
+  <properties/>
+  <testcase name="verifyEasy" time="0.038" classname="org.parboiled.scala.SimpleScalaTest">
+    <failure type="java.lang.AssertionError" message="expected:&amp;lt;&amp;gt; but was:&amp;lt;InputLine
+SequenceRule
+  Expression
+  SequenceRule
+    Term
+    SequenceRule
+      Factor
+      FirstOfRule
+        Number
+        SequenceRule
+          Digits
+          OneOrMoreRule
+            LeafRule
+          ActionRule
+        Parens
+        SequenceRule
+          SequenceRule
+            CharRule
+            ProxyRule
+          CharRule
+      ZeroOrMoreRule
+        SequenceRule
+          LeafRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+    ZeroOrMoreRule
+      SequenceRule
+        LeafRule
+        Term
+        SequenceRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+          ZeroOrMoreRule
+            SequenceRule
+              LeafRule
+              Factor
+              FirstOfRule
+                Number
+                SequenceRule
+                  Digits
+                  OneOrMoreRule
+                    LeafRule
+                  ActionRule
+                Parens
+                SequenceRule
+                  SequenceRule
+                    CharRule
+                    ProxyRule
+                  CharRule
+  LeafRule
+&amp;gt;">
+      <![CDATA[java.lang.AssertionError: expected:<> but was:<InputLine
+SequenceRule
+  Expression
+  SequenceRule
+    Term
+    SequenceRule
+      Factor
+      FirstOfRule
+        Number
+        SequenceRule
+          Digits
+          OneOrMoreRule
+            LeafRule
+          ActionRule
+        Parens
+        SequenceRule
+          SequenceRule
+            CharRule
+            ProxyRule
+          CharRule
+      ZeroOrMoreRule
+        SequenceRule
+          LeafRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+    ZeroOrMoreRule
+      SequenceRule
+        LeafRule
+        Term
+        SequenceRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+          ZeroOrMoreRule
+            SequenceRule
+              LeafRule
+              Factor
+              FirstOfRule
+                Number
+                SequenceRule
+                  Digits
+                  OneOrMoreRule
+                    LeafRule
+                  ActionRule
+                Parens
+                SequenceRule
+                  SequenceRule
+                    CharRule
+                    ProxyRule
+                  CharRule
+  LeafRule
+>
+	at org.parboiled.scala.SimpleScalaTest.verifyEasy(SimpleScalaTest.scala:26)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:158)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.runTestNG(TestNGSuite.scala:145)
+	at org.parboiled.scala.SimpleScalaTest.runTestNG(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:96)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:59)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1523)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1520)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at org.scalatest.tools.Runner$.doRunRunRunADoRunRun(Runner.scala:1520)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:616)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:615)
+	at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1564)
+	at org.scalatest.tools.Runner$.runOptionallyWithPassFailReporter(Runner.scala:614)
+	at org.scalatest.tools.Runner$.run(Runner.scala:517)
+	at org.scalatest.tools.Runner.run(Runner.scala)
+	at org.jetbrains.plugins.scala.testingSupport.scalaTest.ScalaTest10Scala28Runner.main(ScalaTest10Scala28Runner.java:31)
+... Removed 25 stack frames]]>
+    </failure>
+  </testcase>
+</testsuite>

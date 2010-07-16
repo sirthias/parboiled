@@ -9,11 +9,11 @@ class SimpleParser extends Parser {
   }
 
   def Expression:Rule[Int] = rule {
-    Term & (anyOf("+-") & Term)*
+    Term & **(anyOf("+-") & Term)
   }
 
   def Term = rule {
-    Factor & (anyOf("*-") & Factor)*
+    Factor & **(anyOf("*-") & Factor)
   }
 
   def Factor = rule {
@@ -24,12 +24,12 @@ class SimpleParser extends Parser {
     '(' & Expression & ')'
   }
 
-  def Number = rule {
-    Digits
+  def Number = rule {    
+    Digits & ((s:String) => Val(5))
   }
 
   def Digits = rule {
-    Digit+
+    ++(Digit)
   }
 
   def Digit = rule {

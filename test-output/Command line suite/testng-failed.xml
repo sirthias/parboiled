@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" skipfailedinvocationCounts="false" verbose="1" name="Failed suite [Command line suite]" junit="false" annotations="JDK" data-provider-thread-count="10">
+  <test name="Command line test(failed)" junit="false" annotations="JDK">
+    <classes>
+      <class name="org.parboiled.scala.SimpleScalaTest">
+        <methods>
+          <include name="verifyEasy"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>

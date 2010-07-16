@@ -1,0 +1,300 @@
+<html>
+<head>
+<title>TestNG:  Command line test</title>
+<link href="../testng.css" rel="stylesheet" type="text/css" />
+<link href="../my-testng.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+.log { display: none;} 
+.stack-trace { display: none;} 
+</style>
+<script type="text/javascript">
+<!--
+function flip(e) {
+  current = e.style.display;
+  if (current == 'block') {
+    e.style.display = 'none';
+    return 0;
+  }
+  else {
+    e.style.display = 'block';
+    return 1;
+  }
+}
+
+function toggleBox(szDivId, elem, msg1, msg2)
+{
+  var res = -1;  if (document.getElementById) {
+    res = flip(document.getElementById(szDivId));
+  }
+  else if (document.all) {
+    // this is the way old msie versions work
+    res = flip(document.all[szDivId]);
+  }
+  if(elem) {
+    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;
+  }
+
+}
+
+function toggleAllBoxes() {
+  if (document.getElementsByTagName) {
+    d = document.getElementsByTagName('div');
+    for (i = 0; i < d.length; i++) {
+      if (d[i].className == 'log') {
+        flip(d[i]);
+      }
+    }
+  }
+}
+
+// -->
+</script>
+
+</head>
+<body>
+<h2 align='center'>Command line test</h2><table border='1' align="center">
+<tr>
+<td>Tests passed/Failed/Skipped:</td><td>0/1/0</td>
+</tr><tr>
+<td>Started on:</td><td>Fri Jul 16 17:58:45 CEST 2010</td>
+</tr>
+<tr><td>Total time:</td><td>0 seconds (52 ms)</td>
+</tr><tr>
+<td>Included groups:</td><td></td>
+</tr><tr>
+<td>Excluded groups:</td><td></td>
+</tr>
+</table><p/>
+<small><i>(Hover the method name to see the test class name)</i></small><p/>
+<table width='100%' border='1' class='invocation-failed'>
+<tr><td colspan='4' align='center'><b>FAILED TESTS</b></td></tr>
+<tr><td><b>Test method</b></td>
+<td><b>Instance</b></td>
+<td width="10%"><b>Time (seconds)</b></td>
+<td width="30%"><b>Exception</b></td>
+</tr>
+<tr>
+<td title='org.parboiled.scala.SimpleScalaTest.verifyEasy()'><b>verifyEasy</b><br>Test class:Command line test</td>
+<td>org.parboiled.scala.SimpleScalaTest@67e2da</td><td>0</td>
+<td><div><pre>java.lang.AssertionError: expected:&lt;&gt; but was:&lt;InputLine
+SequenceRule
+  Expression
+  SequenceRule
+    Term
+    SequenceRule
+      Factor
+      FirstOfRule
+        Number
+        SequenceRule
+          Digits
+          OneOrMoreRule
+            LeafRule
+          ActionRule
+        Parens
+        SequenceRule
+          SequenceRule
+            CharRule
+            ProxyRule
+          CharRule
+      ZeroOrMoreRule
+        SequenceRule
+          LeafRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+    ZeroOrMoreRule
+      SequenceRule
+        LeafRule
+        Term
+        SequenceRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+          ZeroOrMoreRule
+            SequenceRule
+              LeafRule
+              Factor
+              FirstOfRule
+                Number
+                SequenceRule
+                  Digits
+                  OneOrMoreRule
+                    LeafRule
+                  ActionRule
+                Parens
+                SequenceRule
+                  SequenceRule
+                    CharRule
+                    ProxyRule
+                  CharRule
+  LeafRule
+&gt;
+	at org.parboiled.scala.SimpleScalaTest.verifyEasy(SimpleScalaTest.scala:26)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:158)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.runTestNG(TestNGSuite.scala:145)
+	at org.parboiled.scala.SimpleScalaTest.runTestNG(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:96)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:59)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1523)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1520)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at org.scalatest.tools.Runner$.doRunRunRunADoRunRun(Runner.scala:1520)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:616)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:615)
+	at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1564)
+	at org.scalatest.tools.Runner$.runOptionallyWithPassFailReporter(Runner.scala:614)
+	at org.scalatest.tools.Runner$.run(Runner.scala:517)
+	at org.scalatest.tools.Runner.run(Runner.scala)
+	at org.jetbrains.plugins.scala.testingSupport.scalaTest.ScalaTest10Scala28Runner.main(ScalaTest10Scala28Runner.java:31)
+... Removed 25 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace11564649", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace11564649'><pre>java.lang.AssertionError: expected:&lt;&gt; but was:&lt;InputLine
+SequenceRule
+  Expression
+  SequenceRule
+    Term
+    SequenceRule
+      Factor
+      FirstOfRule
+        Number
+        SequenceRule
+          Digits
+          OneOrMoreRule
+            LeafRule
+          ActionRule
+        Parens
+        SequenceRule
+          SequenceRule
+            CharRule
+            ProxyRule
+          CharRule
+      ZeroOrMoreRule
+        SequenceRule
+          LeafRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+    ZeroOrMoreRule
+      SequenceRule
+        LeafRule
+        Term
+        SequenceRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+          ZeroOrMoreRule
+            SequenceRule
+              LeafRule
+              Factor
+              FirstOfRule
+                Number
+                SequenceRule
+                  Digits
+                  OneOrMoreRule
+                    LeafRule
+                  ActionRule
+                Parens
+                SequenceRule
+                  SequenceRule
+                    CharRule
+                    ProxyRule
+                  CharRule
+  LeafRule
+&gt;
+	at org.testng.Assert.fail(Assert.java:86)
+	at org.testng.Assert.failNotEquals(Assert.java:440)
+	at org.testng.Assert.assertEquals(Assert.java:110)
+	at org.testng.Assert.assertEquals(Assert.java:131)
+	at org.testng.Assert.assertEquals(Assert.java:141)
+	at org.parboiled.scala.SimpleScalaTest.verifyEasy(SimpleScalaTest.scala:26)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:592)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:609)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:532)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:686)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1018)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:128)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:112)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:759)
+	at org.testng.TestRunner.privateRun(TestRunner.java:592)
+	at org.testng.TestRunner.run(TestRunner.java:486)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:912)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:876)
+	at org.testng.TestNG.run(TestNG.java:784)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:158)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.runTestNG(TestNGSuite.scala:145)
+	at org.parboiled.scala.SimpleScalaTest.runTestNG(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:96)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:59)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1523)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1520)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at org.scalatest.tools.Runner$.doRunRunRunADoRunRun(Runner.scala:1520)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:616)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:615)
+	at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1564)
+	at org.scalatest.tools.Runner$.runOptionallyWithPassFailReporter(Runner.scala:614)
+	at org.scalatest.tools.Runner$.run(Runner.scala:517)
+	at org.scalatest.tools.Runner.run(Runner.scala)
+	at org.jetbrains.plugins.scala.testingSupport.scalaTest.ScalaTest10Scala28Runner.main(ScalaTest10Scala28Runner.java:31)
+</pre></div></td>
+</tr>
+</table><p>
+</body>
+</html>

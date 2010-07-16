@@ -1,0 +1,216 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Command line suite">
+    <groups>
+    </groups>
+    <test name="Command line test">
+      <class name="org.parboiled.scala.SimpleScalaTest">
+        <test-method status="FAIL" signature="verifyEasy()" name="verifyEasy" duration-ms="38" started-at="2010-07-16T17:58:45Z" finished-at="2010-07-16T17:58:45Z">
+          <exception class="java.lang.AssertionError">
+            <message>
+              <![CDATA[expected:<> but was:<InputLine
+SequenceRule
+  Expression
+  SequenceRule
+    Term
+    SequenceRule
+      Factor
+      FirstOfRule
+        Number
+        SequenceRule
+          Digits
+          OneOrMoreRule
+            LeafRule
+          ActionRule
+        Parens
+        SequenceRule
+          SequenceRule
+            CharRule
+            ProxyRule
+          CharRule
+      ZeroOrMoreRule
+        SequenceRule
+          LeafRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+    ZeroOrMoreRule
+      SequenceRule
+        LeafRule
+        Term
+        SequenceRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+          ZeroOrMoreRule
+            SequenceRule
+              LeafRule
+              Factor
+              FirstOfRule
+                Number
+                SequenceRule
+                  Digits
+                  OneOrMoreRule
+                    LeafRule
+                  ActionRule
+                Parens
+                SequenceRule
+                  SequenceRule
+                    CharRule
+                    ProxyRule
+                  CharRule
+  LeafRule
+>]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.AssertionError: expected:<> but was:<InputLine
+SequenceRule
+  Expression
+  SequenceRule
+    Term
+    SequenceRule
+      Factor
+      FirstOfRule
+        Number
+        SequenceRule
+          Digits
+          OneOrMoreRule
+            LeafRule
+          ActionRule
+        Parens
+        SequenceRule
+          SequenceRule
+            CharRule
+            ProxyRule
+          CharRule
+      ZeroOrMoreRule
+        SequenceRule
+          LeafRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+    ZeroOrMoreRule
+      SequenceRule
+        LeafRule
+        Term
+        SequenceRule
+          Factor
+          FirstOfRule
+            Number
+            SequenceRule
+              Digits
+              OneOrMoreRule
+                LeafRule
+              ActionRule
+            Parens
+            SequenceRule
+              SequenceRule
+                CharRule
+                ProxyRule
+              CharRule
+          ZeroOrMoreRule
+            SequenceRule
+              LeafRule
+              Factor
+              FirstOfRule
+                Number
+                SequenceRule
+                  Digits
+                  OneOrMoreRule
+                    LeafRule
+                  ActionRule
+                Parens
+                SequenceRule
+                  SequenceRule
+                    CharRule
+                    ProxyRule
+                  CharRule
+  LeafRule
+>
+	at org.testng.Assert.fail(Assert.java:86)
+	at org.testng.Assert.failNotEquals(Assert.java:440)
+	at org.testng.Assert.assertEquals(Assert.java:110)
+	at org.testng.Assert.assertEquals(Assert.java:131)
+	at org.testng.Assert.assertEquals(Assert.java:141)
+	at org.parboiled.scala.SimpleScalaTest.verifyEasy(SimpleScalaTest.scala:26)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:592)
+	at org.testng.internal.MethodHelper.invokeMethod(MethodHelper.java:609)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:532)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:686)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1018)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:128)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:112)
+	at org.testng.TestRunner.runWorkers(TestRunner.java:759)
+	at org.testng.TestRunner.privateRun(TestRunner.java:592)
+	at org.testng.TestRunner.run(TestRunner.java:486)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:332)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:327)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:299)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:204)
+	at org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:912)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:876)
+	at org.testng.TestNG.run(TestNG.java:784)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:158)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.runTestNG(TestNGSuite.scala:145)
+	at org.parboiled.scala.SimpleScalaTest.runTestNG(SimpleScalaTest.scala:9)
+	at org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:96)
+	at org.parboiled.scala.SimpleScalaTest.run(SimpleScalaTest.scala:9)
+	at org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:59)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1523)
+	at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$3.apply(Runner.scala:1520)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at org.scalatest.tools.Runner$.doRunRunRunADoRunRun(Runner.scala:1520)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:616)
+	at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:615)
+	at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1564)
+	at org.scalatest.tools.Runner$.runOptionallyWithPassFailReporter(Runner.scala:614)
+	at org.scalatest.tools.Runner$.run(Runner.scala:517)
+	at org.scalatest.tools.Runner.run(Runner.scala)
+	at org.jetbrains.plugins.scala.testingSupport.scalaTest.ScalaTest10Scala28Runner.main(ScalaTest10Scala28Runner.java:31)
+]]>
+            </full-stacktrace>
+          </exception>
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

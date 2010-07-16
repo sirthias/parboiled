@@ -4,35 +4,45 @@
     <!-- can be overridden at the command line with -Dversion= -->
     <property name="version" value="snapshot"/>
 
-    <path id="compile.classpath">
-        <pathelement location="lib/asm/asm-all-3.2.jar"/>
-        <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
-        <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
-        <pathelement location="lib/annotations.jar"/>
-    </path>
-
-    <taskdef name="javacn" classname="org.parboiled.ant.Javacn"
-             classpath="lib/javacn-1.0.1.jar;lib/asm/asm-all-3.2.jar;"/>
-    <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
-    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-issue-21.jar;"/>
-    <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar;"/>
-
     <target name="clean" description="Remove all generated files">
         <delete dir="target"/>
     </target>
 
-    <target name="compile.main" description="Compile main sources">
+    <target name="init">
+        <path id="compile.classpath">
+            <pathelement location="lib/asm/asm-all-3.2.jar"/>
+            <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
+            <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
+            <pathelement location="lib/annotations.jar"/>
+            <pathelement location="lib/scala/scala-library-2.8.0.jar"/>
+        </path>
+
+        <taskdef name="javacn" classname="org.parboiled.ant.Javacn"
+                 classpath="lib/javacn-1.0.1.jar;lib/asm/asm-all-3.2.jar;"/>
+        <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
+        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-issue-21.jar;"/>
+        <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar;"/>
+        <taskdef resource="scala/tools/ant/antlib.xml"
+                 classpath="lib/scala/scala-compiler-2.8.0.jar;lib/scala/scala-library-2.8.0.jar;"/>
+    </target>
+
+    <target name="compile.main" depends="init" description="Compile main sources">
         <mkdir dir="target/main"/>
         <javacn debug="on" destdir="target/main" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
             <src location="src/main/java"/>
             <classpath refid="compile.classpath"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
+        <scalac srcdir="src/main/scala" destdir="target/main">
+            <classpath refid="compile.classpath"/>
+            <classpath location="target/main"/>
+        </scalac>
     </target>
 
     <target name="compile.examples" depends="compile.main" description="Compile example sources">
         <mkdir dir="target/examples"/>
-        <javacn debug="on" destdir="target/examples" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
+        <javacn debug="on" destdir="target/examples" source="1.5" target="1.5" encoding="utf8"
+                includeantruntime="false">
             <src location="src/examples/java"/>
             <classpath refid="compile.classpath"/>
             <classpath location="target/main"/>
@@ -49,6 +59,10 @@
             <classpath location="target/examples"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
+        <scalac srcdir="src/test/scala" destdir="target/test">
+            <classpath refid="compile.classpath"/>
+            <classpath location="target/main"/>
+        </scalac>
         <copy toDir="target/test">
             <fileset dir="src/test/resources"/>
         </copy>
@@ -134,7 +148,7 @@
                 <os family="unix"/>
             </and>
         </condition>
-        
+
         <proguard>
             -libraryjars "${jdk.lib.1.5}"
             -libraryjars "lib/annotations.jar"
