@@ -1,10 +1,9 @@
 package org.parboiled
 
+import matchers.{ActionMatcher, StringMatcher, CharSetMatcher}
 import org.parboiled.support.Characters
 import _root_.scala.collection.mutable
 import org.parboiled.{Action => PAction, Context => PContext}
-import org.parboiled.matchers.{StringMatcher, CharSetMatcher}
-
 trait Construction { this: Rules with Support =>
 
   trait Parser {
@@ -77,7 +76,7 @@ trait Construction { this: Rules with Support =>
 
   def setFromValue[V,T](f: V => T) = (value:Val[V]) => Val(f(value.value))
 
-  def convertValue[V](f: V => V) = setFromValue(f)
+  def convertValue[V](f: V => V) = setFromValue[V,V](f)
 
   implicit def toRule(c: Char) = new CharRule(c)
 
@@ -91,44 +90,20 @@ trait Construction { this: Rules with Support =>
     case _ => new LeafRule(new StringMatcher(chars.map(toRule).map(_.toMatcher), chars).label("\"" + chars + '"'))
   }
 
-  implicit def toAction[V, T](f: PContext[V] => Boolean): Rule[T] = {
-    val action = new PAction[V] {
-      def run(c: PContext[V]): Boolean = f(c.asInstanceOf[PContext[V]])
-    }
-    new ActionRule[T](action.asInstanceOf[PAction[T]])
-  }
+  private def toAction[V,T](f: PContext[V] => Boolean): T =
+    new LeafRule(new ActionMatcher(new PAction[V] { def run(c: PContext[V]): Boolean = f(c) }).label("Action")).asInstanceOf[T]
 
-  implicit def toAction2[V, T](f: PContext[V] => Unit): Rule[T] =
-    toAction((c: PContext[V]) => {f(c); true})
-
-  implicit def toAction3[V, T](f: PContext[V] => Val[T]): Rule[T] =
-    toAction((c: PContext[V]) => {c.asInstanceOf[PContext[T]].setNodeValue(f(c).value); true})
-
-  implicit def toAction4[T](f: () => Boolean): Rule[T] =
-    toAction((c: PContext[_]) => f())
-
-  implicit def toAction5[T](f: () => Unit): Rule[T] =
-    toAction((c: PContext[_]) => {f(); true})
-
-  implicit def toAction6[T](f: () => Val[T]): Rule[T] =
-    toAction3((c: PContext[_]) => f())
-
-  implicit def toAction7[T](f: String => Boolean): Rule[T] =
-    toAction((c: PContext[_]) => f(c.getPrevText))
-
-  implicit def toAction8[T](f: String => Unit): Rule[T] =
-    toAction((c: PContext[_]) => {f(c.getPrevText); true})
-
-  implicit def toAction9[T](f: String => Val[T]): Rule[T] =
-    toAction3((c: PContext[_]) => f(c.getPrevText))
-
-  implicit def toAction10[V, T](f: Val[V] => Boolean): Rule[T] =
-    toAction((c: PContext[V]) => f(Val(c.getPrevValue)))
-
-  implicit def toAction11[V, T](f: Val[V] => Unit): Rule[T] =
-    toAction((c: PContext[V]) => {f(Val(c.getPrevValue)); true})
-
-  implicit def toAction12[V, T](f: Val[V] => Val[T]): Rule[T] =
-    toAction3((c: PContext[V]) => f(Val(c.getPrevValue)))
+  implicit def toAction1[V](f: PContext[V] => Boolean) = toAction[V, LeafRule](f)
+  implicit def toAction2[V](f: PContext[V] => Unit) = toAction[V, LeafRule]((c: PContext[V]) => {f(c); true})
+  implicit def toAction3[V, T](f: PContext[V] => Val[T]) = toAction[V, Rule[T]]((c: PContext[V]) => {c.asInstanceOf[PContext[T]].setNodeValue(f(c).value); true})
+  implicit def toAction4(f: => Boolean) = toAction[Any, LeafRule]((c: PContext[_]) => f)
+  implicit def toAction5(f: => Unit) = toAction[Any, LeafRule]((c: PContext[_]) => {f; true})
+  implicit def toAction6[T](f: => Val[T]) = toAction3((c: PContext[_]) => f)
+  implicit def toAction7(f: String => Boolean) = toAction[Any, LeafRule]((c: PContext[_]) => f(c.getPrevText))
+  implicit def toAction8(f: String => Unit) = toAction[Any, LeafRule]((c: PContext[_]) => {f(c.getPrevText); true})
+  implicit def toAction9[T](f: String => Val[T]) = toAction3((c: PContext[_]) => f(c.getPrevText))
+  implicit def toAction10[V](f: Val[V] => Boolean) = toAction[V, LeafRule]((c: PContext[V]) => f(Val(c.getPrevValue)))
+  implicit def toAction11[V](f: Val[V] => Unit) = toAction[V, LeafRule]((c: PContext[V]) => {f(Val(c.getPrevValue)); true})
+  implicit def toAction12[V, T](f: Val[V] => Val[T]) = toAction3((c: PContext[V]) => f(Val(c.getPrevValue)))
 
 }

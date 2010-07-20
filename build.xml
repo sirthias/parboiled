@@ -15,7 +15,7 @@
             <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
             <pathelement location="lib/annotations.jar"/>
             <pathelement location="lib/scala/scala-library-2.8.0.jar"/>
-            <pathelement location="lib/scalatest/scalatest-1..jar"/>
+            <pathelement location="lib/scalatest/scalatest-1.2.jar"/>
         </path>
 
         <taskdef name="javacn" classname="org.parboiled.ant.Javacn"

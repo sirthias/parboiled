@@ -1,19 +1,17 @@
 package org.parboiled
 
 import org.parboiled.matchers._
-import org.parboiled.{Action => PAction}
 import org.parboiled.support.Characters
 import org.parboiled.common.StringUtils.escape
 
-trait Rules { this: Construction =>
+trait Rules {
+
   trait Rule[+V] {
     def toMatcher: Matcher[_]
 
     def ~(other: LeafRule): Rule[V] = new SequenceRule[V, Nothing, V](this, other)
 
     def ~[T](other: Rule[T]): Rule[T] = new SequenceRule[V, T, T](this, other)
-
-    def ~(f: V => Unit): Rule[V] = new SequenceRule[V, V, V](this, toAction11((value:Val[V]) => f(value.value))) 
 
     def |[T >: V](other: Rule[T]): Rule[T] = new FirstOfRule[T](this, other)
 
@@ -108,10 +106,6 @@ trait Rules { this: Construction =>
     }
 
     def arm(inner: NonLeafRule[V]): NonLeafRule[V] = {this.inner = inner; inner}
-  }
-
-  class ActionRule[V](val action: PAction[V]) extends Rule[V] {
-    lazy val toMatcher = new ActionMatcher(action).label("Action")
   }
 
   lazy val EMPTY = new LeafRule(new EmptyMatcher().label("EMPTY"))

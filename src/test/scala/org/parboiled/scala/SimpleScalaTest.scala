@@ -16,7 +16,7 @@ class SimpleScalaTest extends AbstractTest with TestNGSuite {
   def verifyEasy() = {
     val rule = parser.InputLine
 
-    assertEquals(printRule(rule), "" +
+    /*assertEquals(printRule(rule), "" +
             "InputLine: SequenceRule\n"+
             "  Expression: SequenceRule\n"+
             "    SequenceRule\n"+
@@ -58,11 +58,11 @@ class SimpleScalaTest extends AbstractTest with TestNGSuite {
             "            CharRule: '-'\n"+
             "            Term: SequenceRule\n"+
             "          ActionRule\n"+
-            "  LeafRule: EOI\n")
+            "  LeafRule: EOI\n")*/
 
     val matcher = rule.toMatcher
 
-    assertEquals(GraphUtils.printTree(matcher.asInstanceOf[Matcher[Int]], new ToStringFormatter[Matcher[Int]](),
+    /*assertEquals(GraphUtils.printTree(matcher.asInstanceOf[Matcher[Int]], new ToStringFormatter[Matcher[Int]](),
       Filters.preventLoops[Int]), "" +
             "InputLine\n"+
             "    Expression\n"+
@@ -98,7 +98,7 @@ class SimpleScalaTest extends AbstractTest with TestNGSuite {
             "                    '-'\n"+
             "                    Term\n"+
             "                    Action\n"+
-            "    EOI\n");
+            "    EOI\n");*/
 
     val res = testWithoutRecovery(matcher, "1+2*(3-4)", "" +
             "[InputLine, {-1}] '1+2*(3-4)'\n"+
