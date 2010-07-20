@@ -1,19 +1,29 @@
 package org.parboiled.scala
 
-import Parboiled._
+import org.parboiled.Scala._
 
 class SimpleParser extends Parser {
 
   def InputLine = rule {
-    Expression & EOI
+    Expression ~ EOI
   }
 
   def Expression:Rule[Int] = rule {
-    Term & **(anyOf("+-") & Term)
+    var a:Int = 0
+    Term ~ (a = _) ~
+            zeroOrMore(
+              '+' ~ Term ~ setFromValue[Int, Int](a + _) |
+              '-' ~ Term ~ convertValue[Int](a - _)
+            )
   }
 
   def Term = rule {
-    Factor & **(anyOf("*-") & Factor)
+    var a:Int = 0
+    Factor ~ ((i:Val[Int]) => a = i.value) ~
+            zeroOrMore(
+              '*' ~ Factor ~ ((i:Val[Int]) => Val(a * i.value)) |
+              '/' ~ Factor ~ ((i:Val[Int]) => Val(a / i.value))
+            )
   }
 
   def Factor = rule {
@@ -21,15 +31,15 @@ class SimpleParser extends Parser {
   }
 
   def Parens = rule {
-    '(' & Expression & ')'
+    '(' ~ Expression ~ ')'
   }
 
   def Number = rule {    
-    Digits & ((s:String) => Val(5))
+    Digits ~ setFromMatch(_.toInt)
   }
 
   def Digits = rule {
-    ++(Digit)
+    oneOrMore(Digit)
   }
 
   def Digit = rule {

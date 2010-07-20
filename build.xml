@@ -15,6 +15,7 @@
             <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
             <pathelement location="lib/annotations.jar"/>
             <pathelement location="lib/scala/scala-library-2.8.0.jar"/>
+            <pathelement location="lib/scalatest/scalatest-1..jar"/>
         </path>
 
         <taskdef name="javacn" classname="org.parboiled.ant.Javacn"
@@ -62,6 +63,7 @@
         <scalac srcdir="src/test/scala" destdir="target/test">
             <classpath refid="compile.classpath"/>
             <classpath location="target/main"/>
+            <classpath location="target/test"/>
         </scalac>
         <copy toDir="target/test">
             <fileset dir="src/test/resources"/>
