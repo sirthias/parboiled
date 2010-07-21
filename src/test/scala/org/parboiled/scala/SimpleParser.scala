@@ -2,27 +2,27 @@ package org.parboiled.scala
 
 import org.parboiled.Scala._
 
-class SimpleParser extends Parser {
+class SimpleParser extends Parser[Int] {
 
   def InputLine = rule {
     Expression ~ EOI
   }
 
-  def Expression:Rule[Int] = rule {
+  def Expression:Rule = rule {
     var a:Int = 0
-    Term ~ withValue(a = _:Int) ~
+    Term ~ withValue(a = _) ~
             zeroOrMore(
-              '+' ~ Term ~ convertValue[Int](a + _) |
-              '-' ~ Term ~ convertValue[Int](a - _)
+              '+' ~ Term ~ withValue(a + _) |
+              '-' ~ Term ~ withValue(a - _)
             )
   }
 
   def Term = rule {
     var a:Int = 0
-    Factor ~ withValue(a = _:Int) ~
+    Factor ~ withValue(a = _) ~
             zeroOrMore(
-              '*' ~ Factor ~ convertValue[Int](a * _) |
-              '/' ~ Factor ~ convertValue[Int](a / _)
+              '*' ~ Factor ~ withValue(a * _) |
+              '/' ~ Factor ~ withValue(a / _)
             )
   }
 
@@ -35,7 +35,7 @@ class SimpleParser extends Parser {
   }
 
   def Number = rule {    
-    Digits ~ setFromMatch(_.toInt)
+    Digits ~ withMatch(_.toInt)
   }
 
   def Digits = rule {

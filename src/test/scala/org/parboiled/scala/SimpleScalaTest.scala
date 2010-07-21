@@ -19,46 +19,32 @@ class SimpleScalaTest extends AbstractTest with TestNGSuite {
     /*assertEquals(printRule(rule), "" +
             "InputLine: SequenceRule\n"+
             "  Expression: SequenceRule\n"+
-            "    SequenceRule\n"+
-            "      Term: SequenceRule\n"+
-            "        SequenceRule\n"+
-            "          Factor: FirstOfRule\n"+
-            "            Number: SequenceRule\n"+
-            "              Digits: OneOrMoreRule\n"+
-            "                LeafRule: Digit\n"+
-            "              ActionRule\n"+
-            "            Parens: SequenceRule\n"+
-            "              SequenceRule\n"+
-            "                CharRule: '('\n"+
-            "                ProxyRule\n"+
-            "              CharRule: ')'\n"+
-            "          ActionRule\n"+
-            "        ZeroOrMoreRule\n"+
-            "          FirstOfRule\n"+
-            "            SequenceRule\n"+
-            "              SequenceRule\n"+
-            "                CharRule: '*'\n"+
-            "                Factor: FirstOfRule\n"+
-            "              ActionRule\n"+
-            "            SequenceRule\n"+
-            "              SequenceRule\n"+
-            "                CharRule: '/'\n"+
-            "                Factor: FirstOfRule\n"+
-            "              ActionRule\n"+
-            "      ActionRule\n"+
-            "    ZeroOrMoreRule\n"+
+            "    Term: SequenceRule\n"+
+            "      Factor: FirstOfRule\n"+
+            "        Number: UnaryRule\n"+
+            "          Digit: SimpleRule\n"+
+            "        Parens: SequenceRule\n"+
+            "          SequenceRule\n"+
+            "            '(': CharRule\n"+
+            "            ProxyRule\n"+
+            "          ')': CharRule\n"+
+            "      ZeroOrMore: UnaryRule\n"+
+            "        FirstOfRule\n"+
+            "          SequenceRule\n"+
+            "            '*': CharRule\n"+
+            "            Factor: FirstOfRule\n"+
+            "          SequenceRule\n"+
+            "            '/': CharRule\n"+
+            "            Factor: FirstOfRule\n"+
+            "    ZeroOrMore: UnaryRule\n"+
             "      FirstOfRule\n"+
             "        SequenceRule\n"+
-            "          SequenceRule\n"+
-            "            CharRule: '+'\n"+
-            "            Term: SequenceRule\n"+
-            "          ActionRule\n"+
+            "          '+': CharRule\n"+
+            "          Term: SequenceRule\n"+
             "        SequenceRule\n"+
-            "          SequenceRule\n"+
-            "            CharRule: '-'\n"+
-            "            Term: SequenceRule\n"+
-            "          ActionRule\n"+
-            "  LeafRule: EOI\n")*/
+            "          '-': CharRule\n"+
+            "          Term: SequenceRule\n"+
+            "  EOI: SimpleRule\n")*/
 
     val matcher = rule.toMatcher
 
@@ -69,35 +55,27 @@ class SimpleScalaTest extends AbstractTest with TestNGSuite {
             "        Term\n"+
             "            Factor\n"+
             "                Number\n"+
-            "                    Digits\n"+
-            "                        Digit\n"+
-            "                    Action\n"+
+            "                    Digit\n"+
             "                Parens\n"+
             "                    '('\n"+
             "                    Expression\n"+
             "                    ')'\n"+
-            "            Action\n"+
             "            ZeroOrMore\n"+
             "                FirstOf\n"+
             "                    Sequence\n"+
             "                        '*'\n"+
             "                        Factor\n"+
-            "                        Action\n"+
             "                    Sequence\n"+
             "                        '/'\n"+
             "                        Factor\n"+
-            "                        Action\n"+
-            "        Action\n"+
             "        ZeroOrMore\n"+
             "            FirstOf\n"+
             "                Sequence\n"+
             "                    '+'\n"+
             "                    Term\n"+
-            "                    Action\n"+
             "                Sequence\n"+
             "                    '-'\n"+
             "                    Term\n"+
-            "                    Action\n"+
             "    EOI\n");*/
 
     val res = testWithoutRecovery(matcher, "1+2*(3-4)", "" +

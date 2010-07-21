@@ -2,7 +2,7 @@ package org.parboiled
 
 import collection.mutable.Set
 
-private[parboiled] trait Support { this: Rules =>
+private[parboiled] trait Support {
 
   type RuleMethod = StackTraceElement
 
@@ -14,20 +14,17 @@ private[parboiled] trait Support { this: Rules =>
     }
   }
 
-  def printRule(rule: Rule[_]):String = printRule(rule, "", false, Set.empty[Rule[_]])
+  def printRule[T](rule: Rules[T]#Rule): String = printRule(rule, "", false, Set.empty[Rules[T]#Rule])
 
-  private def printRule(rule: Rule[_], indent: String, printIndent: Boolean, printed: Set[Rule[_]]): String = {
-    val printSub =
-      if (printed.contains(rule)) ((r:Rule[_]) => "") else printRule(_: Rule[_], indent + "  ", true, printed)
+  private def printRule[T](rule: Rules[T]#Rule, indent: String, printIndent: Boolean, printed: Set[Rules[T]#Rule]): String = {
+    val printSub = if (printed.contains(rule)) ((r: Rules[T]#Rule) => "")
+    else printRule(_: Rules[T]#Rule, indent + "  ", true, printed)
     printed += rule
-    val ind = if (printIndent) indent else ""
-    rule match {
-      case r: LabelRule[_] => ind + r.label + ": " + printRule(r.sub, indent, false, printed)
-      case r: BinaryRule[_, _, _] => ind + rule + '\n' + printSub(r.left) + printSub(r.right)
-      case r: UnaryRule[_] => ind + rule + '\n' + printSub(r.sub)
-      case r: LeafRule => ind + rule + ": " + r.matcher + '\n'
-      case r: Rule[_] => ind + r + '\n'
-    }
+    (if (printIndent) indent else "") + (if (rule.label != null) rule.label + ": " else "") + rule + '\n' + (rule match {
+      case r: Rules[_]#BinaryRule => printSub(r.left) + printSub(r.right)
+      case r: Rules[_]#UnaryRule => printSub(r.sub)
+      case r: Rules[_]#Rule => ""
+    })
   }
 
 }
