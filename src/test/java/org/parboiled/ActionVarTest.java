@@ -30,7 +30,7 @@ public class ActionVarTest extends AbstractTest {
         @SuppressWarnings({"InfiniteRecursion"})
         public Rule A() {
             Var<List<String>> list = new Var<List<String>>(new ArrayList<String>());
-            return Sequence('a', Optional(Sequence(A(), list.get().add("Text"), UP2(set(list.get().size())))));
+            return Sequence('a', Optional(Sequence(A(), list.get().add("Text"), push(list.get().size()))));
         }
 
     }
@@ -51,8 +51,8 @@ public class ActionVarTest extends AbstractTest {
                 "                    [Sequence, {1}] 'aa'\n" +
                 "                        [A, {1}] 'aa'\n" +
                 "                            ['a'] 'a'\n" +
-                "                            [Optional] 'a'\n" +
-                "                                [Sequence] 'a'\n" +
+                "                            [Optional, {1}] 'a'\n" +
+                "                                [Sequence, {1}] 'a'\n" +
                 "                                    [A] 'a'\n" +
                 "                                        ['a'] 'a'\n" +
                 "                                        [Optional]\n");

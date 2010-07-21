@@ -16,72 +16,71 @@
 
 package org.parboiled.support;
 
+import org.parboiled.ActionMatcher;
 import org.parboiled.matchers.*;
 
 /**
  * A {@link MatcherVisitor} determining whether a matcher is a basic single character matcher.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class IsSingleCharMatcherVisitor<V> implements MatcherVisitor<V, Boolean> {
+public class IsSingleCharMatcherVisitor implements MatcherVisitor<Boolean> {
 
-    public Boolean visit(ActionMatcher<V> matcher) {
+    public Boolean visit(ActionMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(AnyMatcher<V> matcher) {
+    public Boolean visit(AnyMatcher matcher) {
         return true;
     }
 
-    public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
+    public Boolean visit(CharIgnoreCaseMatcher matcher) {
         return true;
     }
 
-    public Boolean visit(CharMatcher<V> matcher) {
+    public Boolean visit(CharMatcher matcher) {
         return true;
     }
 
-    public Boolean visit(CharRangeMatcher<V> matcher) {
+    public Boolean visit(CharRangeMatcher matcher) {
         return true;
     }
 
-    public Boolean visit(CharSetMatcher<V> matcher) {
+    public Boolean visit(CharSetMatcher matcher) {
         return true;
     }
 
-    public Boolean visit(CustomMatcher<V> matcher) {
+    public Boolean visit(CustomMatcher matcher) {
         return matcher.isSingleCharMatcher();
     }
 
-    public Boolean visit(EmptyMatcher<V> matcher) {
+    public Boolean visit(EmptyMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(FirstOfMatcher<V> matcher) {
+    public Boolean visit(FirstOfMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(OneOrMoreMatcher<V> matcher) {
+    public Boolean visit(OneOrMoreMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(OptionalMatcher<V> matcher) {
+    public Boolean visit(OptionalMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(SequenceMatcher<V> matcher) {
+    public Boolean visit(SequenceMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(TestMatcher<V> matcher) {
+    public Boolean visit(TestMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(TestNotMatcher<V> matcher) {
+    public Boolean visit(TestNotMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
+    public Boolean visit(ZeroOrMoreMatcher matcher) {
         return false;
     }
 

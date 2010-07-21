@@ -29,58 +29,6 @@ public abstract class BaseGroupClass {
         this.name = name;
     }
 
-    protected final Context UP(Context context) {
-        Context parentContext = context.getParent();
-        Checks.ensure(parentContext != null, "Illegal UP() call in '%s', already at root level", this);
-        return parentContext;
-    }
-
-    protected final Context UP2(Context context) {
-        return UP(UP(context));
-    }
-
-    protected final Context UP3(Context context) {
-        return UP(UP(UP(context)));
-    }
-
-    protected final Context UP4(Context context) {
-        return UP(UP(UP(UP(context))));
-    }
-
-    protected final Context UP5(Context context) {
-        return UP(UP(UP(UP(UP(context)))));
-    }
-
-    protected final Context UP6(Context context) {
-        return UP(UP(UP(UP(UP(UP(context))))));
-    }
-
-    protected final Context DOWN(Context context) {
-        Context subContext = context.getSubContext();
-        Checks.ensure(subContext != null, "Illegal DOWN() call in '%s', already at leaf level", this);
-        return subContext;
-    }
-
-    protected final Context DOWN2(Context context) {
-        return DOWN(DOWN(context));
-    }
-
-    protected final Context DOWN3(Context context) {
-        return DOWN(DOWN(DOWN(context)));
-    }
-
-    protected final Context DOWN4(Context context) {
-        return DOWN(DOWN(DOWN(DOWN(context))));
-    }
-
-    protected final Context DOWN5(Context context) {
-        return DOWN(DOWN(DOWN(DOWN(DOWN(context)))));
-    }
-
-    protected final Context DOWN6(Context context) {
-        return DOWN(DOWN(DOWN(DOWN(DOWN(DOWN(context))))));
-    }
-
     @Override
     public String toString() {
         return name;

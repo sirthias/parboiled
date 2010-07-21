@@ -23,6 +23,4 @@ import com.google.common.base.Function;
  *
  * @param <T> the type of {@link GraphNode} this Filter is operating on
  */
-public interface Filter<T extends GraphNode<T>> extends Function<T, Printability> {
-
-}
+public interface Filter<T extends GraphNode<T>> extends Function<T, Printability> {}

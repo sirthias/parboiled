@@ -22,10 +22,8 @@ import org.jetbrains.annotations.NotNull;
  * Interface that can be implemented by classes containing action methods.
  * If the class containing action methods implements this interface parboiled will use it to inform the
  * instance of the current context, immediately before an action call.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public interface ContextAware<V> {
+public interface ContextAware {
 
     /**
      * Called immediately before any parser action method invocation. Informs the object containing the
@@ -33,6 +31,6 @@ public interface ContextAware<V> {
      *
      * @param context the context
      */
-    void setContext(@NotNull Context<V> context);
+    void setContext(@NotNull Context context);
 
 }

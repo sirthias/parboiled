@@ -18,30 +18,30 @@ trait Implicits[V] {
     case _ => new SimpleRule(new StringMatcher(chars.map(toRule).map(_.toMatcher), chars), "\"" + chars + '"')
   }
 
-  implicit def toAction(f: PContext[V] => Boolean): Rule =
-    new SimpleRule(new ActionMatcher(new PAction[V] {def run(c: PContext[V]): Boolean = f(c)}), "Action")
+  implicit def toAction(f: PContext => Boolean): Rule =
+    new SimpleRule(new ActionMatcher(new PAction {def run(c: PContext): Boolean = f(c)}), "Action")
 
-  implicit def toAction2(f: PContext[V] => Unit) = toAction((c: PContext[V]) => {f(c); true})
+  implicit def toAction2(f: PContext => Unit) = toAction((c: PContext) => {f(c); true})
 
-  implicit def toAction3(f: PContext[V] => V) = toAction((c: PContext[V]) => {c.setNodeValue(f(c)); true})
+  implicit def toAction3(f: PContext => V) = toAction((c: PContext) => {c.push(f(c)); true})
 
-  implicit def toAction4(f: () => Boolean) = toAction((c: PContext[V]) => f())
+  implicit def toAction4(f: () => Boolean) = toAction((c: PContext) => f())
 
-  implicit def toAction5(f: () => Unit) = toAction((c: PContext[V]) => {f(); true})
+  implicit def toAction5(f: () => Unit) = toAction((c: PContext) => {f(); true})
 
-  implicit def toAction6(f: () => V) = toAction3((c: PContext[V]) => f())
+  implicit def toAction6(f: () => V) = toAction3((c: PContext) => f())
 
-  implicit def toAction7(f: String => Boolean) = toAction((c: PContext[V]) => f(c.getPrevText))
+  implicit def toAction7(f: String => Boolean) = toAction((c: PContext) => f(c.getMatch))
 
-  implicit def toAction8(f: String => Unit) = toAction((c: PContext[V]) => {f(c.getPrevText); true})
+  implicit def toAction8(f: String => Unit) = toAction((c: PContext) => {f(c.getMatch); true})
 
-  implicit def toAction9(f: String => V) = toAction3((c: PContext[V]) => f(c.getPrevText))
+  implicit def toAction9(f: String => V) = toAction3((c: PContext) => f(c.getMatch))
 
-  implicit def toAction10(f: V => Boolean) = toAction((c: PContext[V]) => f(c.getPrevValue))
+  implicit def toAction10(f: V => Boolean) = toAction((c: PContext) => f(c.pop().asInstanceOf[V]))
 
-  implicit def toAction11(f: V => Unit) = toAction((c: PContext[V]) => {f(c.getPrevValue); true})
+  implicit def toAction11(f: V => Unit) = toAction((c: PContext) => {f(c.pop().asInstanceOf[V]); true})
 
-  implicit def toAction12(f: V => V) = toAction3((c: PContext[V]) => f(c.getPrevValue))
+  implicit def toAction12(f: V => V) = toAction3((c: PContext) => f(c.pop().asInstanceOf[V]))
 
   def run(f: => Unit) = () => f
 

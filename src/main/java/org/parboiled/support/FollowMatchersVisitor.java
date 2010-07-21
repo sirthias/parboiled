@@ -27,18 +27,15 @@ import java.util.List;
  * Collects the matchers that can legally follow the currently running matcher according to the grammar into a given
  * list. The visitor returns true if the collected matchers are all possible followers, and false if other matchers
  * higher up the rule stack can also follow.
- *
- * @param <V>
  */
-public class FollowMatchersVisitor<V> extends DefaultMatcherVisitor<V, Boolean> {
+public class FollowMatchersVisitor extends DefaultMatcherVisitor<Boolean> {
 
-    private final CanMatchEmptyVisitor<V> canMatchEmptyVisitor = new CanMatchEmptyVisitor<V>();
-    private final List<Matcher<V>> followMatchers = new ArrayList<Matcher<V>>();
-    private MatcherContext<V> context;
+    private final CanMatchEmptyVisitor canMatchEmptyVisitor = new CanMatchEmptyVisitor();
+    private final List<Matcher> followMatchers = new ArrayList<Matcher>();
+    private MatcherContext context;
 
-    @SuppressWarnings({"unchecked"})
     @NotNull
-    public List<Matcher<V>> getFollowMatchers(MatcherContext<V> currentContext) {
+    public List<Matcher> getFollowMatchers(MatcherContext currentContext) {
         followMatchers.clear();
         context = currentContext.getParent();
         while (context != null) {
@@ -50,7 +47,7 @@ public class FollowMatchersVisitor<V> extends DefaultMatcherVisitor<V, Boolean> 
     }
 
     @Override
-    public Boolean visit(OneOrMoreMatcher<V> matcher) {
+    public Boolean visit(OneOrMoreMatcher matcher) {
         // since this call is only legal when we are currently within a match of the sub matcher,
         // i.e. the submatcher can either match once more or the repetition can legally terminate which means
         // our follower set addition is incomplete -> return false
@@ -59,9 +56,9 @@ public class FollowMatchersVisitor<V> extends DefaultMatcherVisitor<V, Boolean> 
     }
 
     @Override
-    public Boolean visit(SequenceMatcher<V> matcher) {
+    public Boolean visit(SequenceMatcher matcher) {
         for (int i = context.getIntTag() + 1; i < matcher.getChildren().size(); i++) {
-            Matcher<V> child = matcher.getChildren().get(i);
+            Matcher child = matcher.getChildren().get(i);
             followMatchers.add(child);
             if (!child.accept(canMatchEmptyVisitor)) return true;
         }
@@ -69,13 +66,13 @@ public class FollowMatchersVisitor<V> extends DefaultMatcherVisitor<V, Boolean> 
     }
 
     @Override
-    public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
+    public Boolean visit(ZeroOrMoreMatcher matcher) {
         followMatchers.add(matcher.subMatcher);
         return false;
     }
 
     @Override
-    public Boolean defaultValue(AbstractMatcher<V> matcher) {
+    public Boolean defaultValue(AbstractMatcher matcher) {
         return false;
     }
 

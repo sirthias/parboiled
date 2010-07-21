@@ -22,25 +22,23 @@ import org.parboiled.Rule;
 
 /**
  * A {@link Matcher} that tries its sub matcher once against the input and always succeeds.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class OptionalMatcher<V> extends AbstractMatcher<V> {
+public class OptionalMatcher extends AbstractMatcher {
 
-    public final Matcher<V> subMatcher;
+    public final Matcher subMatcher;
 
     public OptionalMatcher(@NotNull Rule subRule) {
         super(subRule);
         this.subMatcher = getChildren().get(0);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         subMatcher.getSubContext(context).runMatcher();
         context.createNode();
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 }

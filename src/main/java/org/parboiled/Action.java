@@ -25,10 +25,8 @@ package org.parboiled;
  * immediately before the invocation of the actions {@link #run} method.
  * This allows simple anonymous action class implementations directly in the parser rule definitions, even when
  * they access context-sensitive methods defined in the {@link BaseActions} or {@link BaseParser} classes.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public interface Action<V> {
+public interface Action {
 
     /**
      * Runs the parser action.
@@ -36,6 +34,6 @@ public interface Action<V> {
      * @param context the current parsing context
      * @return true if the parsing process is to proceed, false if the current rule is to fail
      */
-    boolean run(Context<V> context);
+    boolean run(Context context);
 
 }

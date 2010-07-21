@@ -40,7 +40,7 @@ public class JavaTest {
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.CompilationUnit();
 
-        assertEquals(ParserStatistics.<Object>generateFor(compilationUnit).toString(), "" +
+        assertEquals(ParserStatistics.generateFor(compilationUnit).toString(), "" +
                 "Parser statistics for rule 'CompilationUnit':\n" +
                 "    Total rules       : 681\n" +
                 "        Actions       : 0\n" +
@@ -63,7 +63,7 @@ public class JavaTest {
                 "    ProxyMatchers     : 14\n" +
                 "    VarFramingMatchers: 0\n");
 
-        ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
+        ParsingResult parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +

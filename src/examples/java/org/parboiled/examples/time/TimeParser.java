@@ -18,55 +18,51 @@ package org.parboiled.examples.time;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.support.Var;
 
 /**
- * Parser for very relaxed time literals. Demonstrates parse tree node selection via labels.
+ * Parser for very relaxed time literals. Demonstrates usage of the value stack with default values.
  */
 public class TimeParser extends BaseParser<Object> {
 
     public Rule Time() {
-        return Sequence(
-                FirstOf(Time_HH_MM_SS(), Time_HHMMSS(), Time_HMM()),
-                set(convertToTime(
-                        (Integer) value(nodeByLabel("hours")),
-                        (Integer) value(nodeByLabel("minutes")),
-                        (Integer) value(nodeByLabel("seconds"))))
-        );
+        return FirstOf(Time_HH_MM_SS(), Time_HHMMSS(), Time_HMM());
     }
 
-    // hh:mm(:ss)?
-
+    // h(h)?:mm(:ss)?
     public Rule Time_HH_MM_SS() {
         return Sequence(
-                OneOrTwoDigits().label("hours"), ':',
-                TwoDigits().label("minutes"),
-                Optional(Sequence(':', TwoDigits().label("seconds"))),
-                Eoi()
+                OneOrTwoDigits(), ':',
+                TwoDigits(),
+                FirstOf(Sequence(':', TwoDigits()), push(0)),
+                Eoi(),
+                swap3() && push(convertToTime(popAsInt(), popAsInt(), popAsInt()))
         );
     }
 
     // hh(mm(ss)?)?
-
     public Rule Time_HHMMSS() {
         return Sequence(
-                TwoDigits().label("hours"),
-                Optional(
+                TwoDigits(),
+                FirstOf(
                         Sequence(
-                                TwoDigits().label("minutes"),
-                                Optional(TwoDigits().label("seconds"))
-                        )
+                                TwoDigits(),
+                                FirstOf(TwoDigits(), push(0))
+                        ),
+                        push(0, 0)
                 ),
-                Eoi()
+                Eoi(),
+                swap3() && push(convertToTime(popAsInt(), popAsInt(), popAsInt()))
         );
     }
 
     // h(mm)?
-
     public Rule Time_HMM() {
         return Sequence(
-                OneDigit().label("hours"),
-                Optional(TwoDigits().label("minutes")),
-                Eoi()
+                OneDigit(),
+                FirstOf(TwoDigits(), push(0)),
+                Eoi(),
+                swap() && push(convertToTime(popAsInt(), popAsInt()))
         );
     }
 
@@ -75,11 +71,11 @@ public class TimeParser extends BaseParser<Object> {
     }
 
     public Rule OneDigit() {
-        return Sequence(Digit(), set(Integer.parseInt(lastText())));
+        return Sequence(Digit(), push(Integer.parseInt(match())));
     }
 
     public Rule TwoDigits() {
-        return Sequence(Sequence(Digit(), Digit()), set(Integer.parseInt(lastText())));
+        return Sequence(Sequence(Digit(), Digit()), push(Integer.parseInt(match())));
     }
 
     public Rule Digit() {
@@ -87,6 +83,18 @@ public class TimeParser extends BaseParser<Object> {
     }
 
     // ************************* ACTIONS *****************************
+
+    protected Integer popAsInt() {
+        return (Integer) pop();
+    }
+
+    protected String convertToTime(Integer hours) {
+        return convertToTime(hours, 0);
+    }
+
+    protected String convertToTime(Integer hours, Integer minutes) {
+        return convertToTime(hours, minutes, 0);
+    }
 
     protected String convertToTime(Integer hours, Integer minutes, Integer seconds) {
         return String.format("%s h, %s min, %s s",

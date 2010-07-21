@@ -24,19 +24,17 @@ import org.parboiled.errors.GrammarException;
 /**
  * A {@link Matcher} that repeatedly tries its sub matcher against the input.
  * Succeeds if its sub matcher succeeds at least once.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class OneOrMoreMatcher<V> extends AbstractMatcher<V> {
+public class OneOrMoreMatcher extends AbstractMatcher {
 
-    public final Matcher<V> subMatcher;
+    public final Matcher subMatcher;
 
     public OneOrMoreMatcher(@NotNull Rule subRule) {
         super(subRule);
         this.subMatcher = getChildren().get(0);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         boolean matched = subMatcher.getSubContext(context).runMatcher();
         if (!matched) return false;
 
@@ -55,7 +53,7 @@ public class OneOrMoreMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 }

@@ -31,11 +31,11 @@ public class PrevCallsTest extends AbstractTest {
             Reference<Character> op = new Reference<Character>();
             Reference<Integer> b = new Reference<Integer>();
             return Sequence(
-                    Digits(), a.set(prevValue()),
-                    Operator(), op.set(prevChar()),
-                    Digits(), b.set(prevValue()),
+                    Digits(), a.set(pop()),
+                    Operator(), op.set(matchedChar()),
+                    Digits(), b.set(pop()),
                     Eoi(),
-                    set(op.get() == '+' ? a.get() + b.get() : a.get() - b.get())
+                    push(op.get() == '+' ? a.get() + b.get() : a.get() - b.get())
             );
         }
 
@@ -57,7 +57,7 @@ public class PrevCallsTest extends AbstractTest {
         public Rule Digits2() {
             return Sequence(
                     OneOrMore(CharRange('0', '9')),
-                    set(Integer.parseInt(prevText()))
+                    push(Integer.parseInt(match()))
             );
         }
 

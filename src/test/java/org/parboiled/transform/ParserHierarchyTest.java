@@ -33,7 +33,7 @@ public class ParserHierarchyTest {
         }
 
         Rule B() {
-            return Sequence('B', set());
+            return Sequence('B', push());
         }
 
         Rule C() {
@@ -51,7 +51,7 @@ public class ParserHierarchyTest {
 
         @Override
         Rule C() {
-            return Sequence(super.C(), set());
+            return Sequence(super.C(), push());
         }
 
     }
@@ -60,7 +60,7 @@ public class ParserHierarchyTest {
 
         @Override
         Rule B() {
-            return Sequence(super.B(), 'B', set());
+            return Sequence(super.B(), 'B', push());
         }
 
         @Override
@@ -69,7 +69,7 @@ public class ParserHierarchyTest {
         }
 
         Rule D() {
-            return Sequence(super.A(), super.B(), B(), set());
+            return Sequence(super.A(), super.B(), B(), push());
         }
 
     }
@@ -126,13 +126,13 @@ public class ParserHierarchyTest {
                 " 0     ALOAD 0\n" +
                 " 1     BIPUSH 66\n" +
                 " 2     INVOKESTATIC java/lang/Character.valueOf (C)Ljava/lang/Character;\n" +
-                " 3     NEW org/parboiled/transform/Action$äCo8BF2tAHkMFXit\n" +
+                " 3     NEW org/parboiled/transform/Action$xTfAVmBHBKljDrVr\n" +
                 " 4     DUP\n" +
                 " 5     LDC \"$B_Action1\"\n" +
-                " 6     INVOKESPECIAL org/parboiled/transform/Action$äCo8BF2tAHkMFXit.<init> (Ljava/lang/String;)V\n" +
+                " 6     INVOKESPECIAL org/parboiled/transform/Action$xTfAVmBHBKljDrVr.<init> (Ljava/lang/String;)V\n" +
                 " 7     DUP\n" +
                 " 8     ALOAD 0\n" +
-                " 9     PUTFIELD org/parboiled/transform/Action$äCo8BF2tAHkMFXit.field$0 : Lorg/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled;\n" +
+                " 9     PUTFIELD org/parboiled/transform/Action$xTfAVmBHBKljDrVr.field$0 : Lorg/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled;\n" +
                 "10     ICONST_0\n" +
                 "11     ANEWARRAY java/lang/Object\n" +
                 "12     INVOKEVIRTUAL org/parboiled/transform/ParserHierarchyTest$Parser1.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
@@ -162,13 +162,13 @@ public class ParserHierarchyTest {
                 "20     ANEWARRAY java/lang/Object\n" +
                 "21     DUP\n" +
                 "22     ICONST_0\n" +
-                "23     NEW org/parboiled/transform/Action$f95pccam4VQJuwgB\n" +
+                "23     NEW org/parboiled/transform/Action$snRURumB3lS2pPT7\n" +
                 "24     DUP\n" +
                 "25     LDC \"B_Action1\"\n" +
-                "26     INVOKESPECIAL org/parboiled/transform/Action$f95pccam4VQJuwgB.<init> (Ljava/lang/String;)V\n" +
+                "26     INVOKESPECIAL org/parboiled/transform/Action$snRURumB3lS2pPT7.<init> (Ljava/lang/String;)V\n" +
                 "27     DUP\n" +
                 "28     ALOAD 0\n" +
-                "29     PUTFIELD org/parboiled/transform/Action$f95pccam4VQJuwgB.field$0 : Lorg/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled;\n" +
+                "29     PUTFIELD org/parboiled/transform/Action$snRURumB3lS2pPT7.field$0 : Lorg/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled;\n" +
                 "30     AASTORE\n" +
                 "31     INVOKEVIRTUAL org/parboiled/transform/ParserHierarchyTest$Parser3.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "32     DUP\n" +
@@ -189,13 +189,13 @@ public class ParserHierarchyTest {
                 " 0     ALOAD 0\n" +
                 " 1     ALOAD 0\n" +
                 " 2     INVOKESPECIAL org/parboiled/transform/ParserHierarchyTest$Parser1.C ()Lorg/parboiled/Rule;\n" +
-                " 3     NEW org/parboiled/transform/Action$GZoDgtNxTVEBqYT3\n" +
+                " 3     NEW org/parboiled/transform/Action$Kx5fYxzM7BsyiL1A\n" +
                 " 4     DUP\n" +
                 " 5     LDC \"$C_Action1\"\n" +
-                " 6     INVOKESPECIAL org/parboiled/transform/Action$GZoDgtNxTVEBqYT3.<init> (Ljava/lang/String;)V\n" +
+                " 6     INVOKESPECIAL org/parboiled/transform/Action$Kx5fYxzM7BsyiL1A.<init> (Ljava/lang/String;)V\n" +
                 " 7     DUP\n" +
                 " 8     ALOAD 0\n" +
-                " 9     PUTFIELD org/parboiled/transform/Action$GZoDgtNxTVEBqYT3.field$0 : Lorg/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled;\n" +
+                " 9     PUTFIELD org/parboiled/transform/Action$Kx5fYxzM7BsyiL1A.field$0 : Lorg/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled;\n" +
                 "10     ICONST_0\n" +
                 "11     ANEWARRAY java/lang/Object\n" +
                 "12     INVOKEVIRTUAL org/parboiled/transform/ParserHierarchyTest$Parser2.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +

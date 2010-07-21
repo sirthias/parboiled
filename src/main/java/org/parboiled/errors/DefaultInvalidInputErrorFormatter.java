@@ -28,12 +28,10 @@ import java.util.List;
 /**
  * A {@link Formatter} for {@link InvalidInputError}s that automatically creates the correct "expected" text
  * for the error.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidInputError<V>> {
+public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInputError> {
 
-    public String format(InvalidInputError<V> error) {
+    public String format(InvalidInputError error) {
         if (error == null) return "";
 
         String errorMessage = String.format("Invalid input '%s%s'",
@@ -44,10 +42,10 @@ public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidIn
         return StringUtils.isEmpty(expectedString) ? errorMessage : errorMessage + ", expected " + expectedString;
     }
 
-    public String getExpectedString(InvalidInputError<V> error) {
+    public String getExpectedString(InvalidInputError error) {
         List<String> labelList = new ArrayList<String>();
-        for (MatcherPath<V> path : error.getFailedMatchers()) {
-            Matcher<V> labelMatcher = ErrorUtils.findProperLabelMatcher(path, error.getLastMatch());
+        for (MatcherPath path : error.getFailedMatchers()) {
+            Matcher labelMatcher = ErrorUtils.findProperLabelMatcher(path, error.getLastMatch());
             if (labelMatcher == null) continue;
             String[] labels = getLabels(labelMatcher);
             for (String label : labels) {
@@ -66,7 +64,7 @@ public class DefaultInvalidInputErrorFormatter<V> implements Formatter<InvalidIn
      * @param matcher the matcher
      * @return the labels
      */
-    public String[] getLabels(Matcher<V> matcher) {
+    public String[] getLabels(Matcher matcher) {
         if (matcher instanceof CharSetMatcher) {
             CharSetMatcher cMatcher = (CharSetMatcher) matcher;
             if (!cMatcher.characters.isSubtractive()) {

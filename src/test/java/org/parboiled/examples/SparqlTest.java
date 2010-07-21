@@ -61,7 +61,7 @@ public class SparqlTest {
     public void test() throws Exception {
         int failures = 0;
         for (TextInfo textInfo : getTextInfos()) {
-            ParsingResult<Object> result = RecoveringParseRunner.run(parser.Query(), textInfo.text);
+            ParsingResult result = RecoveringParseRunner.run(parser.Query(), textInfo.text);
 
             boolean passed = result.hasErrors() == (textInfo.result == Result.FAIL);
             if (!passed) {

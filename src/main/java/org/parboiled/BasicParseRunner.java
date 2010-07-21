@@ -32,15 +32,13 @@ import java.util.List;
  * Instead it simply marks the ParsingResult as "unmatched" if the input is not valid with regard to the rule grammar.
  * It never causes the parser to perform more than one parsing run and is the fastest way to determine
  * whether a given input conforms to the rule grammar.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class BasicParseRunner<V> implements ParseRunner<V> {
+public class BasicParseRunner implements ParseRunner {
 
     protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
-    protected final Matcher<V> rootMatcher;
+    protected final Matcher rootMatcher;
     protected InputBuffer inputBuffer;
-    protected MatcherContext<V> rootContext;
+    protected MatcherContext rootContext;
     protected boolean matched;
 
     /**
@@ -51,8 +49,8 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
-        return new BasicParseRunner<V>(rule, input).run();
+    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
+        return new BasicParseRunner(rule, input).run();
     }
 
     /**
@@ -61,7 +59,6 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param rule  the parser rule
      * @param input the input text
      */
-    @SuppressWarnings({"unchecked"})
     public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
         this(rule, new DefaultInputBuffer(input));
     }
@@ -72,42 +69,38 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param rule        the parser rule
      * @param inputBuffer the input buffer
      */
-    @SuppressWarnings({"unchecked"})
     public BasicParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
-        this.rootMatcher = (Matcher<V>) rule;
+        this.rootMatcher = (Matcher) rule;
         this.inputBuffer = inputBuffer;
     }
 
-    @SuppressWarnings({"unchecked"})
-    public ParsingResult<V> run() {
+    public ParsingResult run() {
         if (rootContext == null) {
             matched = runRootContext();
         }
-        return new ParsingResult<V>(matched, rootContext.getNode(), parseErrors, inputBuffer);
+        return new ParsingResult(matched, rootContext.getNode(), rootContext.getValueStack(), parseErrors, inputBuffer);
     }
 
     protected boolean runRootContext() {
-        return runRootContext(new Handler<V>(), true);
+        return runRootContext(new Handler(), true);
     }
 
-    protected boolean runRootContext(MatchHandler<V> handler, boolean fastStringMatching) {
-        rootContext = new MatcherContext<V>(inputBuffer, parseErrors, handler, rootMatcher, fastStringMatching);
+    protected boolean runRootContext(MatchHandler handler, boolean fastStringMatching) {
+        rootContext = new MatcherContext(inputBuffer, parseErrors, handler, rootMatcher, fastStringMatching);
         return handler.matchRoot(rootContext);
     }
 
     /**
      * The most trivial {@link MatchHandler} implementation.
      * Simply delegates to the given Context for performing the match, without any additional logic.
-     *
-     * @param <V> the type of the value field of a parse tree node
      */
-    public static final class Handler<V> implements MatchHandler<V> {
+    public static final class Handler implements MatchHandler {
 
-        public boolean matchRoot(MatcherContext<V> rootContext) {
+        public boolean matchRoot(MatcherContext rootContext) {
             return rootContext.runMatcher();
         }
 
-        public boolean match(MatcherContext<V> context) {
+        public boolean match(MatcherContext context) {
             return context.getMatcher().match(context);
         }
 

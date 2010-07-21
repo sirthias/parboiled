@@ -236,7 +236,7 @@
     </target>
 
     <target name="run-example-calc2" depends="compile.examples" description="Run the Calculator2 example">
-        <java classname="org.parboiled.examples.calculators.CalculatorParser2" fork="true">
+        <java classname="org.parboiled.examples.calculators.CalculatorParser1" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath location="target/main"/>
             <classpath location="target/examples"/>
@@ -244,7 +244,7 @@
     </target>
 
     <target name="run-example-calc3" depends="compile.examples" description="Run the Calculator3 example">
-        <java classname="org.parboiled.examples.calculators.CalculatorParser3" fork="true">
+        <java classname="org.parboiled.examples.calculators.CalculatorParser2" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath location="target/main"/>
             <classpath location="target/examples"/>
@@ -252,7 +252,7 @@
     </target>
 
     <target name="run-example-calc4" depends="compile.examples" description="Run the Calculator4 example">
-        <java classname="org.parboiled.examples.calculators.CalculatorParser4" fork="true">
+        <java classname="org.parboiled.examples.calculators.CalculatorParser3" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath location="target/main"/>
             <classpath location="target/examples"/>
@@ -260,7 +260,7 @@
     </target>
 
     <target name="run-example-calc5" depends="compile.examples" description="Run the Calculator5 example">
-        <java classname="org.parboiled.examples.calculators.CalculatorParser5" fork="true">
+        <java classname="org.parboiled.examples.calculators.CalculatorParser4" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath location="target/main"/>
             <classpath location="target/examples"/>

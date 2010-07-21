@@ -22,10 +22,8 @@ import org.parboiled.MatcherContext;
 
 /**
  * A {@link Matcher} matching a single character out of a given range of characters.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class CharRangeMatcher<V> extends AbstractMatcher<V> {
+public class CharRangeMatcher extends AbstractMatcher {
 
     public final char cLow;
     public final char cHigh;
@@ -36,7 +34,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         this.cHigh = cHigh;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         char c = context.getCurrentChar();
         if (c < cLow || c > cHigh) return false;
 
@@ -45,7 +43,7 @@ public class CharRangeMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

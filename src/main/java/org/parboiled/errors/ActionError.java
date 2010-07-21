@@ -22,16 +22,14 @@ import org.parboiled.support.MatcherPath;
 
 /**
  * A {@link ParseError} wrapping an ActionException.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class ActionError<V> extends BasicParseError {
+public class ActionError extends BasicParseError {
 
-    private final MatcherPath<V> errorPath;
+    private final MatcherPath errorPath;
     private final ActionException actionException;
 
     public ActionError(@NotNull InputBuffer inputBuffer, int errorIndex, String errorMessage,
-                       @NotNull MatcherPath<V> errorPath, @NotNull ActionException actionException) {
+                       @NotNull MatcherPath errorPath, @NotNull ActionException actionException) {
         super(inputBuffer, errorIndex, errorMessage);
         this.errorPath = errorPath;
         this.actionException = actionException;
@@ -43,7 +41,7 @@ public class ActionError<V> extends BasicParseError {
      * @return the MatcherPath
      */
     @NotNull
-    public MatcherPath<V> getErrorPath() {
+    public MatcherPath getErrorPath() {
         return errorPath;
     }
 

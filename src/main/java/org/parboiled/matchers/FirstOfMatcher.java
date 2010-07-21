@@ -24,20 +24,18 @@ import java.util.List;
 
 /**
  * A {@link Matcher} trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class FirstOfMatcher<V> extends AbstractMatcher<V> {
+public class FirstOfMatcher extends AbstractMatcher {
 
     public FirstOfMatcher(@NotNull Rule[] subRules) {
         super(subRules);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
-        List<Matcher<V>> children = getChildren();
+    public boolean match(@NotNull MatcherContext context) {
+        List<Matcher> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {
-            Matcher<V> matcher = children.get(i);
+            Matcher matcher = children.get(i);
             if (matcher.getSubContext(context).runMatcher()) {
                 context.createNode();
                 return true;
@@ -46,7 +44,7 @@ public class FirstOfMatcher<V> extends AbstractMatcher<V> {
         return false;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 }

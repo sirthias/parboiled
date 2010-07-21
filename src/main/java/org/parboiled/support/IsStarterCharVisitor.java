@@ -16,86 +16,85 @@
 
 package org.parboiled.support;
 
+import org.parboiled.ActionMatcher;
 import org.parboiled.matchers.*;
 
 /**
  * A {@link MatcherVisitor} determining whether a matcher can start a match with a given char.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class IsStarterCharVisitor<V> implements MatcherVisitor<V, Boolean> {
+public class IsStarterCharVisitor implements MatcherVisitor<Boolean> {
 
-    private final CanMatchEmptyVisitor<V> canMatchEmptyVisitor = new CanMatchEmptyVisitor<V>();
+    private final CanMatchEmptyVisitor canMatchEmptyVisitor = new CanMatchEmptyVisitor();
     private final char starterChar;
 
     public IsStarterCharVisitor(char starterChar) {
         this.starterChar = starterChar;
     }
 
-    public Boolean visit(ActionMatcher<V> matcher) {
+    public Boolean visit(ActionMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(AnyMatcher<V> matcher) {
+    public Boolean visit(AnyMatcher matcher) {
         return starterChar != Characters.EOI;
     }
 
-    public Boolean visit(CharIgnoreCaseMatcher<V> matcher) {
+    public Boolean visit(CharIgnoreCaseMatcher matcher) {
         return matcher.charLow == starterChar || matcher.charUp == starterChar;
     }
 
-    public Boolean visit(CharMatcher<V> matcher) {
+    public Boolean visit(CharMatcher matcher) {
         return matcher.character == starterChar;
     }
 
-    public Boolean visit(CharRangeMatcher<V> matcher) {
+    public Boolean visit(CharRangeMatcher matcher) {
         return matcher.cLow <= starterChar && starterChar <= matcher.cHigh;
     }
 
-    public Boolean visit(CharSetMatcher<V> matcher) {
+    public Boolean visit(CharSetMatcher matcher) {
         return matcher.characters.contains(starterChar);
     }
 
-    public Boolean visit(CustomMatcher<V> matcher) {
+    public Boolean visit(CustomMatcher matcher) {
         return matcher.isStarterChar(starterChar);
     }
 
-    public Boolean visit(EmptyMatcher<V> matcher) {
+    public Boolean visit(EmptyMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(FirstOfMatcher<V> matcher) {
-        for (Matcher<V> child : matcher.getChildren()) {
+    public Boolean visit(FirstOfMatcher matcher) {
+        for (Matcher child : matcher.getChildren()) {
             if (child.accept(this)) return true;
         }
         return false;
     }
 
-    public Boolean visit(OneOrMoreMatcher<V> matcher) {
+    public Boolean visit(OneOrMoreMatcher matcher) {
         return matcher.subMatcher.accept(this);
     }
 
-    public Boolean visit(OptionalMatcher<V> matcher) {
+    public Boolean visit(OptionalMatcher matcher) {
         return matcher.subMatcher.accept(this);
     }
 
-    public Boolean visit(SequenceMatcher<V> matcher) {
-        for (Matcher<V> child : matcher.getChildren()) {
+    public Boolean visit(SequenceMatcher matcher) {
+        for (Matcher child : matcher.getChildren()) {
             if (child.accept(this)) return true;
             if (!child.accept(canMatchEmptyVisitor)) break;
         }
         return false;
     }
 
-    public Boolean visit(TestMatcher<V> matcher) {
+    public Boolean visit(TestMatcher matcher) {
         return matcher.subMatcher.accept(this);
     }
 
-    public Boolean visit(TestNotMatcher<V> matcher) {
+    public Boolean visit(TestNotMatcher matcher) {
         return false;
     }
 
-    public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
+    public Boolean visit(ZeroOrMoreMatcher matcher) {
         return matcher.subMatcher.accept(this);
     }
 

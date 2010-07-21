@@ -61,7 +61,6 @@ public class LabelTest extends AbstractTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testLabellingParser() {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);

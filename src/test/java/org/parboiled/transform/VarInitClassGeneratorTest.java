@@ -50,7 +50,7 @@ public class VarInitClassGeneratorTest extends TransformationTest {
         public Rule A() {
             Var<List<String>> list = new Var<List<String>>(new ArrayList<String>());
             Var<Integer> i = new Var<Integer>(26);
-            return Sequence('a', list.get().add(prevText()));
+            return Sequence('a', list.get().add(match()));
         }
 
     }
@@ -121,7 +121,7 @@ public class VarInitClassGeneratorTest extends TransformationTest {
         assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 17\n" +
-                "public final class org/parboiled/transform/Action$66ihcäZNqvTSFkcu extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$OLan4U0W0uCiimxr extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 4097\n" +
@@ -142,15 +142,15 @@ public class VarInitClassGeneratorTest extends TransformationTest {
                 "  // access flags 1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$66ihcäZNqvTSFkcu.field$0 : Lorg/parboiled/support/Var;\n" +
+                "    GETFIELD org/parboiled/transform/Action$OLan4U0W0uCiimxr.field$0 : Lorg/parboiled/support/Var;\n" +
                 "    INVOKEVIRTUAL org/parboiled/support/Var.get ()Ljava/lang/Object;\n" +
                 "    CHECKCAST java/util/List\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$66ihcäZNqvTSFkcu.field$1 : Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$OLan4U0W0uCiimxr.field$1 : Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser$$parboiled;\n" +
                 "    DUP\n" +
                 "    ALOAD 1\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
-                "    INVOKEVIRTUAL org/parboiled/transform/VarInitClassGeneratorTest$Parser.prevText ()Ljava/lang/String;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/VarInitClassGeneratorTest$Parser.match ()Ljava/lang/String;\n" +
                 "    INVOKEINTERFACE java/util/List.add (Ljava/lang/Object;)Z\n" +
                 "    IRETURN\n" +
                 "    MAXSTACK = 4\n" +

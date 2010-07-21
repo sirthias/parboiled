@@ -16,73 +16,73 @@
 
 package org.parboiled.support;
 
+import org.parboiled.ActionMatcher;
 import org.parboiled.matchers.*;
 
 /**
  * A basic {@link MatcherVisitor} implementation that delegates all visiting methods to one default value method.
  *
- * @param <V> the type of the value field of a parse tree node
  * @param <R> the return value of this visitor
  */
-public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
+public class DefaultMatcherVisitor<R> implements MatcherVisitor<R> {
 
-    public R visit(ActionMatcher<V> matcher) {
+    public R visit(ActionMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(AnyMatcher<V> matcher) {
+    public R visit(AnyMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(CharIgnoreCaseMatcher<V> matcher) {
+    public R visit(CharIgnoreCaseMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(CharMatcher<V> matcher) {
+    public R visit(CharMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(CharRangeMatcher<V> matcher) {
+    public R visit(CharRangeMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(CharSetMatcher<V> matcher) {
+    public R visit(CharSetMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(CustomMatcher<V> matcher) {
+    public R visit(CustomMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(EmptyMatcher<V> matcher) {
+    public R visit(EmptyMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(FirstOfMatcher<V> matcher) {
+    public R visit(FirstOfMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(OneOrMoreMatcher<V> matcher) {
+    public R visit(OneOrMoreMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(OptionalMatcher<V> matcher) {
+    public R visit(OptionalMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(SequenceMatcher<V> matcher) {
+    public R visit(SequenceMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(TestMatcher<V> matcher) {
+    public R visit(TestMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(TestNotMatcher<V> matcher) {
+    public R visit(TestNotMatcher matcher) {
         return defaultValue(matcher);
     }
 
-    public R visit(ZeroOrMoreMatcher<V> matcher) {
+    public R visit(ZeroOrMoreMatcher matcher) {
         return defaultValue(matcher);
     }
 
@@ -93,7 +93,7 @@ public class DefaultMatcherVisitor<V, R> implements MatcherVisitor<V, R> {
      * @return the return value (null by default)
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    public R defaultValue(AbstractMatcher<V> matcher) {
+    public R defaultValue(AbstractMatcher matcher) {
         return null;
     }
 

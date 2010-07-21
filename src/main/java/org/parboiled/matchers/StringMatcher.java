@@ -23,10 +23,8 @@ import org.parboiled.Rule;
 /**
  * A {@link SequenceMatcher} specialization for sequences of CharMatchers. Performs fast string matching if the
  * current context has it enabled.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class StringMatcher<V> extends SequenceMatcher<V> {
+public class StringMatcher extends SequenceMatcher {
 
     private final char[] characters;
 
@@ -36,7 +34,7 @@ public class StringMatcher<V> extends SequenceMatcher<V> {
     }
 
     @Override
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         if (!context.fastStringMatching()) {
             return super.match(context);
         }

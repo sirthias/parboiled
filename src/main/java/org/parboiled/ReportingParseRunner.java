@@ -31,10 +31,8 @@ import java.util.List;
  * does not conform to the rule grammar.
  * It performs exactly as the {@link BasicParseRunner} on valid input, however, on invalid input two more parsing
  * runs are initiated: one for recording the first parse error and one for collecting the error report information.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class ReportingParseRunner<V> extends BasicParseRunner<V> {
+public class ReportingParseRunner extends BasicParseRunner {
 
     /**
      * Create a new ReportingParseRunner instance with the given rule and input text and returns the result of
@@ -44,8 +42,8 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
-        return new ReportingParseRunner<V>(rule, input).run();
+    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
+        return new ReportingParseRunner(rule, input).run();
     }
 
     /**
@@ -77,13 +75,13 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
         }
 
         // ok, we have a parse error, so run again without fast string matching and with our recording handler
-        RecordingParseRunner.Handler<V> recordingHandler = new RecordingParseRunner.Handler<V>();
+        RecordingParseRunner.Handler recordingHandler = new RecordingParseRunner.Handler();
         if (runRootContext(recordingHandler, false)) {
             throw new IllegalStateException(); // we failed before so we should really be failing again
         }
 
         // finally perform a third, reporting run (now that we know the error location)
-        Handler<V> reportingHandler = new Handler<V>(recordingHandler.getErrorIndex());
+        Handler reportingHandler = new Handler(recordingHandler.getErrorIndex());
         if (runRootContext(reportingHandler, false)) {
             throw new IllegalStateException(); // we failed before so we should really be failing again
         }
@@ -94,16 +92,14 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
     /**
      * A {@link MatchHandler} implementation that reports the {@link InvalidInputError} at a given error index.
      * For the actual matching this handler relies on another, inner {@link MatchHandler} instance it delegates to.
-     *
-     * @param <V> the type of the value field of a parse tree node
      */
-    public static class Handler<V> implements MatchHandler<V> {
-        private final IsSingleCharMatcherVisitor<V> isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor<V>();
+    public static class Handler implements MatchHandler {
+        private final IsSingleCharMatcherVisitor isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor();
         private final int errorIndex;
-        private final MatchHandler<V> inner;
-        private final List<MatcherPath<V>> failedMatchers = new ArrayList<MatcherPath<V>>();
-        private MatcherPath<V> lastMatch;
-        private InvalidInputError<V> parseError;
+        private final MatchHandler inner;
+        private final List<MatcherPath> failedMatchers = new ArrayList<MatcherPath>();
+        private MatcherPath lastMatch;
+        private InvalidInputError parseError;
         private boolean seeking;
 
         /**
@@ -113,7 +109,7 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
          * @param errorIndex the InputLocation of the error to be reported
          */
         public Handler(int errorIndex) {
-            this(errorIndex, new BasicParseRunner.Handler<V>());
+            this(errorIndex, new BasicParseRunner.Handler());
         }
 
         /**
@@ -123,7 +119,7 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
          * @param errorIndex the InputLocation of the error to be reported
          * @param inner      the inner MatchHandler to use
          */
-        public Handler(int errorIndex, @NotNull MatchHandler<V> inner) {
+        public Handler(int errorIndex, @NotNull MatchHandler inner) {
             this.errorIndex = errorIndex;
             this.inner = inner;
         }
@@ -133,22 +129,22 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
          *
          * @return the InvalidInputError
          */
-        public InvalidInputError<V> getParseError() {
+        public InvalidInputError getParseError() {
             return parseError;
         }
 
-        public boolean matchRoot(MatcherContext<V> rootContext) {
+        public boolean matchRoot(MatcherContext rootContext) {
             failedMatchers.clear();
             seeking = errorIndex > 0;
             inner.matchRoot(rootContext);
 
             parseError =
-                    new InvalidInputError<V>(rootContext.getInputBuffer(), errorIndex, lastMatch, failedMatchers, null);
+                    new InvalidInputError(rootContext.getInputBuffer(), errorIndex, lastMatch, failedMatchers, null);
             rootContext.getParseErrors().add(parseError);
             return false;
         }
 
-        public boolean match(MatcherContext<V> context) {
+        public boolean match(MatcherContext context) {
             boolean matched = inner.match(context);
             if (context.getCurrentIndex() == errorIndex) {
                 if (matched && seeking) {

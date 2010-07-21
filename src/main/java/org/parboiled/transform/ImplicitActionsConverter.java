@@ -59,11 +59,6 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
             method.setContainsExplicitActions(true);
             return;
         }
-        if (node.isContextSwitch()) {
-            insertNewActionWrapperAfterContextSwitch(node);
-            method.setContainsExplicitActions(true);
-            return;
-        }
         if (!node.isActionRoot()) {
             for (InstructionGraphNode predecessor : node.getPredecessors()) {
                 walkNode(predecessor);
@@ -76,31 +71,6 @@ class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
         method.instructions.set(node.getInstruction(), insn);
         node.setIsActionRoot();
         node.setInstruction(insn);
-    }
-
-    private void insertNewActionWrapperAfterContextSwitch(InstructionGraphNode node) {
-        // insert a booleanValue() call after the the given node
-        MethodInsnNode bvInsn = new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z");
-        method.instructions.insert(node.getInstruction(), bvInsn);
-        InstructionGraphNode bvNode = new InstructionGraphNode(bvInsn, null);
-
-        // insert an ACTION(...) call after the booleanValue() node
-        MethodInsnNode wrapperInsn = createActionWrappingInsn();
-        method.instructions.insert(bvInsn, wrapperInsn);
-        InstructionGraphNode wrapperNode = new InstructionGraphNode(wrapperInsn, null);
-
-        // point all dependents of the original node to the wrapperNode
-        for (InstructionGraphNode dependent : getDependents(node)) {
-            dependent.getPredecessors().set(dependent.getPredecessors().indexOf(node), wrapperNode);
-        }
-
-        // fix other structures
-        List<InstructionGraphNode> graphNodes = method.getGraphNodes();
-        int nodeIndex = graphNodes.indexOf(node);
-        graphNodes.add(nodeIndex + 1, bvNode);
-        graphNodes.add(nodeIndex + 2, wrapperNode);
-        bvNode.getPredecessors().add(node);
-        wrapperNode.getPredecessors().add(bvNode);
     }
 
     private boolean isImplicitAction(InstructionGraphNode node) {

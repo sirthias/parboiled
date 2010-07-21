@@ -28,12 +28,10 @@ import org.parboiled.support.ParsingResult;
  * without actually creating a {@link InvalidInputError} instance and adding it to the list of ParseErrors.
  * It never causes the parser to perform more than one parsing run and is rarely used directly. Instead its functionality
  * is relied upon by the {@link ReportingParseRunner} and {@link RecoveringParseRunner} classes.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class RecordingParseRunner<V> extends BasicParseRunner<V> {
+public class RecordingParseRunner extends BasicParseRunner {
 
-    private Handler<V> handler;
+    private Handler handler;
 
     /**
      * Create a new RecordingParseRunner instance with the given rule and input text and returns the result of
@@ -43,8 +41,8 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
-        return new RecordingParseRunner<V>(rule, input).run();
+    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
+        return new RecordingParseRunner(rule, input).run();
     }
 
     /**
@@ -69,7 +67,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
 
     @Override
     protected boolean runRootContext() {
-        handler = new Handler<V>();
+        handler = new Handler();
         return runRootContext(handler, false); // run without fast string matching to properly get the error location 
     }
 
@@ -88,18 +86,16 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
      * A {@link MatchHandler} implementation keeping track of the furthest match in the current input buffer,
      * and therefore the first location corresponding to an {@link InvalidInputError}.
      * For the actual matching this handler relies on another, inner {@link MatchHandler} instance it delegates to.
-     *
-     * @param <V> the type of the value field of a parse tree node
      */
-    public static class Handler<V> implements MatchHandler<V> {
+    public static class Handler implements MatchHandler {
         private int errorIndex;
-        private final MatchHandler<V> inner;
+        private final MatchHandler inner;
 
         /**
          * Creates a new Handler which delegates to a {@link BasicParseRunner.Handler} instance.
          */
         public Handler() {
-            this(new BasicParseRunner.Handler<V>());
+            this(new BasicParseRunner.Handler());
         }
 
         /**
@@ -107,7 +103,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
          *
          * @param inner the inner instance to delegate to
          */
-        public Handler(@NotNull MatchHandler<V> inner) {
+        public Handler(@NotNull MatchHandler inner) {
             this.inner = inner;
         }
 
@@ -120,7 +116,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
             return errorIndex;
         }
 
-        public boolean matchRoot(MatcherContext<V> rootContext) {
+        public boolean matchRoot(MatcherContext rootContext) {
             errorIndex = rootContext.getCurrentIndex();
             if (inner.matchRoot(rootContext)) {
                 errorIndex = -1;
@@ -129,7 +125,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
             return false;
         }
 
-        public boolean match(MatcherContext<V> context) {
+        public boolean match(MatcherContext context) {
             if (inner.match(context)) {
                 if (errorIndex < context.getCurrentIndex() && notTestNot(context)) {
                     errorIndex = context.getCurrentIndex();
@@ -139,7 +135,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
             return false;
         }
 
-        private boolean notTestNot(MatcherContext<V> context) {
+        private boolean notTestNot(MatcherContext context) {
             return !(context.getMatcher() instanceof TestNotMatcher) &&
                     (context.getParent() == null || notTestNot(context.getParent()));
         }

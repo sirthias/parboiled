@@ -23,9 +23,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-import java.util.HashSet;
-import java.util.List;
-
 import static org.parboiled.transform.AsmUtils.findLoadedClass;
 import static org.parboiled.transform.AsmUtils.loadClass;
 
@@ -115,36 +112,6 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
 
     protected abstract void generateMethod(InstructionGroup group, ClassWriter cw);
 
-    protected void fixContextSwitches(InstructionGroup group) {
-        List<InstructionGraphNode> nodes = group.getNodes();
-        InsnList instructions = group.getInstructions();
-        for (int i = nodes.size() - 1; i >= 0; i--) {
-            InstructionGraphNode node = nodes.get(i);
-            if (!node.isContextSwitch()) continue;
-
-            // insert context switch
-            String contextSwitchType = ((MethodInsnNode) node.getInstruction()).name;
-            insertContextSwitch(instructions, getFirstOfSubtree(instructions, node, new HashSet<InstructionGraphNode>())
-                    .getInstruction(), contextSwitchType);
-
-            // insert inverse context switch, reversing the context switch done before
-            String reverse = contextSwitchType.startsWith("UP") ?
-                    contextSwitchType.replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP");
-            insertContextSwitch(instructions, node.getInstruction(), reverse);
-
-            // remove original call
-            instructions.remove(node.getInstruction());
-        }
-    }
-
-    private void insertContextSwitch(InsnList instructions, AbstractInsnNode firstInsn, String contextSwitchType) {
-        instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 0));
-        instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 1));
-        instructions.insertBefore(firstInsn, new MethodInsnNode(INVOKEVIRTUAL,
-                getBaseType().getInternalName(), contextSwitchType, CONTEXT_SWITCH_DESC));
-        instructions.insertBefore(firstInsn, new VarInsnNode(ASTORE, 1));
-    }
-
     protected void insertSetContextCalls(InstructionGroup group, int localVarIx) {
         InsnList instructions = group.getInstructions();
         for (InstructionGraphNode node : group.getNodes()) {
@@ -185,21 +152,6 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
             // change the load to ALOAD 0
             group.getInstructions().set(insn, new VarInsnNode(ALOAD, 0));
         }
-    }
-
-    private static InstructionGraphNode getFirstOfSubtree(InsnList instructions, InstructionGraphNode node,
-                                                         HashSet<InstructionGraphNode> covered) {
-        InstructionGraphNode first = node;
-        if (!covered.contains(node)) {
-            covered.add(node);
-            for (InstructionGraphNode predecessor : node.getPredecessors()) {
-                InstructionGraphNode firstOfPred = getFirstOfSubtree(instructions, predecessor, covered);
-                if (instructions.indexOf(first.getInstruction()) > instructions.indexOf(firstOfPred.getInstruction())) {
-                    first = firstOfPred;
-                }
-            }
-        }
-        return first;
     }
 
 }

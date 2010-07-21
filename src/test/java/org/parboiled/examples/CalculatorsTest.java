@@ -40,21 +40,21 @@ public class CalculatorsTest extends AbstractTest {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser0.class);
         test(parser.InputLine(), "1+5", "" +
                 "[InputLine] '1+5'\n" +
-                "    [Expression] '1+5'\n" +
-                "        [Term] '1'\n" +
-                "            [Factor] '1'\n" +
-                "                [Number] '1'\n" +
-                "                    [Digit] '1'\n" +
-                "            [ZeroOrMore]\n" +
-                "        [ZeroOrMore] '+5'\n" +
-                "            [Sequence] '+5'\n" +
-                "                [[+-]] '+'\n" +
-                "                [Term] '5'\n" +
-                "                    [Factor] '5'\n" +
-                "                        [Number] '5'\n" +
-                "                            [Digit] '5'\n" +
-                "                    [ZeroOrMore]\n" +
-                "    [EOI]\n");
+                "  [Expression] '1+5'\n" +
+                "    [Term] '1'\n" +
+                "      [Factor] '1'\n" +
+                "        [Number] '1'\n" +
+                "          [Digit] '1'\n" +
+                "      [ZeroOrMore]\n" +
+                "    [ZeroOrMore] '+5'\n" +
+                "      [Sequence] '+5'\n" +
+                "        [[+-]] '+'\n" +
+                "        [Term] '5'\n" +
+                "          [Factor] '5'\n" +
+                "            [Number] '5'\n" +
+                "              [Digit] '5'\n" +
+                "          [ZeroOrMore]\n" +
+                "  [EOI]\n");
     }
 
     @Test
@@ -63,117 +63,59 @@ public class CalculatorsTest extends AbstractTest {
         runBasicCalculationTests(parser, "");
     }
 
-    @SuppressWarnings({"unchecked"})
     @Test
     public void testCalculator2() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser2.class);
 
         assertEqualsMultiline(
                 printTree(
-                        (Matcher<Integer>) parser.InputLine(),
-                        new ToStringFormatter<Matcher<Integer>>(),
-                        Filters.<Integer>preventLoops()
+                        (Matcher) parser.InputLine(),
+                        new ToStringFormatter<Matcher>(),
+                        Filters.preventLoops()
                 ), "" +
                         "InputLine\n" +
-                        "    Expression\n" +
-                        "        Term\n" +
-                        "            Factor\n" +
-                        "                Number\n" +
-                        "                    Digits\n" +
-                        "                        Digit\n" +
-                        "                    Number_Action1\n" +
-                        "                Parens\n" +
-                        "                    '('\n" +
-                        "                    Expression\n" +
-                        "                    ')'\n" +
-                        "            Term_Action1\n" +
-                        "            ZeroOrMore\n" +
-                        "                FirstOf\n" +
-                        "                    Sequence\n" +
-                        "                        '*'\n" +
-                        "                        Factor\n" +
-                        "                        Term_Action2\n" +
-                        "                    Sequence\n" +
-                        "                        '/'\n" +
-                        "                        Factor\n" +
-                        "                        Term_Action3\n" +
+                        "  Expression\n" +
+                        "    Term\n" +
+                        "      Factor\n" +
+                        "        Number\n" +
+                        "          Digits\n" +
+                        "            Digit\n" +
+                        "          Number_Action1\n" +
+                        "        Parens\n" +
+                        "          '('\n" +
+                        "          Expression\n" +
+                        "          ')'\n" +
+                        "      ZeroOrMore\n" +
+                        "        Sequence\n" +
+                        "          [*/]\n" +
+                        "          Term_Action1\n" +
+                        "          Factor\n" +
+                        "          Term_Action2\n" +
+                        "    ZeroOrMore\n" +
+                        "      Sequence\n" +
+                        "        [+-]\n" +
                         "        Expression_Action1\n" +
-                        "        ZeroOrMore\n" +
-                        "            FirstOf\n" +
-                        "                Sequence\n" +
-                        "                    '+'\n" +
-                        "                    Term\n" +
-                        "                    Expression_Action2\n" +
-                        "                Sequence\n" +
-                        "                    '-'\n" +
-                        "                    Term\n" +
-                        "                    Expression_Action3\n" +
-                        "    EOI\n");
+                        "        Term\n" +
+                        "        Expression_Action2\n" +
+                        "  EOI\n");
 
         runBasicCalculationTests(parser, "");
     }
 
-    @SuppressWarnings({"unchecked"})
     @Test
     public void testCalculator3() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser3.class);
-
-        assertEqualsMultiline(
-                printTree(
-                        (Matcher<Integer>) parser.InputLine(),
-                        new ToStringFormatter<Matcher<Integer>>(),
-                        Filters.<Integer>preventLoops()
-                ), "" +
-                        "InputLine\n" +
-                        "    Expression\n" +
-                        "        Term\n" +
-                        "            Factor\n" +
-                        "                Number\n" +
-                        "                    Digits\n" +
-                        "                        Digit\n" +
-                        "                    Number_Action1\n" +
-                        "                Parens\n" +
-                        "                    '('\n" +
-                        "                    Expression\n" +
-                        "                    ')'\n" +
-                        "            Term_Action1\n" +
-                        "            ZeroOrMore\n" +
-                        "                Sequence\n" +
-                        "                    Op\n" +
-                        "                    Factor\n" +
-                        "                    Term_Action2\n" +
-                        "        Expression_Action1\n" +
-                        "        ZeroOrMore\n" +
-                        "            Sequence\n" +
-                        "                Op\n" +
-                        "                Term\n" +
-                        "                Expression_Action2\n" +
-                        "    EOI\n");
-
-        runBasicCalculationTests(parser, "");
+        runBasicCalculationTests(parser, ".0");
+        runExtendedCalculationTests(parser);
     }
 
     @Test
     public void testCalculator4() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser4.class);
         runBasicCalculationTests(parser, ".0");
-        runExtendedCalculationTests(parser);
-    }
-
-    @Test
-    public void testCalculator5() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser5.class);
-        runBasicCalculationTests(parser, ".0");
         runExtendedCalculationTests(parser);        
     }
     
-    @Test
-    public void testCalculator6() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser6.class);
-        runBasicCalculationTests(parser, ".0");
-        runExtendedCalculationTests(parser);
-    }
-
     private void runBasicCalculationTests(CalculatorParser parser, String suffix) {
         test(parser, "1+2", "3" + suffix);
         test(parser, "1+2-3+4", "4" + suffix);
@@ -198,7 +140,6 @@ public class CalculatorsTest extends AbstractTest {
         test(parser, "1-2*3^ 4 /5+6", "-25.4");
     }
 
-    @SuppressWarnings({"unchecked"})
     private void test(CalculatorParser parser, String input, String value) {
         ParsingResult result = ReportingParseRunner.run(parser.InputLine(), input);
         if (result.hasErrors()) {

@@ -30,7 +30,7 @@ import static org.parboiled.common.StringUtils.escape;
 /**
  * Base class of all parboiled parsers. Defines the basic rule creation methods.
  *
- * @param <V> the type of the value field of the parse tree nodes created by this parser
+ * @param <V> the type of the parser values
  */
 @SuppressWarnings({"UnusedDeclaration"})
 public abstract class BaseParser<V> extends BaseActions<V> {
@@ -140,7 +140,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return Ch(characters.getChars()[0]);
         }
-        return new CharSetMatcher<V>(characters).label(characters.toString());
+        return new CharSetMatcher(characters).label(characters.toString());
     }
 
     /**
@@ -177,7 +177,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = Ch(characters[i]);
         }
-        return new StringMatcher<V>(matchers, characters).label('"' + String.valueOf(characters) + '"');
+        return new StringMatcher(matchers, characters).label('"' + String.valueOf(characters) + '"');
     }
 
     /**
@@ -375,7 +375,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Label("ANY")
     public Rule Any() {
-        return new AnyMatcher<V>();
+        return new AnyMatcher();
     }
 
     /**
@@ -385,152 +385,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Label("EMPTY")
     public Rule Empty() {
-        return new EmptyMatcher<V>();
+        return new EmptyMatcher();
     }
 
     ///************************* "MAGIC" METHODS ***************************///
-
-    /**
-     * Changes the context scope of the wrapped expression to the current parent scope.
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T UP(T expression) {
-        throw new UnsupportedOperationException("Illegal UP(...) call outside of Action expression");
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the parent scope two levels up.
-     * Equivalent to UP(UP(...))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T UP2(T expression) {
-        return UP(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the parent scope three levels up.
-     * Equivalent to UP(UP(UP(...)))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T UP3(T expression) {
-        return UP(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the parent scope four levels up.
-     * Equivalent to UP(UP(UP(UP(...))))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T UP4(T expression) {
-        return UP(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the parent scope five levels up.
-     * Equivalent to UP(UP(UP(UP(UP(...)))))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T UP5(T expression) {
-        return UP(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the parent scope six levels up.
-     * Equivalent to UP(UP(UP(UP(UP(UP(...))))))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T UP6(T expression) {
-        return UP(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the current sub scope. This is only valid if this call
-     * is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always at
-     * the bottom of the context chain.
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T DOWN(T expression) {
-        throw new UnsupportedOperationException("Illegal DOWN(...) call outside of Action expression");
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the sub scope two levels down. This is only valid if this
-     * call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is always
-     * at the bottom of the context chain.
-     * Equivalent to DOWN(DOWN(...))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T DOWN2(T expression) {
-        return DOWN(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the sub scope three levels down. This is only valid if
-     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
-     * always at the bottom of the context chain.
-     * Equivalent to DOWN(DOWN(DOWN(...)))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T DOWN3(T expression) {
-        return DOWN(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the sub scope four levels down. This is only valid if
-     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
-     * always at the bottom of the context chain.
-     * Equivalent to DOWN(DOWN(DOWN(DOWN(...))))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T DOWN4(T expression) {
-        return DOWN(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the sub scope five levels down. This is only valid if
-     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
-     * always at the bottom of the context chain.
-     * Equivalent to DOWN(DOWN(DOWN(DOWN(DOWN(...)))))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T DOWN5(T expression) {
-        return DOWN(expression); // will always throw an UnsupportedOperationException
-    }
-
-    /**
-     * Changes the context scope of the wrapped expression to the sub scope six levels down. This is only valid if
-     * this call is at some outer level wrapped with one or more {@link #UP(Object)} calls, since the default scope is
-     * always at the bottom of the context chain.
-     * Equivalent to DOWN(DOWN(DOWN(DOWN(DOWN(DOWN(...))))))
-     *
-     * @param expression the expression to change the context for
-     * @return the result of the expression
-     */
-    public static <T> T DOWN6(T expression) {
-        return DOWN(expression); // will always throw an UnsupportedOperationException
-    }
 
     /**
      * Explicitly marks the wrapped expression as an action expression.
@@ -605,7 +463,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param obj the object to convert
      * @return the rule corresponding to the given object
      */
-    @SuppressWarnings({"unchecked"})
     @DontLabel
     public Rule ToRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
@@ -613,8 +470,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof String) return FromStringLiteral((String) obj);
         if (obj instanceof char[]) return FromCharArray((char[]) obj);
         if (obj instanceof Action) {
-            Action<V> action = (Action<V>) obj;
-            return new ActionMatcher<V>(action).label(action.toString());
+            Action action = (Action) obj;
+            return new ActionMatcher(action).label(action.toString());
         }
         Checks.ensure(!(obj instanceof Boolean), "Rule specification contains an unwrapped Boolean value, " +
                 "if you were trying to specify a parser action wrap the expression with ACTION(...)");

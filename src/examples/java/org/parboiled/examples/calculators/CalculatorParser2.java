@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Mathias Doenitz
+ * Copyright (C) 2009 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,18 @@
 
 package org.parboiled.examples.calculators;
 
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.SuppressNode;
+import org.parboiled.examples.calculators.CalculatorParser2.CalcNode;
+import org.parboiled.support.Var;
+import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
- * A calculator parser keeping calculation results directly in the value field of the parse tree nodes.
- * All calculations are implemented directly in action expressions.
+ * A calculator parser building an AST representing the expression structure before performing the actual calculation.
+ * The parser values are AST nodes of type CalcNode.
  */
-public class CalculatorParser2 extends CalculatorParser<Integer> {
+public class CalculatorParser2 extends CalculatorParser<CalcNode> {
 
     @Override
     public Rule InputLine() {
@@ -31,34 +35,42 @@ public class CalculatorParser2 extends CalculatorParser<Integer> {
     }
 
     public Rule Expression() {
+        Var<Character> op = new Var<Character>();
         return Sequence(
-                Term(), set(), // the set() sets the value of the preceding Term on the current rule (the "Expression")
+                Term(),
                 ZeroOrMore(
-                        FirstOf(
-                                // the action that is run after the '+' and the "Term" have been matched
-                                // sets the value of the enclosing "Expression" to the sum of the old value and the
-                                // value of the node that was constructed last, in this case the preceding "Term"
-                                Sequence('+', Term(), UP3(set(value() + lastValue()))),
+                        Sequence(
+                                CharSet("+-"), op.set(matchedChar()),
+                                Term(),
 
-                                // dito for the '-' operator
-                                Sequence('-', Term(), UP3(set(value() - lastValue())))
+                                // create an AST node for the operation that was just matched
+                                // The new AST node is not set on the parse tree node created for this rule, but on the
+                                // for the "Expression" Sequence two levels up. The arguments for the AST node are
+                                // - the operator that matched (which is two levels underneath the "Expression")
+                                // - the old value of the "Expression" as left child
+                                // - the value of the preceding "Term" as right child
+                                swap() && push(new CalcNode(op.get(), pop(), pop()))
                         )
                 )
         );
     }
 
     public Rule Term() {
+        Var<Character> op = new Var<Character>();
         return Sequence(
-                Factor(), set(), // the set() sets the value of the "Term" to the value of the preceding "Factor"
+                Factor(),
                 ZeroOrMore(
-                        FirstOf(
-                                // the action that is run after the '*' and the "Factor" have been matched
-                                // sets the value of the enclosing "Term" to the product of the old value and the
-                                // value of the node that was constructed last, in this case the preceding "Factor"
-                                Sequence('*', Factor(), UP3(set(value() * lastValue()))),
+                        Sequence(
+                                CharSet("*/"), op.set(matchedChar()),
+                                Factor(),
 
-                                // dito for the '/' operator
-                                Sequence('/', Factor(), UP3(set(value() / lastValue())))
+                                // create an AST node for the operation that was just matched
+                                // The new AST node is not set on the parse tree node created for this rule, but on the
+                                // one for the "Term" Sequence two levels up. The arguments for the AST node are
+                                // - the operator that matched (which is two levels underneath the "Term")
+                                // - the old value of the "Term" as left child
+                                // - the value of the preceding "Factor" as right child
+                                swap() && push(new CalcNode(op.get(), pop(), pop()))
                         )
                 )
         );
@@ -78,10 +90,10 @@ public class CalculatorParser2 extends CalculatorParser<Integer> {
 
                 // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
                 // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
-                set(Integer.parseInt(lastText()))
+                push(new CalcNode(Integer.parseInt(match())))
         );
     }
-    
+
     public Rule Digits() {
         return OneOrMore(Digit());
     }
@@ -89,6 +101,49 @@ public class CalculatorParser2 extends CalculatorParser<Integer> {
     @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
+    }
+
+    //****************************************************************
+
+    /**
+     * The AST node for the calculators. The type of the node is carried as a Character that can either contain
+     * an operator char or be null. In the latter case the AST node is a leaf directly containing a value.
+     */
+    public static class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
+        private int value;
+        private Character operator;
+
+        public CalcNode(int value) {
+            super(null, null);
+            this.value = value;
+        }
+
+        public CalcNode(@NotNull Character operator, @NotNull CalcNode left, @NotNull CalcNode right) {
+            super(left, right);
+            this.operator = operator;
+        }
+
+        public int getValue() {
+            if (operator == null) return value;
+            switch (operator) {
+                case '+':
+                    return left().getValue() + right().getValue();
+                case '-':
+                    return left().getValue() - right().getValue();
+                case '*':
+                    return left().getValue() * right().getValue();
+                case '/':
+                    return left().getValue() / right().getValue();
+                default:
+                    throw new IllegalStateException();
+            }
+        }
+
+        @Override
+        public String toString() {
+            return (operator == null ? "Value " + value : "Operator '" + operator + '\'') + " | " + getValue();
+        }
+
     }
 
     //**************** MAIN ****************

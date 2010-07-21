@@ -26,15 +26,13 @@ import java.util.Arrays;
 
 /**
  * Holds a snapshot of the current {@link Matcher} stack at a certain point during the parsing process.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class MatcherPath<V> {
+public class MatcherPath {
 
     private final Matcher[] matchers;
 
     @SuppressWarnings({"ConstantConditions"})
-    public MatcherPath(@NotNull MatcherContext<V> context) {
+    public MatcherPath(@NotNull MatcherContext context) {
         this(context.getLevel() + 1);
         while (context != null) {
             matchers[context.getLevel()] = context.getMatcher();
@@ -59,8 +57,7 @@ public class MatcherPath<V> {
      * @param i the index to get
      * @return the matcher at the given index
      */
-    @SuppressWarnings({"unchecked"})
-    public Matcher<V> get(int i) {
+    public Matcher get(int i) {
         Preconditions.checkElementIndex(i, matchers.length);
         return matchers[i];
     }
@@ -68,8 +65,7 @@ public class MatcherPath<V> {
     /**
      * @return the deepest matcher of the path
      */
-    @SuppressWarnings({"unchecked"})
-    public Matcher<V> getHead() {
+    public Matcher getHead() {
         return matchers[matchers.length - 1];
     }
 
@@ -79,7 +75,7 @@ public class MatcherPath<V> {
      * @param other the other path
      * @return the length of the longest common path prefix of this path and the given other path
      */
-    public int getCommonPrefixLength(MatcherPath<V> other) {
+    public int getCommonPrefixLength(MatcherPath other) {
         if (other == null) return 0;
         for (int i = 0; i < matchers.length; i++) {
             if (other.length() == i || matchers[i] != other.get(i)) return i;
@@ -93,7 +89,7 @@ public class MatcherPath<V> {
      * @param matcher the matcher
      * @return true if contained
      */
-    public boolean contains(Matcher<V> matcher) {
+    public boolean contains(Matcher matcher) {
         return indexOf(matcher) != -1;
     }
 
@@ -103,7 +99,7 @@ public class MatcherPath<V> {
      * @param matcher the matcher to find
      * @return the index if found, -1 if not found
      */
-    public int indexOf(Matcher<V> matcher) {
+    public int indexOf(Matcher matcher) {
         for (int i = 0; i < matchers.length; i++) {
             if (matchers[i] == matcher) return i;
         }
@@ -116,7 +112,7 @@ public class MatcherPath<V> {
      * @param other the other path
      * @return true if this path is a prefix of the given other path
      */
-    public boolean isPrefixOf(MatcherPath<V> other) {
+    public boolean isPrefixOf(MatcherPath other) {
         return getCommonPrefixLength(other) == length();
     }
 

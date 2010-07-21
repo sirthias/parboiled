@@ -45,7 +45,6 @@ class ActionClassGenerator extends GroupClassGenerator {
     protected void generateMethod(InstructionGroup group, ClassWriter cw) {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", '(' + CONTEXT_DESC + ")Z", null, null);
 
-        fixContextSwitches(group);
         insertSetContextCalls(group, 1);
         convertXLoads(group);
 

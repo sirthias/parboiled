@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * A simple container encapsulating the result of a parsing run.
  */
-public class ParsingResult<V> {
+public class ParsingResult {
 
     /**
      * Indicates whether the input was successfully parsed.
@@ -35,7 +35,9 @@ public class ParsingResult<V> {
     /**
      * The root node of the parse tree created by the parsing run.
      */
-    public final Node<V> parseTreeRoot;
+    public final Node parseTreeRoot;
+
+    public final List<Object> valueStack;
 
     /**
      * The list of parse errors created during the parsing run.
@@ -54,13 +56,15 @@ public class ParsingResult<V> {
      *
      * @param matched       true if the rule matched the input
      * @param parseTreeRoot the parse tree root node
+     * @param valueStack
      * @param parseErrors   the list of parse errors
      * @param inputBuffer   the input buffer
      */
-    public ParsingResult(boolean matched, Node<V> parseTreeRoot, @NotNull List<ParseError> parseErrors,
-                         @NotNull InputBuffer inputBuffer) {
+    public ParsingResult(boolean matched, Node parseTreeRoot, @NotNull List<Object> valueStack,
+                         @NotNull List<ParseError> parseErrors, @NotNull InputBuffer inputBuffer) {
         this.matched = matched;
         this.parseTreeRoot = parseTreeRoot;
+        this.valueStack = valueStack;
         this.parseErrors = parseErrors;
         this.inputBuffer = inputBuffer;
     }

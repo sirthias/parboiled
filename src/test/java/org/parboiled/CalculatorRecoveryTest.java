@@ -17,7 +17,7 @@
 package org.parboiled;
 
 import org.parboiled.examples.calculators.CalculatorParser;
-import org.parboiled.examples.calculators.CalculatorParser2;
+import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.test.FileUtils;
 import org.testng.annotations.Test;
@@ -26,7 +26,7 @@ public class CalculatorRecoveryTest extends AbstractTest {
 
     @Test
     public void testCalculatorErrorRecovery() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser2.class);
+        CalculatorParser parser = Parboiled.createParser(CalculatorParser1.class);
         String[] tests = FileUtils.readAllTextFromResource("CalculatorErrorRecoveryTest.test")
                 .split("###\r?\n");
 

@@ -22,19 +22,17 @@ import org.parboiled.support.Characters;
 
 /**
  * A {@link org.parboiled.matchers.Matcher} matching any single character except EOI.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class AnyMatcher<V> extends AbstractMatcher<V> {
+public class AnyMatcher extends AbstractMatcher {
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         if (context.getCurrentChar() == Characters.EOI) return false;
         context.advanceIndex(1);
         context.createNode();
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

@@ -36,7 +36,7 @@ public class IndentDedentTest extends AbstractTest {
         public Rule Line() {
             return Sequence(
                     ZeroOrMore(' '),
-                    countIndentOrDedent(text(lastNode())),
+                    countIndentOrDedent(match()),
                     ZeroOrMore(LineChar()),
                     Newline()
             );
@@ -73,8 +73,7 @@ public class IndentDedentTest extends AbstractTest {
                 "  stay there\n" +
                 "          go back big time\n" +
                 " and return";
-        ParsingResult<?> result = RecoveringParseRunner.run(rule, source
-        );
+        ParsingResult result = RecoveringParseRunner.run(rule, source);
         assertEquals(parser.indents, 3);
         assertEquals(parser.dedents, 2);
         assertEquals(parser.currentIndent, 1);

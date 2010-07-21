@@ -25,19 +25,17 @@ import java.util.List;
 
 /**
  * An immutable implementation of the Node interface.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
+class NodeImpl extends ImmutableTreeNode<Node> implements Node {
 
-    private final Matcher<V> matcher;
+    private final Matcher matcher;
     private final int startIndex;
     private final int endIndex;
-    private final V value;
+    private final Object value;
     private final boolean hasError;
 
-    public NodeImpl(@NotNull Matcher<V> matcher, List<Node<V>> children, int startIndex,
-                    int endIndex, V value, boolean hasError) {
+    public NodeImpl(@NotNull Matcher matcher, List<Node> children, int startIndex,
+                    int endIndex, Object value, boolean hasError) {
         super(children);
         this.matcher = matcher;
         this.startIndex = startIndex;
@@ -47,7 +45,7 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     }
 
     @NotNull
-    public Matcher<V> getMatcher() {
+    public Matcher getMatcher() {
         return matcher;
     }
 
@@ -63,7 +61,7 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
         return endIndex;
     }
 
-    public V getValue() {
+    public Object getValue() {
         return value;
     }
 

@@ -16,43 +16,44 @@
 
 package org.parboiled.matchers;
 
+import org.parboiled.ActionMatcher;
+
 /**
  * The interface to be implemented by all visitors of {@link Matcher}s.
  *
- * @param <V> the type of the value field of a parse tree node
  * @param <R> the return value of this visitor
  * @see <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor Pattern on Wikipedia</a>
  */
-public interface MatcherVisitor<V, R> {
+public interface MatcherVisitor<R> {
 
-    R visit(ActionMatcher<V> matcher);
+    R visit(ActionMatcher matcher);
 
-    R visit(AnyMatcher<V> matcher);
+    R visit(AnyMatcher matcher);
 
-    R visit(CharIgnoreCaseMatcher<V> matcher);
+    R visit(CharIgnoreCaseMatcher matcher);
 
-    R visit(CharMatcher<V> matcher);
+    R visit(CharMatcher matcher);
 
-    R visit(CustomMatcher<V> matcher);
+    R visit(CustomMatcher matcher);
 
-    R visit(CharRangeMatcher<V> matcher);
+    R visit(CharRangeMatcher matcher);
 
-    R visit(CharSetMatcher<V> matcher);
+    R visit(CharSetMatcher matcher);
 
-    R visit(EmptyMatcher<V> matcher);
+    R visit(EmptyMatcher matcher);
 
-    R visit(FirstOfMatcher<V> matcher);
+    R visit(FirstOfMatcher matcher);
 
-    R visit(OneOrMoreMatcher<V> matcher);
+    R visit(OneOrMoreMatcher matcher);
 
-    R visit(OptionalMatcher<V> matcher);
+    R visit(OptionalMatcher matcher);
 
-    R visit(SequenceMatcher<V> matcher);
+    R visit(SequenceMatcher matcher);
 
-    R visit(TestMatcher<V> matcher);
+    R visit(TestMatcher matcher);
 
-    R visit(TestNotMatcher<V> matcher);
+    R visit(TestNotMatcher matcher);
 
-    R visit(ZeroOrMoreMatcher<V> matcher);
+    R visit(ZeroOrMoreMatcher matcher);
 
 }

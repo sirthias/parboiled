@@ -127,7 +127,7 @@ public final class GraphUtils {
             String line = formatter.format(node);
             if (line != null) {
                 sb.append(indent).append(line).append("\n");
-                indent += "    ";
+                indent += "  ";
             }
         }
         if ((printability == Printability.PrintAndDescend || printability == Printability.Descend) &&

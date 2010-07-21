@@ -46,10 +46,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 1653576444L);
-        //renderToGraphViz(dotSource);
-
-        testMethodAnalysis("RuleWithIndirectExplicitDownAction", 2883729241L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 1884045865L);
         //renderToGraphViz(dotSource);
     }
 
@@ -76,7 +73,6 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         // legend
         sb.append(" Action [penwidth=2.0,style=filled,fillcolor=skyblue];\n");
         sb.append(" VarInit [penwidth=2.0,style=filled,fillcolor=grey];\n");
-        sb.append(" ContextSwitch [penwidth=2.0,color=green];\n");
         sb.append(" XLoad [penwidth=2.0,color=orange];\n");
         sb.append(" XStore [penwidth=2.0,color=red];\n");
         sb.append(" CallOnContextAware [penwidth=2.0];\n");
@@ -86,13 +82,12 @@ public class InstructionGroupCreatorTest extends TransformationTest {
             InstructionGraphNode node = method.getGraphNodes().get(i);
             // generate node
             boolean isSpecial = node.isActionRoot() || node.isVarInitRoot() ||
-                    node.isContextSwitch() || node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
+                    node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
             sb.append(" ").append(i)
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
                     .append(node.isActionRoot() ? "color=skyblue," : "")
                     .append(node.isVarInitRoot() ? "color=grey," : "")
-                    .append(node.isContextSwitch() ? "color=green," : "")
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isActionRoot() ?

@@ -10,7 +10,7 @@ import java.lang.String
 trait Rules[V] {
 
   trait Rule {
-    private var proxies: Option[ListBuffer[ProxyMatcher[Nothing]]] = None
+    private var proxies: Option[ListBuffer[ProxyMatcher]] = None
     protected val matcherCreator: () => PRule
     var label:String = _
 
@@ -22,7 +22,7 @@ trait Rules[V] {
 
     def withLabel(label: String) = { this.label = label; this}
 
-    def registerProxy(matcher: ProxyMatcher[Nothing]) {
+    def registerProxy(matcher: ProxyMatcher) {
       proxies match {
         case Some(list) => list += matcher
         case None => proxies = Some(ListBuffer(matcher))
@@ -30,7 +30,7 @@ trait Rules[V] {
     }
 
     private def updateProxies(matcher: PRule): PRule = {
-      for (list <- proxies; p <- list) p.arm(matcher.asInstanceOf[Matcher[Nothing]])
+      for (list <- proxies; p <- list) p.arm(matcher.asInstanceOf[Matcher])
       matcher
     }
 

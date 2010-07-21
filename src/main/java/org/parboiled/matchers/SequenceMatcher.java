@@ -24,20 +24,18 @@ import java.util.List;
 
 /**
  * A {@link Matcher} that executes all of its sub matcher in sequence and only succeeds, if all sub matchers succeed.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class SequenceMatcher<V> extends AbstractMatcher<V> {
+public class SequenceMatcher extends AbstractMatcher {
 
     public SequenceMatcher(@NotNull Rule[] subRules) {
         super(subRules);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
-        List<Matcher<V>> children = getChildren();
+    public boolean match(@NotNull MatcherContext context) {
+        List<Matcher> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {
-            Matcher<V> matcher = children.get(i);
+            Matcher matcher = children.get(i);
 
             // remember the current index in the context, so we can access it for building the current follower set
             context.setIntTag(i);
@@ -50,7 +48,7 @@ public class SequenceMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

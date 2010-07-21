@@ -58,7 +58,6 @@ public class CachingTest extends AbstractTest {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testLabellingParser() {
         CachingParser parser = Parboiled.createParser(CachingParser.class);
@@ -69,7 +68,7 @@ public class CachingTest extends AbstractTest {
         assertEquals(countAllDistinct(matcher1), 5);
         assertEquals(countAllDistinct(matcher2), 6);
 
-        assertEquals(ParserStatistics.<Object>generateFor(parser.Rule1()).toString(), "" +
+        assertEquals(ParserStatistics.generateFor(parser.Rule1()).toString(), "" +
                 "Parser statistics for rule 'Rule1':\n" +
                 "    Total rules       : 5\n" +
                 "        Actions       : 0\n" +
@@ -92,7 +91,7 @@ public class CachingTest extends AbstractTest {
                 "    ProxyMatchers     : 0\n" +
                 "    VarFramingMatchers: 0\n");
 
-        assertEquals(ParserStatistics.<Object>generateFor(parser.Rule2()).toString(), "" +
+        assertEquals(ParserStatistics.generateFor(parser.Rule2()).toString(), "" +
                 "Parser statistics for rule 'Rule2':\n" +
                 "    Total rules       : 6\n" +
                 "        Actions       : 0\n" +

@@ -19,10 +19,8 @@ package org.parboiled;
 /**
  * A MatchHandler is responsible for actually running the match of a given {@link MatcherContext}.
  * Many times it wraps the actual call to the matcher with some custom logic, e.g. for error handling.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public interface MatchHandler<V> {
+public interface MatchHandler {
 
     /**
      * Runs the root MatcherContext.
@@ -30,7 +28,7 @@ public interface MatchHandler<V> {
      * @param rootContext the root MatcherContext.
      * @return true if matched
      */
-    boolean matchRoot(MatcherContext<V> rootContext);
+    boolean matchRoot(MatcherContext rootContext);
 
     /**
      * Runs the given MatcherContext.
@@ -38,6 +36,6 @@ public interface MatchHandler<V> {
      * @param context the MatcherContext
      * @return true if matched
      */
-    boolean match(MatcherContext<V> context);
+    boolean match(MatcherContext context);
 
 }

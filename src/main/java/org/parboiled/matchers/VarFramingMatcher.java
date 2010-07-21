@@ -23,18 +23,18 @@ import org.parboiled.support.Var;
 
 import java.util.List;
 
-public class VarFramingMatcher<V> implements Matcher<V> {
+public class VarFramingMatcher implements Matcher {
 
-    private Matcher<V> inner;
+    private Matcher inner;
     private final Var[] variables;
 
     @SuppressWarnings({"unchecked"})
     public VarFramingMatcher(@NotNull Rule inner, @NotNull Var[] variables) {
-        this.inner = (Matcher<V>) inner;
+        this.inner = (Matcher) inner;
         this.variables = variables;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         for (Var var : variables) {
             var.enterFrame();
         }
@@ -51,7 +51,7 @@ public class VarFramingMatcher<V> implements Matcher<V> {
     // GraphNode
 
     @NotNull
-    public List<Matcher<V>> getChildren() {
+    public List<Matcher> getChildren() {
         return inner.getChildren();
     }
 
@@ -59,25 +59,25 @@ public class VarFramingMatcher<V> implements Matcher<V> {
 
     @SuppressWarnings({"unchecked"})
     public Rule label(String label) {
-        inner = (Matcher<V>) inner.label(label);
+        inner = (Matcher) inner.label(label);
         return this;
     }
 
     @SuppressWarnings({"unchecked"})
     public Rule suppressNode() {
-        inner = (Matcher<V>) inner.suppressNode();
+        inner = (Matcher) inner.suppressNode();
         return this;
     }
 
     @SuppressWarnings({"unchecked"})
     public Rule suppressSubnodes() {
-        inner = (Matcher<V>) inner.suppressSubnodes();
+        inner = (Matcher) inner.suppressSubnodes();
         return this;
     }
 
     @SuppressWarnings({"unchecked"})
     public Rule skipNode() {
-        inner = (Matcher<V>) inner.skipNode();
+        inner = (Matcher) inner.skipNode();
         return this;
     }
 
@@ -91,13 +91,13 @@ public class VarFramingMatcher<V> implements Matcher<V> {
 
     public boolean isNodeSkipped() {return inner.isNodeSkipped();}
 
-    public MatcherContext<V> getSubContext(MatcherContext<V> context) {
-        MatcherContext<V> subContext = inner.getSubContext(context);
+    public MatcherContext getSubContext(MatcherContext context) {
+        MatcherContext subContext = inner.getSubContext(context);
         subContext.setMatcher(this); // we need to inject ourselves here otherwise we get cut out
         return subContext;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {return inner.accept(visitor);}
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {return inner.accept(visitor);}
 
     @Override
     public String toString() { return inner.toString(); }
@@ -106,13 +106,12 @@ public class VarFramingMatcher<V> implements Matcher<V> {
      * Retrieves the innermost Matcher that is not a VarFramingMatcher.
      *
      * @param matcher the matcher to unwrap
-     * @param <V>     the type of the value field of a parse tree node
      * @return the given instance if it is not a VarFramingMatcher, otherwise the innermost Matcher
      */
     @SuppressWarnings({"unchecked"})
-    public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
+    public static  Matcher unwrap(Matcher matcher) {
         if (matcher instanceof VarFramingMatcher) {
-            VarFramingMatcher<V> varFramingMatcher = (VarFramingMatcher<V>) matcher;
+            VarFramingMatcher varFramingMatcher = (VarFramingMatcher) matcher;
             return unwrap(varFramingMatcher.inner);
         }
         return matcher;

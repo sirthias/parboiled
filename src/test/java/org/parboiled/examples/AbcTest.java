@@ -28,17 +28,17 @@ public class AbcTest extends AbstractTest {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
         test(parser.S(), "aabbcc", "" +
                 "[S] 'aabbcc'\n" +
-                "    [OneOrMore] 'aa'\n" +
-                "        ['a'] 'a'\n" +
-                "        ['a'] 'a'\n" +
-                "    [B] 'bbcc'\n" +
+                "  [OneOrMore] 'aa'\n" +
+                "    ['a'] 'a'\n" +
+                "    ['a'] 'a'\n" +
+                "  [B] 'bbcc'\n" +
+                "    ['b'] 'b'\n" +
+                "    [Optional] 'bc'\n" +
+                "      [B] 'bc'\n" +
                 "        ['b'] 'b'\n" +
-                "        [Optional] 'bc'\n" +
-                "            [B] 'bc'\n" +
-                "                ['b'] 'b'\n" +
-                "                [Optional]\n" +
-                "                ['c'] 'c'\n" +
-                "        ['c'] 'c'\n");
+                "        [Optional]\n" +
+                "        ['c'] 'c'\n" +
+                "    ['c'] 'c'\n");
     }
 
     @Test
@@ -49,17 +49,17 @@ public class AbcTest extends AbstractTest {
                 "aabbbcc\n" +
                 "    ^\n", "" +
                 "[S]E 'aabbcc'\n" +
-                "    [OneOrMore] 'aa'\n" +
-                "        ['a'] 'a'\n" +
-                "        ['a'] 'a'\n" +
-                "    [B]E 'bbcc'\n" +
+                "  [OneOrMore] 'aa'\n" +
+                "    ['a'] 'a'\n" +
+                "    ['a'] 'a'\n" +
+                "  [B]E 'bbcc'\n" +
+                "    ['b'] 'b'\n" +
+                "    [Optional]E 'bc'\n" +
+                "      [B]E 'bc'\n" +
                 "        ['b'] 'b'\n" +
-                "        [Optional]E 'bc'\n" +
-                "            [B]E 'bc'\n" +
-                "                ['b'] 'b'\n" +
-                "                [Optional]\n" +
-                "                ['c'] 'c'\n" +
-                "        ['c'] 'c'\n"
+                "        [Optional]\n" +
+                "        ['c'] 'c'\n" +
+                "    ['c'] 'c'\n"
         );
     }
 
@@ -71,17 +71,17 @@ public class AbcTest extends AbstractTest {
                 "aabcc\n" +
                 "   ^\n", "" +
                 "[S]E 'aabbcc'\n" +
-                "    [OneOrMore] 'aa'\n" +
-                "        ['a'] 'a'\n" +
-                "        ['a'] 'a'\n" +
-                "    [B]E 'bbcc'\n" +
-                "        ['b'] 'b'\n" +
-                "        [Optional]E 'bc'\n" +
-                "            [B]E 'bc'\n" +
-                "                ['b']E 'b'\n" +
-                "                [Optional]\n" +
-                "                ['c'] 'c'\n" +
-                "        ['c'] 'c'\n"
+                "  [OneOrMore] 'aa'\n" +
+                "    ['a'] 'a'\n" +
+                "    ['a'] 'a'\n" +
+                "  [B]E 'bbcc'\n" +
+                "    ['b'] 'b'\n" +
+                "    [Optional]E 'bc'\n" +
+                "      [B]E 'bc'\n" +
+                "        ['b']E 'b'\n" +
+                "        [Optional]\n" +
+                "        ['c'] 'c'\n" +
+                "    ['c'] 'c'\n"
         );
     }
 

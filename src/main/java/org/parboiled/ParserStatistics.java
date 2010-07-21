@@ -22,37 +22,37 @@ import org.parboiled.matchers.*;
 
 import java.util.*;
 
-public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> {
+public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
 
-    private final Matcher<V> root;
+    private final Matcher root;
     private int totalRules;
-    private final Set<AnyMatcher<V>> anyMatchers = new HashSet<AnyMatcher<V>>();
-    private final Set<CharIgnoreCaseMatcher<V>> charIgnoreCaseMatchers = new HashSet<CharIgnoreCaseMatcher<V>>();
-    private final Set<CharMatcher<V>> charMatchers = new HashSet<CharMatcher<V>>();
-    private final Set<CustomMatcher<V>> customMatchers = new HashSet<CustomMatcher<V>>();
-    private final Set<CharRangeMatcher<V>> charRangeMatchers = new HashSet<CharRangeMatcher<V>>();
-    private final Set<CharSetMatcher<V>> charSetMatchers = new HashSet<CharSetMatcher<V>>();
-    private final Set<EmptyMatcher<V>> emptyMatchers = new HashSet<EmptyMatcher<V>>();
-    private final Set<FirstOfMatcher<V>> firstOfMatchers = new HashSet<FirstOfMatcher<V>>();
-    private final Set<OneOrMoreMatcher<V>> oneOrMoreMatchers = new HashSet<OneOrMoreMatcher<V>>();
-    private final Set<OptionalMatcher<V>> optionalMatchers = new HashSet<OptionalMatcher<V>>();
-    private final Set<SequenceMatcher<V>> sequenceMatchers = new HashSet<SequenceMatcher<V>>();
-    private final Set<TestMatcher<V>> testMatchers = new HashSet<TestMatcher<V>>();
-    private final Set<TestNotMatcher<V>> testNotMatchers = new HashSet<TestNotMatcher<V>>();
-    private final Set<ZeroOrMoreMatcher<V>> zeroOrMoreMatchers = new HashSet<ZeroOrMoreMatcher<V>>();
+    private final Set<AnyMatcher> anyMatchers = new HashSet<AnyMatcher>();
+    private final Set<CharIgnoreCaseMatcher> charIgnoreCaseMatchers = new HashSet<CharIgnoreCaseMatcher>();
+    private final Set<CharMatcher> charMatchers = new HashSet<CharMatcher>();
+    private final Set<CustomMatcher> customMatchers = new HashSet<CustomMatcher>();
+    private final Set<CharRangeMatcher> charRangeMatchers = new HashSet<CharRangeMatcher>();
+    private final Set<CharSetMatcher> charSetMatchers = new HashSet<CharSetMatcher>();
+    private final Set<EmptyMatcher> emptyMatchers = new HashSet<EmptyMatcher>();
+    private final Set<FirstOfMatcher> firstOfMatchers = new HashSet<FirstOfMatcher>();
+    private final Set<OneOrMoreMatcher> oneOrMoreMatchers = new HashSet<OneOrMoreMatcher>();
+    private final Set<OptionalMatcher> optionalMatchers = new HashSet<OptionalMatcher>();
+    private final Set<SequenceMatcher> sequenceMatchers = new HashSet<SequenceMatcher>();
+    private final Set<TestMatcher> testMatchers = new HashSet<TestMatcher>();
+    private final Set<TestNotMatcher> testNotMatchers = new HashSet<TestNotMatcher>();
+    private final Set<ZeroOrMoreMatcher> zeroOrMoreMatchers = new HashSet<ZeroOrMoreMatcher>();
 
-    private final Set<Action<V>> actions = new HashSet<Action<V>>();
+    private final Set<Action> actions = new HashSet<Action>();
     private final Set<Class<?>> actionClasses = new HashSet<Class<?>>();
-    private final Set<ProxyMatcher<V>> proxyMatchers = new HashSet<ProxyMatcher<V>>();
-    private final Set<VarFramingMatcher<V>> varFramingMatchers = new HashSet<VarFramingMatcher<V>>();
+    private final Set<ProxyMatcher> proxyMatchers = new HashSet<ProxyMatcher>();
+    private final Set<VarFramingMatcher> varFramingMatchers = new HashSet<VarFramingMatcher>();
 
     @SuppressWarnings({"unchecked"})
-    public static <V> ParserStatistics<V> generateFor(@NotNull Rule rule) {
-        Matcher<V> matcher = (Matcher<V>) rule;
-        return matcher.accept(new ParserStatistics<V>(matcher));
+    public static  ParserStatistics generateFor(@NotNull Rule rule) {
+        Matcher matcher = (Matcher) rule;
+        return matcher.accept(new ParserStatistics(matcher));
     }
 
-    private ParserStatistics(Matcher<V> root) {
+    private ParserStatistics(Matcher root) {
         this.root = root;
         countSpecials(root);
     }
@@ -65,63 +65,63 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
         return totalRules;
     }
 
-    public Set<AnyMatcher<V>> getAnyMatchers() {
+    public Set<AnyMatcher> getAnyMatchers() {
         return anyMatchers;
     }
 
-    public Set<CharIgnoreCaseMatcher<V>> getCharIgnoreCaseMatchers() {
+    public Set<CharIgnoreCaseMatcher> getCharIgnoreCaseMatchers() {
         return charIgnoreCaseMatchers;
     }
 
-    public Set<CharMatcher<V>> getCharMatchers() {
+    public Set<CharMatcher> getCharMatchers() {
         return charMatchers;
     }
 
-    public Set<CustomMatcher<V>> getCustomMatchers() {
+    public Set<CustomMatcher> getCustomMatchers() {
         return customMatchers;
     }
 
-    public Set<CharRangeMatcher<V>> getCharRangeMatchers() {
+    public Set<CharRangeMatcher> getCharRangeMatchers() {
         return charRangeMatchers;
     }
 
-    public Set<CharSetMatcher<V>> getCharSetMatchers() {
+    public Set<CharSetMatcher> getCharSetMatchers() {
         return charSetMatchers;
     }
 
-    public Set<EmptyMatcher<V>> getEmptyMatchers() {
+    public Set<EmptyMatcher> getEmptyMatchers() {
         return emptyMatchers;
     }
 
-    public Set<FirstOfMatcher<V>> getFirstOfMatchers() {
+    public Set<FirstOfMatcher> getFirstOfMatchers() {
         return firstOfMatchers;
     }
 
-    public Set<OneOrMoreMatcher<V>> getOneOrMoreMatchers() {
+    public Set<OneOrMoreMatcher> getOneOrMoreMatchers() {
         return oneOrMoreMatchers;
     }
 
-    public Set<OptionalMatcher<V>> getOptionalMatchers() {
+    public Set<OptionalMatcher> getOptionalMatchers() {
         return optionalMatchers;
     }
 
-    public Set<SequenceMatcher<V>> getSequenceMatchers() {
+    public Set<SequenceMatcher> getSequenceMatchers() {
         return sequenceMatchers;
     }
 
-    public Set<TestMatcher<V>> getTestMatchers() {
+    public Set<TestMatcher> getTestMatchers() {
         return testMatchers;
     }
 
-    public Set<TestNotMatcher<V>> getTestNotMatchers() {
+    public Set<TestNotMatcher> getTestNotMatchers() {
         return testNotMatchers;
     }
 
-    public Set<ZeroOrMoreMatcher<V>> getZeroOrMoreMatchers() {
+    public Set<ZeroOrMoreMatcher> getZeroOrMoreMatchers() {
         return zeroOrMoreMatchers;
     }
 
-    public Set<Action<V>> getActions() {
+    public Set<Action> getActions() {
         return actions;
     }
 
@@ -129,17 +129,17 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
         return actionClasses;
     }
 
-    public Set<ProxyMatcher<V>> getProxyMatchers() {
+    public Set<ProxyMatcher> getProxyMatchers() {
         return proxyMatchers;
     }
 
-    public Set<VarFramingMatcher<V>> getVarFramingMatchers() {
+    public Set<VarFramingMatcher> getVarFramingMatchers() {
         return varFramingMatchers;
     }
 
     // MatcherVisitor interface
 
-    public ParserStatistics<V> visit(ActionMatcher<V> matcher) {
+    public ParserStatistics visit(ActionMatcher matcher) {
         if (!actions.contains(matcher.action)) {
             totalRules++;
             actions.add(matcher.action);
@@ -148,67 +148,67 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
         return this;
     }
 
-    public ParserStatistics<V> visit(AnyMatcher<V> matcher) {
+    public ParserStatistics visit(AnyMatcher matcher) {
         return visit(matcher, anyMatchers);
     }
 
-    public ParserStatistics<V> visit(CharIgnoreCaseMatcher<V> matcher) {
+    public ParserStatistics visit(CharIgnoreCaseMatcher matcher) {
         return visit(matcher, charIgnoreCaseMatchers);
     }
 
-    public ParserStatistics<V> visit(CharMatcher<V> matcher) {
+    public ParserStatistics visit(CharMatcher matcher) {
         return visit(matcher, charMatchers);
     }
 
-    public ParserStatistics<V> visit(CustomMatcher<V> matcher) {
+    public ParserStatistics visit(CustomMatcher matcher) {
         return visit(matcher, customMatchers);
     }
 
-    public ParserStatistics<V> visit(CharRangeMatcher<V> matcher) {
+    public ParserStatistics visit(CharRangeMatcher matcher) {
         return visit(matcher, charRangeMatchers);
     }
 
-    public ParserStatistics<V> visit(CharSetMatcher<V> matcher) {
+    public ParserStatistics visit(CharSetMatcher matcher) {
         return visit(matcher, charSetMatchers);
     }
 
-    public ParserStatistics<V> visit(EmptyMatcher<V> matcher) {
+    public ParserStatistics visit(EmptyMatcher matcher) {
         return visit(matcher, emptyMatchers);
     }
 
-    public ParserStatistics<V> visit(FirstOfMatcher<V> matcher) {
+    public ParserStatistics visit(FirstOfMatcher matcher) {
         return visit(matcher, firstOfMatchers);
     }
 
-    public ParserStatistics<V> visit(OneOrMoreMatcher<V> matcher) {
+    public ParserStatistics visit(OneOrMoreMatcher matcher) {
         return visit(matcher, oneOrMoreMatchers);
     }
 
-    public ParserStatistics<V> visit(OptionalMatcher<V> matcher) {
+    public ParserStatistics visit(OptionalMatcher matcher) {
         return visit(matcher, optionalMatchers);
     }
 
-    public ParserStatistics<V> visit(SequenceMatcher<V> matcher) {
+    public ParserStatistics visit(SequenceMatcher matcher) {
         return visit(matcher, sequenceMatchers);
     }
 
-    public ParserStatistics<V> visit(TestMatcher<V> matcher) {
+    public ParserStatistics visit(TestMatcher matcher) {
         return visit(matcher, testMatchers);
     }
 
-    public ParserStatistics<V> visit(TestNotMatcher<V> matcher) {
+    public ParserStatistics visit(TestNotMatcher matcher) {
         return visit(matcher, testNotMatchers);
     }
 
-    public ParserStatistics<V> visit(ZeroOrMoreMatcher<V> matcher) {
+    public ParserStatistics visit(ZeroOrMoreMatcher matcher) {
         return visit(matcher, zeroOrMoreMatchers);
     }
 
-    private <M extends Matcher<V>> ParserStatistics<V> visit(M matcher, Set<M> set) {
+    private <M extends Matcher> ParserStatistics visit(M matcher, Set<M> set) {
         if (!set.contains(matcher)) {
             totalRules++;
             set.add(matcher);
-            for (Matcher<V> child : matcher.getChildren()) {
+            for (Matcher child : matcher.getChildren()) {
                 countSpecials(child);
                 child.accept(this);
             }
@@ -216,11 +216,11 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
         return this;
     }
 
-    private void countSpecials(Matcher<V> matcher) {
+    private void countSpecials(Matcher matcher) {
         if (matcher instanceof ProxyMatcher) {
-            proxyMatchers.add((ProxyMatcher<V>) matcher);
+            proxyMatchers.add((ProxyMatcher) matcher);
         } else if (matcher instanceof VarFramingMatcher) {
-            varFramingMatchers.add((VarFramingMatcher<V>) matcher);
+            varFramingMatchers.add((VarFramingMatcher) matcher);
         }
     }
 
@@ -278,7 +278,7 @@ public class ParserStatistics<V> implements MatcherVisitor<V, ParserStatistics> 
 
     private List<String> printActionClassInstances(Class<?> actionClass) {
         List<String> actionNames = new ArrayList<String>();
-        for (Action<V> action : actions) {
+        for (Action action : actions) {
             if (action.getClass().equals(actionClass)) {
                 actionNames.add(action.toString());
             }

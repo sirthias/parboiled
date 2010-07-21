@@ -284,17 +284,6 @@ class AsmUtils {
                 isAssignableTo(methodOwner, Var.class);
     }
 
-    public static boolean isContextSwitch(@NotNull AbstractInsnNode insn) {
-        if (insn.getOpcode() != Opcodes.INVOKESTATIC) return false;
-        MethodInsnNode mi = (MethodInsnNode) insn;
-        return isContextSwitch(mi.owner, mi.name);
-    }
-
-    public static boolean isContextSwitch(@NotNull String methodOwner, @NotNull String methodName) {
-        return isAssignableTo(methodOwner, BaseParser.class) &&
-                "UP/UP2/UP3/UP4/UP5/UP6/DOWN/DOWN2/DOWN3/DOWN4/DOWN5/DOWN6".contains(methodName);
-    }
-
     public static boolean isCallOnContextAware(@NotNull AbstractInsnNode insn) {
         if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;

@@ -18,6 +18,7 @@ package org.parboiled.errors;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.ActionMatcher;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
@@ -39,11 +40,10 @@ public final class ErrorUtils {
      *
      * @param failedMatcherPath the path to the failed matcher
      * @param lastMatchPath     the path of the last match
-     * @param <V>               the type of the value field of a parse tree node
      * @return the matcher whose label is best for presentation in "expected" strings
      */
-    public static <V> Matcher<V> findProperLabelMatcher(@NotNull final MatcherPath<V> failedMatcherPath,
-                                                        MatcherPath<V> lastMatchPath) {
+    public static  Matcher findProperLabelMatcher(@NotNull final MatcherPath failedMatcherPath,
+                                                        MatcherPath lastMatchPath) {
         int commonPrefixLength = failedMatcherPath.getCommonPrefixLength(lastMatchPath);
         if (lastMatchPath != null && commonPrefixLength == lastMatchPath.length()) {
             return failedMatcherPath.getHead();
@@ -51,35 +51,35 @@ public final class ErrorUtils {
 
         final Reference<Integer> ix = new Reference<Integer>();
 
-        DefaultMatcherVisitor<V, Boolean> hasProperLabelVisitor = new DefaultMatcherVisitor<V, Boolean>() {
+        DefaultMatcherVisitor<Boolean> hasProperLabelVisitor = new DefaultMatcherVisitor<Boolean>() {
             @Override
-            public Boolean visit(ActionMatcher<V> matcher) {
+            public Boolean visit(ActionMatcher matcher) {
                 return false;
             }
 
             @Override
-            public Boolean visit(EmptyMatcher<V> matcher) {
+            public Boolean visit(EmptyMatcher matcher) {
                 return false;
             }
 
             @Override
-            public Boolean visit(FirstOfMatcher<V> matcher) {
+            public Boolean visit(FirstOfMatcher matcher) {
                 String label = matcher.getLabel();
                 return !"FirstOf".equals(label);
             }
 
             @Override
-            public Boolean visit(OneOrMoreMatcher<V> matcher) {
+            public Boolean visit(OneOrMoreMatcher matcher) {
                 return !"OneOrMore".equals(matcher.getLabel());
             }
 
             @Override
-            public Boolean visit(OptionalMatcher<V> matcher) {
+            public Boolean visit(OptionalMatcher matcher) {
                 return !"Optional".equals(matcher.getLabel());
             }
 
             @Override
-            public Boolean visit(SequenceMatcher<V> matcher) {
+            public Boolean visit(SequenceMatcher matcher) {
                 // if the sequence only has the default label we never use it
                 if ("Sequence".equals(matcher.getLabel())) return false;
 
@@ -87,25 +87,25 @@ public final class ErrorUtils {
                 Preconditions.checkState(ix.get() + 1 < failedMatcherPath.length());
 
                 // we only accept the sequence name as a good label if the failed matcher is its first child
-                Matcher<V> failedSub = failedMatcherPath.get(ix.get() + 1);
-                Matcher<V> firstSub = ProxyMatcher.unwrap(matcher.getChildren().get(0));
+                Matcher failedSub = failedMatcherPath.get(ix.get() + 1);
+                Matcher firstSub = ProxyMatcher.unwrap(matcher.getChildren().get(0));
                 return firstSub == failedSub;
             }
 
             @Override
-            public Boolean visit(ZeroOrMoreMatcher<V> matcher) {
+            public Boolean visit(ZeroOrMoreMatcher matcher) {
                 return !"ZeroOrMore".equals(matcher.getLabel());
             }
 
             @Override
-            public Boolean defaultValue(AbstractMatcher<V> matcher) {
+            public Boolean defaultValue(AbstractMatcher matcher) {
                 return true;
             }
         };
 
         for (int i = commonPrefixLength; i < failedMatcherPath.length(); i++) {
             ix.set(i);
-            Matcher<V> matcher = failedMatcherPath.get(i);
+            Matcher matcher = failedMatcherPath.get(i);
             if (matcher.accept(hasProperLabelVisitor)) {
                 return matcher;
             }
@@ -120,8 +120,8 @@ public final class ErrorUtils {
      * @param inputBuffer the input buffer
      * @return the pretty print text
      */
-    public static <V> String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
-        return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter<V>());
+    public static  String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
+        return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter());
     }
 
     /**
@@ -132,13 +132,12 @@ public final class ErrorUtils {
      * @param formatter   the formatter for InvalidInputErrors
      * @return the pretty print text
      */
-    @SuppressWarnings({"unchecked"})
-    public static <V> String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer,
-                                             @NotNull Formatter<InvalidInputError<V>> formatter) {
+    public static  String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer,
+                                             @NotNull Formatter<InvalidInputError> formatter) {
         int start = error.getStartIndex();
         String message = error.getErrorMessage() != null ? error.getErrorMessage() :
                 error instanceof InvalidInputError ?
-                        formatter.format((InvalidInputError<V>) error) : error.getClass().getSimpleName();
+                        formatter.format((InvalidInputError) error) : error.getClass().getSimpleName();
 
         DefaultInputBuffer.Position pos = inputBuffer.getPosition(start);
         StringBuilder sb = new StringBuilder(message);
@@ -166,7 +165,7 @@ public final class ErrorUtils {
      * @param parsingResult the parsing result
      * @return the pretty print text
      */
-    public static String printParseErrors(@NotNull ParsingResult<?> parsingResult) {
+    public static String printParseErrors(@NotNull ParsingResult parsingResult) {
         return printParseErrors(parsingResult.parseErrors, parsingResult.inputBuffer);
     }
 

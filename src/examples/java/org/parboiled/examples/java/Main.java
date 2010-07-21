@@ -70,7 +70,7 @@ public class Main {
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<Object> result = ReportingParseRunner.run(rootRule, sourceText);
+            ParsingResult result = ReportingParseRunner.run(rootRule, sourceText);
             if (!result.matched) {
                 System.out.printf("\nParse error(s) in file '%s':\n%s", sourceFile, printParseErrors(result));
                 System.exit(1);

@@ -27,8 +27,8 @@ public class ActionTest extends AbstractTest {
     public static class Actions extends BaseActions<Object> {
 
         public boolean addOne() {
-            Integer i = (Integer) getContext().getNodeValue();
-            getContext().setNodeValue(i + 1);
+            Integer i = (Integer) getContext().pop();
+            getContext().push(i + 1);
             return true;
         }
     }
@@ -40,9 +40,9 @@ public class ActionTest extends AbstractTest {
         public Rule A() {
             return Sequence(
                     'a',
-                    set(42),
+                    push(42),
                     B(18),
-                    stringAction("lastText:"+ lastText())
+                    stringAction("lastText:"+ match())
             );
         }
 
@@ -50,16 +50,16 @@ public class ActionTest extends AbstractTest {
             int j = i + 1;
             return Sequence(
                     'b',
-                    set(timesTwo(i + j)),
+                    push(timesTwo(i + j)),
                     C(),
-                    set(value()) // no effect
+                    push(pop()) // no effect
             );
         }
 
         public Rule C() {
             return Sequence(
                     'c',
-                    set(value()), // no effect
+                    push(pop()), // no effect
                     new Action() {
                         public boolean run(Context context) {
                             return getContext() == context;
@@ -72,8 +72,8 @@ public class ActionTest extends AbstractTest {
         @Label("Last")
         public Rule D(int i) {
             return Sequence(
-                    'd', set(UP3(value())),
-                    UP(set(i)),
+                    'd', dup(),
+                    push(i),
                     actions.addOne()
             );
         }
@@ -94,16 +94,16 @@ public class ActionTest extends AbstractTest {
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.A(), "abcd", "" +
-                "[A, {42}] 'abcd'\n" +
+                "[A, {2}] 'abcd'\n" +
                 "    ['a'] 'a'\n" +
-                "    [B, {74}] 'bcd'\n" +
-                "        ['b'] 'b'\n" +
-                "        [C, {1}] 'cd'\n" +
-                "            ['c'] 'c'\n" +
-                "            [Last, {43}] 'd'\n" +
-                "                ['d'] 'd'\n");
+                "    [B, {2}] 'bcd'\n" +
+                "        ['b', {42}] 'b'\n" +
+                "        [C, {2}] 'cd'\n" +
+                "            ['c', {74}] 'c'\n" +
+                "            [Last, {2}] 'd'\n" +
+                "                ['d', {74}] 'd'\n");
 
-        ParserStatistics<Object> stats = ParserStatistics.generateFor(parser.A());
+        ParserStatistics stats = ParserStatistics.generateFor(parser.A());
         assertEquals(stats.toString(), "" +
                 "Parser statistics for rule 'A':\n" +
                 "    Total rules       : 17\n" +
@@ -129,13 +129,13 @@ public class ActionTest extends AbstractTest {
 
         assertEquals(stats.printActionClassInstances(), "" +
                 "Action classes and their instances for rule 'A':\n" +
-                "    Action$0giyIxDX7Mk6g1wT : A_Action1\n" +
-                "    Action$EhPxB8PLI074kxTD : A_Action2\n" +
-                "    Action$WxwT85eöxHtQh4qk : B_Action1\n" +
-                "    Action$eGe2AFydnE95kf3g : D_Action2\n" +
+                "    Action$6cLpVbWbQq5ipg4L : A_Action2\n" +
+                "    Action$C7Cct03iSioF6Y0I : D_Action1\n" +
+                "    Action$CkakYAwr0N00UnJ1 : D_Action2\n" +
+                "    Action$I0TRs0StgVDw2pzp : B_Action2, C_Action1\n" +
+                "    Action$UUSxqpbGyJy9hEöE : A_Action1\n" +
                 "    Action$j9fDPvQwCYftylRy : D_Action3\n" +
-                "    Action$rWBC0msöENfoebYi : D_Action1\n" +
-                "    Action$rg9Tdät0tagVQXdX : B_Action2, C_Action1\n" +
+                "    Action$yNYbmROXF8hUKwhq : B_Action1\n" +
                 "    and 1 anonymous instance(s)\n");
     }
 

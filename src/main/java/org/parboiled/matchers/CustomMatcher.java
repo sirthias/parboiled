@@ -22,10 +22,8 @@ import org.parboiled.Rule;
 /**
  * Base class of custom matcher implementations. If you want to implement custom matchers they have to be derived
  * from this class. Instances of derived classes can be directly used in rule defining expressions.
- *
- * @param <V> the type of the value field of a parse tree node.
  */
-public abstract class CustomMatcher<V> extends AbstractMatcher<V> {
+public abstract class CustomMatcher extends AbstractMatcher {
 
     protected CustomMatcher() {
     }
@@ -60,7 +58,7 @@ public abstract class CustomMatcher<V> extends AbstractMatcher<V> {
      */
     public abstract boolean isStarterChar(char c);
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

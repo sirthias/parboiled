@@ -25,12 +25,10 @@ import java.util.List;
 /**
  * A {@link Matcher} that delegates all {@link Rule} and {@link Matcher} interface methods to another {@link Matcher}.
  * It can also hold a label and a leaf marker and lazily apply these to the underlying {@link Matcher} once it is available.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
+public class ProxyMatcher implements Matcher, Cloneable {
 
-    private Matcher<V> target;
+    private Matcher target;
     private String label;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
@@ -38,7 +36,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
     private boolean dirty;
 
     @NotNull
-    public List<Matcher<V>> getChildren() {
+    public List<Matcher> getChildren() {
         if (dirty) apply();
         return target.getChildren();
     }
@@ -67,7 +65,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
         dirty = label != null || nodeSuppressed || subnodesSuppressed || nodeSkipped;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         if (dirty) apply();
         return target.match(context);
     }
@@ -92,7 +90,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
         return target.isNodeSkipped();
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         if (dirty) apply();
         return target.accept(visitor);
     }
@@ -111,7 +109,6 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
         if (nodeSkipped) skipNode();
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule label(String label) {
         if (target == null) {
             // if we have no target yet we need to save the label and "apply" it later
@@ -122,7 +119,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
             // this proxy matcher is already waiting for its label application opportunity,
             // so we need to create another proxy level
-            ProxyMatcher<V> anotherProxy = createClone();
+            ProxyMatcher anotherProxy = createClone();
             anotherProxy.setLabel(label);
             anotherProxy.arm(this);
             return anotherProxy;
@@ -130,12 +127,11 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
         // we already have a target to which we can directly apply the label
         Rule inner = unwrap(target);
-        target = (Matcher<V>) inner.label(label); // since relabelling might change the instance we have to update it
+        target = (Matcher) inner.label(label); // since relabelling might change the instance we have to update it
         setLabel(null);
         return target;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule suppressNode() {
         if (target == null) {
             // if we have no target yet we need to save the marker and "apply" it later
@@ -145,12 +141,11 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
         // we already have a target to which we can directly apply the marker
         Rule inner = unwrap(target);
-        target = (Matcher<V>) inner.suppressNode(); // since this might change the instance we have to update it
+        target = (Matcher) inner.suppressNode(); // since this might change the instance we have to update it
         setNodeSuppressed(false);
         return target;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule suppressSubnodes() {
         if (target == null) {
             // if we have no target yet we need to save the marker and "apply" it later
@@ -160,12 +155,11 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
         // we already have a target to which we can directly apply the marker
         Rule inner = unwrap(target);
-        target = (Matcher<V>) inner.suppressSubnodes(); // since this might change the instance we have to update it
+        target = (Matcher) inner.suppressSubnodes(); // since this might change the instance we have to update it
         setSubnodesSuppressed(false);
         return target;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule skipNode() {
         if (target == null) {
             // if we have no target yet we need to save the marker and "apply" it later
@@ -175,7 +169,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
 
         // we already have a target to which we can directly apply the marker
         Rule inner = unwrap(target);
-        target = (Matcher<V>) inner.skipNode(); // since this might change the instance we have to update it
+        target = (Matcher) inner.skipNode(); // since this might change the instance we have to update it
         setNodeSkipped(false);
         return target;
     }
@@ -185,7 +179,7 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
      *
      * @param target the Matcher to delegate to
      */
-    public void arm(@NotNull Matcher<V> target) {
+    public void arm(@NotNull Matcher target) {
         this.target = target;
     }
 
@@ -193,30 +187,26 @@ public class ProxyMatcher<V> implements Matcher<V>, Cloneable {
      * Retrieves the innermost Matcher that is not a ProxyMatcher.
      *
      * @param matcher the matcher to unwrap
-     * @param <V>     the type of the value field of a parse tree node
      * @return the given instance if it is not a ProxyMatcher, otherwise the innermost non-proxy Matcher
      */
-    @SuppressWarnings({"unchecked"})
-    public static <V> Matcher<V> unwrap(Matcher<V> matcher) {
+    public static  Matcher unwrap(Matcher matcher) {
         if (matcher instanceof ProxyMatcher) {
-            ProxyMatcher<V> proxyMatcher = (ProxyMatcher<V>) matcher;
+            ProxyMatcher proxyMatcher = (ProxyMatcher) matcher;
             if (proxyMatcher.dirty) proxyMatcher.apply();
             return proxyMatcher.target;
         }
         return matcher;
     }
 
-    public MatcherContext<V> getSubContext(MatcherContext<V> context) {
+    public MatcherContext getSubContext(MatcherContext context) {
         if (dirty) apply();
         return target.getSubContext(context);
     }
 
     // creates a shallow copy
-
-    @SuppressWarnings({"unchecked"})
-    private ProxyMatcher<V> createClone() {
+    private ProxyMatcher createClone() {
         try {
-            return (ProxyMatcher<V>) clone();
+            return (ProxyMatcher) clone();
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException();
         }

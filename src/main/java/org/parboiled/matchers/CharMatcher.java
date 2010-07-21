@@ -21,10 +21,8 @@ import org.parboiled.MatcherContext;
 
 /**
  * A {@link Matcher} matching a single given character.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class CharMatcher<V> extends AbstractMatcher<V> {
+public class CharMatcher extends AbstractMatcher {
 
     public final char character;
 
@@ -32,14 +30,14 @@ public class CharMatcher<V> extends AbstractMatcher<V> {
         this.character = character;
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         if (context.getCurrentChar() != character) return false;
         context.advanceIndex(1);
         context.createNode();
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

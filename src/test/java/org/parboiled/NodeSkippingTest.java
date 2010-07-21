@@ -87,7 +87,6 @@ public class NodeSkippingTest extends AbstractTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testNodeSuppression() {
         Parser parser = Parboiled.createParser(Parser.class);

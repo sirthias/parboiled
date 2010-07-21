@@ -24,28 +24,24 @@ import org.parboiled.trees.ImmutableGraphNode;
 
 /**
  * Abstract base class of most regular {@link Matcher}s.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> implements Matcher<V>, Cloneable {
+public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implements Matcher, Cloneable {
 
     private String label;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
     private boolean nodeSkipped;
 
-    AbstractMatcher() {
+    public AbstractMatcher() {
         this(new Rule[0]);
     }
 
-    @SuppressWarnings({"unchecked"})
     AbstractMatcher(@NotNull Rule subRule) {
         this(new Rule[] {subRule});
     }
 
-    @SuppressWarnings({"unchecked"})
     AbstractMatcher(@NotNull Rule[] subRules) {
-        super(ImmutableList.<Matcher<V>>of(toMatchers(subRules)));
+        super(ImmutableList.<Matcher>of(toMatchers(subRules)));
     }
 
     private static Matcher[] toMatchers(@NotNull Rule[] subRules) {
@@ -77,44 +73,43 @@ public abstract class AbstractMatcher<V> extends ImmutableGraphNode<Matcher<V>> 
         return getLabel();
     }
 
-    public AbstractMatcher<V> label(@NotNull String label) {
+    public AbstractMatcher label(@NotNull String label) {
         if (label.equals(this.label)) return this;
-        AbstractMatcher<V> clone = createClone();
+        AbstractMatcher clone = createClone();
         clone.label = label;
         return clone;
     }
 
     public Rule suppressNode() {
         if (nodeSuppressed) return this;
-        AbstractMatcher<V> clone = createClone();
+        AbstractMatcher clone = createClone();
         clone.nodeSuppressed = true;
         return clone;
     }
 
     public Rule suppressSubnodes() {
         if (subnodesSuppressed) return this;
-        AbstractMatcher<V> clone = createClone();
+        AbstractMatcher clone = createClone();
         clone.subnodesSuppressed = true;
         return clone;
     }
 
     public Rule skipNode() {
         if (nodeSkipped) return this;
-        AbstractMatcher<V> clone = createClone();
+        AbstractMatcher clone = createClone();
         clone.nodeSkipped = true;
         return clone;
     }
 
     // default implementation is to simply delegate to the context
-    public MatcherContext<V> getSubContext(MatcherContext<V> context) {
+    public MatcherContext getSubContext(MatcherContext context) {
         return context.getSubContext(this);
     }
 
     // creates a shallow copy
-    @SuppressWarnings({"unchecked"})
-    private AbstractMatcher<V> createClone() {
+    private AbstractMatcher createClone() {
         try {
-            return (AbstractMatcher<V>) clone();
+            return (AbstractMatcher) clone();
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException();
         }

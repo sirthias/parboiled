@@ -21,10 +21,8 @@ import org.parboiled.MatcherContext;
 
 /**
  * A {@link Matcher} matching a single character case-independently.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
+public class CharIgnoreCaseMatcher extends AbstractMatcher {
 
     public final char charLow;
     public final char charUp;
@@ -34,7 +32,7 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
         this.charUp = Character.toUpperCase(character);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         char c = context.getCurrentChar();
         if (c != charLow && c != charUp) return false;
         context.advanceIndex(1);
@@ -42,7 +40,7 @@ public class CharIgnoreCaseMatcher<V> extends AbstractMatcher<V> {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

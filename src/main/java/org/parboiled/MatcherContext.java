@@ -27,12 +27,12 @@ import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
-import static org.parboiled.support.ParseTreeUtils.findNode;
-import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
 
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
@@ -52,28 +52,34 @@ import static org.parboiled.support.ParseTreeUtils.findNodeByPath;
  * <p>For performance reasons sub context instances are reused instead of being recreated. If a MatcherContext instance
  * returns null on a {@link #getMatcher()} call it has been retired (is invalid) and is waiting to be reinitialized
  * with a new Matcher by its parent</p>
- *
- * @param <V> the node value type
  */
-public class MatcherContext<V> implements Context<V> {
+public class MatcherContext implements Context {
+
+    static class StackElement {
+        private Object value;
+        private StackElement next;
+
+        private StackElement(Object value, StackElement next) {
+            this.value = value;
+            this.next = next;
+        }
+    }
 
     private final InputBuffer inputBuffer;
     private final List<ParseError> parseErrors;
-    private final MatchHandler<V> matchHandler;
-    private final Reference<Node<V>> lastNodeRef;
-    private final MatcherContext<V> parent;
+    private final MatchHandler matchHandler;
+    private final MatcherContext parent;
     private final int level;
     private final boolean fastStringMatching;
 
-    private MatcherContext<V> subContext;
+    private MatcherContext subContext;
     private int startIndex;
-    private int currentIndex;
+    int currentIndex; // package private because of direct access from ActionMatcher
     private char currentChar;
-    private Matcher<V> matcher;
-    private Node<V> node;
-    private List<Node<V>> subNodes = ImmutableList.of();
-    private V nodeValue;
-    private V treeValue;
+    private Matcher matcher;
+    private Node node;
+    StackElement valueStack; // package private because of direct access from ActionMatcher
+    private List<Node> subNodes = ImmutableList.of();
     private int intTag;
     private boolean hasError;
     private boolean nodeSuppressed;
@@ -95,21 +101,20 @@ public class MatcherContext<V> implements Context<V> {
      *                           and disable it once the input has proven to contain errors.</p>
      */
     public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                          @NotNull MatchHandler<V> matchHandler, @NotNull Matcher<V> matcher,
+                          @NotNull MatchHandler matchHandler, @NotNull Matcher matcher,
                           boolean fastStringMatching) {
-        this(inputBuffer, parseErrors, matchHandler, new Reference<Node<V>>(), null, 0, fastStringMatching);
+        this(inputBuffer, parseErrors, matchHandler, null, 0, fastStringMatching);
         this.currentChar = inputBuffer.charAt(0);
         this.matcher = ProxyMatcher.unwrap(matcher);
         this.nodeSuppressed = matcher.isNodeSuppressed();
     }
 
     private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull List<ParseError> parseErrors,
-                           @NotNull MatchHandler<V> matchHandler, @NotNull Reference<Node<V>> lastNodeRef,
-                           MatcherContext<V> parent, int level, boolean fastStringMatching) {
+                           @NotNull MatchHandler matchHandler, MatcherContext parent, int level,
+                           boolean fastStringMatching) {
         this.inputBuffer = inputBuffer;
         this.parseErrors = parseErrors;
         this.matchHandler = matchHandler;
-        this.lastNodeRef = lastNodeRef;
         this.parent = parent;
         this.level = level;
         this.fastStringMatching = fastStringMatching;
@@ -122,11 +127,11 @@ public class MatcherContext<V> implements Context<V> {
 
     //////////////////////////////// CONTEXT INTERFACE ////////////////////////////////////
 
-    public MatcherContext<V> getParent() {
+    public MatcherContext getParent() {
         return parent;
     }
 
-    public MatcherContext<V> getSubContext() {
+    public MatcherContext getSubContext() {
         // if the subContext has a null matcher it has been retired and is invalid
         return subContext != null && subContext.matcher != null ? subContext : null;
     }
@@ -140,7 +145,7 @@ public class MatcherContext<V> implements Context<V> {
         return startIndex;
     }
 
-    public Matcher<V> getMatcher() {
+    public Matcher getMatcher() {
         return matcher;
     }
 
@@ -157,13 +162,9 @@ public class MatcherContext<V> implements Context<V> {
         return currentIndex;
     }
 
-    public String getNodeText(Node<V> node) {
-        return ParseTreeUtils.getNodeText(node, inputBuffer);
-    }
-
     @NotNull
-    public MatcherPath<V> getPath() {
-        return new MatcherPath<V>(this);
+    public MatcherPath getPath() {
+        return new MatcherPath(this);
     }
 
     public int getLevel() {
@@ -173,32 +174,9 @@ public class MatcherContext<V> implements Context<V> {
     public boolean fastStringMatching() {
         return fastStringMatching;
     }
-    public V getNodeValue() {
-        return nodeValue;
-    }
-
-    public void setNodeValue(V value) {
-        this.nodeValue = value;
-    }
-
-    public V getTreeValue() {
-        return nodeValue != null ? nodeValue : treeValue;
-    }
-
-    public Node<V> getNodeByPath(String path) {
-        return findNodeByPath(subNodes, path);
-    }
-
-    public Node<V> getNodeByLabel(String labelPrefix) {
-        return findNode(subNodes, new LabelPrefixPredicate<V>(labelPrefix));
-    }
-
-    public Node<V> getLastNode() {
-        return lastNodeRef.get();
-    }
 
     @NotNull
-    public List<Node<V>> getSubNodes() {
+    public List<Node> getSubNodes() {
         return subNodes;
     }
 
@@ -215,36 +193,161 @@ public class MatcherContext<V> implements Context<V> {
         return hasError;
     }
 
-    public V getPrevValue() {
-        MatcherContext<V> sequenceContext = getPrevSequenceContext();
-        return sequenceContext.subContext.nodeValue;
-    }
-
-    public String getPrevText() {
-        MatcherContext<V> sequenceContext = getPrevSequenceContext();
-        MatcherContext<V> prevContext = sequenceContext.subContext;
-        return sequenceContext.hasError ? sequenceContext.getNodeText(getLastNode()) :
+    public String getMatch() {
+        MatcherContext sequenceContext = getPrevSequenceContext();
+        MatcherContext prevContext = sequenceContext.subContext;
+        return sequenceContext.hasError ? ParseTreeUtils.getNodeText(prevContext.node, inputBuffer) :
                 inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
     }
 
-    public int getPrevStartIndex() {
-        MatcherContext<V> sequenceContext = getPrevSequenceContext();
+    public int getMatchStartIndex() {
+        MatcherContext sequenceContext = getPrevSequenceContext();
         return sequenceContext.subContext.startIndex;
     }
 
-    public int getPrevEndIndex() {
-        MatcherContext<V> sequenceContext = getPrevSequenceContext();
+    public int getMatchEndIndex() {
+        MatcherContext sequenceContext = getPrevSequenceContext();
         return sequenceContext.subContext.currentIndex;
     }
 
-    private MatcherContext<V> getPrevSequenceContext() {
-        MatcherContext<V> actionContext = this;
+    public List<Object> getValueStack() {
+        return new AbstractList<Object>() {
+            @Override
+            public Object get(int index) { return get(valueStack, index).value; }
+
+            private StackElement get(StackElement head, int index) {
+                if (head == null) throw new IndexOutOfBoundsException();
+                return index == 0 ? head : get(head.next, index - 1);
+            }
+
+            @Override
+            public int size() { return size(valueStack); }
+
+            private int size(StackElement head) {
+                return head == null ? 0 : size(head.next) + 1;
+            }
+
+            @Override
+            public Iterator<Object> iterator() {
+                final Reference<StackElement> cursor = new Reference<StackElement>(valueStack);
+                return new Iterator<Object>() {
+                    public boolean hasNext() {
+                        return cursor.isSet();
+                    }
+                    public Object next() {
+                        StackElement head = cursor.get();
+                        Object value = head.value;
+                        cursor.set(head.next);
+                        return value;
+                    }
+                    public void remove() { throw new UnsupportedOperationException(); }
+                };
+            }
+        };
+    }
+
+    public void push(Object value) {
+        valueStack = new StackElement(value, valueStack);
+    }
+
+    public void push(Object... values) {
+        for (Object value : values) push(value);
+    }
+
+    public Object pop() {
+        Checks.ensure(valueStack != null, "Cannot pop from an empty value stack");
+        Object value = valueStack.value;
+        valueStack = valueStack.next;
+        return value;
+    }
+
+    public Object peek() {
+        Checks.ensure(valueStack != null, "Cannot peek into an empty value stack");
+        return valueStack.value;
+    }
+
+    public void poke(Object value) {
+        Checks.ensure(valueStack != null, "Cannot poke into an empty value stack");
+        valueStack.value = value;
+    }
+
+    public void swap() {
+        Checks.ensure(valueStack != null && valueStack.next != null,
+                "Swap not allowed on value stack with less than two elements");
+        Object temp = valueStack.value;
+        StackElement down1 = valueStack.next;
+        valueStack.value = down1.value;
+        down1.value = temp;
+    }
+
+    public void swap3() {
+        Checks.ensure(valueStack != null && valueStack.next != null && valueStack.next.next != null,
+                "Swap3 not allowed on value stack with less than 3 elements");
+        StackElement down2 = valueStack.next.next;
+        Object temp = valueStack.value;
+        valueStack.value = down2.value;
+        down2.value = temp;
+    }
+
+    public void swap4() {
+        Checks.ensure(valueStack != null && valueStack.next != null && valueStack.next.next != null &&
+                valueStack.next.next.next != null,
+                "Swap4 not allowed on value stack with less than 4 elements");
+        StackElement down1 = valueStack.next;
+        StackElement down2 = down1.next;
+        StackElement down3 = down2.next;
+        Object temp = valueStack.value;
+        valueStack.value = down3.value;
+        down3.value = temp;
+        temp = down1.value;
+        down1.value = down2.value;
+        down2.value = temp;
+    }
+
+    public void swap5() {
+        Checks.ensure(valueStack != null && valueStack.next != null && valueStack.next.next != null &&
+                valueStack.next.next.next != null && valueStack.next.next.next.next != null,
+                "Swap5 not allowed on value stack with less than 5 elements");
+        StackElement down1 = valueStack.next;
+        StackElement down3 = down1.next.next;
+        StackElement down4 = down3.next;
+        Object temp = valueStack.value;
+        valueStack.value = down4.value;
+        down4.value = temp;
+        temp = down1.value;
+        down1.value = down3.value;
+        down3.value = temp;
+    }
+
+    public void swap6() {
+        Checks.ensure(valueStack != null && valueStack.next != null && valueStack.next.next != null &&
+                valueStack.next.next.next != null && valueStack.next.next.next.next != null &&
+                valueStack.next.next.next.next.next != null,
+                "Swap6 not allowed on value stack with less than 6 elements");
+        StackElement down1 = valueStack.next;
+        StackElement down2 = down1.next;
+        StackElement down3 = down2.next;
+        StackElement down4 = down3.next;
+        StackElement down5 = down4.next;
+        Object temp = valueStack.value;
+        valueStack.value = down5.value;
+        down5.value = temp;
+        temp = down1.value;
+        down1.value = down4.value;
+        down4.value = temp;
+        temp = down2.value;
+        down2.value = down3.value;
+        down3.value = temp;
+    }
+
+    private MatcherContext getPrevSequenceContext() {
+        MatcherContext actionContext = this;
 
         // we need to find the deepest currently active context
         while (actionContext.subContext != null && actionContext.subContext.matcher != null) {
             actionContext = actionContext.subContext;
         }
-        MatcherContext<V> sequenceContext = actionContext.getParent();
+        MatcherContext sequenceContext = actionContext.getParent();
 
         // make sure all the constraints are met
         Checks.ensure(
@@ -257,7 +360,7 @@ public class MatcherContext<V> implements Context<V> {
 
     //////////////////////////////// PUBLIC ////////////////////////////////////
 
-    public void setMatcher(Matcher<V> matcher) {
+    public void setMatcher(Matcher matcher) {
         this.matcher = matcher;
     }
 
@@ -277,7 +380,7 @@ public class MatcherContext<V> implements Context<V> {
         currentChar = inputBuffer.charAt(currentIndex);
     }
 
-    public Node<V> getNode() {
+    public Node getNode() {
         return node;
     }
 
@@ -305,14 +408,11 @@ public class MatcherContext<V> implements Context<V> {
 
     @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
-        nodeValue = getTreeValue();
-        if (nodeValue != null && parent != null) {
-            parent.treeValue = nodeValue;
-        }
         if (!nodeSuppressed && !matcher.isNodeSkipped()) {
-            node = new NodeImpl<V>(matcher, subNodes, startIndex, currentIndex, nodeValue, hasError);
+            node = new NodeImpl(matcher, subNodes, startIndex, currentIndex,
+                    valueStack != null ? valueStack.value : null, hasError);
 
-            MatcherContext<V> nodeParentContext = parent;
+            MatcherContext nodeParentContext = parent;
             if (nodeParentContext != null) {
                 while (nodeParentContext.getMatcher().isNodeSkipped()) {
                     nodeParentContext = nodeParentContext.getParent();
@@ -320,30 +420,28 @@ public class MatcherContext<V> implements Context<V> {
                 }
                 nodeParentContext.addChildNode(node);
             }
-            lastNodeRef.set(node);
         }
     }
 
-    public final MatcherContext<V> getBasicSubContext() {
+    public final MatcherContext getBasicSubContext() {
         return subContext == null ?
 
                 // init new level
-                subContext = new MatcherContext<V>(inputBuffer, parseErrors, matchHandler, lastNodeRef, this,
-                        level + 1, fastStringMatching) :
+                subContext = new MatcherContext(inputBuffer, parseErrors, matchHandler, this, level + 1,
+                        fastStringMatching) :
 
                 // reuse existing instance
                 subContext;
     }
 
-    public final MatcherContext<V> getSubContext(Matcher<V> matcher) {
-        MatcherContext<V> sc = getBasicSubContext();
+    public final MatcherContext getSubContext(Matcher matcher) {
+        MatcherContext sc = getBasicSubContext();
         sc.matcher = matcher;
         sc.startIndex = sc.currentIndex = currentIndex;
         sc.currentChar = currentChar;
         sc.node = null;
         sc.subNodes = ImmutableList.of();
-        sc.nodeValue = null;
-        sc.treeValue = null;
+        sc.valueStack = valueStack;
         sc.nodeSuppressed = nodeSuppressed || this.matcher.areSubnodesSuppressed() || matcher.isNodeSuppressed();
         sc.hasError = false;
         return sc;
@@ -355,6 +453,7 @@ public class MatcherContext<V> implements Context<V> {
                 if (parent != null) {
                     parent.currentIndex = currentIndex;
                     parent.currentChar = currentChar;
+                    parent.valueStack = valueStack;
                 }
                 matcher = null; // "retire" this context
                 return true;
@@ -374,15 +473,15 @@ public class MatcherContext<V> implements Context<V> {
     //////////////////////////////// PRIVATE ////////////////////////////////////
 
     @SuppressWarnings({"fallthrough"})
-    private void addChildNode(@NotNull Node<V> node) {
+    private void addChildNode(@NotNull Node node) {
         int size = subNodes.size();
         if (size == 0) {
             subNodes = ImmutableList.of(node);
             return;
         }
         if (size == 1) {
-            Node<V> node0 = subNodes.get(0);
-            subNodes = new ArrayList<Node<V>>(4);
+            Node node0 = subNodes.get(0);
+            subNodes = new ArrayList<Node>(4);
             subNodes.add(node0);
         }
         subNodes.add(node);

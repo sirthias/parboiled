@@ -60,14 +60,6 @@ class TestParser extends BaseParser<Integer> {
         return Sequence('a', 'b', ACTION(integer < 0 && action()));
     }
 
-    public Rule RuleWithDirectImplicitUpAction() {
-        return Sequence('a', UP2(set(integer)), 'b');
-    }
-
-    public Rule RuleWithIndirectExplicitDownAction() {
-        return Sequence('a', 'b', UP3(DOWN2(integer < 0 && action())));
-    }
-
     public Rule RuleWithIndirectImplicitParamAction(int param) {
         return Sequence('a', 'b', integer == param);
     }
@@ -108,7 +100,7 @@ class TestParser extends BaseParser<Integer> {
     public Rule NumberRule() {
         return Sequence(
                 OneOrMore(CharRange('0', '9')).suppressNode(),
-                set(parseInt(isEmpty(lastText()) ? "0" : lastText()))
+                push(parseInt(isEmpty(match()) ? "0" : match()))
         );
     }
 

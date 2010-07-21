@@ -25,16 +25,14 @@ import java.util.List;
 /**
  * A {@link ParseError} describing one or more input characters that are illegal with regard to the underlying
  * language grammar.
- *
- * @param <V>
  */
-public class InvalidInputError<V> extends BasicParseError {
+public class InvalidInputError extends BasicParseError {
 
-    private final MatcherPath<V> lastMatch;
-    private final List<MatcherPath<V>> failedMatchers;
+    private final MatcherPath lastMatch;
+    private final List<MatcherPath> failedMatchers;
 
-    public InvalidInputError(@NotNull InputBuffer inputBuffer, int startIndex, MatcherPath<V> lastMatch,
-                             @NotNull List<MatcherPath<V>> failedMatchers, String errorMessage) {
+    public InvalidInputError(@NotNull InputBuffer inputBuffer, int startIndex, MatcherPath lastMatch,
+                             @NotNull List<MatcherPath> failedMatchers, String errorMessage) {
         super(inputBuffer, startIndex, errorMessage);
         this.lastMatch = lastMatch;
         this.failedMatchers = failedMatchers;
@@ -45,7 +43,7 @@ public class InvalidInputError<V> extends BasicParseError {
      *
      * @return the MatcherPatch
      */
-    public MatcherPath<V> getLastMatch() {
+    public MatcherPath getLastMatch() {
         return lastMatch;
     }
 
@@ -55,7 +53,7 @@ public class InvalidInputError<V> extends BasicParseError {
      * @return the list of paths to the single character matchers that failed at the error location of this error
      */
     @NotNull
-    public List<MatcherPath<V>> getFailedMatchers() {
+    public List<MatcherPath> getFailedMatchers() {
         return failedMatchers;
     }
 

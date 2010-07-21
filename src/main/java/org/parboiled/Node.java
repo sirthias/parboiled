@@ -22,10 +22,8 @@ import org.parboiled.trees.TreeNode;
 
 /**
  * Represents a node in the parse tree created during a parsing run.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public interface Node<V> extends TreeNode<Node<V>> {
+public interface Node extends TreeNode<Node> {
 
     /**
      * Returns the matcher that created this node.
@@ -33,7 +31,7 @@ public interface Node<V> extends TreeNode<Node<V>> {
      * @return the matcher that created this node.
      */
     @NotNull
-    Matcher<V> getMatcher();
+    Matcher getMatcher();
 
     /**
      * Returns the label of this node which is equal to the name of the rule that created this node
@@ -59,10 +57,8 @@ public interface Node<V> extends TreeNode<Node<V>> {
 
     /**
      * Returns the value object attached to this node.
-     *
-     * @return the value object
      */
-    V getValue();
+    Object getValue();
 
     /**
      * @return true if there were parse errors in the input range covered by this node

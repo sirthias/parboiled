@@ -26,25 +26,15 @@ import java.util.List;
 
 /**
  * A Context object is available to parser actions methods during their runtime and provides various support functionalities.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public interface Context<V> {
+public interface Context {
 
     /**
      * Returns the parent context, i.e. the context for the currently running parent matcher.
      *
      * @return the parent context
      */
-    Context<V> getParent();
-
-    /**
-     * Returns the current sub context, which will only be non-null if the action call leading to this method was
-     * wrapped with one or more {@link BaseParser#UP(Object)} calls.
-     *
-     * @return the current sub context.
-     */
-    Context<V> getSubContext();
+    Context getParent();
 
     /**
      * Returns the InputBuffer the parser is currently running against
@@ -59,7 +49,7 @@ public interface Context<V> {
      *
      * @return the matcher
      */
-    Matcher<V> getMatcher();
+    Matcher getMatcher();
 
     /**
      * Returns the index into the underlying input buffer where the matcher of this context started its match.
@@ -91,20 +81,12 @@ public interface Context<V> {
     List<ParseError> getParseErrors();
 
     /**
-     * Returns the input text matched by the given node, with error correction.
-     *
-     * @param node the node
-     * @return null if node is null otherwise a string with the matched input text (which can be empty)
-     */
-    String getNodeText(Node<V> node);
-
-    /**
      * Returns the {@link MatcherPath} to the currently running matcher.
      *
      * @return the path
      */
     @NotNull
-    MatcherPath<V> getPath();
+    MatcherPath getPath();
 
     /**
      * Returns the current matcher level, with 0 being the root level, 1 being one level below the root and so on.
@@ -128,72 +110,13 @@ public interface Context<V> {
     boolean fastStringMatching();
 
     /**
-     * <p>Returns the first node that matches the given path.
-     * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a
-     * description of the path argument.</p>
-     * <p><b>Caution</b>: Be aware of the current state of the parse tree when calling this method.
-     * You can only reference nodes that have already been created. Since parse tree nodes are immutable they are
-     * only created when their complete subtrees are fully determined. This means that all parent nodes have not yet
-     * been created when you call this method. Note that you can still access the value objects of future parent
-     * nodes through the getParent() chain.</p>
-     *
-     * @param path the path to the node being searched for
-     * @return the node if found or null if not found
-     */
-    Node<V> getNodeByPath(String path);
-
-    /**
-     * <p>Returns the first node that matches the given labelPrefix.
-     * <p><b>Caution</b>: Be aware of the current state of the parse tree when calling this method.
-     * You can only reference nodes that have already been created. Since parse tree nodes are immutable they are
-     * only created when their complete subtrees are fully determined. This means that all parent nodes have not yet
-     * been created when you call this method. Note that you can still access the value objects of future parent
-     * nodes through the getParent() chain.</p>
-     *
-     * @param labelPrefix the label prefix to search for
-     * @return the node if found or null if not found
-     */
-    Node<V> getNodeByLabel(String labelPrefix);
-
-    /**
-     * Returns the last node created during this parsing run. The last node is independent from the current context
-     * scope, i.e. all contexts along the context chain would return the same object at any given point in the
-     * parsing process.
-     *
-     * @return the last node created during this parsing run.
-     */
-    Node<V> getLastNode();
-
-    /**
-     * Sets the value object of the node to be created at the current context scope.
-     *
-     * @param value the object
-     */
-    void setNodeValue(V value);
-
-    /**
-     * Returns the previously set value of the node to be created at the current context scope.
-     *
-     * @return the previously set value
-     */
-    V getNodeValue();
-
-    /**
-     * If this context has an explicitly set node value (see {@link #setNodeValue(Object)}) it is returned.
-     * Otherwise the method return the last non-null value of the already created subnodes.
-     *
-     * @return a node value or null
-     */
-    V getTreeValue();
-
-    /**
      * Returns the parse tree subnodes already created in the current context scope.
      * Note that the returned list is immutable.
      *
      * @return the parse tree subnodes already created in the current context scope
      */
     @NotNull
-    List<Node<V>> getSubNodes();
+    List<Node> getSubNodes();
 
     /**
      * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
@@ -218,57 +141,53 @@ public interface Context<V> {
     boolean hasError();
 
     /**
-     * <p>Returns the value object of the context immediately preceeding the action expression that is currently being
-     * evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first position
-     * in this Sequence.</p>
-     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
-     *
-     * @return the value object of the immediately preceeding subcontext
-     */
-    V getPrevValue();
-
-    /**
      * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
-     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the input text matched by the immediately preceeding subcontext
      */
-    String getPrevText();
+    String getMatch();
 
     /**
      * <p>Returns the start index of the context immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
-     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the start index of the context immediately preceeding current action
      */
-    int getPrevStartIndex();
+    int getMatchStartIndex();
 
     /**
      * <p>Returns the end index of the context immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
-     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p>
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the end index of the context immediately preceeding current action, i.e. the index of the character
      *         immediately following the last matched character
      */
-    int getPrevEndIndex();
+    int getMatchEndIndex();
 
+    List<Object> getValueStack();
+
+    void push(Object value);
+
+    void push(Object... values);
+
+    Object pop();
+
+    Object peek();
+
+    void poke(Object value);
+
+    void swap();
+
+    void swap3();
+
+    void swap4();
+
+    void swap5();
+
+    void swap6();
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 package org.parboiled.examples.calculators;
 
 import org.parboiled.Rule;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.parboiled.common.Utils.zip;
+import org.parboiled.annotations.SuppressNode;
 
 /**
- * A simple calculator parser using an action approach demonstrating node selecting queries and keeping calculation
- * results directly in the value field of the parse tree nodes.
+ * A calculator parser keeping calculation results directly in the value field of the parse tree nodes.
+ * All calculations are implemented directly in action expressions.
  */
 public class CalculatorParser1 extends CalculatorParser<Integer> {
 
@@ -38,16 +34,16 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                        Sequence(
-                                // we label the CharSet rule so we can later
-                                // conveniently address the parse tree node created by it
-                                CharSet("+-").label("Op"),
-                                Term()
-                        )
-                ),
+                        FirstOf(
+                                // the action that is run after the '+' and the "Term" have been matched
+                                // sets the value of the enclosing "Expression" to the sum of the old value and the
+                                // value of the node that was constructed last, in this case the preceding "Term"
+                                Sequence('+', Term(), push(pop() + pop())),
 
-                // "Z/S/..." is short for "ZeroOrMore/Sequence/..."
-                compute(value("Term"), chars("Z/S/Op"), values("Z/S/Term"))
+                                // dito for the '-' operator
+                                Sequence('-', Term(), swap() && push(pop() - pop()))
+                        )
+                )
         );
     }
 
@@ -55,14 +51,16 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                        Sequence(
-                                CharSet("*/").label("Op"),
-                                Factor()
-                        )
-                ),
+                        FirstOf(
+                                // the action that is run after the '*' and the "Factor" have been matched
+                                // sets the value of the enclosing "Term" to the product of the old value and the
+                                // value of the node that was constructed last, in this case the preceding "Factor"
+                                Sequence('*', Factor(), push(pop() * pop())),
 
-                // "Z/S/..." is short for "ZeroOrMore/Sequence/..."
-                compute(value("Factor"), chars("Z/S/Op"), values("Z/S/Factor"))
+                                // dito for the '/' operator
+                                Sequence('/', Factor(), swap() && push(pop() / pop()))
+                        )
+                )
         );
     }
 
@@ -79,41 +77,18 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                 Digits(),
 
                 // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the Sequence rule labeled "Number")
-                set(Integer.parseInt(lastText()))
+                // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
+                push(Integer.parseInt(match()))
         );
     }
-
+    
     public Rule Digits() {
         return OneOrMore(Digit());
     }
 
+    @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
-    }
-
-    //**************** ACTIONS ****************
-
-    public boolean compute(Integer firstValue, List<Character> operators, List<Integer> values) {
-        int value = firstValue;
-        for (Map.Entry<Character, Integer> entry : zip(operators, values)) {
-            value = performOperation(entry.getKey(), value, entry.getValue());
-        }
-        return set(value);
-    }
-
-    private int performOperation(char operator, int value1, int value2) {
-        switch (operator) {
-            case '+':
-                return value1 + value2;
-            case '-':
-                return value1 - value2;
-            case '*':
-                return value1 * value2;
-            case '/':
-                return value1 / value2;
-        }
-        throw new IllegalStateException();
     }
 
     //**************** MAIN ****************

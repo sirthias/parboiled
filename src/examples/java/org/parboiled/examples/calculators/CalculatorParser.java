@@ -50,7 +50,7 @@ public abstract class CalculatorParser<V> extends BaseParser<V> {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<?> result = RecoveringParseRunner.run(parser.InputLine(), input);
+            ParsingResult result = RecoveringParseRunner.run(parser.InputLine(), input);
 
             if (result.hasErrors()) {
                 System.out.println("\nParse Errors:\n" + printParseErrors(result));

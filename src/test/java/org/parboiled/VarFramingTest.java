@@ -33,12 +33,12 @@ public class VarFramingTest extends AbstractTest {
         public Rule Clause() {
             Var<Integer> a = new Var<Integer>(-1);
             return Sequence(
-                    Digits(), a.set(prevValue()),
+                    Digits(), a.set(peek()),
                     SomeRule(a),
                     Optional(
                             Sequence(
                                     '+',
-                                    Clause(), set(a.get())
+                                    Clause(), push(a.get())
                             )
                     )
             );
@@ -48,7 +48,7 @@ public class VarFramingTest extends AbstractTest {
         public Rule Digits() {
             return Sequence(
                     OneOrMore(CharRange('0', '9')),
-                    set(Integer.parseInt(prevText()))
+                    push(Integer.parseInt(match()))
             );
         }
         
@@ -63,7 +63,7 @@ public class VarFramingTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
 
-        ParserStatistics<Object> stats = ParserStatistics.generateFor(rule);
+        ParserStatistics stats = ParserStatistics.generateFor(rule);
         assertEquals(stats.toString(), "" +
                 "Parser statistics for rule 'Clause':\n" +
                 "    Total rules       : 11\n" +

@@ -18,13 +18,15 @@ package org.parboiled.examples.calculators;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
-import org.parboiled.annotations.SuppressNode;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
+import org.parboiled.support.Var;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
  * A calculator parser building an AST representing the expression structure before performing the actual calculation.
  * The value field of the parse tree nodes is used for AST nodes.
+ * As opposed to the CalculatorParser2 this parser also supports floating point operations, negative numbers, a "power"
+ * and a "SQRT" operation as well as optional whitespace between the various expressions components.
  */
 public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
@@ -34,31 +36,35 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Expression() {
+        Var<Character> op = new Var<Character>();
         return Sequence(
-                Term(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Term"
+                Term(),
                 ZeroOrMore(
                         Sequence(
-                                CharSet("+-").label("Op"),
+                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral transformation
+                                FirstOf('+', '-'), op.set(matchedChar()),
                                 Term(),
 
                                 // create an AST node for the operation that was just matched
                                 // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // for the "Expression" Sequence two levels up. The arguments for the AST node are
+                                // one for the "Expression" Sequence two levels up. The arguments for the AST node are
                                 // - the operator that matched (which is two levels underneath the "Expression")
                                 // - the old value of the "Expression" as left child
                                 // - the value of the preceding "Term" as right child
-                                UP2(set(new CalcNode(DOWN2(character("Op")), value(), lastValue())))
+                                swap() && push(new CalcNode(op.get(), pop(), pop()))
                         )
                 )
         );
     }
 
     public Rule Term() {
+        Var<Character> op = new Var<Character>();
         return Sequence(
-                Factor(), set(), // the set() sets the value of the "Expression" to the value of the preceding "Factor"
+                Factor(),
                 ZeroOrMore(
                         Sequence(
-                                CharSet("*/").label("Op"),
+                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral transformation
+                                FirstOf('*', '/'), op.set(matchedChar()),
                                 Factor(),
 
                                 // create an AST node for the operation that was just matched
@@ -67,14 +73,42 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                                 // - the operator that matched (which is two levels underneath the "Term")
                                 // - the old value of the "Term" as left child
                                 // - the value of the preceding "Factor" as right child
-                                UP2(set(new CalcNode(DOWN2(character("Op")), value(), lastValue())))
+                                swap() && push(new CalcNode(op.get(), pop(), pop()))
                         )
                 )
         );
     }
 
     public Rule Factor() {
-        return FirstOf(Number(), Parens());
+        return Sequence(
+                Atom(),
+                ZeroOrMore(
+                        Sequence(
+                                '^',
+                                Atom(),
+
+                                // create a new AST node and set it as the value of the parse tree node for the
+                                // "Factor" rule, the node contains the operator ('^'), the old
+                                // "Factor" value as left child and the value of the "Atom" following
+                                // the operator as right child
+                                swap() && push(new CalcNode('^', pop(), pop()))
+                        )
+                )
+        );
+    }
+
+    public Rule Atom() {
+        return FirstOf(Number(), SquareRoot(), Parens());
+    }
+
+    public Rule SquareRoot() {
+        return Sequence(
+                "SQRT",
+                Parens(),
+
+                // create a new AST node with a special operator 'R' and only one child
+                push(new CalcNode('R', pop(), null))
+        );
     }
 
     public Rule Parens() {
@@ -83,21 +117,41 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
     public Rule Number() {
         return Sequence(
-                Digits(),
-
-                // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
-                set(new CalcNode(Integer.parseInt(lastText())))
+                // we use another Sequence in the "Number" Sequence so we can easily access the input text matched
+                // by the three enclosed rules with "lastText()"
+                Sequence(
+                        Optional(Ch('-')),
+                        OneOrMore(Digit()),
+                        Optional(Sequence(Ch('.'), OneOrMore(Digit())))
+                ),
+                push(new CalcNode(Double.parseDouble(match()))),
+                WhiteSpace()
         );
     }
 
-    public Rule Digits() {
-        return OneOrMore(Digit());
-    }
-
-    @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
+    }
+
+    public Rule WhiteSpace() {
+        return ZeroOrMore(CharSet(" \t\f"));
+    }
+
+    // we redefine the rule creation for character literals to also match trailing whitespace this way we don't have
+    // to insert extra whitespace() rules after each character literal
+    // however, we now have to wrap character matching rules we don't want to be "space swallowing"
+    // with the Ch(...) rule creator
+
+    @Override
+    protected Rule FromCharLiteral(char c) {
+        return Sequence(Ch(c), WhiteSpace());
+    }
+
+    // same thing for String literals
+
+    @Override
+    protected Rule FromStringLiteral(@NotNull String string) {
+        return Sequence(String(string), WhiteSpace());
     }
 
     //****************************************************************
@@ -107,20 +161,20 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
      * an operator char or be null. In the latter case the AST node is a leaf directly containing a value.
      */
     public static class CalcNode extends ImmutableBinaryTreeNode<CalcNode> {
-        private int value;
+        private double value;
         private Character operator;
 
-        public CalcNode(int value) {
+        public CalcNode(double value) {
             super(null, null);
             this.value = value;
         }
 
-        public CalcNode(@NotNull Character operator, @NotNull CalcNode left, @NotNull CalcNode right) {
+        public CalcNode(@NotNull Character operator, @NotNull CalcNode left, CalcNode right) {
             super(left, right);
             this.operator = operator;
         }
 
-        public int getValue() {
+        public double getValue() {
             if (operator == null) return value;
             switch (operator) {
                 case '+':
@@ -131,6 +185,10 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                     return left().getValue() * right().getValue();
                 case '/':
                     return left().getValue() / right().getValue();
+                case '^':
+                    return Math.pow(left().getValue(), right().getValue());
+                case 'R':
+                    return Math.sqrt(left().getValue());
                 default:
                     throw new IllegalStateException();
             }
@@ -140,7 +198,6 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         public String toString() {
             return (operator == null ? "Value " + value : "Operator '" + operator + '\'') + " | " + getValue();
         }
-
     }
 
     //**************** MAIN ****************
@@ -148,5 +205,4 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     public static void main(String[] args) {
         main(CalculatorParser3.class);
     }
-
 }

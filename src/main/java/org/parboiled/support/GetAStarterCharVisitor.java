@@ -26,13 +26,11 @@ import java.util.Random;
 /**
  * Returns the first character a given matcher can start a match with.
  * For all complex matchers, i.e. the ones not always matching just one character, the visitor returns null.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class GetAStarterCharVisitor<V> extends DefaultMatcherVisitor<V, Character> {
+public class GetAStarterCharVisitor extends DefaultMatcherVisitor<Character> {
 
     @Override
-    public Character visit(CharSetMatcher<V> matcher) {
+    public Character visit(CharSetMatcher matcher) {
         Characters characters = matcher.characters;
         if (!characters.isSubtractive()) {
             return characters.getChars()[0];
@@ -48,17 +46,17 @@ public class GetAStarterCharVisitor<V> extends DefaultMatcherVisitor<V, Characte
     }
 
     @Override
-    public Character visit(CharIgnoreCaseMatcher<V> matcher) {
+    public Character visit(CharIgnoreCaseMatcher matcher) {
         return matcher.charLow;
     }
 
     @Override
-    public Character visit(CharMatcher<V> matcher) {
+    public Character visit(CharMatcher matcher) {
         return matcher.character;
     }
 
     @Override
-    public Character visit(CharRangeMatcher<V> matcher) {
+    public Character visit(CharRangeMatcher matcher) {
         return matcher.cLow;
     }
 }

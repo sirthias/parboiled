@@ -19,30 +19,23 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Checks;
-import org.parboiled.support.LabelPrefixPredicate;
-import org.parboiled.support.ParseTreeUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.parboiled.support.ParseTreeUtils.collectNodes;
 
 /**
  * Convenience context aware base class defining a number of useful helper methods.
  *
- * @param <V> the type of the value field of a parse tree node
+ * @param <V> the type of the parser values
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class BaseActions<V> implements ContextAware<V> {
+public abstract class BaseActions<V> implements ContextAware {
 
-    private Context<V> context;
+    private Context context;
 
     /**
      * The current context for use with action methods. Updated immediately before action calls.
      *
      * @return the current context
      */
-    public Context<V> getContext() {
+    public Context getContext() {
         return context;
     }
 
@@ -51,368 +44,114 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @param context the context
      */
-    public void setContext(@NotNull Context<V> context) {
+    public void setContext(@NotNull Context context) {
         this.context = context;
-    }
-
-    /**
-     * Returns the first parse tree node found under the given prefix path.
-     * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
-     * The path is relative to the current context scope, which can be changed with {@link BaseParser#UP(Object)} or {@link BaseParser#DOWN(Object)}.
-     *
-     * @param path the path to search for
-     * @return the parse tree node if found or null if not found
-     */
-    public Node<V> node(String path) {
-        check();
-        return context.getNodeByPath(path);
-    }
-
-    /**
-     * Returns a list of all parse tree nodes found under the given prefix path.
-     * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
-     * The path is relative to the current context scope, which can be changed with {@link BaseParser#UP(Object)} or {@link BaseParser#DOWN(Object)}.
-     *
-     * @param path the path to search for
-     * @return the list of parse tree nodes
-     */
-    @NotNull
-    public List<Node<V>> nodes(String path) {
-        check();
-        return ParseTreeUtils.collectNodesByPath(context.getSubNodes(), path, new ArrayList<Node<V>>());
-    }
-
-    /**
-     * Returns the first parse tree node found with the given label prefix.
-     * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} for a description of the path argument.
-     * The search is performed in the current context scope, which can be changed with {@link BaseParser#UP(Object)} or {@link BaseParser#DOWN(Object)}.
-     *
-     * @param labelPrefix the label prefix
-     * @return the parse tree node if found or null if not found
-     */
-    public Node<V> nodeByLabel(String labelPrefix) {
-        check();
-        return context.getNodeByLabel(labelPrefix);
-    }
-
-    /**
-     * Returns a list of all parse tree nodes found under the given prefix path.
-     * See {@link org.parboiled.support.ParseTreeUtils#findNodeByPath(org.parboiled.Node, String)} )} for a description of the path argument.
-     * The search is performed in the current context scope, which can be changed with {@link BaseParser#UP(Object)} or {@link BaseParser#DOWN(Object)}.
-     *
-     * @param labelPrefix the label prefix
-     * @return the list of parse tree nodes
-     */
-    @NotNull
-    public List<Node<V>> nodesByLabel(String labelPrefix) {
-        check();
-        return collectNodes(context.getSubNodes(),
-                new LabelPrefixPredicate<V>(labelPrefix),
-                new ArrayList<Node<V>>()
-        );
-    }
-
-    /**
-     * Returns the last node created during this parsing run. This last node is independent of the current context
-     * scope, i.e. {@link BaseParser#UP(Object)} or {@link BaseParser#DOWN(Object)} have no influence on it.
-     *
-     * @return the last node created during this parsing run
-     */
-    public Node<V> lastNode() {
-        check();
-        return context.getLastNode();
-    }
-
-    /**
-     * Returns the tree value of the current context scope, i.e., if there is an explicitly set value it is
-     * returned. Otherwise the last non-null child value, or, if there is no such value, null.
-     *
-     * @return the tree value of the current context scope
-     */
-    public V value() {
-        check();
-        return context.getTreeValue();
-    }
-
-    /**
-     * Returns the value of the given node.
-     *
-     * @param node the node the get the value from
-     * @return the value of the node, or null if the node is null
-     */
-    public V value(Node<V> node) {
-        return node == null ? null : node.getValue();
-    }
-
-    /**
-     * Returns the value of the node found under the given prefix path.
-     * Equivalent to <code>value(node(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the value of the node, or null if the node is not found
-     */
-    public V value(String path) {
-        return value(node(path));
-    }
-
-    /**
-     * Returns a list of the values of all given nodes.
-     *
-     * @param nodes the nodes to get the values from
-     * @return the list of values
-     */
-    @NotNull
-    public List<V> values(List<Node<V>> nodes) {
-        List<V> values = new ArrayList<V>();
-        for (Node<V> node : nodes) {
-            values.add(node.getValue());
-        }
-        return values;
-    }
-
-    /**
-     * Returns the list of the values of all nodes found under the given prefix path.
-     * Equivalent to <code>values(nodes(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the list of values
-     */
-    @NotNull
-    public List<V> values(String path) {
-        return values(nodes(path));
-    }
-
-    /**
-     * Returns the value of the last node created during this parsing run.
-     * Equivalent to <code>value(lastNode())</code>.
-     *
-     * @return the value of the last node created
-     */
-    public V lastValue() {
-        return value(lastNode());
-    }
-
-    /**
-     * Returns the input text matched by the given parse tree node, with correctable errors corrected.
-     *
-     * @param node the parse tree node
-     * @return the input text matched by the given node
-     */
-    public String text(Node<V> node) {
-        check();
-        return context.getNodeText(node);
-    }
-
-    /**
-     * Returns the input text matched by the node found under the given prefix path.
-     * Equivalent to <code>text(node(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the matched input text
-     */
-    public String text(String path) {
-        return text(node(path));
-    }
-
-    /**
-     * Returns a list of the input texts matched by all given nodes.
-     *
-     * @param nodes the nodes
-     * @return the list of matched input texts
-     */
-    @NotNull
-    public List<String> texts(List<Node<V>> nodes) {
-        check();
-        List<String> values = new ArrayList<String>();
-        for (Node<V> node : nodes) {
-            values.add(context.getNodeText(node));
-        }
-        return values;
-    }
-
-    /**
-     * Returns a list of the input texts matched by of all nodes found under the given prefix path.
-     * Equivalent to <code>texts(nodes(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the list of matched input texts
-     */
-    @NotNull
-    public List<String> texts(String path) {
-        return texts(nodes(path));
-    }
-
-    /**
-     * Returns the input text matched by the last node created during this parsing run.
-     * Equivalent to <code>text(lastNode())</code>.
-     *
-     * @return the input text matched by the last node created
-     */
-    public String lastText() {
-        return text(lastNode());
-    }
-
-    /**
-     * Returns the first character of the input text matched by the given parse tree node.
-     *
-     * @param node the parse tree node
-     * @return the first matched character or null if the given node is null
-     */
-    public Character character(Node<V> node) {
-        String text = text(node);
-        return StringUtils.isEmpty(text) ? null : text.charAt(0);
-    }
-
-    /**
-     * Returns the first character of the input text matched by the node found under the given prefix path.
-     * Equivalent to <code>character(node(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the first matched character or null if the node is not found
-     */
-    public Character character(String path) {
-        return character(node(path));
-    }
-
-    /**
-     * Returns a list of the first characters of the input texts matched by all given nodes.
-     *
-     * @param nodes the nodes
-     * @return the list of the first matched characters
-     */
-    @NotNull
-    public List<Character> chars(List<Node<V>> nodes) {
-        check();
-        List<Character> values = new ArrayList<Character>();
-        for (Node<V> node : nodes) {
-            values.add(character(node));
-        }
-        return values;
-    }
-
-    /**
-     * Returns a list of the first characters of the input texts matched by of all nodes found
-     * under the given prefix path.
-     * Equivalent to <code>chars(nodes(path))</code>.
-     *
-     * @param path the path to search for
-     * @return the list of the first matched characters
-     */
-    @NotNull
-    public List<Character> chars(String path) {
-        return chars(nodes(path));
-    }
-
-    /**
-     * Returns the first character of the input text matched by the last node created during this parsing run.
-     * Equivalent to <code>character(lastNode())</code>.
-     *
-     * @return the first character of the input text matched by the last node created
-     */
-    public Character lastChar() {
-        return character(lastNode());
-    }
-
-    /**
-     * <p>Returns the value object of the rule immediately preceeding the action expression that is currently being
-     * evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first position
-     * in this Sequence.</p>
-     * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
-     * and will always return the same result.</p> 
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
-     *
-     * @return the value object of the immediately preceeding subrule
-     */
-    public V prevValue() {
-        check();
-        return context.getPrevValue();
     }
 
     /**
      * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
-     * <p>This call is internally delegated to the deepest active Context in the current Context stack, i.e. it can be
-     * wrapped by an arbitrary number of UP() / DOWN() wrappers and will always return the same result.</p> 
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the input text matched by the immediately preceeding subrule
      */
-    public String prevText() {
+    public String match() {
         check();
-        return context.getPrevText();
+        return context.getMatch();
     }
 
-    /**
-     * Returns the first character of the input text matched by the rule immediately preceeding the action expression
-     * that is currently being evaluated. Only valid on the deepest currently active context in the context stack,
-     * which must be for a SequenceMatcher and the action currently being run must not be the first rule of this Sequence.
-     * This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.
-     *
-     * @return the first character of the input text matched by the immediately preceeding subrule
-     */
-    public Character prevChar() {
-        String text = prevText();
-        return StringUtils.isEmpty(text) ? null : text.charAt(0);
+    public char matchedChar() {
+        return match().charAt(0);
     }
-    
+
     /**
      * <p>Returns the start index of the matched rule immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
-     * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
-     * and will always return the same result.</p> 
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the start index of the context immediately preceeding current action
      */
-    public int prevStart() {
+    public int matchStart() {
         check();
-        return context.getPrevStartIndex();
+        return context.getMatchStartIndex();
     }
-    
+
     /**
      * <p>Returns the end location of the matched rule immediately preceeding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
-     * <p>This call is Context agnostic, i.e. it can be wrapped by an arbitrary number of UP() / DOWN() wrappers
-     * and will always return the same result.</p> 
-     * <p>This method does not rely on the generated parse tree nodes and can therefore also be used in parts of the
-     * grammar where parse tree node creation is suppressed.</p>
      *
      * @return the end index of the context immediately preceeding current action, i.e. the index of the character
      *         immediately following the last matched character
      */
-    public int prevEnd() {
+    public int matchEnd() {
         check();
-        return context.getPrevEndIndex();
+        return context.getMatchEndIndex();
     }
 
-    /**
-     * Sets the value of the parse tree node to be created for the current context scope to the value of the
-     * immediately preceeding rule that just matched.
-     * Equivalent to <code>set(prevValue())</code>.
-     * Check {@link #prevValue()} for constraints and further information.
-     *
-     * @return true
-     */
-    public boolean set() {
-        return set(prevValue());
+    public boolean push(V value) {
+        check();
+        context.push(value);
+        return true;
     }
 
-    /**
-     * Sets the value of the parse tree node to be created for the current context scope to the given value.
-     *
-     * @param value the value to set
-     * @return true
-     */
-    public boolean set(V value) {
+    public boolean push(V... values) {
         check();
-        context.setNodeValue(value);
+        context.push(values);
+        return true;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public V pop() {
+        check();
+        return (V) context.pop();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public V peek() {
+        check();
+        return (V) context.peek();
+    }
+
+    public boolean poke(V value) {
+        check();
+        context.poke(value);
+        return true;
+    }
+
+    public boolean dup() {
+        check();
+        context.push(context.peek());
+        return true;
+    }
+
+    public boolean swap() {
+        check();
+        context.swap();
+        return true;
+    }
+
+    public boolean swap3() {
+        check();
+        context.swap3();
+        return true;
+    }
+
+    public boolean swap4() {
+        check();
+        context.swap4();
+        return true;
+    }
+
+    public boolean swap5() {
+        check();
+        context.swap5();
+        return true;
+    }
+
+    public boolean swap6() {
+        check();
+        context.swap6();
         return true;
     }
 

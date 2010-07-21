@@ -23,19 +23,17 @@ import org.parboiled.Rule;
 /**
  * A special {@link Matcher} not actually matching any input but rather trying its sub matcher against the current input
  * position. Succeeds if the sub matcher would succeed.
- *
- * @param <V> the type of the value field of a parse tree node
  */
-public class TestMatcher<V> extends AbstractMatcher<V> {
+public class TestMatcher extends AbstractMatcher {
 
-    public final Matcher<V> subMatcher;
+    public final Matcher subMatcher;
 
     public TestMatcher(@NotNull Rule subRule) {
         super(subRule);
         this.subMatcher = getChildren().get(0);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         int lastIndex = context.getCurrentIndex();
         if (subMatcher.getSubContext(context).runMatcher()) {
             context.setCurrentIndex(lastIndex); // reset location, Test matchers never advance
@@ -45,7 +43,7 @@ public class TestMatcher<V> extends AbstractMatcher<V> {
         return false;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 

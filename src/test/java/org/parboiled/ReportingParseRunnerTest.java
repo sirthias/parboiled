@@ -50,7 +50,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
 
     private void test(CalculatorParser1 parser, String input, String expectedErrorMessage) {
         Rule rule = parser.InputLine();
-        ParsingResult<Integer> result = ReportingParseRunner.run(rule, input);
+        ParsingResult result = ReportingParseRunner.run(rule, input);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result), expectedErrorMessage);
     }
@@ -68,7 +68,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.CompilationUnit();
-        ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
+        ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result), "" +
                 "Invalid input ';', expected Spacing, Expression or ')' (line 5, pos 32):\n" +
@@ -89,7 +89,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.CompilationUnit();
-        ParsingResult<Object> result = ReportingParseRunner.run(rule, sourceWithErrors);
+        ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result), "" +
                 "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
@@ -107,7 +107,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
     public void testErrorLocation() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Line();
-        ParsingResult<Object> result = ReportingParseRunner.run(rule, "Text;;Something");
+        ParsingResult result = ReportingParseRunner.run(rule, "Text;;Something");
         assertEquals(result.parseErrors.size(), 1);
         assertEqualsMultiline(printParseErrors(result), "" +
                 "Invalid input ';' (line 1, pos 6):\n" +

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchers;
+package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
@@ -24,6 +24,8 @@ import org.parboiled.Rule;
 import org.parboiled.errors.ActionError;
 import org.parboiled.errors.ActionException;
 import org.parboiled.errors.GrammarException;
+import org.parboiled.matchers.AbstractMatcher;
+import org.parboiled.matchers.MatcherVisitor;
 import org.parboiled.transform.BaseAction;
 
 import java.lang.reflect.Field;
@@ -31,18 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link Matcher} that not actually matches input but runs a given parser {@link Action}.
- *
- * @param <V> the type of the value field of a parse tree node
+ * A {@link org.parboiled.matchers.Matcher} that not actually matches input but runs a given parser {@link Action}.
  */
-public class ActionMatcher<V> extends AbstractMatcher<V> {
+public class ActionMatcher extends AbstractMatcher {
 
-    public final Action<V> action;
-    public final List<ContextAware<V>> contextAwares = new ArrayList<ContextAware<V>>();
+    public final Action action;
+    public final List<ContextAware> contextAwares = new ArrayList<ContextAware>();
     public final boolean skipInPredicates;
 
-    @SuppressWarnings({"unchecked"})
-    public ActionMatcher(@NotNull Action<V> action) {
+    public ActionMatcher(@NotNull Action action) {
         this.action = action;
 
         // Base Actions take care of their context setting need themselves, so we do not need to analyze fields, etc.
@@ -53,7 +52,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         skipInPredicates = false;
 
         if (action instanceof ContextAware) {
-            contextAwares.add((ContextAware<V>) action);
+            contextAwares.add((ContextAware) action);
         }
         // in order to make anonymous inner classes and other member classes work seamlessly
         // we collect the synthetic references to the outer parent classes and inform them of
@@ -62,7 +61,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
             if (field.isSynthetic() && ContextAware.class.isAssignableFrom(field.getType())) {
                 field.setAccessible(true);
                 try {
-                    ContextAware<V> contextAware = (ContextAware<V>) field.get(action);
+                    ContextAware contextAware = (ContextAware) field.get(action);
                     if (contextAware != null) contextAwares.add(contextAware);
                 } catch (IllegalAccessException e) {
                     // ignore
@@ -74,21 +73,21 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
     }
 
     @Override
-    public MatcherContext<V> getSubContext(MatcherContext<V> context) {
-        MatcherContext<V> subContext = context.getBasicSubContext();
+    public MatcherContext getSubContext(MatcherContext context) {
+        MatcherContext subContext = context.getBasicSubContext();
         subContext.setMatcher(this);
         // if the subcontext contains match data we use the existing subcontext without reinitializing
         // this way we can access the match data of the previous match from this action
         return subContext.getCurrentIndex() > 0 ? subContext : context.getSubContext(this);
     }
 
-    public boolean match(@NotNull MatcherContext<V> context) {
+    public boolean match(@NotNull MatcherContext context) {
         if (skipInPredicates && context.inPredicate()) return true;
 
         // actions need to run in the parent context
-        MatcherContext<V> parentContext = context.getParent();
+        MatcherContext parentContext = context.getParent();
         if (!contextAwares.isEmpty()) {
-            for (ContextAware<V> contextAware : contextAwares) {
+            for (ContextAware contextAware : contextAwares) {
                 contextAware.setContext(parentContext);
             }
         }
@@ -97,13 +96,14 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
             if (!action.run(parentContext)) return false;
 
             // since we initialize the actions own context only partially in getSubContext(MatcherContext)
-            // (in order to be able to still access the previous subcontexts values in action expressions)
+            // (in order to be able to still access the previous subcontexts fields in action expressions)
             // we need to make sure to not accidentally advance the current index of our parent with some old
             // index from a previous subcontext, so we explicitly set the marker here
-            context.setCurrentIndex(parentContext.getCurrentIndex());
+            context.currentIndex = parentContext.currentIndex;
+            context.valueStack = parentContext.valueStack;
             return true;
         } catch (ActionException e) {
-            context.getParseErrors().add(new ActionError<V>(context.getInputBuffer(), context.getCurrentIndex(),
+            context.getParseErrors().add(new ActionError(context.getInputBuffer(), context.getCurrentIndex(),
                     e.getMessage(), context.getPath(), e));
             return false;
         }
@@ -114,7 +114,7 @@ public class ActionMatcher<V> extends AbstractMatcher<V> {
         throw new GrammarException("Actions cannot be marked with @SuppressNode or @SuppressSubnodes");
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<V, R> visitor) {
+    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
 
