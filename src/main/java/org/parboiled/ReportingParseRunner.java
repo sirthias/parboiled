@@ -18,10 +18,7 @@ package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
-import org.parboiled.support.InputBuffer;
-import org.parboiled.support.IsSingleCharMatcherVisitor;
-import org.parboiled.support.MatcherPath;
-import org.parboiled.support.ParsingResult;
+import org.parboiled.support.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +29,7 @@ import java.util.List;
  * It performs exactly as the {@link BasicParseRunner} on valid input, however, on invalid input two more parsing
  * runs are initiated: one for recording the first parse error and one for collecting the error report information.
  */
-public class ReportingParseRunner extends BasicParseRunner {
+public class ReportingParseRunner<V> extends BasicParseRunner<V> {
 
     /**
      * Create a new ReportingParseRunner instance with the given rule and input text and returns the result of
@@ -42,8 +39,8 @@ public class ReportingParseRunner extends BasicParseRunner {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
-        return new ReportingParseRunner(rule, input).run();
+    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+        return new ReportingParseRunner<V>(rule, input).run();
     }
 
     /**
@@ -61,9 +58,11 @@ public class ReportingParseRunner extends BasicParseRunner {
      *
      * @param rule        the parser rule
      * @param inputBuffer the input buffer
+     * @param valueStack  the value stack
      */
-    public ReportingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
-        super(rule, inputBuffer);
+    public ReportingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer,
+                                @NotNull ValueStack<V> valueStack) {
+        super(rule, inputBuffer, valueStack);
     }
 
     @SuppressWarnings({"SimplifiableIfStatement"})
@@ -133,7 +132,7 @@ public class ReportingParseRunner extends BasicParseRunner {
             return parseError;
         }
 
-        public boolean matchRoot(MatcherContext rootContext) {
+        public boolean matchRoot(MatcherContext<?> rootContext) {
             failedMatchers.clear();
             seeking = errorIndex > 0;
             inner.matchRoot(rootContext);
@@ -144,7 +143,7 @@ public class ReportingParseRunner extends BasicParseRunner {
             return false;
         }
 
-        public boolean match(MatcherContext context) {
+        public boolean match(MatcherContext<?> context) {
             boolean matched = inner.match(context);
             if (context.getCurrentIndex() == errorIndex) {
                 if (matched && seeking) {

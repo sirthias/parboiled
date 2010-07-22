@@ -21,20 +21,21 @@ import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.InputBuffer;
 import org.parboiled.support.MatcherPath;
+import org.parboiled.support.ValueStack;
 
 import java.util.List;
 
 /**
  * A Context object is available to parser actions methods during their runtime and provides various support functionalities.
  */
-public interface Context {
+public interface Context<V> {
 
     /**
      * Returns the parent context, i.e. the context for the currently running parent matcher.
      *
      * @return the parent context
      */
-    Context getParent();
+    Context<V> getParent();
 
     /**
      * Returns the InputBuffer the parser is currently running against
@@ -116,7 +117,7 @@ public interface Context {
      * @return the parse tree subnodes already created in the current context scope
      */
     @NotNull
-    List<Node> getSubNodes();
+    List<Node<V>> getSubNodes();
 
     /**
      * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
@@ -168,26 +169,6 @@ public interface Context {
      */
     int getMatchEndIndex();
 
-    List<Object> getValueStack();
-
-    void push(Object value);
-
-    void push(Object... values);
-
-    Object pop();
-
-    Object peek();
-
-    void poke(Object value);
-
-    void swap();
-
-    void swap3();
-
-    void swap4();
-
-    void swap5();
-
-    void swap6();
+    ValueStack<V> getValueStack();
 }
 

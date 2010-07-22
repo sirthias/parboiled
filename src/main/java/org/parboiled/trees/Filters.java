@@ -27,12 +27,12 @@ import static org.parboiled.trees.GraphUtils.hasChildren;
 
 public class Filters {
 
-    public static  Filter<Node> skipEmptyOptionalsAndZeroOrMores() {
-        return new Filter<Node>() {
-            private final Filter<Node> skipEmptyOptionals = skipEmptyOptionals();
-            private final Filter<Node> skipEmptyZeroOrMores = skipEmptyZeroOrMores();
+    public static <V> Filter<Node<V>> skipEmptyOptionalsAndZeroOrMores() {
+        return new Filter<Node<V>>() {
+            private final Filter<Node<V>> skipEmptyOptionals = skipEmptyOptionals();
+            private final Filter<Node<V>> skipEmptyZeroOrMores = skipEmptyZeroOrMores();
 
-            public Printability apply(Node node) {
+            public Printability apply(Node<V> node) {
                 return skipEmptyOptionals.apply(node) == Printability.Skip ||
                         skipEmptyZeroOrMores.apply(node) == Printability.Skip ?
                         Printability.Skip : Printability.PrintAndDescend;
@@ -40,9 +40,9 @@ public class Filters {
         };
     }
 
-    public static  Filter<Node> skipEmptyOptionals() {
-        return new Filter<Node>() {
-            public Printability apply(Node node) {
+    public static <V> Filter<Node<V>> skipEmptyOptionals() {
+        return new Filter<Node<V>>() {
+            public Printability apply(Node<V> node) {
                 return hasChildren(node) || node.getEndIndex() != node.getStartIndex() ||
                         !"Optional".equals(node.getLabel()) ?
                         Printability.PrintAndDescend : Printability.Skip;
@@ -50,9 +50,9 @@ public class Filters {
         };
     }
 
-    public static  Filter<Node> skipEmptyZeroOrMores() {
-        return new Filter<Node>() {
-            public Printability apply(Node node) {
+    public static <V> Filter<Node<V>> skipEmptyZeroOrMores() {
+        return new Filter<Node<V>>() {
+            public Printability apply(Node<V> node) {
                 return hasChildren(node) || node.getEndIndex() != node.getStartIndex() || !"ZeroOrMore"
                         .equals(node.getLabel()) ?
                         Printability.PrintAndDescend : Printability.Skip;
@@ -60,7 +60,7 @@ public class Filters {
         };
     }
 
-    public static  Filter<Matcher> preventLoops() {
+    public static Filter<Matcher> preventLoops() {
         return new Filter<Matcher>() {
             private final Set<Matcher> visited = new HashSet<Matcher>();
 

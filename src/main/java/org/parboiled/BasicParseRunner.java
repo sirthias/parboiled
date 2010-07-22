@@ -22,6 +22,7 @@ import org.parboiled.matchers.Matcher;
 import org.parboiled.support.DefaultInputBuffer;
 import org.parboiled.support.InputBuffer;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ValueStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +34,13 @@ import java.util.List;
  * It never causes the parser to perform more than one parsing run and is the fastest way to determine
  * whether a given input conforms to the rule grammar.
  */
-public class BasicParseRunner implements ParseRunner {
+public class BasicParseRunner<V> implements ParseRunner<V> {
 
     protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
+    protected final ValueStack<V> valueStack;
     protected final Matcher rootMatcher;
     protected InputBuffer inputBuffer;
-    protected MatcherContext rootContext;
+    protected MatcherContext<V> rootContext;
     protected boolean matched;
 
     /**
@@ -49,8 +51,8 @@ public class BasicParseRunner implements ParseRunner {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
-        return new BasicParseRunner(rule, input).run();
+    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+        return new BasicParseRunner<V>(rule, input).run();
     }
 
     /**
@@ -60,7 +62,7 @@ public class BasicParseRunner implements ParseRunner {
      * @param input the input text
      */
     public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
-        this(rule, new DefaultInputBuffer(input));
+        this(rule, new DefaultInputBuffer(input), new ValueStack<V>());
     }
 
     /**
@@ -68,17 +70,20 @@ public class BasicParseRunner implements ParseRunner {
      *
      * @param rule        the parser rule
      * @param inputBuffer the input buffer
+     * @param valueStack  the value stack
      */
-    public BasicParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
+    public BasicParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer, @NotNull ValueStack<V> valueStack) {
         this.rootMatcher = (Matcher) rule;
         this.inputBuffer = inputBuffer;
+        this.valueStack = valueStack;
     }
 
-    public ParsingResult run() {
+    public ParsingResult<V> run() {
         if (rootContext == null) {
             matched = runRootContext();
         }
-        return new ParsingResult(matched, rootContext.getNode(), rootContext.getValueStack(), parseErrors, inputBuffer);
+        return new ParsingResult<V>(matched, rootContext.getNode(), rootContext.getValueStack(), parseErrors,
+                inputBuffer);
     }
 
     protected boolean runRootContext() {
@@ -86,7 +91,8 @@ public class BasicParseRunner implements ParseRunner {
     }
 
     protected boolean runRootContext(MatchHandler handler, boolean fastStringMatching) {
-        rootContext = new MatcherContext(inputBuffer, parseErrors, handler, rootMatcher, fastStringMatching);
+        rootContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, handler, rootMatcher,
+                fastStringMatching);
         return handler.matchRoot(rootContext);
     }
 
@@ -96,11 +102,11 @@ public class BasicParseRunner implements ParseRunner {
      */
     public static final class Handler implements MatchHandler {
 
-        public boolean matchRoot(MatcherContext rootContext) {
+        public boolean matchRoot(MatcherContext<?> rootContext) {
             return rootContext.runMatcher();
         }
 
-        public boolean match(MatcherContext context) {
+        public boolean match(MatcherContext<?> context) {
             return context.getMatcher().match(context);
         }
 

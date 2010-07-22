@@ -18,7 +18,7 @@ package org.parboiled.errors;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.ActionMatcher;
+import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
@@ -165,7 +165,7 @@ public final class ErrorUtils {
      * @param parsingResult the parsing result
      * @return the pretty print text
      */
-    public static String printParseErrors(@NotNull ParsingResult parsingResult) {
+    public static String printParseErrors(@NotNull ParsingResult<?> parsingResult) {
         return printParseErrors(parsingResult.parseErrors, parsingResult.inputBuffer);
     }
 

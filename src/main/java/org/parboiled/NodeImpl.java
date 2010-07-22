@@ -26,16 +26,16 @@ import java.util.List;
 /**
  * An immutable implementation of the Node interface.
  */
-class NodeImpl extends ImmutableTreeNode<Node> implements Node {
+class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
 
     private final Matcher matcher;
     private final int startIndex;
     private final int endIndex;
-    private final Object value;
+    private final V value;
     private final boolean hasError;
 
-    public NodeImpl(@NotNull Matcher matcher, List<Node> children, int startIndex,
-                    int endIndex, Object value, boolean hasError) {
+    public NodeImpl(@NotNull Matcher matcher, List<Node<V>> children, int startIndex,
+                    int endIndex, V value, boolean hasError) {
         super(children);
         this.matcher = matcher;
         this.startIndex = startIndex;
@@ -61,7 +61,7 @@ class NodeImpl extends ImmutableTreeNode<Node> implements Node {
         return endIndex;
     }
 
-    public Object getValue() {
+    public V getValue() {
         return value;
     }
 

@@ -49,7 +49,7 @@ public class TimeParser extends BaseParser<Object> {
                                 TwoDigits(),
                                 FirstOf(TwoDigits(), push(0))
                         ),
-                        push(0, 0)
+                        pushAll(0, 0)
                 ),
                 Eoi(),
                 swap3() && push(convertToTime(popAsInt(), popAsInt(), popAsInt()))

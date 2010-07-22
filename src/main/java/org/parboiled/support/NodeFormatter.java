@@ -22,9 +22,9 @@ import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 
 /**
- * A simple Formatter<Node that provides String representation for parse tree nodes.
+ * A simple Formatter<Node> that provides String representation for parse tree nodes.
  */
-public class NodeFormatter implements Formatter<Node> {
+public class NodeFormatter<V> implements Formatter<Node<V>> {
 
     private final InputBuffer inputBuffer;
 
@@ -37,7 +37,7 @@ public class NodeFormatter implements Formatter<Node> {
         this.inputBuffer = inputBuffer;
     }
 
-    public String format(Node node) {
+    public String format(Node<V> node) {
         String nodeLabel = node.toString();
         String nodeText = StringUtils.escape(ParseTreeUtils.getNodeText(node, inputBuffer));
         return StringUtils.isEmpty(nodeText) ? nodeLabel : nodeLabel + " '" + nodeText + '\'';

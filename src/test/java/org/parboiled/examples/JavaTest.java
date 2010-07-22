@@ -63,7 +63,7 @@ public class JavaTest {
                 "    ProxyMatchers     : 14\n" +
                 "    VarFramingMatchers: 0\n");
 
-        ParsingResult parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
+        ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +

@@ -62,7 +62,7 @@ public interface Matcher extends Rule, GraphNode<Matcher> {
      * @param context the MatcherContext
      * @return true if the match was successful
      */
-    boolean match(@NotNull MatcherContext context);
+    <V> boolean match(@NotNull MatcherContext<V> context);
 
     /**
      * Accepts the given matcher visitor.

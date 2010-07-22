@@ -24,11 +24,11 @@ import static org.testng.Assert.assertEquals;
 
 public class ActionTest extends AbstractTest {
 
-    public static class Actions extends BaseActions<Object> {
+    public static class Actions extends BaseActions<Integer> {
 
         public boolean addOne() {
-            Integer i = (Integer) getContext().pop();
-            getContext().push(i + 1);
+            Integer i = getContext().getValueStack().pop();
+            getContext().getValueStack().push(i + 1);
             return true;
         }
     }

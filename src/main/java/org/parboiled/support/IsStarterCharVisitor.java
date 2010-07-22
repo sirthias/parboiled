@@ -16,7 +16,7 @@
 
 package org.parboiled.support;
 
-import org.parboiled.ActionMatcher;
+import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.*;
 
 /**

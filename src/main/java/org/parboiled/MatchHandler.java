@@ -28,7 +28,7 @@ public interface MatchHandler {
      * @param rootContext the root MatcherContext.
      * @return true if matched
      */
-    boolean matchRoot(MatcherContext rootContext);
+    boolean matchRoot(MatcherContext<?> rootContext);
 
     /**
      * Runs the given MatcherContext.
@@ -36,6 +36,6 @@ public interface MatchHandler {
      * @param context the MatcherContext
      * @return true if matched
      */
-    boolean match(MatcherContext context);
+    boolean match(MatcherContext<?> context);
 
 }

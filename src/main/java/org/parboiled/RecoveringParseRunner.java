@@ -40,7 +40,7 @@ import java.util.List;
  * speed as the {@link BasicParseRunner}. However, if there are {@link InvalidInputError}s in the input potentially
  * many more runs are performed to properly report all errors and test the various recovery strategies.
  */
-public class RecoveringParseRunner extends BasicParseRunner {
+public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     private int errorIndex;
     private InvalidInputError currentError;
@@ -54,8 +54,8 @@ public class RecoveringParseRunner extends BasicParseRunner {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
-        return new RecoveringParseRunner(rule, input).run();
+    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+        return new RecoveringParseRunner<V>(rule, input).run();
     }
 
     /**
@@ -73,9 +73,11 @@ public class RecoveringParseRunner extends BasicParseRunner {
      *
      * @param rule        the parser rule
      * @param inputBuffer the input buffer
+     * @param valueStack  the value stack
      */
-    public RecoveringParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
-        super(rule, inputBuffer);
+    public RecoveringParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer,
+                                 @NotNull ValueStack<V> valueStack) {
+        super(rule, inputBuffer, valueStack);
     }
 
     @Override
@@ -245,11 +247,11 @@ public class RecoveringParseRunner extends BasicParseRunner {
             this.currentError = currentError;
         }
 
-        public boolean matchRoot(MatcherContext rootContext) {
+        public boolean matchRoot(MatcherContext<?> rootContext) {
             return rootContext.runMatcher();
         }
 
-        public boolean match(MatcherContext context) {
+        public boolean match(MatcherContext<?> context) {
             Matcher matcher = context.getMatcher();
             if (matcher.accept(isSingleCharMatcherVisitor)) {
                 if (prepareErrorLocation(context) && matcher.match(context)) {

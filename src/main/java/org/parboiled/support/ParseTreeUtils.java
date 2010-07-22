@@ -36,7 +36,7 @@ public final class ParseTreeUtils {
      * @param inputBuffer the underlying inputBuffer
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    public static String getNodeText(Node node, @NotNull InputBuffer inputBuffer) {
+    public static String getNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
         if (node == null) return null;
         if (!node.hasError()) {
             return getRawNodeText(node, inputBuffer);
@@ -48,7 +48,7 @@ public final class ParseTreeUtils {
         } else {
             StringBuilder sb = new StringBuilder();
             int index = node.getStartIndex();
-            for (Node child : node.getChildren()) {
+            for (Node<?> child : node.getChildren()) {
                 addInputLocations(inputBuffer, sb, index, child.getStartIndex());
                 sb.append(getNodeText(child, inputBuffer));
                 index = child.getEndIndex();
@@ -82,7 +82,7 @@ public final class ParseTreeUtils {
      * @param inputBuffer the underlying inputBuffer
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    public static String getRawNodeText(Node node, @NotNull InputBuffer inputBuffer) {
+    public static String getRawNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
         return node == null ? null : inputBuffer.extract(node.getStartIndex(), node.getEndIndex());
     }
 
@@ -92,7 +92,7 @@ public final class ParseTreeUtils {
      * @param parsingResult the parsing result containing the parse tree
      * @return a new String
      */
-    public static String printNodeTree(@NotNull ParsingResult parsingResult) {
+    public static String printNodeTree(@NotNull ParsingResult<?> parsingResult) {
         return printNodeTree(parsingResult, null);
     }
 
@@ -105,8 +105,8 @@ public final class ParseTreeUtils {
      * @param filter        optional node filter selecting the nodes to print and/or descend into for tree printing
      * @return a new String
      */
-    public static String printNodeTree(@NotNull ParsingResult parsingResult, Filter<Node> filter) {
-        return printTree(parsingResult.parseTreeRoot, new NodeFormatter(parsingResult.inputBuffer), filter);
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult, Filter<Node<V>> filter) {
+        return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
     }
 
 }

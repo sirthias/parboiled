@@ -22,6 +22,7 @@ import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
 import org.parboiled.support.InputBuffer;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ValueStack;
 
 /**
  * A {@link ParseRunner} implementation that records the location of the first {@link InvalidInputError} found,
@@ -29,7 +30,7 @@ import org.parboiled.support.ParsingResult;
  * It never causes the parser to perform more than one parsing run and is rarely used directly. Instead its functionality
  * is relied upon by the {@link ReportingParseRunner} and {@link RecoveringParseRunner} classes.
  */
-public class RecordingParseRunner extends BasicParseRunner {
+public class RecordingParseRunner<V> extends BasicParseRunner<V> {
 
     private Handler handler;
 
@@ -41,8 +42,8 @@ public class RecordingParseRunner extends BasicParseRunner {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static  ParsingResult run(@NotNull Rule rule, @NotNull String input) {
-        return new RecordingParseRunner(rule, input).run();
+    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+        return new RecordingParseRunner<V>(rule, input).run();
     }
 
     /**
@@ -60,9 +61,11 @@ public class RecordingParseRunner extends BasicParseRunner {
      *
      * @param rule        the parser rule
      * @param inputBuffer the input buffer
+     * @param valueStack  the value stack
      */
-    public RecordingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer) {
-        super(rule, inputBuffer);
+    public RecordingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer,
+                                @NotNull ValueStack<V> valueStack) {
+        super(rule, inputBuffer, valueStack);
     }
 
     @Override

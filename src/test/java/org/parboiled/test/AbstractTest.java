@@ -51,20 +51,20 @@ public abstract class AbstractTest {
         return result;
     }
 
-    public  ParsingResult testFail(Rule rule, String input, String expectedErrors,
+    public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
                                          String expectedTree) {
         return testFail(rule, input, expectedErrors, expectedTree, null);
     }
 
-    public  ParsingResult testFail(Rule rule, String input, String expectedErrors,
-                                         String expectedTree, Filter<Node> filter) {
-        ParsingResult result = testFail(rule, input, expectedErrors);
+    public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
+                                         String expectedTree, Filter<Node<V>> filter) {
+        ParsingResult<V> result = testFail(rule, input, expectedErrors);
         assertEqualsMultiline(printNodeTree(result, filter), expectedTree);
         return result;
     }
 
-    public  ParsingResult testFail(Rule rule, String input, String expectedErrors) {
-        ParsingResult result = RecoveringParseRunner.run(rule, input);
+    public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors) {
+        ParsingResult<V> result = RecoveringParseRunner.run(rule, input);
         assertEqualsMultiline(printParseErrors(result), expectedErrors);
         return result;
     }

@@ -16,8 +16,6 @@
 
 package org.parboiled.matchers;
 
-import org.parboiled.ActionMatcher;
-
 /**
  * The interface to be implemented by all visitors of {@link Matcher}s.
  *

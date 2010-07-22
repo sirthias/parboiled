@@ -65,7 +65,7 @@ public class ProxyMatcher implements Matcher, Cloneable {
         dirty = label != null || nodeSuppressed || subnodesSuppressed || nodeSkipped;
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public <V> boolean match(@NotNull MatcherContext<V> context) {
         if (dirty) apply();
         return target.match(context);
     }

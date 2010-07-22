@@ -17,7 +17,6 @@
 package org.parboiled;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.StringUtils;
 import org.parboiled.support.Checks;
 
 /**
@@ -26,16 +25,16 @@ import org.parboiled.support.Checks;
  * @param <V> the type of the parser values
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class BaseActions<V> implements ContextAware {
+public abstract class BaseActions<V> implements ContextAware<V> {
 
-    private Context context;
+    private Context<V> context;
 
     /**
      * The current context for use with action methods. Updated immediately before action calls.
      *
      * @return the current context
      */
-    public Context getContext() {
+    public Context<V> getContext() {
         return context;
     }
 
@@ -44,7 +43,7 @@ public abstract class BaseActions<V> implements ContextAware {
      *
      * @param context the context
      */
-    public void setContext(@NotNull Context context) {
+    public void setContext(@NotNull Context<V> context) {
         this.context = context;
     }
 
@@ -91,67 +90,87 @@ public abstract class BaseActions<V> implements ContextAware {
 
     public boolean push(V value) {
         check();
-        context.push(value);
+        context.getValueStack().push(value);
         return true;
     }
 
-    public boolean push(V... values) {
+    public boolean push(int down, V value) {
         check();
-        context.push(values);
+        context.getValueStack().push(down, value);
         return true;
     }
 
-    @SuppressWarnings({"unchecked"})
+    public boolean pushAll(V firstValue, V... values) {
+        check();
+        context.getValueStack().pushAll(firstValue, values);
+        return true;
+    }
+
     public V pop() {
         check();
-        return (V) context.pop();
+        return context.getValueStack().pop();
     }
 
-    @SuppressWarnings({"unchecked"})
+    public V pop(int down) {
+        check();
+        return context.getValueStack().pop(down);
+    }
+
     public V peek() {
         check();
-        return (V) context.peek();
+        return context.getValueStack().peek();
+    }
+
+    public V peek(int down) {
+        check();
+        return context.getValueStack().peek(down);
     }
 
     public boolean poke(V value) {
         check();
-        context.poke(value);
+        context.getValueStack().poke(value);
+        return true;
+    }
+
+    public boolean poke(int down, V value) {
+        check();
+        context.getValueStack().poke(down, value);
         return true;
     }
 
     public boolean dup() {
         check();
-        context.push(context.peek());
+        context.getValueStack().dup();
         return true;
     }
 
     public boolean swap() {
         check();
-        context.swap();
+        context.getValueStack().swap();
         return true;
     }
 
     public boolean swap3() {
         check();
-        context.swap3();
+        context.getValueStack().swap3();
         return true;
     }
 
     public boolean swap4() {
         check();
-        context.swap4();
+        context.getValueStack().swap4();
         return true;
     }
 
     public boolean swap5() {
         check();
-        context.swap5();
+        context.getValueStack().swap5();
         return true;
     }
 
     public boolean swap6() {
         check();
-        context.swap6();
+        context.getValueStack().swap6();
         return true;
     }
 

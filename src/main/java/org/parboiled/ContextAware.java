@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * If the class containing action methods implements this interface parboiled will use it to inform the
  * instance of the current context, immediately before an action call.
  */
-public interface ContextAware {
+public interface ContextAware<V> {
 
     /**
      * Called immediately before any parser action method invocation. Informs the object containing the
@@ -31,6 +31,6 @@ public interface ContextAware {
      *
      * @param context the context
      */
-    void setContext(@NotNull Context context);
+    void setContext(@NotNull Context<V> context);
 
 }

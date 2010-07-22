@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
@@ -24,8 +24,6 @@ import org.parboiled.Rule;
 import org.parboiled.errors.ActionError;
 import org.parboiled.errors.ActionException;
 import org.parboiled.errors.GrammarException;
-import org.parboiled.matchers.AbstractMatcher;
-import org.parboiled.matchers.MatcherVisitor;
 import org.parboiled.transform.BaseAction;
 
 import java.lang.reflect.Field;
@@ -81,7 +79,8 @@ public class ActionMatcher extends AbstractMatcher {
         return subContext.getCurrentIndex() > 0 ? subContext : context.getSubContext(this);
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    @SuppressWarnings({"unchecked"})
+    public <V> boolean match(@NotNull MatcherContext<V> context) {
         if (skipInPredicates && context.inPredicate()) return true;
 
         // actions need to run in the parent context
@@ -99,8 +98,7 @@ public class ActionMatcher extends AbstractMatcher {
             // (in order to be able to still access the previous subcontexts fields in action expressions)
             // we need to make sure to not accidentally advance the current index of our parent with some old
             // index from a previous subcontext, so we explicitly set the marker here
-            context.currentIndex = parentContext.currentIndex;
-            context.valueStack = parentContext.valueStack;
+            context.setCurrentIndex(parentContext.getCurrentIndex());
             return true;
         } catch (ActionException e) {
             context.getParseErrors().add(new ActionError(context.getInputBuffer(), context.getCurrentIndex(),

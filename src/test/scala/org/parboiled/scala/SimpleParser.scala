@@ -10,19 +10,19 @@ class SimpleParser extends Parser[Int] {
 
   def Expression:Rule = rule {
     var a:Int = 0
-    Term ~ withValue(a = _) ~
+    Term ~ //withValue(a = _) ~
             zeroOrMore(
-              '+' ~ Term ~ withValue(a + _) |
-              '-' ~ Term ~ withValue(a - _)
+              '+' ~ Term | //~ withValue(a + _) |
+              '-' ~ Term //~ withValue(a - _)
             )
   }
 
   def Term = rule {
     var a:Int = 0
-    Factor ~ withValue(a = _) ~
+    Factor ~ //withValue(a = _) ~
             zeroOrMore(
-              '*' ~ Factor ~ withValue(a * _) |
-              '/' ~ Factor ~ withValue(a / _)
+              '*' ~ Factor | //~ withValue(a * _) |
+              '/' ~ Factor //~ withValue(a / _)
             )
   }
 
@@ -35,7 +35,7 @@ class SimpleParser extends Parser[Int] {
   }
 
   def Number = rule {    
-    Digits ~ withMatch(_.toInt)
+    Digits //~ //withMatch(_.toInt)
   }
 
   def Digits = rule {
