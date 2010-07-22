@@ -16,7 +16,10 @@
 
 package org.parboiled.support;
 
+import com.google.common.collect.Lists;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -56,7 +59,7 @@ public class ValueStackTest {
 
         stack.pushAll(19, 20);
         stack.swap3();
-        assertEquals(stack.getValues().toArray(), new Object[]{20,19,18});
+        assertEquals(Lists.newLinkedList(stack), Arrays.asList(18,19,20));
     }
 
 }

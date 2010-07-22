@@ -307,7 +307,7 @@ public class MatcherContext<V> implements Context<V> {
 
     public boolean runMatcher() {
         try {
-            int pointer = valueStack.savePointer(); // save the value stack pointer so we can reset in case of failure
+            Object stackSnapshot = valueStack.takeSnapshot();
             if (matchHandler.match(this)) {
                 if (parent != null) {
                     parent.currentIndex = currentIndex;
@@ -316,10 +316,8 @@ public class MatcherContext<V> implements Context<V> {
                 matcher = null; // "retire" this context
                 return true;
             }
-            // rule failed, so invalidate all stack actions (beyond the saved stack pointer)
-            // CAUTION: for performance reasons we do not check or restore the bottom part of the stack (below the
-            // current stack pointer), i.e. actions must make sure to not alter the value stack outside of their
-            valueStack.restorePointer(pointer);
+            // rule failed, so invalidate all stack actions the rule might have done
+            valueStack.restoreSnapshot(stackSnapshot);
 
             matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
             return false;

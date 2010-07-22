@@ -37,6 +37,9 @@ public class ParsingResult<V> {
      */
     public final Node<V> parseTreeRoot;
 
+    /**
+     * The ValueStack used during the parsing run.
+     */
     public final ValueStack<V> valueStack;
 
     /**

@@ -17,124 +17,143 @@
 package org.parboiled.support;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
-import org.parboiled.common.Reference;
 
-import java.util.AbstractList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
-public class ValueStack<V> {
+/**
+ * An implementation of a stack of value objects providing an efficient snapshot capability and a number of convenience
+ * methods. The current state of the stack can be saved and restored in small constant time with the methods
+ * {@link #takeSnapshot()} and {@link #restoreSnapshot(Object)} ()}. The implementation also serves as an Iterable
+ * over the current stack values (the values are being provided with the last value (on top of the stack) first).
+ *
+ * @param <V> the type of the value objects
+ */
+@SuppressWarnings({"ConstantConditions"})
+public class ValueStack<V> implements Iterable<V> {
 
-    private static final int INITIAL_SIZE = 16;
+    private static class Element {
+        private final Object value;
+        private final Element tail;
 
-    private Object[] array;
-    private int index; // points always to the element after the last one pushed
-
-    public ValueStack() {
-        reset();
+        private Element(Object value, Element tail) {
+            this.value = value;
+            this.tail = tail;
+        }
     }
 
-    public ValueStack(V[] values) {
-        reset(values);
+    private Element head;
+    private V tempValue;
+
+    public ValueStack() {
+    }
+
+    public ValueStack(Iterable<V> values) {
+        pushAll(values);
     }
 
     public boolean isEmpty() {
-        return index == 0;
+        return head == null;
     }
 
     public int size() {
-        return index;
+        return size(head);
+    }
+
+    private static int size(Element head) {
+        return head == null ? 0 : size(head.tail) + 1;
     }
 
     public void reset() {
-        index = 0;
-        array = new Object[INITIAL_SIZE];
+        head = null;
     }
 
-    public void reset(@NotNull V[] values) {
-        array = new Object[values.length];
-        System.arraycopy(values, 0, array, 0, values.length);
-        index = values.length;
+    public Object takeSnapshot() {
+        return head;
     }
 
-    public int savePointer() {
-        return index;
-    }
-
-    public void restorePointer(int pointer) {
-        Preconditions.checkArgument(pointer <= array.length);
-        index = pointer;
+    public void restoreSnapshot(Object snapshot) {
+        try {
+            head = (Element) snapshot;
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Given argument '" + snapshot + "' is not a valid snapshot element");
+        }
     }
 
     public void push(V value) {
-        if (index == array.length) growArray();
-        array[index++] = value;
+        push(0, value);
     }
 
     public void push(int down, V value) {
-        Preconditions.checkArgument(down >= 0, "Argument 'down' must not be negative");
-        Preconditions.checkArgument(index > down, "Cannot push under bottom of the stack");
-        if (index == array.length) growArray();
-        int ix = index - down;
-        if (down > 0) System.arraycopy(array, ix, array, ix + 1, index - ix);
-        array[ix] = value;
-        index++;
+        head = push(down, value, head);
+    }
+
+    private static Element push(int down, Object value, Element head) {
+        if (down == 0) return new Element(value, head);
+        Preconditions.checkArgument(head != null, "Cannot push beyond the bottom of the stack");
+        if (down > 0) return new Element(head.value, push(down - 1, value, head.tail));
+        throw new IllegalArgumentException("Argument 'down' must not be negative");
     }
 
     public void pushAll(V firstValue, V... values) {
         push(firstValue);
-        for (V value : values) {
-            push(value);
-        }
+        for (V value : values) push(value);
     }
 
-    private void growArray() {
-        Object[] newArray = new Object[array.length * 2];
-        System.arraycopy(array, 0, newArray, 0, array.length);
-        array = newArray;
+    public void pushAll(Iterable<V> values) {
+        head = null;
+        for (V value : values) push(value);
     }
 
-    @SuppressWarnings({"unchecked"})
     public V pop() {
-        Checks.ensure(index > 0, "Cannot pop from an empty value stack");
-        return (V) array[--index];
+        return pop(0);
     }
 
-    @SuppressWarnings({"unchecked"})
     public V pop(int down) {
-        Preconditions.checkArgument(down >= 0, "Argument 'down' must not be negative");
-        Preconditions.checkArgument(index > down, "Cannot pop from beyond the bottom of the stack");
-        int ix = --index - down;
-        V value = (V) array[ix];
-        if (down > 0) System.arraycopy(array, ix + 1, array, ix, index - ix);
-        return value;
+        head = pop(down, head);
+        return tempValue;
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
+    private Element pop(int down, Element head) {
+        Preconditions.checkArgument(head != null, "Cannot pop from beyond the bottom of the stack");
+        if (down == 0) {
+            tempValue = (V) head.value;
+            return head.tail;
+        }
+        if (down > 0) return new Element(head.value, pop(down - 1, head.tail));
+        throw new IllegalArgumentException("Argument 'down' must not be negative");
+    }
+
     public V peek() {
-        Checks.ensure(index > 0, "Cannot peek beyond bottom of the stack ");
-        return (V) array[index - 1];
+        return peek(0);
     }
 
     @SuppressWarnings({"unchecked"})
     public V peek(int down) {
-        Preconditions.checkArgument(down >= 0, "Argument 'down' must not be negative");
-        Preconditions.checkArgument(index > down, "Cannot peek beyond bottom of the stack ");
-        return (V) array[index - down - 1];
+        return (V) peek(down, head);
+    }
+
+    @SuppressWarnings({"ConstantConditions"})
+    private static Object peek(int down, Element head) {
+        Preconditions.checkArgument(head != null, "Cannot peek beyond the bottom of the stack");
+        if (down == 0) return head.value;
+        if (down > 0) return peek(down - 1, head.tail);
+        throw new IllegalArgumentException("Argument 'down' must not be negative");
     }
 
     public void poke(V value) {
-        Checks.ensure(index > 0, "Cannot poke into an empty value stack");
-        array[index - 1] = value;
+        push(0, value);
     }
 
     public void poke(int down, V value) {
-        Preconditions.checkArgument(down >= 0, "Argument 'down' must not be negative");
-        Preconditions.checkArgument(index > down, "Cannot poke beyond the bottom of the stack");
-        array[index - down - 1] = value;
+        head = poke(down, value, head);
+    }
+
+    private static Element poke(int down, Object value, Element head) {
+        Preconditions.checkArgument(head != null, "Cannot poke beyond the bottom of the stack");
+        if (down == 0) return new Element(value, head.tail);
+        if (down > 0) return new Element(head.value, poke(down - 1, value, head.tail));
+        throw new IllegalArgumentException("Argument 'down' must not be negative");
     }
 
     public void dup() {
@@ -142,57 +161,67 @@ public class ValueStack<V> {
     }
 
     public void swap() {
-        Checks.ensure(index >= 2, "Swap not allowed on stack with less than two elements");
-        swap(1, 2);
+        Checks.ensure(isSizeGTE(2, head), "Swap not allowed on stack with less than two elements");
+        Element down1 = head.tail;
+        head = new Element(down1.value, new Element(head.value, down1.tail));
     }
 
     public void swap3() {
-        Checks.ensure(index >= 3, "Swap3 not allowed on stack with less than 3 elements");
-        swap(1, 3);
+        Checks.ensure(isSizeGTE(3, head), "Swap3 not allowed on stack with less than 3 elements");
+        Element down1 = head.tail;
+        Element down2 = down1.tail;
+        head = new Element(down2.value, new Element(down1.value, new Element(head.value, down2.tail)));
     }
 
     public void swap4() {
-        Checks.ensure(index >= 4, "Swap4 not allowed on stack with less than 4 elements");
-        swap(1, 4);
-        swap(2, 3);
+        Checks.ensure(isSizeGTE(4, head), "Swap4 not allowed on stack with less than 4 elements");
+        Element down1 = head.tail;
+        Element down2 = down1.tail;
+        Element down3 = down2.tail;
+        head = new Element(down3.value, new Element(down2.value, new Element(down1.value, new Element(head.value,
+                down3.tail))));
     }
 
     public void swap5() {
-        Checks.ensure(index >= 5, "Swap5 not allowed on stack with less than 5 elements");
-        swap(1, 5);
-        swap(2, 4);
+        Checks.ensure(isSizeGTE(5, head), "Swap5 not allowed on stack with less than 5 elements");
+        Element down1 = head.tail;
+        Element down2 = down1.tail;
+        Element down3 = down2.tail;
+        Element down4 = down3.tail;
+        head = new Element(down4.value, new Element(down3.value, new Element(down2.value, new Element(down1.value,
+                new Element(head.value, down4.tail)))));
     }
 
     public void swap6() {
-        Checks.ensure(index >= 6, "Swap6 not allowed on stack with less than 6 elements");
-        swap(1, 6);
-        swap(2, 5);
-        swap(3, 4);
+        Checks.ensure(isSizeGTE(6, head), "Swap6 not allowed on stack with less than 6 elements");
+        Element down1 = head.tail;
+        Element down2 = down1.tail;
+        Element down3 = down2.tail;
+        Element down4 = down3.tail;
+        Element down5 = down4.tail;
+        head = new Element(down5.value, new Element(down4.value, new Element(down3.value, new Element(down2.value,
+                new Element(down1.value, new Element(head.value, down5.tail))))));
     }
 
-    private void swap(int a, int b) {
-        Object temp = array[index - a];
-        array[index - a] = array[index - b];
-        array[index - b] = temp;
+    private static boolean isSizeGTE(int minSize, Element head) {
+        return minSize == 1 ? head != null : isSizeGTE(minSize - 1, head.tail);
     }
 
-    /**
-     * Returns all stack values in an immutable list, with the deepest object at the first position.
-     * @return the list of stack values
-     */
-    @SuppressWarnings({"unchecked"})
-    public List<V> getValues() {
-        return new AbstractList<V>() {
-            @Override
-            public V get(int ix) {
-                if (0<= ix && ix < index) return (V) array[ix];
-                throw new IndexOutOfBoundsException("Illegal index: " + ix);
+    public Iterator<V> iterator() {
+        return new Iterator<V>() {
+            private Element next = head;
+            public boolean hasNext() {
+                return next != null;
             }
-            @Override
-            public int size() {
-                return index;
+            @SuppressWarnings({"unchecked"})
+            public V next() {
+                V value = (V) next.value;
+                next = next.tail;
+                return value;
+            }
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         };
     }
-
 }
