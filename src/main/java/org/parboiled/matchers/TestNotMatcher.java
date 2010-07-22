@@ -35,11 +35,15 @@ public class TestNotMatcher extends AbstractMatcher {
 
     public boolean match(@NotNull MatcherContext context) {
         int lastIndex = context.getCurrentIndex();
-        if (subMatcher.getSubContext(context).runMatcher()) {
-            context.setCurrentIndex(lastIndex); // reset location, Test matchers never advance
-            return false;
-        }
-        context.setCurrentIndex(lastIndex); // reset location, Test matchers never advance
+        Object valueStackSnapshot = context.getValueStack().takeSnapshot();
+
+        if (subMatcher.getSubContext(context).runMatcher()) return false;
+
+        // reset location, Test matchers never advance
+        context.setCurrentIndex(lastIndex);
+
+        // erase all value stack changes the the submatcher could have made
+        context.getValueStack().restoreSnapshot(valueStackSnapshot);
         return true;
     }
 
