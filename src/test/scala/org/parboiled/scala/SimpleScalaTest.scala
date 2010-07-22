@@ -12,7 +12,7 @@ import org.parboiled.trees.{Filters, GraphUtils}
 class SimpleScalaTest extends AbstractTest with TestNGSuite {
   val parser = new SimpleParser
 
-  @Test
+  //@Test
   def verifyEasy() = {
     val rule = parser.InputLine
 

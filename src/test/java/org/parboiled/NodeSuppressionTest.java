@@ -93,13 +93,13 @@ public class NodeSuppressionTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.ABCDEFGH(), "abcdefgh", "" +
                 "[ABCDEFGH] 'abcdefgh'\n" +
-                "    [ABCD] 'abcd'\n" +
-                "        [AB] 'ab'\n" +
-                "            [A] 'a'\n" +
-                "        [CD] 'cd'\n" +
-                "    [EFGH] 'efgh'\n" +
-                "        [EF] 'ef'\n" +
-                "            [E] 'e'\n");
+                "  [ABCD] 'abcd'\n" +
+                "    [AB] 'ab'\n" +
+                "      [A] 'a'\n" +
+                "    [CD] 'cd'\n" +
+                "  [EFGH] 'efgh'\n" +
+                "    [EF] 'ef'\n" +
+                "      [E] 'e'\n");
     }
 
 }

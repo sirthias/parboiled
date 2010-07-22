@@ -92,16 +92,16 @@ public class NodeSkippingTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.ABCDEFGH(), "abcdefgh", "" +
                 "[ABCDEFGH] 'abcdefgh'\n" +
-                "    [ABCD] 'abcd'\n" +
-                "        [AB] 'ab'\n" +
-                "            [A] 'a'\n" +
-                "        [C] 'c'\n" +
-                "        [D] 'd'\n" +
-                "    [EF] 'ef'\n" +
-                "        [E] 'e'\n" +
-                "        [F] 'f'\n" +
-                "    [G] 'g'\n" +
-                "    [H] 'h'\n");
+                "  [ABCD] 'abcd'\n" +
+                "    [AB] 'ab'\n" +
+                "      [A] 'a'\n" +
+                "    [C] 'c'\n" +
+                "    [D] 'd'\n" +
+                "  [EF] 'ef'\n" +
+                "    [E] 'e'\n" +
+                "    [F] 'f'\n" +
+                "  [G] 'g'\n" +
+                "  [H] 'h'\n");
     }
 
 }

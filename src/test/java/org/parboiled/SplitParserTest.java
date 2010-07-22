@@ -51,11 +51,11 @@ public class SplitParserTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.Clause(), "1+5", "" +
                 "[Clause] '1+5'\n" +
-                "    [Digit] '1'\n" +
-                "    [Operator] '+'\n" +
-                "        ['+'] '+'\n" +
-                "    [Digit] '5'\n" +
-                "    [EOI]\n");
+                "  [Digit] '1'\n" +
+                "  [Operator] '+'\n" +
+                "    ['+'] '+'\n" +
+                "  [Digit] '5'\n" +
+                "  [EOI]\n");
     }
 
 }

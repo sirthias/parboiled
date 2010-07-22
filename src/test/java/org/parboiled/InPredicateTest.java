@@ -66,18 +66,18 @@ public class InPredicateTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.Number(), "56577", "" +
                 "[Number] '56577'\n" +
-                "    [OneOrMore] '56577'\n" +
-                "        [Digit] '5'\n" +
-                "            [0..9] '5'\n" +
-                "        [Digit] '6'\n" +
-                "            [0..9] '6'\n" +
-                "        [Digit] '5'\n" +
-                "            [0..9] '5'\n" +
-                "        [Digit] '7'\n" +
-                "            [0..9] '7'\n" +
-                "        [Digit] '7'\n" +
-                "            [0..9] '7'\n" +
-                "    [EOI]\n");
+                "  [OneOrMore] '56577'\n" +
+                "    [Digit] '5'\n" +
+                "      [0..9] '5'\n" +
+                "    [Digit] '6'\n" +
+                "      [0..9] '6'\n" +
+                "    [Digit] '5'\n" +
+                "      [0..9] '5'\n" +
+                "    [Digit] '7'\n" +
+                "      [0..9] '7'\n" +
+                "    [Digit] '7'\n" +
+                "      [0..9] '7'\n" +
+                "  [EOI]\n");
         assertEquals(parser.count, 1);
     }
 

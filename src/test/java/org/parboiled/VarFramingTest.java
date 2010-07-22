@@ -89,15 +89,15 @@ public class VarFramingTest extends AbstractTest {
 
         testWithoutRecovery(rule, "1+2+3", "" +
                 "[Clause, {1}] '1+2+3'\n" +
-                "    [Optional, {1}] '+2+3'\n" +
-                "        [Sequence, {1}] '+2+3'\n" +
-                "            ['+'] '+'\n" +
-                "            [Clause, {2}] '2+3'\n" +
-                "                [Optional, {2}] '+3'\n" +
-                "                    [Sequence, {2}] '+3'\n" +
-                "                        ['+'] '+'\n" +
-                "                        [Clause, {3}] '3'\n" +
-                "                            [Optional]\n");
+                "  [Optional, {1}] '+2+3'\n" +
+                "    [Sequence, {1}] '+2+3'\n" +
+                "      ['+', {1}] '+'\n" +
+                "      [Clause, {2}] '2+3'\n" +
+                "        [Optional, {2}] '+3'\n" +
+                "          [Sequence, {2}] '+3'\n" +
+                "            ['+', {2}] '+'\n" +
+                "            [Clause, {3}] '3'\n" +
+                "              [Optional, {3}]\n");
     }
 
 }

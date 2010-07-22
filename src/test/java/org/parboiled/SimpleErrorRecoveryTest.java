@@ -66,98 +66,98 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
                 "Alice has anximals\n" +
                 "            ^\n", "" +
                 "[Clause]E 'Alice has animals'\n" +
-                "    [Subject] 'Alice'\n" +
-                "        [Name] 'Alice'\n" +
-                "            [\"Alice\"] 'Alice'\n" +
-                "        [ZeroOrMore]\n" +
-                "    [Verb] ' has '\n" +
-                "        [\" has \"] ' has '\n" +
-                "    [Object]E 'animals'\n" +
-                "        [\"animals\"]E 'animals'\n" +
-                "            ['i'] 'i'\n" +
-                "    [EOI]\n");
+                "  [Subject] 'Alice'\n" +
+                "    [Name] 'Alice'\n" +
+                "      [\"Alice\"] 'Alice'\n" +
+                "    [ZeroOrMore]\n" +
+                "  [Verb] ' has '\n" +
+                "    [\" has \"] ' has '\n" +
+                "  [Object]E 'animals'\n" +
+                "    [\"animals\"]E 'animals'\n" +
+                "      ['i'] 'i'\n" +
+                "  [EOI]\n");
 
         testFail(parser.Clause().suppressSubnodes(), "Alice has anximals", "" +
                 "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
                 "Alice has anximals\n" +
                 "            ^\n", "" +
                 "[Clause]E 'Alice has animalsEOI'\n" +
-                "    [Object]E 'animals'\n" +
-                "        [\"animals\"]E 'animals'\n" +
-                "            ['i'] 'i'\n");
+                "  [Object]E 'animals'\n" +
+                "    [\"animals\"]E 'animals'\n" +
+                "      ['i'] 'i'\n");
 
         testFail(parser.Clause(), "Alice has anmals", "" +
                 "Invalid input 'm', expected 'i' (line 1, pos 13):\n" +
                 "Alice has anmals\n" +
                 "            ^\n", "" +
                 "[Clause]E 'Alice has animals'\n" +
-                "    [Subject] 'Alice'\n" +
-                "        [Name] 'Alice'\n" +
-                "            [\"Alice\"] 'Alice'\n" +
-                "        [ZeroOrMore]\n" +
-                "    [Verb] ' has '\n" +
-                "        [\" has \"] ' has '\n" +
-                "    [Object]E 'animals'\n" +
-                "        [\"animals\"]E 'animals'\n" +
-                "            ['i']E 'i'\n" +
-                "    [EOI]\n");
+                "  [Subject] 'Alice'\n" +
+                "    [Name] 'Alice'\n" +
+                "      [\"Alice\"] 'Alice'\n" +
+                "    [ZeroOrMore]\n" +
+                "  [Verb] ' has '\n" +
+                "    [\" has \"] ' has '\n" +
+                "  [Object]E 'animals'\n" +
+                "    [\"animals\"]E 'animals'\n" +
+                "      ['i']E 'i'\n" +
+                "  [EOI]\n");
 
         testFail(parser.Clause(), "Alixyce has animals", "" +
                 "Invalid input 'x...', expected 'c' (line 1, pos 4):\n" +
                 "Alixyce has animals\n" +
                 "   ^^^^\n", "" +
                 "[Clause]E 'Ali has animals'\n" +
-                "    [Subject]E 'Ali'\n" +
-                "        [Name]E 'Ali'\n" +
-                "            [\"Alice\"]E 'Ali'\n" +
-                "        [ZeroOrMore]\n" +
-                "    [Verb] ' has '\n" +
-                "        [\" has \"] ' has '\n" +
-                "    [Object] 'animals'\n" +
-                "        [\"animals\"] 'animals'\n" +
-                "    [EOI]\n");
+                "  [Subject]E 'Ali'\n" +
+                "    [Name]E 'Ali'\n" +
+                "      [\"Alice\"]E 'Ali'\n" +
+                "    [ZeroOrMore]\n" +
+                "  [Verb] ' has '\n" +
+                "    [\" has \"] ' has '\n" +
+                "  [Object] 'animals'\n" +
+                "    [\"animals\"] 'animals'\n" +
+                "  [EOI]\n");
 
         testFail(parser.Clause(), "Alicexy has animals", "" +
                 "Invalid input 'x...', expected \" and \", \" or \" or Verb (line 1, pos 6):\n" +
                 "Alicexy has animals\n" +
                 "     ^^^^^^^^^^^^^^\n", "" +
                 "[Clause]E 'Alice'\n" +
-                "    [Subject] 'Alice'\n" +
-                "        [Name] 'Alice'\n" +
-                "            [\"Alice\"] 'Alice'\n" +
-                "        [ZeroOrMore]\n");
+                "  [Subject] 'Alice'\n" +
+                "    [Name] 'Alice'\n" +
+                "      [\"Alice\"] 'Alice'\n" +
+                "    [ZeroOrMore]\n");
 
         testFail(parser.Clause(), "Alize has animals", "" +
                 "Invalid input 'z', expected 'c' (line 1, pos 4):\n" +
                 "Alize has animals\n" +
                 "   ^\n", "" +
                 "[Clause]E 'Alice has animals'\n" +
-                "    [Subject]E 'Alice'\n" +
-                "        [Name]E 'Alice'\n" +
-                "            [\"Alice\"]E 'Alice'\n" +
-                "                ['c']E 'c'\n" +
-                "        [ZeroOrMore]\n" +
-                "    [Verb] ' has '\n" +
-                "        [\" has \"] ' has '\n" +
-                "    [Object] 'animals'\n" +
-                "        [\"animals\"] 'animals'\n" +
-                "    [EOI]\n");
+                "  [Subject]E 'Alice'\n" +
+                "    [Name]E 'Alice'\n" +
+                "      [\"Alice\"]E 'Alice'\n" +
+                "        ['c']E 'c'\n" +
+                "    [ZeroOrMore]\n" +
+                "  [Verb] ' has '\n" +
+                "    [\" has \"] ' has '\n" +
+                "  [Object] 'animals'\n" +
+                "    [\"animals\"] 'animals'\n" +
+                "  [EOI]\n");
 
         testFail(parser.Clause(), "Alice lofes animals", "" +
                 "Invalid input 'f', expected 'v' (line 1, pos 9):\n" +
                 "Alice lofes animals\n" +
                 "        ^\n", "" +
                 "[Clause]E 'Alice loves animals'\n" +
-                "    [Subject] 'Alice'\n" +
-                "        [Name] 'Alice'\n" +
-                "            [\"Alice\"] 'Alice'\n" +
-                "        [ZeroOrMore]\n" +
-                "    [Verb]E ' loves '\n" +
-                "        [\" loves \"]E ' loves '\n" +
-                "            ['v']E 'v'\n" +
-                "    [Object] 'animals'\n" +
-                "        [\"animals\"] 'animals'\n" +
-                "    [EOI]\n");
+                "  [Subject] 'Alice'\n" +
+                "    [Name] 'Alice'\n" +
+                "      [\"Alice\"] 'Alice'\n" +
+                "    [ZeroOrMore]\n" +
+                "  [Verb]E ' loves '\n" +
+                "    [\" loves \"]E ' loves '\n" +
+                "      ['v']E 'v'\n" +
+                "  [Object] 'animals'\n" +
+                "    [\"animals\"] 'animals'\n" +
+                "  [EOI]\n");
 
         testFail(parser.Clause(), "Alixce and Emlio lofe animals", "" +
                 "Invalid input 'x', expected 'c' (line 1, pos 4):\n" +
@@ -172,23 +172,23 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
                 "Alixce and Emlio lofe animals\n" +
                 "                   ^\n", "" +
                 "[Clause]E 'Alice and Emilio love animals'\n" +
-                "    [Subject]E 'Alice and Emilio'\n" +
-                "        [Name]E 'Alice'\n" +
-                "            [\"Alice\"]E 'Alice'\n" +
-                "                ['c'] 'c'\n" +
-                "        [ZeroOrMore]E ' and Emilio'\n" +
-                "            [Sequence]E ' and Emilio'\n" +
-                "                [FirstOf] ' and '\n" +
-                "                    [\" and \"] ' and '\n" +
-                "                [Name]E 'Emilio'\n" +
-                "                    [\"Emilio\"]E 'Emilio'\n" +
-                "                        ['i']E 'i'\n" +
-                "    [Verb]E ' love '\n" +
-                "        [\" love \"]E ' love '\n" +
-                "            ['v']E 'v'\n" +
-                "    [Object] 'animals'\n" +
-                "        [\"animals\"] 'animals'\n" +
-                "    [EOI]\n");
+                "  [Subject]E 'Alice and Emilio'\n" +
+                "    [Name]E 'Alice'\n" +
+                "      [\"Alice\"]E 'Alice'\n" +
+                "        ['c'] 'c'\n" +
+                "    [ZeroOrMore]E ' and Emilio'\n" +
+                "      [Sequence]E ' and Emilio'\n" +
+                "        [FirstOf] ' and '\n" +
+                "          [\" and \"] ' and '\n" +
+                "        [Name]E 'Emilio'\n" +
+                "          [\"Emilio\"]E 'Emilio'\n" +
+                "            ['i']E 'i'\n" +
+                "  [Verb]E ' love '\n" +
+                "    [\" love \"]E ' love '\n" +
+                "      ['v']E 'v'\n" +
+                "  [Object] 'animals'\n" +
+                "    [\"animals\"] 'animals'\n" +
+                "  [EOI]\n");
     }
 
 }

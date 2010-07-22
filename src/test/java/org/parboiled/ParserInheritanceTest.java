@@ -47,20 +47,20 @@ public class ParserInheritanceTest extends AbstractTest {
         ParentParser parentParser = Parboiled.createParser(ParentParser.class);
         test(parentParser.Abcd(), "abcd", "" +
                 "[Abcd] 'abcd'\n" +
-                "    [\"ab\"] 'ab'\n" +
-                "    [\"cd\"] 'cd'\n");
+                "  [\"ab\"] 'ab'\n" +
+                "  [\"cd\"] 'cd'\n");
         
         DerivedParser derivedParser = Parboiled.createParser(DerivedParser.class);
         Rule rule = derivedParser.Abcds();
         test(rule, "abcdabcd", "" +
                 "[Abcds] 'abcdabcd'\n" +
-                "    [OneOrMore] 'abcdabcd'\n" +
-                "        [Abcd] 'abcd'\n" +
-                "            [\"ab\"] 'ab'\n" +
-                "            [\"cd\"] 'cd'\n" +
-                "        [Abcd] 'abcd'\n" +
-                "            [\"ab\"] 'ab'\n" +
-                "            [\"cd\"] 'cd'\n");
+                "  [OneOrMore] 'abcdabcd'\n" +
+                "    [Abcd] 'abcd'\n" +
+                "      [\"ab\"] 'ab'\n" +
+                "      [\"cd\"] 'cd'\n" +
+                "    [Abcd] 'abcd'\n" +
+                "      [\"ab\"] 'ab'\n" +
+                "      [\"cd\"] 'cd'\n");
     }
 
 }

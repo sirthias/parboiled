@@ -35,14 +35,14 @@ public class RecursionTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.LotsOfAs(), "AaA", "" +
                 "[LotsOfAs] 'AaA'\n" +
-                "    ['a/A'] 'A'\n" +
-                "    [Optional] 'aA'\n" +
-                "        [LotsOfAs] 'aA'\n" +
-                "            ['a/A'] 'a'\n" +
-                "            [Optional] 'A'\n" +
-                "                [LotsOfAs] 'A'\n" +
-                "                    ['a/A'] 'A'\n" +
-                "                    [Optional]\n");
+                "  ['a/A'] 'A'\n" +
+                "  [Optional] 'aA'\n" +
+                "    [LotsOfAs] 'aA'\n" +
+                "      ['a/A'] 'a'\n" +
+                "      [Optional] 'A'\n" +
+                "        [LotsOfAs] 'A'\n" +
+                "          ['a/A'] 'A'\n" +
+                "          [Optional]\n");
     }
 
 }

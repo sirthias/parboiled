@@ -43,12 +43,12 @@ public class SimpleTest extends AbstractTest {
         Rule rule = parser.Clause();
         testWithoutRecovery(rule, "1+5b", "" +
                 "[Clause] '1+5b'\n" +
-                "    [Digit] '1'\n" +
-                "    [Operator] '+'\n" +
-                "        ['+'] '+'\n" +
-                "    [Digit] '5'\n" +
-                "    [[abcd]] 'b'\n" +
-                "    [EOI]\n");
+                "  [Digit] '1'\n" +
+                "  [Operator] '+'\n" +
+                "    ['+'] '+'\n" +
+                "  [Digit] '5'\n" +
+                "  [[abcd]] 'b'\n" +
+                "  [EOI]\n");
     }
 
 }

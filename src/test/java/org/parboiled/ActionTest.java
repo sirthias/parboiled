@@ -95,13 +95,13 @@ public class ActionTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.A(), "abcd", "" +
                 "[A, {2}] 'abcd'\n" +
-                "    ['a'] 'a'\n" +
-                "    [B, {2}] 'bcd'\n" +
-                "        ['b', {42}] 'b'\n" +
-                "        [C, {2}] 'cd'\n" +
-                "            ['c', {74}] 'c'\n" +
-                "            [Last, {2}] 'd'\n" +
-                "                ['d', {74}] 'd'\n");
+                "  ['a'] 'a'\n" +
+                "  [B, {2}] 'bcd'\n" +
+                "    ['b', {42}] 'b'\n" +
+                "    [C, {2}] 'cd'\n" +
+                "      ['c', {74}] 'c'\n" +
+                "      [Last, {2}] 'd'\n" +
+                "        ['d', {74}] 'd'\n");
 
         ParserStatistics stats = ParserStatistics.generateFor(parser.A());
         assertEquals(stats.toString(), "" +

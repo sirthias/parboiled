@@ -68,37 +68,37 @@ public class LabelTest extends AbstractTest {
 
         assertEqualsMultiline(printTree((Matcher) rule, new ToStringFormatter<Matcher>()), "" +
                 "AOpB\n" +
-                "    A\n" +
-                "        Digit\n" +
-                "    FirstOp\n" +
-                "        '+'\n" +
-                "        '-'\n" +
-                "    B\n" +
-                "        Digit\n" +
-                "    SecondOp\n" +
-                "        '+'\n" +
-                "        '-'\n" +
-                "    NUmBER\n" +
-                "        Digit\n");
+                "  A\n" +
+                "    Digit\n" +
+                "  FirstOp\n" +
+                "    '+'\n" +
+                "    '-'\n" +
+                "  B\n" +
+                "    Digit\n" +
+                "  SecondOp\n" +
+                "    '+'\n" +
+                "    '-'\n" +
+                "  NUmBER\n" +
+                "    Digit\n");
 
         // verify that there is each only one Digit matcher, '+' matcher and '-' matcher
         assertEquals(countAllDistinct((Matcher) rule), 9);
 
         test(rule, "123-54+9", "" +
                 "[AOpB] '123-54+9'\n" +
-                "    [A] '123'\n" +
-                "        [Digit] '1'\n" +
-                "        [Digit] '2'\n" +
-                "        [Digit] '3'\n" +
-                "    [FirstOp] '-'\n" +
-                "        ['-'] '-'\n" +
-                "    [B] '54'\n" +
-                "        [Digit] '5'\n" +
-                "        [Digit] '4'\n" +
-                "    [SecondOp] '+'\n" +
-                "        ['+'] '+'\n" +
-                "    [NUmBER] '9'\n" +
-                "        [Digit] '9'\n");
+                "  [A] '123'\n" +
+                "    [Digit] '1'\n" +
+                "    [Digit] '2'\n" +
+                "    [Digit] '3'\n" +
+                "  [FirstOp] '-'\n" +
+                "    ['-'] '-'\n" +
+                "  [B] '54'\n" +
+                "    [Digit] '5'\n" +
+                "    [Digit] '4'\n" +
+                "  [SecondOp] '+'\n" +
+                "    ['+'] '+'\n" +
+                "  [NUmBER] '9'\n" +
+                "    [Digit] '9'\n");
     }
 
     @Test
@@ -108,17 +108,17 @@ public class LabelTest extends AbstractTest {
 
         test(rule, "bbaaaa", "" +
                 "[RecursiveLabel] 'bbaaa'\n" +
-                "    [Sequence] 'bbaaa'\n" +
+                "  [Sequence] 'bbaaa'\n" +
+                "    ['b'] 'b'\n" +
+                "    [First] 'baa'\n" +
+                "      [Sequence] 'baa'\n" +
                 "        ['b'] 'b'\n" +
-                "        [First] 'baa'\n" +
-                "            [Sequence] 'baa'\n" +
-                "                ['b'] 'b'\n" +
-                "                [First] 'a'\n" +
-                "                    ['a'] 'a'\n" +
-                "                [Second] 'a'\n" +
-                "                    ['a'] 'a'\n" +
+                "        [First] 'a'\n" +
+                "          ['a'] 'a'\n" +
                 "        [Second] 'a'\n" +
-                "            ['a'] 'a'\n");
+                "          ['a'] 'a'\n" +
+                "    [Second] 'a'\n" +
+                "      ['a'] 'a'\n");
     }
 
 }
