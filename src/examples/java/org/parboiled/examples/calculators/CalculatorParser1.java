@@ -41,7 +41,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                                 Sequence('+', Term(), push(pop() + pop())),
 
                                 // dito for the '-' operator
-                                Sequence('-', Term(), swap() && push(pop() - pop()))
+                                Sequence('-', Term(), push(pop(1) - pop()))
                         )
                 )
         );
@@ -58,7 +58,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                                 Sequence('*', Factor(), push(pop() * pop())),
 
                                 // dito for the '/' operator
-                                Sequence('/', Factor(), swap() && push(pop() / pop()))
+                                Sequence('/', Factor(), push(pop(1) / pop()))
                         )
                 )
         );

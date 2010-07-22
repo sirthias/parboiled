@@ -26,7 +26,7 @@ package org.parboiled;
  * This allows simple anonymous action class implementations directly in the parser rule definitions, even when
  * they access context-sensitive methods defined in the {@link BaseActions} or {@link BaseParser} classes.
  */
-public interface Action {
+public interface Action<V> {
 
     /**
      * Runs the parser action.
@@ -34,6 +34,6 @@ public interface Action {
      * @param context the current parsing context
      * @return true if the parsing process is to proceed, false if the current rule is to fail
      */
-    boolean run(Context context);
+    boolean run(Context<V> context);
 
 }

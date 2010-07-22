@@ -5,10 +5,6 @@
     <groups>
     </groups>
     <test name="Command line test">
-      <class name="org.parboiled.scala.SimpleScalaTest">
-        <test-method status="PASS" signature="verifyEasy()" name="verifyEasy" duration-ms="88" started-at="2010-07-19T18:01:26Z" finished-at="2010-07-19T18:01:26Z">
-        </test-method>
-      </class>
     </test>
   </suite>
 </testng-results>

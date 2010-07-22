@@ -12,116 +12,144 @@ import org.parboiled.trees.{Filters, GraphUtils}
 class SimpleScalaTest extends AbstractTest with TestNGSuite {
   val parser = new SimpleParser
 
-  //@Test
+  @Test
   def verifyEasy() = {
     val rule = parser.InputLine
 
-    /*assertEquals(printRule(rule), "" +
-            "InputLine: SequenceRule\n"+
-            "  Expression: SequenceRule\n"+
-            "    Term: SequenceRule\n"+
-            "      Factor: FirstOfRule\n"+
-            "        Number: UnaryRule\n"+
-            "          Digit: SimpleRule\n"+
-            "        Parens: SequenceRule\n"+
-            "          SequenceRule\n"+
-            "            '(': CharRule\n"+
-            "            ProxyRule\n"+
-            "          ')': CharRule\n"+
-            "      ZeroOrMore: UnaryRule\n"+
-            "        FirstOfRule\n"+
-            "          SequenceRule\n"+
-            "            '*': CharRule\n"+
-            "            Factor: FirstOfRule\n"+
-            "          SequenceRule\n"+
-            "            '/': CharRule\n"+
-            "            Factor: FirstOfRule\n"+
-            "    ZeroOrMore: UnaryRule\n"+
-            "      FirstOfRule\n"+
-            "        SequenceRule\n"+
-            "          '+': CharRule\n"+
-            "          Term: SequenceRule\n"+
-            "        SequenceRule\n"+
-            "          '-': CharRule\n"+
-            "          Term: SequenceRule\n"+
-            "  EOI: SimpleRule\n")*/
+    assertEquals(printRule(rule),
+            """InputLine: SequenceRule
+  Expression: SequenceRule
+    Term: SequenceRule
+      Factor: FirstOfRule
+        Number: SequenceRule
+          Digits: UnaryRule
+            Digit: SimpleRule
+          Action: SimpleRule
+        Parens: SequenceRule
+          SequenceRule
+            '(': CharRule
+            ProxyRule
+          ')': CharRule
+      ZeroOrMore: UnaryRule
+        FirstOfRule
+          SequenceRule
+            SequenceRule
+              '*': CharRule
+              Factor: FirstOfRule
+            Action: SimpleRule
+          SequenceRule
+            SequenceRule
+              '/': CharRule
+              Factor: FirstOfRule
+            Action: SimpleRule
+    ZeroOrMore: UnaryRule
+      FirstOfRule
+        SequenceRule
+          SequenceRule
+            '+': CharRule
+            Term: SequenceRule
+          Action: SimpleRule
+        SequenceRule
+          SequenceRule
+            '-': CharRule
+            Term: SequenceRule
+          Action: SimpleRule
+  EOI: SimpleRule
+""")
 
     val matcher = rule.toMatcher
 
-    /*assertEquals(GraphUtils.printTree(matcher.asInstanceOf[Matcher[Int]], new ToStringFormatter[Matcher[Int]](),
-      Filters.preventLoops[Int]), "" +
-            "InputLine\n"+
-            "    Expression\n"+
-            "        Term\n"+
-            "            Factor\n"+
-            "                Number\n"+
-            "                    Digit\n"+
-            "                Parens\n"+
-            "                    '('\n"+
-            "                    Expression\n"+
-            "                    ')'\n"+
-            "            ZeroOrMore\n"+
-            "                FirstOf\n"+
-            "                    Sequence\n"+
-            "                        '*'\n"+
-            "                        Factor\n"+
-            "                    Sequence\n"+
-            "                        '/'\n"+
-            "                        Factor\n"+
-            "        ZeroOrMore\n"+
-            "            FirstOf\n"+
-            "                Sequence\n"+
-            "                    '+'\n"+
-            "                    Term\n"+
-            "                Sequence\n"+
-            "                    '-'\n"+
-            "                    Term\n"+
-            "    EOI\n");*/
+    assertEquals(GraphUtils.printTree(matcher.asInstanceOf[Matcher], new ToStringFormatter[Matcher](),
+      Filters.preventLoops),
+            """InputLine
+  Expression
+    Term
+      Factor
+        Number
+          Digits
+            Digit
+          Action
+        Parens
+          '('
+          Expression
+          ')'
+      ZeroOrMore
+        FirstOf
+          Sequence
+            '*'
+            Factor
+            Action
+          Sequence
+            '/'
+            Factor
+            Action
+    ZeroOrMore
+      FirstOf
+        Sequence
+          '+'
+          Term
+          Action
+        Sequence
+          '-'
+          Term
+          Action
+  EOI
+""");
 
-    val res = testWithoutRecovery(matcher, "1+2*(3-4)", "" +
-            "[InputLine, {-1}] '1+2*(3-4)'\n"+
-            "    [Expression, {-1}] '1+2*(3-4)'\n"+
-            "        [Term, {1}] '1'\n"+
-            "            [Factor, {1}] '1'\n"+
-            "                [Number, {1}] '1'\n"+
-            "                    [Digits] '1'\n"+
-            "                        [Digit] '1'\n"+
-            "            [ZeroOrMore]\n"+
-            "        [ZeroOrMore, {-1}] '+2*(3-4)'\n"+
-            "            [FirstOf, {-1}] '+2*(3-4)'\n"+
-            "                [Sequence, {-1}] '+2*(3-4)'\n"+
-            "                    ['+'] '+'\n"+
-            "                    [Term, {-4}] '2*(3-4)'\n"+
-            "                        [Factor, {2}] '2'\n"+
-            "                            [Number, {2}] '2'\n"+
-            "                                [Digits] '2'\n"+
-            "                                    [Digit] '2'\n"+
-            "                        [ZeroOrMore, {-4}] '*(3-4)'\n"+
-            "                            [FirstOf, {-4}] '*(3-4)'\n"+
-            "                                [Sequence, {-4}] '*(3-4)'\n"+
-            "                                    ['*'] '*'\n"+
-            "                                    [Factor, {-1}] '(3-4)'\n"+
-            "                                        [Parens, {-1}] '(3-4)'\n"+
-            "                                            ['('] '('\n"+
-            "                                            [Expression, {-1}] '3-4'\n"+
-            "                                                [Term, {3}] '3'\n"+
-            "                                                    [Factor, {3}] '3'\n"+
-            "                                                        [Number, {3}] '3'\n"+
-            "                                                            [Digits] '3'\n"+
-            "                                                                [Digit] '3'\n"+
-            "                                                    [ZeroOrMore]\n"+
-            "                                                [ZeroOrMore, {-1}] '-4'\n"+
-            "                                                    [FirstOf, {-1}] '-4'\n"+
-            "                                                        [Sequence, {-1}] '-4'\n"+
-            "                                                            ['-'] '-'\n"+
-            "                                                            [Term, {4}] '4'\n"+
-            "                                                                [Factor, {4}] '4'\n"+
-            "                                                                    [Number, {4}] '4'\n"+
-            "                                                                        [Digits] '4'\n"+
-            "                                                                            [Digit] '4'\n"+
-            "                                                                [ZeroOrMore]\n"+
-            "                                            [')'] ')'\n"+
-            "    [EOI]\n")
+    val res = testWithoutRecovery(matcher, "1+2*(3-4)+5",
+      """[InputLine, {4}] '1+2*(3-4)+5'
+  [Expression, {4}] '1+2*(3-4)+5'
+    [Term, {1}] '1'
+      [Factor, {1}] '1'
+        [Number, {1}] '1'
+          [Digits] '1'
+            [Digit] '1'
+      [ZeroOrMore, {1}]
+    [ZeroOrMore, {4}] '+2*(3-4)+5'
+      [FirstOf, {-1}] '+2*(3-4)'
+        [Sequence, {-1}] '+2*(3-4)'
+          ['+', {1}] '+'
+          [Term, {-2}] '2*(3-4)'
+            [Factor, {2}] '2'
+              [Number, {2}] '2'
+                [Digits, {1}] '2'
+                  [Digit, {1}] '2'
+            [ZeroOrMore, {-2}] '*(3-4)'
+              [FirstOf, {-2}] '*(3-4)'
+                [Sequence, {-2}] '*(3-4)'
+                  ['*', {2}] '*'
+                  [Factor, {-1}] '(3-4)'
+                    [Parens, {-1}] '(3-4)'
+                      ['(', {2}] '('
+                      [Expression, {-1}] '3-4'
+                        [Term, {3}] '3'
+                          [Factor, {3}] '3'
+                            [Number, {3}] '3'
+                              [Digits, {2}] '3'
+                                [Digit, {2}] '3'
+                          [ZeroOrMore, {3}]
+                        [ZeroOrMore, {-1}] '-4'
+                          [FirstOf, {-1}] '-4'
+                            [Sequence, {-1}] '-4'
+                              ['-', {3}] '-'
+                              [Term, {4}] '4'
+                                [Factor, {4}] '4'
+                                  [Number, {4}] '4'
+                                    [Digits, {3}] '4'
+                                      [Digit, {3}] '4'
+                                [ZeroOrMore, {4}]
+                      [')', {-1}] ')'
+      [FirstOf, {4}] '+5'
+        [Sequence, {4}] '+5'
+          ['+', {-1}] '+'
+          [Term, {5}] '5'
+            [Factor, {5}] '5'
+              [Number, {5}] '5'
+                [Digits, {-1}] '5'
+                  [Digit, {-1}] '5'
+            [ZeroOrMore, {5}]
+  [EOI, {4}]
+""")
   }
 
 }
