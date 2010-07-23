@@ -987,7 +987,7 @@ Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
     [ZeroOrMore, {-5}]
   [EOI, {-5}]
 ###
-(2++*(5-1xy)y+1
+>>>(2++*(5-1xy)y+1
 ===
 Invalid input '+', expected Term (line 1, pos 4):
 (2++*(5-1xy)y+1

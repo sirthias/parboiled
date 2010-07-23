@@ -236,6 +236,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         private final InvalidInputError currentError;
         private int fringeIndex;
         private MatcherPath lastMatchPath;
+        private Object lastMatchValueStackSnapshot;
 
         /**
          * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its endIndex
@@ -265,6 +266,9 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
 
             if (matcher.match(context)) {
+                // remember the last good value stack state, since in case we have to resync we need to restore that
+                // state in order to reverse the reset the failed (and to be resynced) SequenceMatcher has done
+                lastMatchValueStackSnapshot = context.getValueStack().takeSnapshot();
                 return true;
             }
 
@@ -332,6 +336,10 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         protected boolean resynchronize(MatcherContext context) {
             context.clearNodeSuppression();
             context.markError();
+
+            // by resyncing we flip an unmatched sequence to a matched one, so we have to reverse the value stack reset
+            // the SequenceMatcher has done when it determined the now-to-be-resynced sequence as "not-matched"
+            context.getValueStack().restoreSnapshot(lastMatchValueStackSnapshot);
 
             // create a node for the failed Sequence, taking ownership of all sub nodes created so far
             context.createNode();

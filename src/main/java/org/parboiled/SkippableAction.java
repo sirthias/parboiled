@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package org.parboiled.transform;
+package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
-import org.parboiled.Context;
-import org.parboiled.support.Checks;
+/**
+ * An action that can optionally be skipped when run underneath a predicate matcher.
+ */
+public interface SkippableAction<V> extends Action<V> {
 
-@SuppressWarnings({"UnusedDeclaration"})
-abstract class BaseGroupClass {
-
-    public final String name;
-
-    protected BaseGroupClass(@NotNull String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    /**
+     * Determines whether the execution of this action is to be skipped inside of predicate matchers.
+     *
+     * @return true if this action is not to be run inside predicates
+     */
+    boolean skipInPredicates();
 
 }

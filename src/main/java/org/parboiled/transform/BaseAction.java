@@ -24,12 +24,13 @@ package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Action;
+import org.parboiled.SkippableAction;
 
 /**
  * Base class of generated classes wrapping action expressions.
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public abstract class BaseAction extends BaseGroupClass implements Action {
+public abstract class BaseAction extends BaseGroupClass implements SkippableAction {
 
     private boolean skipInPredicates;
 

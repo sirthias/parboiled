@@ -32,6 +32,8 @@ public class SequenceMatcher extends AbstractMatcher {
     }
 
     public boolean match(@NotNull MatcherContext context) {
+        Object valueStackSnapshot = context.getValueStack().takeSnapshot();
+
         List<Matcher> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {
@@ -41,6 +43,8 @@ public class SequenceMatcher extends AbstractMatcher {
             context.setIntTag(i);
 
             if (!matcher.getSubContext(context).runMatcher()) {
+                // rule failed, so invalidate all stack actions the rule might have done
+                context.getValueStack().restoreSnapshot(valueStackSnapshot);
                 return false;
             }
         }

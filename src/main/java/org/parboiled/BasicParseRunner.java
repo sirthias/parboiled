@@ -38,6 +38,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
 
     protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
     protected final ValueStack<V> valueStack;
+    protected final Object initialValueStackSnapshot;
     protected final Matcher rootMatcher;
     protected InputBuffer inputBuffer;
     protected MatcherContext<V> rootContext;
@@ -76,6 +77,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
         this.rootMatcher = (Matcher) rule;
         this.inputBuffer = inputBuffer;
         this.valueStack = valueStack;
+        this.initialValueStackSnapshot = valueStack.takeSnapshot();
     }
 
     public ParsingResult<V> run() {
@@ -91,6 +93,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     }
 
     protected boolean runRootContext(MatchHandler handler, boolean fastStringMatching) {
+        valueStack.restoreSnapshot(initialValueStackSnapshot);
         rootContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, handler, rootMatcher,
                 fastStringMatching);
         return handler.matchRoot(rootContext);

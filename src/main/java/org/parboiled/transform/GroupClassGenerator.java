@@ -85,7 +85,7 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Type
     }
 
     private void generateClassBasics(InstructionGroup group, ClassWriter cw) {
-        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL, group.getGroupClassType().getInternalName(), null,
+        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC, group.getGroupClassType().getInternalName(), null,
                 getBaseType().getInternalName(), null);
         cw.visitSource(classNode.sourceFile, null);
     }

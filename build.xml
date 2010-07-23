@@ -9,76 +9,111 @@
     </target>
 
     <target name="init">
-        <path id="compile.classpath">
+        <path id="compile.classpath.java">
             <pathelement location="lib/asm/asm-all-3.2.jar"/>
             <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
             <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
             <pathelement location="lib/annotations.jar"/>
+        </path>
+
+        <path id="compile.classpath.scala">
+            <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
+            <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
             <pathelement location="lib/scala/scala-library-2.8.0.jar"/>
             <pathelement location="lib/scalatest/scalatest-1.2.jar"/>
         </path>
 
-        <taskdef name="javacn" classname="org.parboiled.ant.Javacn"
-                 classpath="lib/javacn-1.0.1.jar;lib/asm/asm-all-3.2.jar;"/>
+        <taskdef name="javacn" classname="org.parboiled.ant.Javacn" classpath="lib/javacn-1.0.1.jar;lib/asm/asm-all-3.2.jar;"/>
         <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
         <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-issue-21.jar;"/>
         <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar;"/>
-        <taskdef resource="scala/tools/ant/antlib.xml"
-                 classpath="lib/scala/scala-compiler-2.8.0.jar;lib/scala/scala-library-2.8.0.jar;"/>
+        <taskdef resource="scala/tools/ant/antlib.xml" classpath="lib/scala/scala-compiler-2.8.0.jar;lib/scala/scala-library-2.8.0.jar;"/>
     </target>
 
-    <target name="compile.main" depends="init" description="Compile main sources">
-        <mkdir dir="target/main"/>
-        <javacn debug="on" destdir="target/main" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
+    <target name="compile.main.java" depends="init" description="Compile main java sources">
+        <mkdir dir="target/main/java"/>
+        <javacn debug="on" destdir="target/main/java" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
             <src location="src/main/java"/>
-            <classpath refid="compile.classpath"/>
+            <classpath refid="compile.classpath.java"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
-        <scalac srcdir="src/main/scala" destdir="target/main">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
+    </target>
+
+    <target name="compile.main.scala" depends="compile.main.java" description="Compile main scala sources">
+        <mkdir dir="target/main/scala"/>
+        <scalac srcdir="src/main/scala" destdir="target/main/scala">
+            <classpath refid="compile.classpath.scala"/>
+            <classpath location="target/main/java"/>
         </scalac>
     </target>
 
-    <target name="compile.examples" depends="compile.main" description="Compile example sources">
-        <mkdir dir="target/examples"/>
-        <javacn debug="on" destdir="target/examples" source="1.5" target="1.5" encoding="utf8"
+    <target name="compile.main" depends="compile.main.java, compile.main.scala" description="Compile all main sources"/>    
+
+    <target name="compile.examples.java" depends="compile.main.java" description="Compile java example sources">
+        <mkdir dir="target/examples/java"/>
+        <javacn debug="on" destdir="target/examples/java" source="1.5" target="1.5" encoding="utf8"
                 includeantruntime="false">
             <src location="src/examples/java"/>
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
     </target>
 
-    <target name="compile.tests" depends="compile.examples" description="Compile test sources">
-        <mkdir dir="target/test"/>
-        <javacn debug="on" destdir="target/test" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
+    <target name="compile.examples.scala" depends="compile.main.scala" description="Compile scala example sources">
+        <mkdir dir="target/examples/scala"/>
+    </target>
+
+	<target name="compile.examples" depends="compile.examples.java, compile.examples.scala" description="Compile all example sources"/>    
+
+    <target name="compile.tests.java" depends="compile.examples.java" description="Compile java test sources">
+        <mkdir dir="target/test/java"/>
+        <javacn debug="on" destdir="target/test/java" source="1.5" target="1.5" encoding="utf8" includeantruntime="false">
             <src location="src/test/java"/>
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
             <compilerarg line="-Xlint:all -Xlint:-serial"/>
         </javacn>
-        <scalac srcdir="src/test/scala" destdir="target/test">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/test"/>
-        </scalac>
-        <copy toDir="target/test">
+        <copy toDir="target/test/java">
             <fileset dir="src/test/resources"/>
         </copy>
     </target>
 
-    <target name="test" depends="compile.tests" description="Run all tests">
+    <target name="compile.tests.scala" depends="compile.examples.scala, compile.tests.java" description="Compile scala test sources">
+        <mkdir dir="target/test/scala"/>
+        <scalac srcdir="src/test/scala" destdir="target/test/scala">
+            <classpath refid="compile.classpath.scala"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/main/scala"/>
+            <classpath location="target/test/java"/>
+        </scalac>
+    </target>
+
+    <target name="compile.tests" depends="compile.tests.java, compile.tests.scala" description="Compile all test sources"/>
+
+    <target name="test.java" depends="compile.tests.java" description="Run all java tests">
         <testng parallel="true" suitename="All Tests" outputdir="target/test-out" haltonfailure="true">
-            <classfileset dir="target/test" includes="**/*Test.class"/>
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
-            <classpath location="target/test"/>
+            <classfileset dir="target/test/java" includes="**/*Test.class"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
+            <classpath location="target/test/java"/>
         </testng>
     </target>
+
+    <target name="test.scala" depends="compile.tests.scala" description="Run all scala tests">
+        <testng parallel="true" suitename="All Tests" outputdir="target/test-out" haltonfailure="true">
+            <classfileset dir="target/test/scala" includes="**/*Test.class"/>
+            <classpath refid="compile.classpath.scala"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/main/scala"/>
+            <classpath location="target/test/java"/>
+            <classpath location="target/test/scala"/>
+        </testng>
+    </target>
+
+    <target name="test" depends="test.java,test.scala" description="Run all tests"/>
 
     <target name="javadoc" description="Builds javadoc">
         <mkdir dir="target/javadoc"/>
@@ -87,10 +122,20 @@
                 <include name="org/parboiled/**"/>
                 <exclude name="org/parboiled/transform/**"/>
             </packageset>
-            <classpath refid="compile.classpath"/>
+            <classpath refid="compile.classpath.java"/>
             <link href="http://java.sun.com/javase/6/docs/api"/>
         </javadoc>
     </target>
+
+	<target name="scaladoc" description="Builds scaladoc">
+        <mkdir dir="target/scaladoc"/>
+        <scaladoc srcdir="src/main/scala" destdir="target/scaladoc" windowtitle="parboiled ${version} API" doctitle="parboiled ${version} API">
+            <classpath refid="compile.classpath.scala"/>
+            <classpath location="target/main/java"/>
+        </scaladoc>
+    </target>
+
+	<target name="doc" depends="javadoc, scaladoc" description="Build all documentation"/>
 
     <target name="manifest">
         <copy file="LICENSE" todir="target/manifest/META-INF"/>
@@ -106,7 +151,7 @@
             <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
             <attribute name="Bundle-Version" value="${version}"/>
             <attribute name="Bundle-Description"
-                       value="parboiled, a Java 1.5+ library providing a light-weight and easy-to-use, yet powerful PEG parsing facility"/>
+                       value="parboiled, a Java 1.5+/Scala 2.8 library providing a light-weight and easy-to-use, yet powerful PEG parsing facility"/>
             <attribute name="Bundle-Name" value="parboiled"/>
             <attribute name="Bundle-DocURL" value="http://www.parboiled.org"/>
             <attribute name="Bundle-Vendor" value="parboiled.org"/>
@@ -114,9 +159,9 @@
         </manifest>
     </target>
 
-    <target name="jar" depends="compile.main, manifest" description="Build main library JAR">
-        <jarjar destfile="target/parboiled-${version}.full.jar" manifest="target/manifest/META-INF/MANIFEST.MF">
-            <fileset dir="target/main"/>
+    <target name="jar.java" depends="compile.main, manifest" description="Create main java library JAR">
+        <jarjar destfile="target/parboiled4j-${version}.full.jar" manifest="target/manifest/META-INF/MANIFEST.MF">
+            <fileset dir="target/main/java"/>
             <fileset dir="target/manifest"/>
             <zipfileset src="lib/asm/asm-all-3.2.jar"/>
             <zipfileset src="lib/google-collect/google-collect-1.0.jar"
@@ -155,8 +200,8 @@
             -libraryjars "${jdk.lib.1.5}"
             -libraryjars "lib/annotations.jar"
             -libraryjars "lib/google-collect/jsr305.jar"
-            -injars "target/parboiled-${version}.full.jar"
-            -outjars "target/parboiled-${version}.jar"
+            -injars "target/parboiled4j-${version}.full.jar"
+            -outjars "target/parboiled4j-${version}.jar"
 
             -keep public class !org.parboiled.asm.**, !org.parboiled.google.**, org.parboiled.** { public protected *; }
             -keep class org.parboiled.google.base.Predicate { *; }
@@ -172,22 +217,48 @@
         </proguard>
     </target>
 
-    <target name="testjar" depends="compile.tests, jar" description="Run all tests against the library jar">
+    <target name="jar.scala" depends="jar.java" description="Create main scala library JAR">
+        <jarjar destfile="target/parboiled4s-${version}.jar" manifest="target/manifest/META-INF/MANIFEST.MF">
+            <fileset dir="target/main/scala"/>
+            <zipfileset src="target/parboiled4j-${version}.jar">
+                <exclude name="org/parboiled/transform/**"/>
+                <exclude name="org/parboiled/asm/**"/>                
+                <exclude name="org/parboiled/Parboiled.class"/>                
+            </zipfileset>
+        </jarjar>
+    </target>
+
+	<target name="jar" depends="jar.java, jar.scala" description="Build all main library JARs"/>
+
+    <target name="testjar.java" depends="compile.tests.java, jar.java" description="Run all java tests against the java library jar">
         <testng verbose="2" parallel="true" suitename="All Tests" outputdir="target/test-out" haltonfailure="true">
-            <classfileset dir="target/test" includes="**/*Test.class">
+            <classfileset dir="target/test/java" includes="**/*Test.class">
                 <exclude name="org/parboiled/transform/**"/>
                 <exclude name="org/parboiled/support/ParseTreeUtilsTest.class"/>
+				<exclude name="org/parboiled/support/ValueStackTest.class"/>
             </classfileset>
-            <classpath location="target/parboiled-${version}.jar"/>
-            <classpath location="target/examples"/>
-            <classpath location="target/test"/>
-            <classpath location="lib/asm/asm-util-3.2.jar"/>
+            <classpath location="target/parboiled4j-${version}.jar"/>
+            <classpath location="target/examples/java"/>
+            <classpath location="target/test/java"/>
         </testng>
     </target>
+
+    <target name="testjar.scala" depends="compile.tests.scala, jar.scala" description="Run all scala tests against the scala library jar">
+        <testng verbose="2" parallel="true" suitename="All Tests" outputdir="target/test-out" haltonfailure="true">
+            <classfileset dir="target/test/scala" includes="**/*Test.class" />
+            <classpath refid="compile.classpath.scala"/>
+            <classpath location="target/parboiled4s-${version}.jar"/>
+            <classpath location="target/test/java"/>
+            <classpath location="target/test/scala"/>
+        </testng>
+    </target>
+
+	<target name="testjar" depends="testjar.java, testjar.scala" description="Build all tests against the main library JARs"/>
 
     <target name="jar.source" depends="manifest" description="Create a JAR with main sources">
         <zip destfile="target/parboiled-${version}-src.jar">
             <fileset dir="src/main/java"/>
+			<fileset dir="src/main/scala"/>
             <fileset dir="target/manifest"/>
         </zip>
     </target>
@@ -202,92 +273,100 @@
     </target>
 
     <target name="jar.javadoc" depends="javadoc" description="Creates a JAR containing javadocs">
-        <zip destfile="target/parboiled-${version}-javadoc.jar">
+        <zip destfile="target/parboiled4j-${version}-javadoc.jar">
             <fileset dir="target/javadoc"/>
         </zip>
     </target>
 
-    <target name="dist" depends="clean, test, testjar, jar.source, jar.javadoc"
+    <target name="jar.scaladoc" depends="scaladoc" description="Creates a JAR containing scaladocs">
+        <zip destfile="target/parboiled4s-${version}-scaladoc.jar">
+            <fileset dir="target/scaladoc"/>
+        </zip>
+    </target>
+
+	<target name="jar.doc" depends="jar.javadoc, jar.scaladoc" description="Create javadoc and scaladoc JARs"/>
+
+    <target name="dist" depends="clean, test, testjar, jar.source, jar.doc"
             description="Compiles, tests and jars everything">
     </target>
 
     <target name="run-example-abc" depends="compile.examples" description="Run the Abc example">
         <java classname="org.parboiled.examples.abc.Main" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-calc0" depends="compile.examples" description="Run the Calculator0 example">
         <java classname="org.parboiled.examples.calculators.CalculatorParser0" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-calc1" depends="compile.examples" description="Run the Calculator1 example">
         <java classname="org.parboiled.examples.calculators.CalculatorParser1" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-calc2" depends="compile.examples" description="Run the Calculator2 example">
         <java classname="org.parboiled.examples.calculators.CalculatorParser1" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-calc3" depends="compile.examples" description="Run the Calculator3 example">
         <java classname="org.parboiled.examples.calculators.CalculatorParser2" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-calc4" depends="compile.examples" description="Run the Calculator4 example">
         <java classname="org.parboiled.examples.calculators.CalculatorParser3" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-calc5" depends="compile.examples" description="Run the Calculator5 example">
         <java classname="org.parboiled.examples.calculators.CalculatorParser4" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-rpn" depends="compile.examples" description="Run the RPN example">
         <java classname="org.parboiled.examples.rpn.Main" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-time" depends="compile.examples" description="Run the Time example">
         <java classname="org.parboiled.examples.time.Main" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 
     <target name="run-example-java" depends="compile.examples" description="Run the Java example">
         <java classname="org.parboiled.examples.java.Main" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath location="target/main"/>
-            <classpath location="target/examples"/>
+            <classpath refid="compile.classpath.java"/>
+            <classpath location="target/main/java"/>
+            <classpath location="target/examples/java"/>
         </java>
     </target>
 

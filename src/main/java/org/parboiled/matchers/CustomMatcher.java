@@ -22,6 +22,9 @@ import org.parboiled.Rule;
 /**
  * Base class of custom matcher implementations. If you want to implement custom matchers they have to be derived
  * from this class. Instances of derived classes can be directly used in rule defining expressions.
+ * Caution: For performance reasons the parsing engine delegates the task of taking and restoring value stack
+ * snapshots to the matchers. Your custom matcher implementations therefore have to take care of value stack managment
+ * themselves! (See the implementation of the SequenceMatcher for hints on how to do this!) 
  */
 public abstract class CustomMatcher extends AbstractMatcher {
 

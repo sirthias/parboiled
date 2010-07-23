@@ -297,7 +297,6 @@ public class MatcherContext<V> implements Context<V> {
 
     public boolean runMatcher() {
         try {
-            Object stackSnapshot = valueStack.takeSnapshot();
             if (matchHandler.match(this)) {
                 if (parent != null) {
                     parent.currentIndex = currentIndex;
@@ -306,9 +305,6 @@ public class MatcherContext<V> implements Context<V> {
                 matcher = null; // "retire" this context
                 return true;
             }
-            // rule failed, so invalidate all stack actions the rule might have done
-            valueStack.restoreSnapshot(stackSnapshot);
-
             matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
             return false;
         } catch (ParserRuntimeException e) {
