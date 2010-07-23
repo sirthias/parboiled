@@ -18,6 +18,7 @@ package org.parboiled.transform;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.testng.annotations.Test;
 
 import static org.parboiled.test.TestUtils.assertEqualsMultiline;
@@ -42,6 +43,7 @@ public class ParserHierarchyTest {
 
     }
 
+    @BuildParseTree
     static class Parser2 extends Parser1 {
 
         @Override

@@ -16,11 +16,13 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.testng.annotations.Test;
 import org.parboiled.test.AbstractTest;
 
 public class RecursionTest extends AbstractTest {
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
 
         @SuppressWarnings({"InfiniteRecursion"})

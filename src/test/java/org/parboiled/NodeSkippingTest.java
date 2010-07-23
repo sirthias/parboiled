@@ -16,12 +16,14 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SkipNode;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 public class NodeSkippingTest extends AbstractTest {
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
 
         public Rule ABCDEFGH() {

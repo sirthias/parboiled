@@ -17,12 +17,14 @@
 package org.parboiled.examples.calculators;
 
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 
 /**
  * A calculator parser building calculation results directly in the parsers value stack.
  * All calculations are implemented directly in action expressions.
  */
+@BuildParseTree
 public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     @Override

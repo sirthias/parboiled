@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SkipActionsInPredicates;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
@@ -24,6 +25,7 @@ import static org.testng.Assert.assertEquals;
 
 public class InPredicateTest extends AbstractTest {
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
         public int count = 0;
 

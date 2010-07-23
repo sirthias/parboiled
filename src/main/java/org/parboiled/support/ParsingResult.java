@@ -33,9 +33,16 @@ public class ParsingResult<V> {
     public final boolean matched;
 
     /**
-     * The root node of the parse tree created by the parsing run.
+     * The root node of the parse tree created by the parsing run. This field will only be non-null when
+     * parse-tree-building has been enabled with a {@link org.parboiled.annotations.BuildParseTree} annotation
+     * on the parser class.
      */
     public final Node<V> parseTreeRoot;
+
+    /**
+     * The top value of the value stack at the end of the parsing run or null, if the value stack is empty.
+     */
+    public final V resultValue;
 
     /**
      * The ValueStack used during the parsing run containing all values not popped of the stack by the parser.
@@ -68,6 +75,7 @@ public class ParsingResult<V> {
         this.matched = matched;
         this.parseTreeRoot = parseTreeRoot;
         this.valueStack = valueStack;
+        this.resultValue = valueStack.isEmpty() ? null : valueStack.peek();
         this.parseErrors = parseErrors;
         this.inputBuffer = inputBuffer;
     }

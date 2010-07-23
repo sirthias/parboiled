@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.support.Var;
 import org.parboiled.test.AbstractTest;
@@ -25,6 +26,7 @@ import static org.testng.Assert.assertEquals;
 
 public class VarFramingTest extends AbstractTest {
 
+    @BuildParseTree
     static class Parser extends BaseParser<Integer> {
 
         int count = 1;

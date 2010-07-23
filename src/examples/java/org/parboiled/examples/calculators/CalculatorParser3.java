@@ -18,6 +18,7 @@ package org.parboiled.examples.calculators;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
 import org.parboiled.support.Var;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
@@ -28,6 +29,7 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
  * As opposed to the CalculatorParser2 this parser also supports floating point operations, negative numbers, a "power"
  * and a "SQRT" operation as well as optional whitespace between the various expressions components.
  */
+@BuildParseTree
 public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
     @Override

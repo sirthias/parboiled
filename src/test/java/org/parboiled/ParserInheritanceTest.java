@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
@@ -27,6 +28,7 @@ public class ParserInheritanceTest extends AbstractTest {
         }
     }
 
+    @BuildParseTree
     public static class ParentParser extends BaseParser<Object> {
         public Actions actions = new Actions();
 

@@ -16,11 +16,13 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.testng.annotations.Test;
 import org.parboiled.test.AbstractTest;
 
 public class SplitParserTest extends AbstractTest {
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
         final Primitives primitives = Parboiled.createParser(Primitives.class);
 
@@ -34,6 +36,7 @@ public class SplitParserTest extends AbstractTest {
         }
     }
 
+    @BuildParseTree
     public static class Primitives extends BaseParser<Object> {
 
         public Rule Operator() {

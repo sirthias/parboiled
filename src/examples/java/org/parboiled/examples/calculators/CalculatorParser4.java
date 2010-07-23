@@ -18,6 +18,7 @@ package org.parboiled.examples.calculators;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
 import org.parboiled.support.Var;
 
@@ -25,6 +26,7 @@ import org.parboiled.support.Var;
  * A calculator parser defining the same language as the CalculatorParser3 but using a rule building helper methods
  * to Factor out common constructs.
  */
+@BuildParseTree
 public class CalculatorParser4 extends CalculatorParser<CalcNode> {
 
     @Override

@@ -4,8 +4,8 @@ import org.parboiled.matchers._
 import org.parboiled.support.Characters
 import org.parboiled.common.StringUtils.escape
 import collection.mutable.ListBuffer
-import org.parboiled.{Rule => PRule}
 import java.lang.String
+import org.parboiled.{Rule => PRule}
 
 trait Rules[V] {
 
@@ -13,14 +13,30 @@ trait Rules[V] {
     private var proxies: Option[ListBuffer[ProxyMatcher]] = None
     protected val matcherCreator: () => PRule
     var label:String = _
+    var suppressNode = false
+    var suppressSubnodes = false
+    var skipNode = false
 
-    lazy val toMatcher = updateProxies(if (label != null) matcherCreator().label(label) else matcherCreator())
+    lazy val toMatcher = {
+      var matcher = matcherCreator()
+      if (label != null) matcher = matcher.label(label)
+      if (suppressNode) matcher = matcher.suppressNode()
+      if (suppressSubnodes) matcher = matcher.suppressSubnodes()
+      if (skipNode) matcher = matcher.skipNode()
+      updateProxies(matcher)
+    }
 
     def ~(other: Rule) = new SequenceRule(this, other)
 
     def |(other: Rule) = new FirstOfRule(this, other)
 
     def withLabel(label: String) = { this.label = label; this}
+
+    def withNodeSuppressed() = { suppressNode = true; this}
+
+    def withSubnodesSuppressed() = { suppressSubnodes = true; this}
+
+    def withNodeSkipped() = { skipNode = true; this}
 
     def registerProxy(matcher: ProxyMatcher) {
       proxies match {

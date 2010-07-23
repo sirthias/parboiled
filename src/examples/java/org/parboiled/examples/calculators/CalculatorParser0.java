@@ -17,10 +17,12 @@
 package org.parboiled.examples.calculators;
 
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 
 /**
  * A basic calculator parser without any actions.
  */
+@BuildParseTree
 public class CalculatorParser0 extends CalculatorParser<Integer> {
 
     @Override

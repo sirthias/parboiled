@@ -16,11 +16,13 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.testng.annotations.Test;
 import org.parboiled.test.AbstractTest;
 
 public class SimpleTest extends AbstractTest {
 
+    @BuildParseTree
     static class Parser extends BaseParser<Object> {
 
         public Rule Clause() {

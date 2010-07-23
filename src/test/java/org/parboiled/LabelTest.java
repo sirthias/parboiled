@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.annotations.Label;
 import org.parboiled.support.ToStringFormatter;
@@ -29,6 +30,7 @@ import static org.testng.Assert.assertEquals;
 
 public class LabelTest extends AbstractTest {
 
+    @BuildParseTree
     public static class LabellingParser extends BaseParser<Object> {
 
         public Rule AOpB() {

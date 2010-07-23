@@ -59,9 +59,11 @@ public class ParserTransformer {
         // since the ruleMethods map on the classnode is a treemap we get the methods sorted by name which puts
         // all super methods first (since they are prefixed with one or more '$')
         for (RuleMethod ruleMethod : classNode.getRuleMethods().values()) {
-            for (RuleMethodProcessor methodProcessor : methodProcessors) {
-                if (methodProcessor.appliesTo(classNode, ruleMethod)) {
-                    methodProcessor.process(classNode, ruleMethod);
+            if (!ruleMethod.hasDontExtend()) {
+                for (RuleMethodProcessor methodProcessor : methodProcessors) {
+                    if (methodProcessor.appliesTo(classNode, ruleMethod)) {
+                        methodProcessor.process(classNode, ruleMethod);
+                    }
                 }
             }
         }

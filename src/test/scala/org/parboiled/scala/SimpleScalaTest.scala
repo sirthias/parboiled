@@ -10,7 +10,7 @@ import org.parboiled.support.ToStringFormatter
 import org.parboiled.trees.{Filters, GraphUtils}
 
 class SimpleScalaTest extends AbstractTest with TestNGSuite {
-  val parser = new SimpleParser
+  val parser = new SimpleParser().withParseTreeBuilding()
 
   @Test
   def verifyEasy() = {

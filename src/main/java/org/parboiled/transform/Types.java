@@ -40,6 +40,7 @@ interface Types {
     static final String ACTION_DESC = Type.getType(Action.class).getDescriptor();
     static final String CACHED_DESC = Type.getType(Cached.class).getDescriptor();
     static final String CONTEXT_DESC = Type.getType(Context.class).getDescriptor();
+    static final String DONT_EXTEND_DESC = Type.getType(DontExtend.class).getDescriptor();
     static final String DONT_LABEL_DESC = Type.getType(DontLabel.class).getDescriptor();
     static final String EXPLICIT_ACTIONS_ONLY_DESC = Type.getType(ExplicitActionsOnly.class).getDescriptor();
     static final String LABEL_DESC = LABEL.getDescriptor();
@@ -47,6 +48,7 @@ interface Types {
     static final String SUPPRESS_SUBNODES_DESC = Type.getType(SuppressSubnodes.class).getDescriptor();
     static final String SKIP_ACTIONS_IN_PREDICATES_DESC = Type.getType(SkipActionsInPredicates.class).getDescriptor();
     static final String DONT_SKIP_ACTIONS_IN_PREDICATES_DESC = Type.getType(DontSkipActionsInPredicates.class).getDescriptor();
+    static final String BUILD_PARSE_TREE_DESC = Type.getType(BuildParseTree.class).getDescriptor();
     static final String SKIP_NODE_DESC = Type.getType(SkipNode.class).getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();

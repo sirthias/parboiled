@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.support.Var;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
@@ -25,6 +26,7 @@ import java.util.List;
 
 public class ActionVarTest extends AbstractTest {
 
+    @BuildParseTree
     static class Parser extends BaseParser<Integer> {
 
         @SuppressWarnings({"InfiniteRecursion"})

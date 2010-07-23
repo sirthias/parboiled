@@ -8,29 +8,42 @@ import org.parboiled.{Action => PAction}
 object Scala extends Support {
 
   trait Parser[V] extends Rules[V] {
+
+    sealed class RuleOption
+    case object SuppressNode extends RuleOption
+    case object SuppressSubnodes extends RuleOption
+    case object SkipNode extends RuleOption
+
     private val cache = mutable.Map.empty[RuleMethod, Rule]
     protected var context:Context[V] = _
+    var buildParseTree = false
+
+    def withParseTreeBuilding(): this.type = { buildParseTree = true; this }
 
     def rule(block: => Rule): Rule = {
       val ruleMethod = getCurrentRuleMethod
-      rule(ruleMethod.getMethodName, ruleMethod, block)
+      rule(ruleMethod.getMethodName, ruleMethod, Seq.empty, block)
     }
 
-    def rule(label: String)(block: => Rule): Rule = {
-      rule(label, getCurrentRuleMethod, block)
+    def rule(label: String, options: RuleOption*)(block: => Rule): Rule = {
+      rule(label, getCurrentRuleMethod, options, block)
     }
 
-    private def rule(label: String, key: RuleMethod, block: => Rule): Rule = cache.get(key) match {
-      case Some(rule) => rule
-      case None => {
-        val proxy = new ProxyRule
-        cache += key -> proxy // protect block from infinite recursion by immediately caching the proxy
-        val rule = block.withLabel(label) // evaluate rule definition block
-        proxy.arm(rule) // arm the proxy in case it is in use
-        cache += key -> rule // replace the cache value with the actual rule (overwriting the proxy)
-        rule
+    private def rule(label: String, key: RuleMethod, options: Seq[RuleOption], block: => Rule): Rule =
+      cache.get(key) match {
+        case Some(rule) => rule
+        case None => {
+          val proxy = new ProxyRule
+          cache += key -> proxy // protect block from infinite recursion by immediately caching the proxy
+          var rule = block.withLabel(label) // evaluate rule definition block
+          if (!buildParseTree || options.contains(SuppressNode)) rule = rule.withNodeSuppressed
+          if (options.contains(SuppressSubnodes)) rule = rule.withSubnodesSuppressed
+          if (options.contains(SkipNode)) rule = rule.withNodeSkipped
+          proxy.arm(rule) // arm the proxy in case it is in use
+          cache += key -> rule // replace the cache value with the actual rule (overwriting the proxy)
+          rule
+        }
       }
-    }
 
     def &(sub: Rule) = new UnaryRule(sub, new TestMatcher(_), "Test")
     def !(sub: Rule) = new UnaryRule(sub, new TestNotMatcher(_), "TestNot")

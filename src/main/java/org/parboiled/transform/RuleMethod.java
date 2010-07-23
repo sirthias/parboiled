@@ -35,6 +35,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.BaseParser;
+import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Var;
 
@@ -55,6 +56,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
     private boolean containsVars; // calls to Var.<init>(T)
     private boolean containsPotentialSuperCalls;
+    private boolean hasDontExtend;
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasCachedAnnotation;
     private boolean hasDontLabelAnnotation;
@@ -70,8 +72,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean skipGeneration;
 
     public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature, String[] exceptions,
-                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno,
-                      boolean hasSkipActionsInPredicates) {
+                      boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno, boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
         this.ownerClass = ownerClass;
 
@@ -93,6 +94,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
 
     public Class<?> getOwnerClass() {
         return ownerClass;
+    }
+
+    public boolean hasDontExtend() {
+        return hasDontExtend;
     }
 
     public int getParameterCount() {
@@ -214,10 +219,6 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
             hasSuppressSubnodesAnnotation = true;
             return null; // we do not need to record this annotation
         }
-        if (SUPPRESS_SUBNODES_DESC.equals(desc)) {
-            hasSuppressSubnodesAnnotation = true;
-            return null; // we do not need to record this annotation
-        }
         if (SKIP_NODE_DESC.equals(desc)) {
             hasSkipNodeAnnotation = true;
             return null; // we do not need to record this annotation
@@ -232,6 +233,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         }
         if (DONT_LABEL_DESC.equals(desc)) {
             hasDontLabelAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (DONT_EXTEND_DESC.equals(desc)) {
+            hasDontExtend = true;
             return null; // we do not need to record this annotation
         }
         return visible ? super.visitAnnotation(desc, true) : null; // only keep visible annotations
@@ -312,4 +317,9 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     public void dontSkipGeneration() {
         skipGeneration = false;
     }
+
+    public void suppressNode() {
+        hasSuppressNodeAnnotation = true;
+    }
+    
 }

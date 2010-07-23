@@ -16,11 +16,13 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 public class SimpleErrorRecoveryTest extends AbstractTest {
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
 
         Rule Clause() {

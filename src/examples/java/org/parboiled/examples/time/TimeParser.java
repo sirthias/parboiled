@@ -18,11 +18,13 @@ package org.parboiled.examples.time;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.support.Var;
 
 /**
  * Parser for very relaxed time literals. Demonstrates usage of the value stack with default values for unmatched rules.
  */
+@BuildParseTree
 public class TimeParser extends BaseParser<Object> {
 
     public Rule Time() {

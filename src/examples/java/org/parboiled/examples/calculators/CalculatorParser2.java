@@ -18,6 +18,7 @@ package org.parboiled.examples.calculators;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.examples.calculators.CalculatorParser2.CalcNode;
 import org.parboiled.support.Var;
@@ -27,6 +28,7 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
  * A calculator parser building an AST representing the expression structure before performing the actual calculation.
  * The parser value stack is used to build the AST nodes of type CalcNode.
  */
+@BuildParseTree
 public class CalculatorParser2 extends CalculatorParser<CalcNode> {
 
     @Override

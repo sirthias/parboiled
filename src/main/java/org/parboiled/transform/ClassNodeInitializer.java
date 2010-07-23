@@ -40,6 +40,7 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
 
     private ParserClassNode classNode;
     private Class<?> ownerClass;
+    private boolean hasBuildParseTree;
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasDontLabelAnnotation;
     private boolean hasSkipActionsInPredicates;
@@ -59,15 +60,19 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
             ownerClass = ownerClass.getSuperclass();
         }
 
-        // finally move all flags from the super methods to their overriding methods
         for (RuleMethod method : classNode.getRuleMethods().values()) {
+            // move all flags from the super methods to their overriding methods
             if (method.isSuperMethod()) {
                 RuleMethod overridingMethod = classNode.getRuleMethods().get(method.name.substring(1) + method.desc);
                 method.moveFlagsTo(overridingMethod);
             } else {
-                // as soon as we see the first non-super method we can break since the methods are sorted so that
-                // the super methods precede all others
-                break;
+                if (!hasBuildParseTree) {
+                    method.suppressNode();
+                } else {
+                    // as soon as we see the first non-super method we can break since the methods are sorted so that
+                    // the super methods precede all others
+                    break;
+                }
             }
         }
     }
@@ -98,9 +103,12 @@ class ClassNodeInitializer extends EmptyVisitor implements Opcodes, Types {
             hasDontLabelAnnotation = true;
             return null;
         }
-
         if (SKIP_ACTIONS_IN_PREDICATES_DESC.equals(desc)) {
             hasSkipActionsInPredicates = true;
+            return null;
+        }
+        if (BUILD_PARSE_TREE_DESC.equals(desc)) {
+            hasBuildParseTree = true;
             return null;
         }
 

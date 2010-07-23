@@ -18,6 +18,7 @@ package org.parboiled.examples.abc;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 
 /**
  * A parser for the classic non-context free language example { a^n b^n c^n : n >= 1 }
@@ -26,6 +27,7 @@ import org.parboiled.Rule;
  * B <- b B? c
  */
 @SuppressWarnings({"InfiniteRecursion"})
+@BuildParseTree
 public class AbcParser extends BaseParser<Object> {
 
     public Rule S() {

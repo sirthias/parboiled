@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.common.Reference;
 import org.parboiled.test.AbstractTest;
@@ -23,6 +24,7 @@ import org.testng.annotations.Test;
 
 public class PrevCallsTest extends AbstractTest {
 
+    @BuildParseTree
     static class Parser extends BaseParser<Integer> {
 
         @SuppressSubnodes

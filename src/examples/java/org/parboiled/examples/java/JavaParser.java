@@ -39,11 +39,13 @@ package org.parboiled.examples.java;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.DontLabel;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
 
 @SuppressWarnings({"InfiniteRecursion"})
+@BuildParseTree
 public class JavaParser extends BaseParser<Object> {
 
     //-------------------------------------------------------------------------

@@ -62,7 +62,7 @@ public class Main {
         time(start);
 
         System.out.printf("Parsing all %s parboiled java sources", sources.size());
-        Rule rootRule = parser.CompilationUnit().suppressSubnodes(); // we want to see the parse-tree-less performance
+        Rule rootRule = parser.CompilationUnit().suppressNode(); // we want to see the parse-tree-less performance
         start = System.currentTimeMillis();
         int lines = 0, characters = 0;
         for (File sourceFile : sources) {

@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.test.AbstractTest;
@@ -23,6 +24,7 @@ import org.testng.annotations.Test;
 
 public class NodeSuppressionTest extends AbstractTest {
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
 
         public Rule ABCDEFGH() {

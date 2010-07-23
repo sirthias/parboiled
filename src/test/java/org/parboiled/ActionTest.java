@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.Label;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
@@ -33,6 +34,7 @@ public class ActionTest extends AbstractTest {
         }
     }
 
+    @BuildParseTree
     public static class Parser extends BaseParser<Integer> {
 
         final Actions actions = new Actions();

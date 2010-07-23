@@ -411,7 +411,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param c the character
      * @return the rule
      */
-    @DontLabel
+    @DontExtend
     protected Rule FromCharLiteral(char c) {
         return Ch(c);
     }
@@ -424,7 +424,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param string the string
      * @return the rule
      */
-    @DontLabel
+    @DontExtend
     protected Rule FromStringLiteral(@NotNull String string) {
         return FromCharArray(string.toCharArray());
     }
@@ -437,7 +437,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param array the char array
      * @return the rule
      */
-    @DontLabel
+    @DontExtend
     protected Rule FromCharArray(@NotNull char[] array) {
         return String(array);
     }
@@ -463,7 +463,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param obj the object to convert
      * @return the rule corresponding to the given object
      */
-    @DontLabel
+    @DontExtend
     public Rule ToRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
         if (obj instanceof Character) return FromCharLiteral((Character) obj);
