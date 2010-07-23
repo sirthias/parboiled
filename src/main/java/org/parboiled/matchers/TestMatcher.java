@@ -21,8 +21,8 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
 /**
- * A special {@link Matcher} not actually matching any input but rather trying its sub matcher against the current input
- * position. Succeeds if the sub matcher would succeed.
+ * A special {@link Matcher} not actually matching any input but rather trying its submatcher against the current input
+ * position. Succeeds if the submatcher would succeed.
  */
 public class TestMatcher extends AbstractMatcher {
 

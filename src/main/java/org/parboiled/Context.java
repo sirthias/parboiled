@@ -169,6 +169,11 @@ public interface Context<V> {
      */
     int getMatchEndIndex();
 
+    /**
+     * Returns the value stack instance used during this parsing run.
+     *
+     * @return the value stack
+     */
     ValueStack<V> getValueStack();
 }
 

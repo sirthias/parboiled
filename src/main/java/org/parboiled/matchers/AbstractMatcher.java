@@ -32,7 +32,7 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     private boolean subnodesSuppressed;
     private boolean nodeSkipped;
 
-    public AbstractMatcher() {
+    AbstractMatcher() {
         this(new Rule[0]);
     }
 

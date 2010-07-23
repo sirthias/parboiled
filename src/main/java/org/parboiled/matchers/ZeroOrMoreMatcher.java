@@ -22,7 +22,7 @@ import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
 
 /**
- * A {@link Matcher} that repeatedly tries its sub matcher against the input. Always succeeds.
+ * A {@link Matcher} that repeatedly tries its submatcher against the input. Always succeeds.
  */
 public class ZeroOrMoreMatcher extends AbstractMatcher {
 

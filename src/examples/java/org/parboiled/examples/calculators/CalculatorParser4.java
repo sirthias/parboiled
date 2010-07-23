@@ -53,7 +53,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                         Sequence(
                                 operatorRule, op.set(matchedChar()),
                                 subRule,
-                                swap() && push(new CalcNode(op.get(), pop(), pop()))
+                                push(new CalcNode(op.get(), pop(1), pop()))
                         )
                 )
         );

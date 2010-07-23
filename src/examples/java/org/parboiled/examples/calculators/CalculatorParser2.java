@@ -25,7 +25,7 @@ import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
  * A calculator parser building an AST representing the expression structure before performing the actual calculation.
- * The parser values are AST nodes of type CalcNode.
+ * The parser value stack is used to build the AST nodes of type CalcNode.
  */
 public class CalculatorParser2 extends CalculatorParser<CalcNode> {
 
@@ -35,20 +35,19 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Expression() {
-        Var<Character> op = new Var<Character>();
+        Var<Character> op = new Var<Character>(); // we use an action variable to hold the operator character
         return Sequence(
                 Term(),
                 ZeroOrMore(
                         Sequence(
-                                CharSet("+-"), op.set(matchedChar()),
+                                CharSet("+-"),
+                                op.set(matchedChar()), // set the action variable to the matched operator char
                                 Term(),
 
                                 // create an AST node for the operation that was just matched
-                                // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // for the "Expression" Sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "Expression")
-                                // - the old value of the "Expression" as left child
-                                // - the value of the preceding "Term" as right child
+                                // we consume the two top stack elements and replace them with a new AST node
+                                // we use an alternative technique to the one shown in CalculatorParser1 to reverse
+                                // the order of the two top value stack elements
                                 swap() && push(new CalcNode(op.get(), pop(), pop()))
                         )
                 )
@@ -56,20 +55,19 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Term() {
-        Var<Character> op = new Var<Character>();
+        Var<Character> op = new Var<Character>(); // we use an action variable to hold the operator character
         return Sequence(
                 Factor(),
                 ZeroOrMore(
                         Sequence(
-                                CharSet("*/"), op.set(matchedChar()),
+                                CharSet("*/"),
+                                op.set(matchedChar()), // set the action variable to the matched operator char
                                 Factor(),
 
                                 // create an AST node for the operation that was just matched
-                                // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // one for the "Term" Sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "Term")
-                                // - the old value of the "Term" as left child
-                                // - the value of the preceding "Factor" as right child
+                                // we consume the two top stack elements and replace them with a new AST node
+                                // we use an alternative technique to the one shown in CalculatorParser1 to reverse
+                                // the order of the two top value stack elements
                                 swap() && push(new CalcNode(op.get(), pop(), pop()))
                         )
                 )
@@ -88,8 +86,8 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Digits(),
 
-                // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
+                // parse the input text matched by the preceding "Digits" rule,
+                // convert it into an Integer and push a new AST node for it onto the value stack
                 push(new CalcNode(Integer.parseInt(match())))
         );
     }

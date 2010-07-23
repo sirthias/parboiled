@@ -20,7 +20,7 @@ import org.parboiled.Rule;
 import org.parboiled.annotations.SuppressNode;
 
 /**
- * A calculator parser keeping calculation results directly in the value field of the parse tree nodes.
+ * A calculator parser building calculation results directly in the parsers value stack.
  * All calculations are implemented directly in action expressions.
  */
 public class CalculatorParser1 extends CalculatorParser<Integer> {
@@ -32,15 +32,15 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     public Rule Expression() {
         return Sequence(
-                Term(),
+                Term(), // a successful match of a Term pushes one Integer value onto the value stack
                 ZeroOrMore(
                         FirstOf(
-                                // the action that is run after the '+' and the "Term" have been matched
-                                // sets the value of the enclosing "Expression" to the sum of the old value and the
-                                // value of the node that was constructed last, in this case the preceding "Term"
+                                // the action that is run after the '+' and the Term have been matched consumes the
+                                // two top value stack elements and replaces them with the calculation result
                                 Sequence('+', Term(), push(pop() + pop())),
 
-                                // dito for the '-' operator
+                                // same for the '-' operator, however, here the order of the "pop"s matters, we need to
+                                // retrieve the second to last value first, which is what the pop(1) call does
                                 Sequence('-', Term(), push(pop(1) - pop()))
                         )
                 )
@@ -49,15 +49,15 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     public Rule Term() {
         return Sequence(
-                Factor(),
+                Factor(), // a successful match of a Factor pushes one Integer value onto the value stack
                 ZeroOrMore(
                         FirstOf(
-                                // the action that is run after the '*' and the "Factor" have been matched
-                                // sets the value of the enclosing "Term" to the product of the old value and the
-                                // value of the node that was constructed last, in this case the preceding "Factor"
+                                // the action that is run after the '*' and the Factor have been matched consumes the
+                                // two top value stack elements and replaces them with the calculation result
                                 Sequence('*', Factor(), push(pop() * pop())),
 
-                                // dito for the '/' operator
+                                // same for the '/' operator, however, here the order of the "pop"s matters, we need to
+                                // retrieve the second to last value first, which is what the pop(1) call does
                                 Sequence('/', Factor(), push(pop(1) / pop()))
                         )
                 )
@@ -65,7 +65,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
     }
 
     public Rule Factor() {
-        return FirstOf(Number(), Parens());
+        return FirstOf(Number(), Parens()); // a factor "produces" exactly one Integer value on the value stack
     }
 
     public Rule Parens() {
@@ -76,8 +76,8 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         return Sequence(
                 Digits(),
 
-                // parse the input text matched by the preceding "Digits" rule, convert it into an Integer and set this
-                // Integer as the value of the parse tree node of this rule (the Sequence rule labelled "Number")
+                // parse the input text matched by the preceding "Digits" rule,
+                // convert it into an Integer and push it onto the value stack
                 push(Integer.parseInt(match()))
         );
     }

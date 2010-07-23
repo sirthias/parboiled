@@ -59,8 +59,17 @@ public abstract class BaseActions<V> implements ContextAware<V> {
         return context.getMatch();
     }
 
-    public char matchedChar() {
-        return match().charAt(0);
+    /**
+     * <p>Returns the first character of the input text matched by the context immediately preceeding the action
+     * expression that is currently being evaluated. This call can only be used in actions that are part of a Sequence
+     * rule and are not at first position in this Sequence.</p>
+     *
+     * @return the first input char of the input text matched by the immediately preceeding subrule or null,
+     *         if the previous rule matched no characters
+     */
+    public Character matchedChar() {
+        String match = match();
+        return org.parboiled.common.StringUtils.isEmpty(match) ? null : match.charAt(0);
     }
 
     /**
@@ -88,86 +97,184 @@ public abstract class BaseActions<V> implements ContextAware<V> {
         return context.getMatchEndIndex();
     }
 
+    /**
+     * Pushes the given value onto the value stack. Equivalent to push(0, value).
+     *
+     * @param value the value to push
+     * @return true
+     */
     public boolean push(V value) {
         check();
         context.getValueStack().push(value);
         return true;
     }
 
+    /**
+     * Inserts the given value a given number of elements below the current top of the value stack.
+     *
+     * @param down  the number of elements to skip before inserting the value (0 being equivalent to push(value))
+     * @param value the value
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
+     * @return true
+     */
     public boolean push(int down, V value) {
         check();
         context.getValueStack().push(down, value);
         return true;
     }
 
-    public boolean pushAll(V firstValue, V... values) {
+    /**
+     * Pushes all given elements onto the value stack (in the order as given).
+     *
+     * @param firstValue the first value
+     * @param moreValues the other values
+     * @return true
+     */
+    public boolean pushAll(V firstValue, V... moreValues) {
         check();
-        context.getValueStack().pushAll(firstValue, values);
+        context.getValueStack().pushAll(firstValue, moreValues);
         return true;
     }
 
+    /**
+     * Removes the value at the top of the value stack and returns it.
+     *
+     * @return the current top value
+     * @throws IllegalArgumentException if the stack is empty
+     */
     public V pop() {
         check();
         return context.getValueStack().pop();
     }
 
+    /**
+     * Removes the value the given number of elements below the top of the value stack.
+     *
+     * @param down the number of elements to skip before removing the value (0 being equivalent to pop())
+     * @return the value
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
+     */
     public V pop(int down) {
         check();
         return context.getValueStack().pop(down);
     }
 
+    /**
+     * Returns the value at the top of the value stack without removing it.
+     *
+     * @return the current top value
+     * @throws IllegalArgumentException if the stack is empty
+     */
     public V peek() {
         check();
         return context.getValueStack().peek();
     }
 
+    /**
+     * Returns the value the given number of elements below the top of the value stack without removing it.
+     *
+     * @param down the number of elements to skip (0 being equivalent to peek())
+     * @return the value
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
+     */
     public V peek(int down) {
         check();
         return context.getValueStack().peek(down);
     }
 
+    /**
+     * Replaces the current top value of the value stack with the given value. Equivalent to poke(0, value).
+     *
+     * @param value the value
+     * @throws IllegalArgumentException if the stack is empty
+     * @return true
+     */
     public boolean poke(V value) {
         check();
         context.getValueStack().poke(value);
         return true;
     }
 
+    /**
+     * Replaces the element the given number of elements below the current top of the value stack.
+     *
+     * @param down  the number of elements to skip before replacing the value (0 being equivalent to poke(value))
+     * @param value the value to replace with
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
+     * @return true
+     */
     public boolean poke(int down, V value) {
         check();
         context.getValueStack().poke(down, value);
         return true;
     }
 
+    /**
+     * Duplicates the top value of the value stack. Equivalent to push(peek()).
+     *
+     * @throws IllegalArgumentException if the stack is empty
+     * @return true
+     */
     public boolean dup() {
         check();
         context.getValueStack().dup();
         return true;
     }
 
+    /**
+     * Swaps the top two elements of the value stack.
+     *
+     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least two elements
+     * @return true
+     */
     public boolean swap() {
         check();
         context.getValueStack().swap();
         return true;
     }
 
+    /**
+     * Reverses the order of the top 3 value stack elements.
+     *
+     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 3 elements
+     * @return true
+     */
     public boolean swap3() {
         check();
         context.getValueStack().swap3();
         return true;
     }
 
+    /**
+     * Reverses the order of the top 4 value stack elements.
+     *
+     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 4 elements
+     * @return true
+     */
     public boolean swap4() {
         check();
         context.getValueStack().swap4();
         return true;
     }
 
+    /**
+     * Reverses the order of the top 5 value stack elements.
+     *
+     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 5 elements
+     * @return true
+     */
     public boolean swap5() {
         check();
         context.getValueStack().swap5();
         return true;
     }
 
+    /**
+     * Reverses the order of the top 6 value stack elements.
+     *
+     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 6 elements
+     * @return true
+     */
     public boolean swap6() {
         check();
         context.getValueStack().swap6();

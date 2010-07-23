@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * <p>Var<T> objects generally behave just like local variables with one exception:<br/>
  * When rule method A() passes a Var defined in its scope to another rule method B() as a parameter and an action
  * in rule method B() writes to this Var all actions in rule method A() running after B() will "see" this newly written
- * value.</p>
+ * value (since values in Var<T> objects are passed by reference)</p>
  *
  * @param <T> the type wrapped by this Var
  */

@@ -19,8 +19,7 @@ package org.parboiled.support;
 import com.google.common.base.Preconditions;
 
 /**
- * Simple specialization of a {@link Var} for Strings.
- * Provides a few convenience helper methods.
+ * Simple specialization of a {@link Var} for Strings. Provides a few convenience helper methods.
  */
 public class StringVar extends Var<String> {
 

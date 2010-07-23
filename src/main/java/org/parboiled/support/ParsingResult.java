@@ -38,7 +38,7 @@ public class ParsingResult<V> {
     public final Node<V> parseTreeRoot;
 
     /**
-     * The ValueStack used during the parsing run.
+     * The ValueStack used during the parsing run containing all values not popped of the stack by the parser.
      */
     public final ValueStack<V> valueStack;
 
@@ -59,7 +59,7 @@ public class ParsingResult<V> {
      *
      * @param matched       true if the rule matched the input
      * @param parseTreeRoot the parse tree root node
-     * @param valueStack    the value stack at the end of the parsing run
+     * @param valueStack    the value stack of the parsing run
      * @param parseErrors   the list of parse errors
      * @param inputBuffer   the input buffer
      */

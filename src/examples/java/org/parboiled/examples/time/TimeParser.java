@@ -21,7 +21,7 @@ import org.parboiled.Rule;
 import org.parboiled.support.Var;
 
 /**
- * Parser for very relaxed time literals. Demonstrates usage of the value stack with default values.
+ * Parser for very relaxed time literals. Demonstrates usage of the value stack with default values for unmatched rules.
  */
 public class TimeParser extends BaseParser<Object> {
 
@@ -86,10 +86,6 @@ public class TimeParser extends BaseParser<Object> {
 
     protected Integer popAsInt() {
         return (Integer) pop();
-    }
-
-    protected String convertToTime(Integer hours) {
-        return convertToTime(hours, 0);
     }
 
     protected String convertToTime(Integer hours, Integer minutes) {

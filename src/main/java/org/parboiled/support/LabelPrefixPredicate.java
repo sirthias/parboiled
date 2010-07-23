@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,17 @@ import org.parboiled.common.StringUtils;
 /**
  * A simple Node predicate determining whether a Node matches a given label prefix.
  * Useful for example for various methods of the {@link ParseTreeUtils}.
+ *
+ * @param <V> the type of the value field of a parse tree node
  */
-public class LabelPrefixPredicate implements Predicate<Node> {
+public class LabelPrefixPredicate<V> implements Predicate<Node<V>> {
     private final String labelPrefix;
 
     public LabelPrefixPredicate(String labelPrefix) {
         this.labelPrefix = labelPrefix;
     }
 
-    public boolean apply(Node input) {
+    public boolean apply(Node<V> input) {
         return input != null && StringUtils.startsWith(input.getLabel(), labelPrefix);
     }
 }

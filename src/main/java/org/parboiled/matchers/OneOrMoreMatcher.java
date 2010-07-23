@@ -22,8 +22,8 @@ import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
 
 /**
- * A {@link Matcher} that repeatedly tries its sub matcher against the input.
- * Succeeds if its sub matcher succeeds at least once.
+ * A {@link Matcher} that repeatedly tries its submatcher against the input.
+ * Succeeds if its submatcher succeeds at least once.
  */
 public class OneOrMoreMatcher extends AbstractMatcher {
 

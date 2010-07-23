@@ -23,12 +23,14 @@ import org.parboiled.support.Var;
 
 import java.util.List;
 
+/**
+ * Special wrapping matcher that manages the creation and destruction of execution frames for a number of action vars.
+ */
 public class VarFramingMatcher implements Matcher {
 
     private Matcher inner;
     private final Var[] variables;
 
-    @SuppressWarnings({"unchecked"})
     public VarFramingMatcher(@NotNull Rule inner, @NotNull Var[] variables) {
         this.inner = (Matcher) inner;
         this.variables = variables;
@@ -49,40 +51,33 @@ public class VarFramingMatcher implements Matcher {
     }
 
     // GraphNode
-
     @NotNull
     public List<Matcher> getChildren() {
         return inner.getChildren();
     }
 
     // Rule
-
-    @SuppressWarnings({"unchecked"})
     public Rule label(String label) {
         inner = (Matcher) inner.label(label);
         return this;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule suppressNode() {
         inner = (Matcher) inner.suppressNode();
         return this;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule suppressSubnodes() {
         inner = (Matcher) inner.suppressSubnodes();
         return this;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Rule skipNode() {
         inner = (Matcher) inner.skipNode();
         return this;
     }
 
     // Matcher
-
     public String getLabel() {return inner.getLabel();}
 
     public boolean isNodeSuppressed() {return inner.isNodeSuppressed();}
@@ -108,7 +103,6 @@ public class VarFramingMatcher implements Matcher {
      * @param matcher the matcher to unwrap
      * @return the given instance if it is not a VarFramingMatcher, otherwise the innermost Matcher
      */
-    @SuppressWarnings({"unchecked"})
     public static  Matcher unwrap(Matcher matcher) {
         if (matcher instanceof VarFramingMatcher) {
             VarFramingMatcher varFramingMatcher = (VarFramingMatcher) matcher;

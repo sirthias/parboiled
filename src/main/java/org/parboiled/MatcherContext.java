@@ -39,14 +39,14 @@ import static org.parboiled.errors.ErrorUtils.printParseError;
  * A subsequent call to {@link #runMatcher()} starts the parsing process.</p>
  * <p>The MatcherContext delegates to a given {@link MatchHandler} to call {@link Matcher#match(MatcherContext)},
  * passing itself to the Matcher which executes its logic, potentially calling sub matchers.
- * For each sub matcher the matcher creates/initializes a sub context with {@link Matcher#getSubContext(MatcherContext)}
+ * For each sub matcher the matcher creates/initializes a subcontext with {@link Matcher#getSubContext(MatcherContext)}
  * and then calls {@link #runMatcher()} on it.</p>
  * <p>This basically creates a stack of MatcherContexts, each corresponding to their rule matchers. The MatcherContext
  * instances serve as companion objects to the matchers, providing them with support for building the
  * parse tree nodes, keeping track of input locations and error recovery.</p>
  * <p>At each point during the parsing process the matchers and action expressions have access to the current
  * MatcherContext and all "open" parent MatcherContexts through the {@link #getParent()} chain.</p>
- * <p>For performance reasons sub context instances are reused instead of being recreated. If a MatcherContext instance
+ * <p>For performance reasons subcontext instances are reused instead of being recreated. If a MatcherContext instance
  * returns null on a {@link #getMatcher()} call it has been retired (is invalid) and is waiting to be reinitialized
  * with a new Matcher by its parent</p>
  */
@@ -62,7 +62,7 @@ public class MatcherContext<V> implements Context<V> {
 
     private MatcherContext<V> subContext;
     private int startIndex;
-    private int currentIndex; // package private because of direct access from ActionMatcher
+    private int currentIndex;
     private char currentChar;
     private Matcher matcher;
     private Node<V> node;
@@ -179,42 +179,32 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public String getMatch() {
-        MatcherContext sequenceContext = getPrevSequenceContext();
-        MatcherContext prevContext = sequenceContext.subContext;
-        return sequenceContext.hasError ? ParseTreeUtils.getNodeText(prevContext.node, inputBuffer) :
+        checkActionContext();
+        MatcherContext prevContext = subContext;
+        return hasError ? ParseTreeUtils.getNodeText(prevContext.node, inputBuffer) :
                 inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
     }
 
     public int getMatchStartIndex() {
-        MatcherContext sequenceContext = getPrevSequenceContext();
-        return sequenceContext.subContext.startIndex;
+        checkActionContext();
+        return subContext.startIndex;
     }
 
     public int getMatchEndIndex() {
-        MatcherContext sequenceContext = getPrevSequenceContext();
-        return sequenceContext.subContext.currentIndex;
+        checkActionContext();
+        return subContext.currentIndex;
+    }
+
+    private void checkActionContext() {
+        // make sure all the constraints are met
+        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(matcher)) instanceof SequenceMatcher &&
+                        intTag > 0 && subContext.matcher instanceof ActionMatcher,
+                "Illegal call to getMatch(), getMatchStartIndex() or getMatchEndIndex(), " +
+                        "only valid in Sequence rule actions that are not in first position");
     }
 
     public ValueStack<V> getValueStack() {
         return valueStack;
-    }
-
-    private MatcherContext getPrevSequenceContext() {
-        MatcherContext actionContext = this;
-
-        // we need to find the deepest currently active context
-        while (actionContext.subContext != null && actionContext.subContext.matcher != null) {
-            actionContext = actionContext.subContext;
-        }
-        MatcherContext sequenceContext = actionContext.getParent();
-
-        // make sure all the constraints are met
-        Checks.ensure(
-                ProxyMatcher.unwrap(VarFramingMatcher.unwrap(sequenceContext.matcher)) instanceof SequenceMatcher &&
-                        sequenceContext.intTag > 0 &&
-                        actionContext.matcher instanceof ActionMatcher,
-                "Illegal getPrevValue() call, only valid in Sequence rule actions that are not in first position");
-        return sequenceContext;
     }
 
     //////////////////////////////// PUBLIC ////////////////////////////////////

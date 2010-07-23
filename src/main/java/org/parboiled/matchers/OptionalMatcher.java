@@ -21,7 +21,7 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
 /**
- * A {@link Matcher} that tries its sub matcher once against the input and always succeeds.
+ * A {@link Matcher} that tries its submatcher once against the input and always succeeds.
  */
 public class OptionalMatcher extends AbstractMatcher {
 

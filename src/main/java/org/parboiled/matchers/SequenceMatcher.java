@@ -23,7 +23,7 @@ import org.parboiled.Rule;
 import java.util.List;
 
 /**
- * A {@link Matcher} that executes all of its sub matcher in sequence and only succeeds, if all sub matchers succeed.
+ * A {@link Matcher} that executes all of its submatchers in sequence and only succeeds if all submatchers succeed.
  */
 public class SequenceMatcher extends AbstractMatcher {
 

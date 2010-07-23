@@ -41,17 +41,13 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 Term(),
                 ZeroOrMore(
                         Sequence(
-                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral transformation
+                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral
+                                // transformation, which automatically consumes any whitespace
                                 FirstOf('+', '-'), op.set(matchedChar()),
                                 Term(),
 
-                                // create an AST node for the operation that was just matched
-                                // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // one for the "Expression" Sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "Expression")
-                                // - the old value of the "Expression" as left child
-                                // - the value of the preceding "Term" as right child
-                                swap() && push(new CalcNode(op.get(), pop(), pop()))
+                                // same as in CalculatorParser2
+                                push(new CalcNode(op.get(), pop(1), pop()))
                         )
                 )
         );
@@ -63,17 +59,9 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 Factor(),
                 ZeroOrMore(
                         Sequence(
-                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral transformation
                                 FirstOf('*', '/'), op.set(matchedChar()),
                                 Factor(),
-
-                                // create an AST node for the operation that was just matched
-                                // The new AST node is not set on the parse tree node created for this rule, but on the
-                                // one for the "Term" Sequence two levels up. The arguments for the AST node are
-                                // - the operator that matched (which is two levels underneath the "Term")
-                                // - the old value of the "Term" as left child
-                                // - the value of the preceding "Factor" as right child
-                                swap() && push(new CalcNode(op.get(), pop(), pop()))
+                                push(new CalcNode(op.get(), pop(1), pop()))
                         )
                 )
         );
@@ -86,12 +74,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                         Sequence(
                                 '^',
                                 Atom(),
-
-                                // create a new AST node and set it as the value of the parse tree node for the
-                                // "Factor" rule, the node contains the operator ('^'), the old
-                                // "Factor" value as left child and the value of the "Atom" following
-                                // the operator as right child
-                                swap() && push(new CalcNode('^', pop(), pop()))
+                                push(new CalcNode('^', pop(1), pop()))
                         )
                 )
         );
@@ -124,6 +107,8 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                         OneOrMore(Digit()),
                         Optional(Sequence(Ch('.'), OneOrMore(Digit())))
                 ),
+
+                // the match() call returns the matched input text of the immediately preceding rule
                 push(new CalcNode(Double.parseDouble(match()))),
                 WhiteSpace()
         );
@@ -148,7 +133,6 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     }
 
     // same thing for String literals
-
     @Override
     protected Rule FromStringLiteral(@NotNull String string) {
         return Sequence(String(string), WhiteSpace());
