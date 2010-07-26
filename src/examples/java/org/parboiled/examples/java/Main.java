@@ -57,20 +57,28 @@ public class Main {
         time(start);
 
         start = System.currentTimeMillis();
-        System.out.print("Retrieving file list...");
-        List<File> sources = recursiveGetAllJavaSources(new File("."), new ArrayList<File>());
+        File baseDir = args.length == 1 ? new File(args[0]) : null;
+        if (baseDir == null || !baseDir.exists()) baseDir = new File(".");
+        System.out.printf("Retrieving file list from '%s'", baseDir);
+        List<File> sources = recursiveGetAllJavaSources(baseDir, new ArrayList<File>());
         time(start);
 
-        System.out.printf("Parsing all %s parboiled java sources", sources.size());
+        System.out.printf("Parsing all %s given java sources", sources.size());
         Rule rootRule = parser.CompilationUnit().suppressNode(); // we want to see the parse-tree-less performance
         start = System.currentTimeMillis();
-        int lines = 0, characters = 0;
+        long lines = 0, characters = 0;
         for (File sourceFile : sources) {
             long dontCountStart = System.currentTimeMillis();
             String sourceText = readAllText(sourceFile);
             start += System.currentTimeMillis() - dontCountStart; // do not count the time for reading the text file
 
-            ParsingResult<?> result = ReportingParseRunner.run(rootRule, sourceText);
+            ParsingResult<?> result = null;
+            try {
+                result = ReportingParseRunner.run(rootRule, sourceText);
+            } catch (Exception e) {
+                System.out.printf("\nException while parsing file '%s':\n%s", sourceFile, e);
+                System.exit(1);
+            }
             if (!result.matched) {
                 System.out.printf("\nParse error(s) in file '%s':\n%s", sourceFile, printParseErrors(result));
                 System.exit(1);
@@ -101,13 +109,12 @@ public class Main {
     };
 
     private static List<File> recursiveGetAllJavaSources(File file, ArrayList<File> list) {
-        File[] files = file.listFiles(fileFilter);
-        for (File f : files) {
-            if (f.isDirectory()) {
+        if (file.isDirectory()) {
+            for (File f : file.listFiles(fileFilter)) {
                 recursiveGetAllJavaSources(f, list);
-            } else {
-                list.add(f);
             }
+        } else {
+            list.add(file);
         }
         return list;
     }

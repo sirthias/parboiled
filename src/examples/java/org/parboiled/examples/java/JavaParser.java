@@ -1,6 +1,6 @@
 //===========================================================================
 //
-//  Parsing Expression Grammar for Java 1.5 as a parboiled parser.
+//  Parsing Expression Grammar for Java 1.6 as a parboiled parser.
 //  Based on Chapters 3 and 18 of Java Language Specification, Third Edition (JLS)
 //  at http://java.sun.com/docs/books/jls/third_edition/html/j3TOC.html.
 //
@@ -32,6 +32,8 @@
 //    2010-03-29 Fixed problem in "annotation"
 //    2010-03-31 Fixed problem in unicode escapes, String literals and line comments
 //               (Thanks to Reinier Zwitserloot for the finds)
+//    2010-07-26 Fixed problem in LocalVariableDeclarationStatement (accept annotations),
+//               HexFloat (HexSignificant) and AnnotationTypeDeclaration (bug in the JLS!)
 //
 //===========================================================================
 
@@ -287,7 +289,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------    
 
     public Rule LocalVariableDeclarationStatement() {
-        return Sequence(Optional(FINAL), Type(), VariableDeclarators(), SEMI);
+        return Sequence(ZeroOrMore(FirstOf(FINAL, Annotation())), Type(), VariableDeclarators(), SEMI);
     }
 
     public Rule VariableDeclarators() {
@@ -761,7 +763,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------    
 
     public Rule AnnotationTypeDeclaration() {
-        return Sequence(Sequence(AT, INTERFACE), Identifier(), AnnotationTypeBody());
+        return Sequence(AT, INTERFACE, Identifier(), AnnotationTypeBody());
     }
 
     public Rule AnnotationTypeBody() {
@@ -774,7 +776,7 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule AnnotationTypeElementRest() {
         return FirstOf(
-                Sequence(Type(), Identifier(), AnnotationMethodOrConstantRest(), SEMI),
+                Sequence(Type(), AnnotationMethodOrConstantRest(), SEMI),
                 ClassDeclaration(),
                 EnumDeclaration(),
                 InterfaceDeclaration(),
@@ -787,7 +789,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     public Rule AnnotationMethodRest() {
-        return Sequence(LPAR, RPAR, Optional(DefaultValue()));
+        return Sequence(Identifier(), LPAR, RPAR, Optional(DefaultValue()));
     }
 
     public Rule AnnotationConstantRest() {
@@ -1004,8 +1006,8 @@ public class JavaParser extends BaseParser<Object> {
 
     public Rule HexSignificant() {
         return FirstOf(
-                Sequence(HexNumeral(), Optional('.')),
-                Sequence(FirstOf("0x", "0X"), ZeroOrMore(HexDigit()), '.', OneOrMore(HexDigit()))
+                Sequence(FirstOf("0x", "0X"), ZeroOrMore(HexDigit()), '.', OneOrMore(HexDigit())),
+                Sequence(HexNumeral(), Optional('.'))
         );
     }
 
