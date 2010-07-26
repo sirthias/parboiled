@@ -42,7 +42,7 @@ public class JavaTest {
 
         assertEquals(ParserStatistics.generateFor(compilationUnit).toString(), "" +
                 "Parser statistics for rule 'CompilationUnit':\n" +
-                "    Total rules       : 681\n" +
+                "    Total rules       : 679\n" +
                 "        Actions       : 0\n" +
                 "        Any           : 1\n" +
                 "        CharIgnoreCase: 0\n" +
@@ -53,8 +53,8 @@ public class JavaTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 68\n" +
                 "        OneOrMore     : 7\n" +
-                "        Optional      : 41\n" +
-                "        Sequence      : 390\n" +
+                "        Optional      : 40\n" +
+                "        Sequence      : 389\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 13\n" +
                 "        ZeroOrMore    : 51\n" +

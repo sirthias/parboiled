@@ -83,7 +83,7 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
                 "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
                 "Alice has anximals\n" +
                 "            ^\n", "" +
-                "[Clause]E 'Alice has animalsEOI'\n" +
+                "[Clause]E 'Alice has animals'\n" +
                 "  [Object]E 'animals'\n" +
                 "    [\"animals\"]E 'animals'\n" +
                 "      ['i'] 'i'\n");
