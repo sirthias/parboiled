@@ -225,7 +225,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void advanceIndex(int delta) {
-        if (currentIndex != Characters.EOI) currentIndex += delta;
+        if (currentChar != Characters.EOI) currentIndex += delta;
         currentChar = inputBuffer.charAt(currentIndex);
     }
 
