@@ -90,6 +90,16 @@ public class ProxyMatcher implements Matcher, Cloneable {
         return target.isNodeSkipped();
     }
 
+    public void setTag(Object tagObject) {
+        if (dirty) apply();
+        target.setTag(tagObject);
+    }
+
+    public Object getTag() {
+        if (dirty) apply();
+        return target.getTag();
+    }
+
     public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         if (dirty) apply();
         return target.accept(visitor);

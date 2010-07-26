@@ -48,36 +48,33 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     /**
      * Create a new RecoveringParseRunner instance with the given rule and input text and returns the result of
-     * its {@link #run()} method invocation.
+     * its {@link #run(String)} method invocation.
      *
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
     public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
-        return new RecoveringParseRunner<V>(rule, input).run();
+        return new RecoveringParseRunner<V>(rule).run(input);
     }
 
     /**
-     * Creates a new RecoveringParseRunner instance for the given rule and input text.
+     * Creates a new RecoveringParseRunner instance for the given rule.
      *
      * @param rule  the parser rule
-     * @param input the input text
      */
-    public RecoveringParseRunner(@NotNull Rule rule, @NotNull String input) {
-        super(rule, input);
+    public RecoveringParseRunner(@NotNull Rule rule) {
+        super(rule);
     }
 
     /**
-     * Creates a new RecoveringParseRunner instance for the given rule and input buffer.
+     * Creates a new RecoveringParseRunner instance for the given rule using the given ValueStack instance.
      *
-     * @param rule        the parser rule
-     * @param inputBuffer the input buffer
+     * @param rule  the parser rule
      * @param valueStack  the value stack
      */
-    public RecoveringParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer,
-                                 @NotNull ValueStack<V> valueStack) {
-        super(rule, inputBuffer, valueStack);
+    public RecoveringParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
+        super(rule, valueStack);
     }
 
     @Override

@@ -36,36 +36,33 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
 
     /**
      * Create a new RecordingParseRunner instance with the given rule and input text and returns the result of
-     * its {@link #run()} method invocation.
+     * its {@link #run(String)} method invocation.
      *
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
     public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
-        return new RecordingParseRunner<V>(rule, input).run();
+        return new RecordingParseRunner<V>(rule).run(input);
     }
 
     /**
-     * Creates a new RecordingParseRunner instance for the given rule and input text.
+     * Creates a new RecordingParseRunner instance for the given rule.
      *
      * @param rule  the parser rule
-     * @param input the input text
      */
-    public RecordingParseRunner(@NotNull Rule rule, @NotNull String input) {
-        super(rule, input);
+    public RecordingParseRunner(@NotNull Rule rule) {
+        super(rule);
     }
 
     /**
-     * Creates a new RecordingParseRunner instance for the given rule and input buffer.
+     * Creates a new RecordingParseRunner instance for the given rule using the given ValueStack instance.
      *
-     * @param rule        the parser rule
-     * @param inputBuffer the input buffer
+     * @param rule  the parser rule
      * @param valueStack  the value stack
      */
-    public RecordingParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer,
-                                @NotNull ValueStack<V> valueStack) {
-        super(rule, inputBuffer, valueStack);
+    public RecordingParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
+        super(rule, valueStack);
     }
 
     @Override
@@ -76,7 +73,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
 
     /**
      * Returns the index of the first {@link InvalidInputError} in the input text.
-     * Must not be called before the {@link #run()} has been called.
+     * Must not be called before the {@link #run(String)} has been called.
      *
      * @return the index of the first parse error or -1, if the input is error free.
      */

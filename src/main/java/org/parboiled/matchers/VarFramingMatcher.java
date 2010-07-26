@@ -86,6 +86,10 @@ public class VarFramingMatcher implements Matcher {
 
     public boolean isNodeSkipped() {return inner.isNodeSkipped();}
 
+    public void setTag(Object tagObject) { inner.setTag(tagObject); }
+
+    public Object getTag() { return inner.getTag(); }
+    
     public MatcherContext getSubContext(MatcherContext context) {
         MatcherContext subContext = inner.getSubContext(context);
         subContext.setMatcher(this); // we need to inject ourselves here otherwise we get cut out

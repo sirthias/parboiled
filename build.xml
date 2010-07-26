@@ -367,6 +367,7 @@
             <classpath refid="compile.classpath.java"/>
             <classpath location="target/main/java"/>
             <classpath location="target/examples/java"/>
+            <arg line="${base}"/>
         </java>
     </target>
 

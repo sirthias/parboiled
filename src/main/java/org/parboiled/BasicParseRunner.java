@@ -46,46 +46,46 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
 
     /**
      * Create a new BasicParseRunner instance with the given rule and input text and returns the result of
-     * its {@link #run()} method invocation.
+     * its {@link #run(String)} method invocation.
      *
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
     public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
-        return new BasicParseRunner<V>(rule, input).run();
+        return new BasicParseRunner<V>(rule).run(input);
     }
 
     /**
-     * Creates a new BasicParseRunner instance for the given rule and input text.
+     * Creates a new BasicParseRunner instance for the given rule.
      *
-     * @param rule  the parser rule
-     * @param input the input text
+     * @param rule the parser rule
      */
-    public BasicParseRunner(@NotNull Rule rule, @NotNull String input) {
-        this(rule, new DefaultInputBuffer(input), new ValueStack<V>());
+    public BasicParseRunner(@NotNull Rule rule) {
+        this(rule, new ValueStack<V>());
     }
 
     /**
-     * Creates a new BasicParseRunner instance for the given rule and input buffer.
+     * Creates a new BasicParseRunner instance for the given rule using the given ValueStack instance.
      *
-     * @param rule        the parser rule
-     * @param inputBuffer the input buffer
-     * @param valueStack  the value stack
+     * @param rule       the parser rule
+     * @param valueStack the value stack
      */
-    public BasicParseRunner(@NotNull Rule rule, @NotNull InputBuffer inputBuffer, @NotNull ValueStack<V> valueStack) {
+    public BasicParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
         this.rootMatcher = (Matcher) rule;
-        this.inputBuffer = inputBuffer;
         this.valueStack = valueStack;
         this.initialValueStackSnapshot = valueStack.takeSnapshot();
     }
 
-    public ParsingResult<V> run() {
-        if (rootContext == null) {
-            matched = runRootContext();
-        }
+    public ParsingResult<V> run(@NotNull String input) {
+        return run(new DefaultInputBuffer(input));
+    }
+
+    public ParsingResult<V> run(@NotNull InputBuffer inputBuffer) {
+        this.inputBuffer = inputBuffer;
+        matched = runRootContext();
         return new ParsingResult<V>(matched, rootContext.getNode(), rootContext.getValueStack(), parseErrors,
-                inputBuffer);
+                this.inputBuffer);
     }
 
     protected boolean runRootContext() {

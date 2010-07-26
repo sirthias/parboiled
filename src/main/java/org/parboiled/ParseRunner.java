@@ -16,6 +16,8 @@
 
 package org.parboiled;
 
+import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.InputBuffer;
 import org.parboiled.support.ParsingResult;
 
 /**
@@ -26,8 +28,17 @@ public interface ParseRunner<V> {
     /**
      * Performs the actual parse and creates a corresponding ParsingResult instance.
      *
+     * @param input the input text to parse
      * @return the ParsingResult for the run
      */
-    ParsingResult<V> run();
+    ParsingResult<V> run(@NotNull String input);
+
+    /**
+     * Performs the actual parse and creates a corresponding ParsingResult instance.
+     *
+     * @param inputBuffer the inputBuffer to use
+     * @return the ParsingResult for the run
+     */
+    ParsingResult<V> run(@NotNull InputBuffer inputBuffer);
 
 }

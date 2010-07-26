@@ -31,8 +31,12 @@ import static org.parboiled.errors.ErrorUtils.printParseErrors;
 
 public class Main {
 
-    @SuppressWarnings({"ConstantConditions"})
     public static void main(String[] args) {
+        new Main().run(args);
+    }
+
+    @SuppressWarnings({"ConstantConditions"})
+    protected void run(String[] args) {
         System.out.println("parboiled Java parser, performance test");
         System.out.println("---------------------------------------");
 
@@ -74,7 +78,7 @@ public class Main {
 
             ParsingResult<?> result = null;
             try {
-                result = ReportingParseRunner.run(rootRule, sourceText);
+                result = run(rootRule, sourceText);
             } catch (Exception e) {
                 System.out.printf("\nException while parsing file '%s':\n%s", sourceFile, e);
                 System.exit(1);
@@ -94,6 +98,10 @@ public class Main {
         System.out.printf("    %6d Files -> %6.2f Files/sec\n", sources.size(), sources.size() * 1000.0 / time);
         System.out.printf("    %6d Lines -> %6d Lines/sec\n", lines, lines * 1000 / time);
         System.out.printf("    %6d Chars -> %6d Chars/sec\n", characters, characters * 1000 / time);
+    }
+
+    protected ParsingResult<?> run(Rule rootRule, String sourceText) {
+        return ReportingParseRunner.run(rootRule, sourceText);
     }
 
     private static long time(long start) {

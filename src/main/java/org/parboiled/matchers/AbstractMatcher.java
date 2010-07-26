@@ -31,6 +31,7 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
     private boolean nodeSkipped;
+    private Object tag;
 
     AbstractMatcher() {
         this(new Rule[0]);
@@ -99,6 +100,13 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
         AbstractMatcher clone = createClone();
         clone.nodeSkipped = true;
         return clone;
+    }
+
+    public Object getTag() {
+        return tag;
+    }
+    public void setTag(Object tagObject) {
+        tag = tagObject;
     }
 
     // default implementation is to simply delegate to the context
