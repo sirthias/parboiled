@@ -28,32 +28,32 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
     private int totalRuns;
     private int totalMatches;
-    private int totalFailures;
+    private int totalMismatches;
     private int totalRematches;
-    private int totalRefailures;
+    private int totalRemismatches;
     private final Map<Rule, RuleReport> ruleReports = new HashMap<Rule, RuleReport>();
 
     private final DoWithMatcherVisitor.Action updateStatsAction = new DoWithMatcherVisitor.Action() {
         public void process(Matcher matcher) {
             RuleStats ruleStats = (RuleStats) matcher.getTag();
-            int rematches = 0, refailures = 0;
+            int rematches = 0, remismatches = 0;
             for (Integer i : ruleStats.positionMatches.values()) {
                 if (i > 0) {
                     rematches += i - 1;
                 } else if (i < 0) {
-                    refailures += -(i + 1);
+                    remismatches += -(i + 1);
                 }
             }
             totalMatches += ruleStats.matches;
-            totalFailures += ruleStats.failures;
+            totalMismatches += ruleStats.mismatches;
             totalRematches += rematches;
-            totalRefailures += refailures;
+            totalRemismatches += remismatches;
             RuleReport ruleReport = ruleReports.get(matcher);
             if (ruleReport == null) {
                 ruleReport = new RuleReport(matcher);
                 ruleReports.put(matcher, ruleReport);
             }
-            ruleReport.update(ruleStats.matches, ruleStats.failures, rematches, refailures);
+            ruleReport.update(ruleStats.matches, ruleStats.mismatches, rematches, remismatches);
         }
     };
 
@@ -83,7 +83,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
     }
 
     public Report getReport() {
-        return new Report(totalRuns, totalMatches, totalFailures, totalRematches, totalRefailures,
+        return new Report(totalRuns, totalMatches, totalMismatches, totalRematches, totalRemismatches,
                 new ArrayList<RuleReport>(ruleReports.values()));
     }
 
@@ -122,7 +122,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
                     posMatches = 0;
                 }
             } else {
-                ruleStats.failures++;
+                ruleStats.mismatches++;
                 if (posMatches == null) {
                     posMatches = -1;
                 } else if (posMatches < 0) {
@@ -138,7 +138,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
     private static class RuleStats {
         private int matches;
-        private int failures;
+        private int mismatches;
 
         // map Index -> matches at that position
         // no entry for a position means that the rule was never tried for that position
@@ -150,7 +150,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
         private void clear() {
             matches = 0;
-            failures = 0;
+            mismatches = 0;
             positionMatches.clear();
         }
     }
@@ -159,24 +159,24 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
         public final int totalRuns;
         public final int totalInvocations;
         public final int totalMatches;
-        public final int totalFailures;
+        public final int totalMismatches;
         public final double matchShare;
         public final int reinvocations;
         public final int rematches;
-        public final int refailures;
+        public final int remismatches;
         public final double reinvocationShare;
         public final List<RuleReport> ruleReports;
 
-        public Report(int totalRuns, int totalMatches, int totalFailures, int rematches,
-                      int refailures, List<RuleReport> ruleReports) {
+        public Report(int totalRuns, int totalMatches, int totalMismatches, int rematches,
+                      int remismatches, List<RuleReport> ruleReports) {
             this.totalRuns = totalRuns;
-            this.totalInvocations = totalMatches + totalFailures;
+            this.totalInvocations = totalMatches + totalMismatches;
             this.totalMatches = totalMatches;
-            this.totalFailures = totalFailures;
+            this.totalMismatches = totalMismatches;
             this.matchShare = ((double) totalMatches) / totalInvocations;
-            this.reinvocations = rematches + refailures;
+            this.reinvocations = rematches + remismatches;
             this.rematches = rematches;
-            this.refailures = refailures;
+            this.remismatches = remismatches;
             this.reinvocationShare = ((double) reinvocations) / totalInvocations;
             this.ruleReports = ruleReports;
         }
@@ -189,36 +189,36 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             sb.append(String.format("Active rules             : %,15d\n", ruleReports.size()));
             sb.append(String.format("Total rule invocations   : %,15d\n", totalInvocations));
             sb.append(String.format("Total rule matches       : %,15d\n", totalMatches));
-            sb.append(String.format("Total rule failures      : %,15d\n", totalFailures));
+            sb.append(String.format("Total rule mismatches    : %,15d\n", totalMismatches));
             sb.append(String.format("Total match share        : %15.2f %%\n", 100.0 * matchShare));
             sb.append(String.format("Rule re-invocations      : %,15d\n", reinvocations));
             sb.append(String.format("Rule re-matches          : %,15d\n", rematches));
-            sb.append(String.format("Rule re-failures         : %,15d\n", refailures));
+            sb.append(String.format("Rule re-mismatches       : %,15d\n", remismatches));
             sb.append(String.format("Rule re-invocation share : %15.2f %%\n", 100.0 * reinvocationShare));
             sb.append("\n");
-            sb.append("Top 10 rules by invocations:\n");
-            sb.append(printTopTen(sortByInvocations().ruleReports));
+            sb.append("Top 20 rules by invocations:\n");
+            sb.append(printTopRules(20, sortByInvocations().ruleReports));
             sb.append("\n");
-            sb.append("Top 10 rules by reinvocations:\n");
-            sb.append(printTopTen(sortByReinvocations().ruleReports));
+            sb.append("Top 20 rules by reinvocations:\n");
+            sb.append(printTopRules(20, sortByReinvocations().ruleReports));
             return sb.toString();
         }
 
-        private static String printTopTen(List<RuleReport> ruleReports) {
+        public static String printTopRules(int count, List<RuleReport> ruleReports) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Rule                 | Invocations | Matches  | Failures | Match %  | Re-Invoc | Re-Match | Re-Fails | Re-Invoc %\n");
-            sb.append("---------------------|-------------|----------|----------|----------|----------|----------|----------|-----------\n");
-            for (int i = 0; i < Math.min(ruleReports.size(), 10); i++) {
+            sb.append("Rule                 | Invocations |   Matches   | Mismatches  | Match %  |  Re-Invocs  | Re-Matches  | Re-Mismatch | Re-Invoc %\n");
+            sb.append("---------------------|-------------|-------------|-------------|----------|-------------|-------------|-------------|-----------\n");
+            for (int i = 0; i < Math.min(ruleReports.size(), count); i++) {
                 RuleReport rep = ruleReports.get(i);
-                sb.append(String.format("%-20s | %,11d | %,8d | %,8d | %6.2f %% | %,8d | %,8d | %,8d | %6.2f %%\n",
+                sb.append(String.format("%-20s | %,11d | %,11d | %,11d | %6.2f %% | %,11d | %,11d | %,11d | %6.2f %%\n",
                         StringUtils.left(rep.getRule().toString(), 20),
                         rep.getInvocations(),
                         rep.getMatches(),
-                        rep.getFailures(),
+                        rep.getMismatches(),
                         rep.getMatchShare() * 100,
                         rep.getReinvocations(),
                         rep.getRematches(),
-                        rep.getRefailures(),
+                        rep.getRemismatches(),
                         rep.getReinvocationShare() * 100
                 ));
             }
@@ -243,10 +243,10 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             return this;
         }
 
-        public Report sortByFailures() {
+        public Report sortByMismatches() {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
-                    return intCompare(a.getFailures(), b.getFailures());
+                    return intCompare(a.getMismatches(), b.getMismatches());
                 }
             });
             return this;
@@ -282,7 +282,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
         public Report sortByReailures() {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
-                    return intCompare(a.getRefailures(), b.getRefailures());
+                    return intCompare(a.getRemismatches(), b.getRemismatches());
                 }
             });
             return this;
@@ -309,29 +309,29 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
     public static class RuleReport {
         private final Rule rule;
         private int matches;
-        private int failures;
+        private int mismatches;
         private int rematches;
-        private int refailures;
+        private int remismatches;
 
         public RuleReport(Rule rule) {
             this.rule = rule;
         }
 
         public Rule getRule() { return rule; }
-        public int getInvocations() { return matches + failures; }
+        public int getInvocations() { return matches + mismatches; }
         public int getMatches() { return matches; }
-        public int getFailures() { return failures; }
+        public int getMismatches() { return mismatches; }
         public double getMatchShare() { return ((double) matches) / getInvocations(); }
-        public int getReinvocations() { return rematches + refailures; }
+        public int getReinvocations() { return rematches + remismatches; }
         public int getRematches() { return rematches; }
-        public int getRefailures() { return refailures; }
+        public int getRemismatches() { return remismatches; }
         public double getReinvocationShare() { return ((double) getReinvocations()) / getInvocations(); }
 
-        public void update(int matchesDelta, int failuresDelta, int rematchesDelta, int refailuresDelta) {
+        public void update(int matchesDelta, int mismatchesDelta, int rematchesDelta, int remismatchesDelta) {
             matches += matchesDelta;
-            failures += failuresDelta;
+            mismatches += mismatchesDelta;
             rematches += rematchesDelta;
-            refailures += refailuresDelta;
+            remismatches += remismatchesDelta;
         }
     }
 }
