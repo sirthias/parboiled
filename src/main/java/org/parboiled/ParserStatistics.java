@@ -19,6 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
+import org.parboiled.support.MatcherVisitor;
 
 import java.util.*;
 

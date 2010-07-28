@@ -19,6 +19,7 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.support.MatcherVisitor;
 
 /**
  * A {@link Matcher} that tries its submatcher once against the input and always succeeds.

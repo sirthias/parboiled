@@ -19,10 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.DefaultInputBuffer;
-import org.parboiled.support.InputBuffer;
-import org.parboiled.support.ParsingResult;
-import org.parboiled.support.ValueStack;
+import org.parboiled.support.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +59,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param rule the parser rule
      */
     public BasicParseRunner(@NotNull Rule rule) {
-        this(rule, new ValueStack<V>());
+        this(rule, new DefaultValueStack<V>());
     }
 
     /**

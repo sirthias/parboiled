@@ -129,7 +129,7 @@
 
 	<target name="scaladoc" description="Builds scaladoc">
         <mkdir dir="target/scaladoc"/>
-        <scaladoc srcdir="src/main/scala" destdir="target/scaladoc" windowtitle="parboiled ${version} API" doctitle="parboiled ${version} API">
+        <scaladoc srcdir="src/main/scala" destdir="target/scaladoc" doctitle="parboiled ${version} API">
             <classpath refid="compile.classpath.scala"/>
             <classpath location="target/main/java"/>
         </scaladoc>

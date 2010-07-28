@@ -18,6 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
+import org.parboiled.support.MatcherVisitor;
 
 /**
  * A {@link Matcher} matching a single character case-independently.

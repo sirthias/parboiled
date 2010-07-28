@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
+import org.parboiled.support.MatcherVisitor;
 
 /**
  * A {@link Matcher} matching a single character out of a given {@link org.parboiled.support.Characters} set.

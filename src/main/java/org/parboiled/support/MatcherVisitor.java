@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.matchers;
+package org.parboiled.support;
+
+import org.parboiled.matchers.*;
 
 /**
- * The interface to be implemented by all visitors of {@link Matcher}s.
+ * The interface to be implemented by all visitors of {@link org.parboiled.matchers.Matcher}s.
  *
  * @param <R> the return value of this visitor
  * @see <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor Pattern on Wikipedia</a>

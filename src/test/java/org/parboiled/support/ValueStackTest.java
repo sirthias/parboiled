@@ -29,7 +29,7 @@ public class ValueStackTest {
 
     @Test
     public void testValueStack() {
-        ValueStack<Integer> stack = new ValueStack<Integer>();
+        ValueStack<Integer> stack = new DefaultValueStack<Integer>();
 
         assertTrue(stack.isEmpty());
 

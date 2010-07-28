@@ -160,6 +160,31 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
+     * Removes the value at the top of the value stack.
+     *
+     * @return true
+     * @throws IllegalArgumentException if the stack is empty
+     */
+    public boolean drop() {
+        check();
+        context.getValueStack().pop();
+        return true;
+    }
+
+    /**
+     * Removes the value the given number of elements below the top of the value stack.
+     *
+     * @param down the number of elements to skip before removing the value (0 being equivalent to drop())
+     * @return true
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
+     */
+    public boolean drop(int down) {
+        check();
+        context.getValueStack().pop(down);
+        return true;
+    }
+
+    /**
      * Returns the value at the top of the value stack without removing it.
      *
      * @return the current top value
