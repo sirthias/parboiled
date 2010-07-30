@@ -30,6 +30,8 @@ trait Rules[V] {
 
     def |(other: Rule) = new FirstOfRule(this, other)
 
+    def unary_! = new UnaryRule(this, new TestNotMatcher(_), "TestNot")
+
     def withLabel(label: String) = { this.label = label; this}
 
     def withNodeSuppressed() = { suppressNode = true; this}

@@ -4,6 +4,7 @@ import matchers._
 import support.Characters
 import _root_.scala.collection.mutable
 import org.parboiled.{Action => PAction}
+import org.parboiled.common.StringUtils.escape
 
 object Scala extends Support {
 
@@ -46,11 +47,19 @@ object Scala extends Support {
       }
 
     def &(sub: Rule) = new UnaryRule(sub, new TestMatcher(_), "Test")
-    def !(sub: Rule) = new UnaryRule(sub, new TestNotMatcher(_), "TestNot")
     def optional(sub: Rule) = new UnaryRule(sub, new OptionalMatcher(_), "Optional")
     def zeroOrMore(sub: Rule) = new UnaryRule(sub, new ZeroOrMoreMatcher(_), "ZeroOrMore")
     def oneOrMore[V](sub: Rule) = new UnaryRule(sub, new OneOrMoreMatcher(_), "OneOrMore")
+    def ignoreCase(c: Char) = new SimpleRule(new CharIgnoreCaseMatcher(c), "'" + escape(c.toLower) + '/' + escape(c.toUpper) + "'")
+    def ignoreCase(s: String): Rule = ignoreCase(s.toCharArray)
     def anyOf(s: String): Rule = anyOf(s.toCharArray)
+    def ch(c: Char) = new CharRule(c)
+    def str(s: String): Rule = str(s.toCharArray)
+    def str(chars: Array[Char]): Rule = chars.length match {
+      case 0 => EMPTY
+      case 1 => toRule(chars(0))
+      case _ => new SimpleRule(new StringMatcher(chars.map(toRule).map(_.toMatcher), chars), "\"" + chars + '"')
+    }
 
     def anyOf(chars: Array[Char]): Rule = chars.length match {
       case 0 => EMPTY
@@ -63,6 +72,12 @@ object Scala extends Support {
         toRule(chars.getChars()(0))
       else
         new SimpleRule(new CharSetMatcher(chars), chars.toString)
+    }
+
+    def ignoreCase(chars: Array[Char]): Rule = chars.length match {
+      case 0 => EMPTY
+      case 1 => ignoreCase(chars(0))
+      case _ => new SimpleRule(new SequenceMatcher(chars.map(ignoreCase(_)).map(_.toMatcher)), "\"" + chars + '"')
     }
 
     def ^?(f: => Boolean) = toTestAction(c => f)
@@ -113,14 +128,10 @@ object Scala extends Support {
     def swap5() = stack.swap5()
     def swap6() = stack.swap6()
 
-    implicit def toRule(c: Char) = new CharRule(c)
-    implicit def toRule(s: String): Rule = toRule(s.toCharArray)
+    implicit def toRule(c: Char) = ch(c)
+    implicit def toRule(s: String) = str(s.toCharArray)
     implicit def toRule(rule: Rule) = rule.toMatcher
-    implicit def toRule(chars: Array[Char]): Rule = chars.length match {
-      case 0 => EMPTY
-      case 1 => toRule(chars(0))
-      case _ => new SimpleRule(new StringMatcher(chars.map(toRule).map(_.toMatcher), chars), "\"" + chars + '"')
-    }
+    implicit def toRule(chars: Array[Char]) = str(chars)
 
   }
 

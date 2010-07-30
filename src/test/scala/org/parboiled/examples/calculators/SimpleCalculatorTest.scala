@@ -1,4 +1,4 @@
-package org.parboiled.scala
+package org.parboiled.examples.calculators
 
 import org.testng.annotations.Test
 import org.parboiled.test.AbstractTest
@@ -9,8 +9,8 @@ import org.parboiled.matchers.Matcher
 import org.parboiled.support.ToStringFormatter
 import org.parboiled.trees.{Filters, GraphUtils}
 
-class SimpleScalaTest extends AbstractTest with TestNGSuite {
-  val parser = new SimpleParser().withParseTreeBuilding()
+class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
+  val parser = new SimpleCalculator().withParseTreeBuilding()
 
   @Test
   def verifyEasy() = {

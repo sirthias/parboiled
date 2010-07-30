@@ -1,8 +1,12 @@
-package org.parboiled.scala
+package org.parboiled.examples.calculators
 
 import org.parboiled.Scala._
 
-class SimpleParser extends Parser[Int] {
+/**
+ * A very simple calculator language supporting the 4 basic calculation types on integers.
+ */
+class SimpleCalculator extends Parser[Int] {
+
   def InputLine = rule {
     Expression ~ EOI
   }
