@@ -1,47 +1,35 @@
 package org.parboiled.examples.calculators
 
-import org.parboiled.Scala._
+import org.parboiled.scala._
 
 /**
  * A very simple calculator language supporting the 4 basic calculation types on integers.
  */
-class SimpleCalculator extends Parser[Int] {
+class SimpleCalculator extends Parser {
 
-  def InputLine = rule {
-    Expression ~ EOI
-  }
+  def InputLine = rule { Expression ~ EOI }
 
-  def Expression: Rule = rule {
+  def Expression: Rule1[Int] = rule {
     Term ~ zeroOrMore(
-      '+' ~ Term ~ push(pop() + pop())
-    | '-' ~ Term ~ push(pop(1) - pop())
+      '+' ~ Term --> ((a:Int, b) => a + b)
+    | '-' ~ Term --> ((a:Int, b) => a - b)
     )
   }
 
   def Term = rule {
     Factor ~ zeroOrMore(
-      '*' ~ Factor ~ push(pop() * pop())
-    | '/' ~ Factor ~ push(pop(1) / pop())
+      '*' ~ Factor --> ((a:Int, b) => a * b)
+    | '/' ~ Factor --> ((a:Int, b) => a / b)
     )
   }
 
-  def Factor = rule {
-    Number | Parens
-  }
+  def Factor = rule { Number | Parens }
 
-  def Parens = rule {
-    '(' ~ Expression ~ ')'
-  }
+  def Parens = rule { '(' ~ Expression ~ ')' }
 
-  def Number = rule {
-    Digits ~ push(_.toInt)
-  }
+  def Number = rule { Digits ~> (_.toInt) }
 
-  def Digits = rule {
-    oneOrMore(Digit)
-  }
+  def Digits = rule { oneOrMore(Digit) }
 
-  def Digit = rule {
-    '0' -- '9'
-  }
+  def Digit = rule { '0' -- '9' }
 }

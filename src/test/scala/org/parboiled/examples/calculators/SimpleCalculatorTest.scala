@@ -4,7 +4,7 @@ import org.testng.annotations.Test
 import org.parboiled.test.AbstractTest
 import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
-import org.parboiled.Scala._
+import org.parboiled.scala._
 import org.parboiled.matchers.Matcher
 import org.parboiled.support.ToStringFormatter
 import org.parboiled.trees.{Filters, GraphUtils}
@@ -16,7 +16,7 @@ class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
   def verifyEasy() = {
     val rule = parser.InputLine
 
-    assertEquals(printRule(rule),
+    assertEquals(Support.printRule(rule),
             """InputLine: SequenceRule
   Expression: SequenceRule
     Term: SequenceRule
