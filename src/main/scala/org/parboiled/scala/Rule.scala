@@ -3,65 +3,189 @@ package org.parboiled.scala
 import org.parboiled.matchers._
 import org.parboiled.common.StringUtils.escape
 import annotation.unchecked.uncheckedVariance
+import org.parboiled.Action
+import org.parboiled.Context
 
-abstract class Rule(val creator: MatcherCreator) {
+abstract class Rule(val matcher: Matcher) {
 
-  def toMatcher = creator.toMatcher
+  def unary_!() = new Rule0(new TestNotMatcher(matcher))
+  def withLabel(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
+  def withNodeSuppressed(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
+  def withSubnodesSuppressed(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
+  def withNodeSkipped(): this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
+  override def toString = getClass.getSimpleName +  ": " + matcher.toString
 
-  def unary_!() = new Rule0(new UnaryCreator(creator, new TestNotMatcher(_)))
+  protected def withMatcher(matcher: Matcher): this.type
 
-  def withLabel(label: String): this.type = { creator.label = label; this}
-  def withNodeSuppressed(): this.type = { creator.suppressNode = true; this}
-  def withSubnodesSuppressed(): this.type = { creator.suppressSubnodes = true; this}
-  def withNodeSkipped(): this.type = { creator.skipNode = true; this}
+  protected def append(action: Action[_]): Matcher = append(new ActionMatcher(action).label("Action"))
+  protected def append(other: Rule): Matcher = append(other.matcher)
+  protected def append(other: Matcher): Matcher = (matcher match {
+    case m: SequenceMatcher if (m.getLabel == "Sequence") => new SequenceMatcher(addSub(m.getChildren, other))
+    case _ => new SequenceMatcher(Array(matcher, other))
+  }).label("Sequence")
 
-  override def toString = getClass.getSimpleName +  ": " + creator.toString
+  protected def appendChoice(other: Rule): Matcher = appendChoice(other.matcher)
+  protected def appendChoice(other: Matcher): Matcher = (matcher match {
+    case m: FirstOfMatcher if (m.getLabel == "FirstOf") => new FirstOfMatcher(addSub(m.getChildren, other))
+    case _ => new FirstOfMatcher(Array(matcher, other))
+  }).label("FirstOf")
 
-  protected def append(other: Rule) = creator.appendSeq(other.creator)
+  private def addSub(subs: java.util.List[Matcher], element: Matcher): Array[org.parboiled.Rule] = {
+    val count = subs.size
+    val array = new Array[org.parboiled.Rule](count + 1)
+    subs.toArray(array)
+    array(count) = element
+    array
+  }
+
+  protected def appendSeqS[R](f: String => R): Matcher = append(new Action[Any] {
+    def run(c: Context[Any]): Boolean = {
+      c.getValueStack.push(f(c.getMatch)); true
+    }
+  })
+
+  protected def appendSeq1[Z, R](f: Z => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val r = f(z)
+      vs.push(r)
+      true
+    }
+  })
+
+  protected def appendSeq2[Y, Z, R](f: (Y, Z) => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val y = vs.pop.asInstanceOf[Y]
+      val r = f(y, z)
+      vs.push(r)
+      true
+    }
+  })
+
+  protected def appendSeq3[X, Y, Z, R](f: (X, Y, Z) => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val y = vs.pop.asInstanceOf[Y]
+      val x = vs.pop.asInstanceOf[X]
+      val r = f(x, y, z)
+      vs.push(r)
+      true
+    }
+  })
+
+  protected def appendSeq4[W, X, Y, Z, R](f: (W, X, Y, Z) => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val y = vs.pop.asInstanceOf[Y]
+      val x = vs.pop.asInstanceOf[X]
+      val w = vs.pop.asInstanceOf[W]
+      val r = f(w, x, y, z)
+      vs.push(r)
+      true
+    }
+  })
+
+  protected def appendSeq5[V, W, X, Y, Z, R](f: (V, W, X, Y, Z) => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val y = vs.pop.asInstanceOf[Y]
+      val x = vs.pop.asInstanceOf[X]
+      val w = vs.pop.asInstanceOf[W]
+      val v = vs.pop.asInstanceOf[V]
+      val r = f(v, w, x, y, z)
+      vs.push(r)
+      true
+    }
+  })
+
+  protected def appendSeq6[U, V, W, X, Y, Z, R](f: (U, V, W, X, Y, Z) => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val y = vs.pop.asInstanceOf[Y]
+      val x = vs.pop.asInstanceOf[X]
+      val w = vs.pop.asInstanceOf[W]
+      val v = vs.pop.asInstanceOf[V]
+      val u = vs.pop.asInstanceOf[U]
+      val r = f(u, v, w, x, y, z)
+      vs.push(r)
+      true
+    }
+  })
+
+  protected def appendSeq7[T, U, V, W, X, Y, Z, R](f: (T, U, V, W, X, Y, Z) => R) = append(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {
+      val vs = context.getValueStack
+      val z = vs.pop.asInstanceOf[Z]
+      val y = vs.pop.asInstanceOf[Y]
+      val x = vs.pop.asInstanceOf[X]
+      val w = vs.pop.asInstanceOf[W]
+      val v = vs.pop.asInstanceOf[V]
+      val u = vs.pop.asInstanceOf[U]
+      val t = vs.pop.asInstanceOf[T]
+      val r = f(t, u, v, w, x, y, z)
+      vs.push(r)
+      true
+    }
+  })
 }
 
-abstract class ReductionRule(creator: MatcherCreator) extends Rule(creator)
+abstract class ReductionRule(matcher: Matcher) extends Rule(matcher)
 
-class ReductionRule1[Z, R](creator: MatcherCreator) extends ReductionRule(creator) {
-  def |(other: ReductionRule1[Z, R]) = new ReductionRule1[Z, R](creator.appendChoice(other.creator))
+class ReductionRule1[Z, R](matcher: Matcher) extends ReductionRule(matcher) {
+  def |(other: ReductionRule1[Z, R]) = new ReductionRule1[Z, R](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new ReductionRule1[Z, R](matcher).asInstanceOf[this.type]
 }
 
-class ReductionRule2[Y, Z, R](creator: MatcherCreator) extends ReductionRule(creator) {
-  def |(other: ReductionRule2[Y, Z, R]) = new ReductionRule2[Y, Z, R](creator.appendChoice(other.creator))
+class ReductionRule2[Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
+  def |(other: ReductionRule2[Y, Z, R]) = new ReductionRule2[Y, Z, R](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new ReductionRule2[Y, Z, R](matcher).asInstanceOf[this.type]
 }
 
-class ReductionRule3[X, Y, Z, R](creator: MatcherCreator) extends ReductionRule(creator) {
-  def |(other: ReductionRule3[X, Y, Z, R]) = new ReductionRule3[X, Y, Z, R](creator.appendChoice(other.creator))
+class ReductionRule3[X, Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
+  def |(other: ReductionRule3[X, Y, Z, R]) = new ReductionRule3[X, Y, Z, R](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new ReductionRule3[X, Y, Z, R](matcher).asInstanceOf[this.type]
 }
 
-abstract class PopRule(creator: MatcherCreator) extends Rule(creator)
+abstract class PopRule(matcher: Matcher) extends Rule(matcher)
 
-class PopRule1[Z](creator: MatcherCreator) extends PopRule(creator) {
-  def |(other: PopRule1[Z]) = new PopRule1[Z](creator.appendChoice(other.creator))
+class PopRule1[Z](matcher: Matcher) extends PopRule(matcher) {
+  def |(other: PopRule1[Z]) = new PopRule1[Z](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new PopRule1[Z](matcher).asInstanceOf[this.type]
 }
 
-class PopRule2[Y, Z](creator: MatcherCreator) extends PopRule(creator) {
-  def |(other: PopRule2[Y, Z]) = new PopRule2[Y, Z](creator.appendChoice(other.creator))
+class PopRule2[Y, Z](matcher: Matcher) extends PopRule(matcher) {
+  def |(other: PopRule2[Y, Z]) = new PopRule2[Y, Z](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new PopRule2[Y, Z](matcher).asInstanceOf[this.type]
 }
 
-class PopRule3[X, Y, Z](creator: MatcherCreator) extends PopRule(creator) {
-  def |(other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](creator.appendChoice(other.creator))
+class PopRule3[X, Y, Z](matcher: Matcher) extends PopRule(matcher) {
+  def |(other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new PopRule3[X, Y, Z](matcher).asInstanceOf[this.type]
 }
 
-class PopRuleN1(creator: MatcherCreator) extends PopRule(creator) {
-  def |(other: PopRuleN1) = new PopRuleN1(creator.appendChoice(other.creator))
+class PopRuleN1(matcher: Matcher) extends PopRule(matcher) {
+  def |(other: PopRuleN1) = new PopRuleN1(appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new PopRuleN1(matcher).asInstanceOf[this.type]
 }
 
-class PopRuleN2(creator: MatcherCreator) extends PopRule(creator) {
-  def |(other: PopRuleN2) = new PopRuleN2(creator.appendChoice(other.creator))
+class PopRuleN2(matcher: Matcher) extends PopRule(matcher) {
+  def |(other: PopRuleN2) = new PopRuleN2(appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new PopRuleN2(matcher).asInstanceOf[this.type]
 }
 
-class PopRuleN3(creator: MatcherCreator) extends PopRule(creator) {
-  def |(other: PopRuleN3) = new PopRuleN3(creator.appendChoice(other.creator))
+class PopRuleN3(matcher: Matcher) extends PopRule(matcher) {
+  def |(other: PopRuleN3) = new PopRuleN3(appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new PopRuleN3(matcher).asInstanceOf[this.type]
 }
 
-class Rule0(creator: MatcherCreator) extends Rule(creator) {
-  def this(creator: => Matcher) = this(new SimpleCreator(() => creator))
+class Rule0(matcher: Matcher) extends Rule(matcher) {
   def ~[X, Y, Z](other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](append(other))
   def ~[Y, Z](other: PopRule2[Y, Z]) = new PopRule2[Y, Z](append(other))
   def ~[Z](other: PopRule1[Z]) = new PopRule1[Z](append(other))
@@ -79,17 +203,18 @@ class Rule0(creator: MatcherCreator) extends Rule(creator) {
   def ~[A, B, C, D, E](other: Rule5[A, B, C, D, E]) = new Rule5[A, B, C, D, E](append(other))
   def ~[A, B, C, D, E, F](other: Rule6[A, B, C, D, E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[A, B, C, D, E, F, G](other: Rule7[A, B, C, D, E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R) = new Rule1[R](creator.appendSeqS(f))
-  def ~~>[Z, R](f: Z => R) = new ReductionRule1[Z, R](creator.appendSeq1(f))
-  def ~~>[Y, Z, R](f: (Y, Z) => R) = new ReductionRule2[Y, Z, R](creator.appendSeq2(f))
-  def ~~>[X, Y, Z, R](f: (X, Y, Z) => R) = new ReductionRule3[X, Y, Z, R](creator.appendSeq3(f))
-  def |(other: Rule0) = new Rule0(creator.appendChoice(other.creator))
+  def ~>[R](f: String => R) = new Rule1[R](appendSeqS(f))
+  def ~~>[Z, R](f: Z => R) = new ReductionRule1[Z, R](appendSeq1(f))
+  def ~~>[Y, Z, R](f: (Y, Z) => R) = new ReductionRule2[Y, Z, R](appendSeq2(f))
+  def ~~>[X, Y, Z, R](f: (X, Y, Z) => R) = new ReductionRule3[X, Y, Z, R](appendSeq3(f))
+  def |(other: Rule0) = new Rule0(appendChoice(other))
   def -(upperBound: String): Rule0 = throw new IllegalArgumentException("char range operator '-' only allowed on single character strings")
+  protected def withMatcher(matcher: Matcher) = new Rule0(matcher).asInstanceOf[this.type]
 }
 
-sealed abstract class PushRule(creator: MatcherCreator) extends Rule(creator)
+sealed abstract class PushRule(matcher: Matcher) extends Rule(matcher)
 
-class Rule1[+A](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule1[+A](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[Y, Z, AA >: A](other: PopRule3[Y, Z, AA]) = new PopRule2[Y, Z](append(other))
   def ~[Z, AA >: A](other: PopRule2[Z, AA]) = new PopRule1[Z](append(other))
   def ~[AA >: A](other: PopRule1[AA]) = new Rule0(append(other))
@@ -106,15 +231,16 @@ class Rule1[+A](creator: MatcherCreator) extends PushRule(creator: MatcherCreato
   def ~[B, C, D, E](other: Rule4[B, C, D, E]): Rule5[A, B, C, D, E] @uncheckedVariance = new Rule5[A, B, C, D, E](append(other))
   def ~[B, C, D, E, F](other: Rule5[B, C, D, E, F]): Rule6[A, B, C, D, E, F] @uncheckedVariance = new Rule6[A, B, C, D, E, F](append(other))
   def ~[B, C, D, E, F, G](other: Rule6[B, C, D, E, F, G]): Rule7[A, B, C, D, E, F, G] @uncheckedVariance = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R): Rule2[A, R] @uncheckedVariance = new Rule2[A, R](creator.appendSeqS(f))
-  def ~~>[R](f: A => R) = new Rule1[R](creator.appendSeq1(f))
-  def ~~>[Z, R](f: (Z, A) => R) = new ReductionRule1[Z, R](creator.appendSeq2(f))
-  def ~~>[Y, Z, R](f: (Y, Z, A) => R) = new ReductionRule2[Y, Z, R](creator.appendSeq3(f))
-  def ~~>[X, Y, Z, R](f: (X, Y, Z, A) => R) = new ReductionRule3[X, Y, Z, R](creator.appendSeq4(f))
-  def |[AA >: A](other: Rule1[AA]) = new Rule1[AA](creator.appendChoice(other.creator))
+  def ~>[R](f: String => R): Rule2[A, R] @uncheckedVariance = new Rule2[A, R](appendSeqS(f))
+  def ~~>[R](f: A => R) = new Rule1[R](appendSeq1(f))
+  def ~~>[Z, R](f: (Z, A) => R) = new ReductionRule1[Z, R](appendSeq2(f))
+  def ~~>[Y, Z, R](f: (Y, Z, A) => R) = new ReductionRule2[Y, Z, R](appendSeq3(f))
+  def ~~>[X, Y, Z, R](f: (X, Y, Z, A) => R) = new ReductionRule3[X, Y, Z, R](appendSeq4(f))
+  def |[AA >: A](other: Rule1[AA]) = new Rule1[AA](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule1[A](matcher).asInstanceOf[this.type]
 }
 
-class Rule2[+A, +B](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule2[+A, +B](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[Z, AA >: A, BB >: B](other: PopRule3[Z, AA, BB]) = new PopRule1[Z](append(other))
   def ~[AA >: A, BB >: B](other: PopRule2[AA, BB]) = new Rule0(append(other))
   def ~[BB >: B](other: PopRule1[BB]) = new Rule1[A](append(other))
@@ -130,16 +256,17 @@ class Rule2[+A, +B](creator: MatcherCreator) extends PushRule(creator: MatcherCr
   def ~[C, D, E](other: Rule3[C, D, E]): Rule5[A, B, C, D, E] @uncheckedVariance = new Rule5[A, B, C, D, E](append(other))
   def ~[C, D, E, F](other: Rule4[C, D, E, F]): Rule6[A, B, C, D, E, F] @uncheckedVariance = new Rule6[A, B, C, D, E, F](append(other))
   def ~[C, D, E, F, G](other: Rule5[C, D, E, F, G]): Rule7[A, B, C, D, E, F, G] @uncheckedVariance = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R): Rule3[A, B, R] @uncheckedVariance = new Rule3[A, B, R](creator.appendSeqS(f))
-  def ~~>[R](f: B => R) = new Rule2[A, R](creator.appendSeq1(f))
-  def ~~>[R](f: (A, B) => R) = new Rule1[R](creator.appendSeq2(f))
-  def ~~>[Z, R](f: (Z, A, B) => R) = new ReductionRule1[Z, R](creator.appendSeq3(f))
-  def ~~>[Y, Z, R](f: (Y, Z, A, B) => R) = new ReductionRule2[Y, Z, R](creator.appendSeq4(f))
-  def ~~>[X, Y, Z, R](f: (X, Y, Z, A, B) => R) = new ReductionRule3[X, Y, Z, R](creator.appendSeq5(f))
-  def |[AA >: A, BB >: B](other: Rule2[AA, BB]) = new Rule2[AA, BB](creator.appendChoice(other.creator))
+  def ~>[R](f: String => R): Rule3[A, B, R] @uncheckedVariance = new Rule3[A, B, R](appendSeqS(f))
+  def ~~>[R](f: B => R) = new Rule2[A, R](appendSeq1(f))
+  def ~~>[R](f: (A, B) => R) = new Rule1[R](appendSeq2(f))
+  def ~~>[Z, R](f: (Z, A, B) => R) = new ReductionRule1[Z, R](appendSeq3(f))
+  def ~~>[Y, Z, R](f: (Y, Z, A, B) => R) = new ReductionRule2[Y, Z, R](appendSeq4(f))
+  def ~~>[X, Y, Z, R](f: (X, Y, Z, A, B) => R) = new ReductionRule3[X, Y, Z, R](appendSeq5(f))
+  def |[AA >: A, BB >: B](other: Rule2[AA, BB]) = new Rule2[AA, BB](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule2[A, B](matcher).asInstanceOf[this.type]
 }
 
-class Rule3[+A, +B, +C](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule3[+A, +B, +C](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[AA >: A, BB >: B, CC >: C](other: PopRule3[AA, BB, CC]) = new Rule0(append(other))
   def ~[BB >: B, CC >: C](other: PopRule2[BB, CC]) = new Rule1[A](append(other))
   def ~[CC >: C](other: PopRule1[CC]) = new Rule2[A, B](append(other))
@@ -154,17 +281,18 @@ class Rule3[+A, +B, +C](creator: MatcherCreator) extends PushRule(creator: Match
   def ~[D, E](other: Rule2[D, E]): Rule5[A, B, C, D, E] @uncheckedVariance = new Rule5[A, B, C, D, E](append(other))
   def ~[D, E, F](other: Rule3[D, E, F]): Rule6[A, B, C, D, E, F] @uncheckedVariance = new Rule6[A, B, C, D, E, F](append(other))
   def ~[D, E, F, G](other: Rule4[D, E, F, G]): Rule7[A, B, C, D, E, F, G] @uncheckedVariance = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R): Rule4[A, B, C, R] @uncheckedVariance = new Rule4[A, B, C, R](creator.appendSeqS(f))
-  def ~~>[R](f: C => R) = new Rule3[A, B, R](creator.appendSeq1(f))
-  def ~~>[R](f: (B, C) => R) = new Rule2[A, R](creator.appendSeq2(f))
-  def ~~>[R](f: (A, B, C) => R) = new Rule1[R](creator.appendSeq3(f))
-  def ~~>[Z, R](f: (Z, A, B, C) => R) = new ReductionRule1[Z, R](creator.appendSeq4(f))
-  def ~~>[Y, Z, R](f: (Y, Z, A, B, C) => R) = new ReductionRule2[Y, Z, R](creator.appendSeq5(f))
-  def ~~>[X, Y, Z, R](f: (X, Y, Z, A, B, C) => R) = new ReductionRule3[X, Y, Z, R](creator.appendSeq6(f))
-  def |[AA >: A, BB >: B, CC >: C](other: Rule3[AA, BB, CC]) = new Rule3[AA, BB, CC](creator.appendChoice(other.creator))
+  def ~>[R](f: String => R): Rule4[A, B, C, R] @uncheckedVariance = new Rule4[A, B, C, R](appendSeqS(f))
+  def ~~>[R](f: C => R) = new Rule3[A, B, R](appendSeq1(f))
+  def ~~>[R](f: (B, C) => R) = new Rule2[A, R](appendSeq2(f))
+  def ~~>[R](f: (A, B, C) => R) = new Rule1[R](appendSeq3(f))
+  def ~~>[Z, R](f: (Z, A, B, C) => R) = new ReductionRule1[Z, R](appendSeq4(f))
+  def ~~>[Y, Z, R](f: (Y, Z, A, B, C) => R) = new ReductionRule2[Y, Z, R](appendSeq5(f))
+  def ~~>[X, Y, Z, R](f: (X, Y, Z, A, B, C) => R) = new ReductionRule3[X, Y, Z, R](appendSeq6(f))
+  def |[AA >: A, BB >: B, CC >: C](other: Rule3[AA, BB, CC]) = new Rule3[AA, BB, CC](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule3[A, B, C](matcher).asInstanceOf[this.type]
 }
 
-class Rule4[+A, +B, +C, +D](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule4[+A, +B, +C, +D](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[BB >: B, CC >: C, DD >: D](other: PopRule3[BB, CC, DD]) = new Rule1[A](append(other))
   def ~[CC >: C, DD >: D](other: PopRule2[CC, DD]) = new Rule2[A, B](append(other))
   def ~[DD >: D](other: PopRule1[DD]) = new Rule3[A, B, C](append(other))
@@ -178,18 +306,19 @@ class Rule4[+A, +B, +C, +D](creator: MatcherCreator) extends PushRule(creator: M
   def ~[E](other: Rule1[E]): Rule5[A, B, C, D, E] @uncheckedVariance = new Rule5[A, B, C, D, E](append(other))
   def ~[E, F](other: Rule2[E, F]): Rule6[A, B, C, D, E, F] @uncheckedVariance = new Rule6[A, B, C, D, E, F](append(other))
   def ~[E, F, G](other: Rule3[E, F, G]): Rule7[A, B, C, D, E, F, G] @uncheckedVariance = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R): Rule5[A, B, C, D, R] @uncheckedVariance = new Rule5[A, B, C, D, R](creator.appendSeqS(f))
-  def ~~>[R](f: D => R) = new Rule4[A, B, C, R](creator.appendSeq1(f))
-  def ~~>[R](f: (C, D) => R) = new Rule3[A, B, R](creator.appendSeq2(f))
-  def ~~>[R](f: (B, C, D) => R) = new Rule2[A, R](creator.appendSeq3(f))
-  def ~~>[R](f: (A, B, C, D) => R) = new Rule1[R](creator.appendSeq4(f))
-  def ~~>[Z, R](f: (Z, A, B, C, D) => R) = new ReductionRule1[Z, R](creator.appendSeq5(f))
-  def ~~>[Y, Z, R](f: (Y, Z, A, B, C, D) => R) = new ReductionRule2[Y, Z, R](creator.appendSeq6(f))
-  def ~~>[X, Y, Z, R](f: (X, Y, Z, A, B, C, D) => R) = new ReductionRule3[X, Y, Z, R](creator.appendSeq7(f))
-  def |[AA >: A, BB >: B, CC >: C, DD >: D](other: Rule4[AA, BB, CC, DD]) = new Rule4[AA, BB, CC, DD](creator.appendChoice(other.creator))
+  def ~>[R](f: String => R): Rule5[A, B, C, D, R] @uncheckedVariance = new Rule5[A, B, C, D, R](appendSeqS(f))
+  def ~~>[R](f: D => R) = new Rule4[A, B, C, R](appendSeq1(f))
+  def ~~>[R](f: (C, D) => R) = new Rule3[A, B, R](appendSeq2(f))
+  def ~~>[R](f: (B, C, D) => R) = new Rule2[A, R](appendSeq3(f))
+  def ~~>[R](f: (A, B, C, D) => R) = new Rule1[R](appendSeq4(f))
+  def ~~>[Z, R](f: (Z, A, B, C, D) => R) = new ReductionRule1[Z, R](appendSeq5(f))
+  def ~~>[Y, Z, R](f: (Y, Z, A, B, C, D) => R) = new ReductionRule2[Y, Z, R](appendSeq6(f))
+  def ~~>[X, Y, Z, R](f: (X, Y, Z, A, B, C, D) => R) = new ReductionRule3[X, Y, Z, R](appendSeq7(f))
+  def |[AA >: A, BB >: B, CC >: C, DD >: D](other: Rule4[AA, BB, CC, DD]) = new Rule4[AA, BB, CC, DD](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule4[A, B, C, D](matcher).asInstanceOf[this.type]
 }
 
-class Rule5[+A, +B, +C, +D, +E](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule5[+A, +B, +C, +D, +E](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[CC >: C, DD >: D, EE >: E](other: PopRule3[CC, DD, EE]) = new Rule2[A, B](append(other))
   def ~[DD >: D, EE >: E](other: PopRule2[DD, EE]) = new Rule3[A, B, C](append(other))
   def ~[EE >: E](other: PopRule1[EE]) = new Rule4[A, B, C, D](append(other))
@@ -202,18 +331,19 @@ class Rule5[+A, +B, +C, +D, +E](creator: MatcherCreator) extends PushRule(creato
   def ~(other: Rule0) = new Rule5[A, B, C, D, E](append(other))
   def ~[F](other: Rule1[F]): Rule6[A, B, C, D, E, F] @uncheckedVariance = new Rule6[A, B, C, D, E, F](append(other))
   def ~[F, G](other: Rule2[F, G]): Rule7[A, B, C, D, E, F, G] @uncheckedVariance = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R): Rule6[A, B, C, D, E, R] @uncheckedVariance = new Rule6[A, B, C, D, E, R](creator.appendSeqS(f))
-  def ~~>[R](f: E => R) = new Rule5[A, B, C, D, R](creator.appendSeq1(f))
-  def ~~>[R](f: (D, E) => R) = new Rule4[A, B, C, R](creator.appendSeq2(f))
-  def ~~>[R](f: (C, D, E) => R) = new Rule3[A, B, R](creator.appendSeq3(f))
-  def ~~>[R](f: (B, C, D, E) => R) = new Rule2[A, R](creator.appendSeq4(f))
-  def ~~>[R](f: (A, B, C, D, E) => R) = new Rule1[R](creator.appendSeq5(f))
-  def ~~>[Z, R](f: (Z, A, B, C, D, E) => R) = new ReductionRule1[Z, R](creator.appendSeq6(f))
-  def ~~>[Y, Z, R](f: (Y, Z, A, B, C, D, E) => R) = new ReductionRule2[Y, Z, R](creator.appendSeq7(f))
-  def |[AA >: A, BB >: B, CC >: C, DD >: D, EE >: E](other: Rule5[AA, BB, CC, DD, EE]) = new Rule5[AA, BB, CC, DD, EE](creator.appendChoice(other.creator))
+  def ~>[R](f: String => R): Rule6[A, B, C, D, E, R] @uncheckedVariance = new Rule6[A, B, C, D, E, R](appendSeqS(f))
+  def ~~>[R](f: E => R) = new Rule5[A, B, C, D, R](appendSeq1(f))
+  def ~~>[R](f: (D, E) => R) = new Rule4[A, B, C, R](appendSeq2(f))
+  def ~~>[R](f: (C, D, E) => R) = new Rule3[A, B, R](appendSeq3(f))
+  def ~~>[R](f: (B, C, D, E) => R) = new Rule2[A, R](appendSeq4(f))
+  def ~~>[R](f: (A, B, C, D, E) => R) = new Rule1[R](appendSeq5(f))
+  def ~~>[Z, R](f: (Z, A, B, C, D, E) => R) = new ReductionRule1[Z, R](appendSeq6(f))
+  def ~~>[Y, Z, R](f: (Y, Z, A, B, C, D, E) => R) = new ReductionRule2[Y, Z, R](appendSeq7(f))
+  def |[AA >: A, BB >: B, CC >: C, DD >: D, EE >: E](other: Rule5[AA, BB, CC, DD, EE]) = new Rule5[AA, BB, CC, DD, EE](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule5[A, B, C, D, E](matcher).asInstanceOf[this.type]
 }
 
-class Rule6[+A, +B, +C, +D, +E, +F](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule6[+A, +B, +C, +D, +E, +F](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[DD >: D, EE >: E, FF >: F](other: PopRule3[DD, EE, FF]) = new Rule3[A, B, C](append(other))
   def ~[EE >: E, FF >: F](other: PopRule2[EE, FF]) = new Rule4[A, B, C, D](append(other))
   def ~[FF >: F](other: PopRule1[FF]) = new Rule5[A, B, C, D, E](append(other))
@@ -225,18 +355,19 @@ class Rule6[+A, +B, +C, +D, +E, +F](creator: MatcherCreator) extends PushRule(cr
   def ~[FF >: F, R](other: ReductionRule1[FF, R]) = new Rule6[A, B, C, D, E, R](append(other))
   def ~(other: Rule0) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[G](other: Rule1[G]): Rule7[A, B, C, D, E, F, G] @uncheckedVariance = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~>[R](f: String => R): Rule7[A, B, C, D, E, F, R] @uncheckedVariance = new Rule7[A, B, C, D, E, F, R](creator.appendSeqS(f))
-  def ~~>[R](f: E => R) = new Rule6[A, B, C, D, E, R](creator.appendSeq1(f))
-  def ~~>[R](f: (E, F) => R) = new Rule5[A, B, C, D, R](creator.appendSeq2(f))
-  def ~~>[R](f: (D, E, F) => R) = new Rule4[A, B, C, R](creator.appendSeq3(f))
-  def ~~>[R](f: (C, D, E, F) => R) = new Rule3[A, B, R](creator.appendSeq4(f))
-  def ~~>[R](f: (B, C, D, E, F) => R) = new Rule2[A, R](creator.appendSeq5(f))
-  def ~~>[R](f: (A, B, C, D, E, F) => R) = new Rule1[R](creator.appendSeq6(f))
-  def ~~>[Z, R](f: (Z, A, B, C, D, E, F) => R) = new ReductionRule1[Z, R](creator.appendSeq7(f))
-  def |[AA >: A, BB >: B, CC >: C, DD >: D, EE >: E, FF >: F](other: Rule6[AA, BB, CC, DD, EE, FF]) = new Rule6[AA, BB, CC, DD, EE, FF](creator.appendChoice(other.creator))
+  def ~>[R](f: String => R): Rule7[A, B, C, D, E, F, R] @uncheckedVariance = new Rule7[A, B, C, D, E, F, R](appendSeqS(f))
+  def ~~>[R](f: E => R) = new Rule6[A, B, C, D, E, R](appendSeq1(f))
+  def ~~>[R](f: (E, F) => R) = new Rule5[A, B, C, D, R](appendSeq2(f))
+  def ~~>[R](f: (D, E, F) => R) = new Rule4[A, B, C, R](appendSeq3(f))
+  def ~~>[R](f: (C, D, E, F) => R) = new Rule3[A, B, R](appendSeq4(f))
+  def ~~>[R](f: (B, C, D, E, F) => R) = new Rule2[A, R](appendSeq5(f))
+  def ~~>[R](f: (A, B, C, D, E, F) => R) = new Rule1[R](appendSeq6(f))
+  def ~~>[Z, R](f: (Z, A, B, C, D, E, F) => R) = new ReductionRule1[Z, R](appendSeq7(f))
+  def |[AA >: A, BB >: B, CC >: C, DD >: D, EE >: E, FF >: F](other: Rule6[AA, BB, CC, DD, EE, FF]) = new Rule6[AA, BB, CC, DD, EE, FF](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule6[A, B, C, D, E, F](matcher).asInstanceOf[this.type]
 }
 
-class Rule7[+A, +B, +C, +D, +E, +F, +G](creator: MatcherCreator) extends PushRule(creator: MatcherCreator) {
+class Rule7[+A, +B, +C, +D, +E, +F, +G](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[EE >: E, FF >: F, GG >: G](other: PopRule3[EE, FF, GG]) = new Rule4[A, B, C, F](append(other))
   def ~[FF >: F, GG >: G](other: PopRule2[FF, GG]) = new Rule5[A, B, C, D, F](append(other))
   def ~[GG >: G](other: PopRule1[GG]) = new Rule6[A, B, C, D, E, F](append(other))
@@ -247,22 +378,22 @@ class Rule7[+A, +B, +C, +D, +E, +F, +G](creator: MatcherCreator) extends PushRul
   def ~[FF >: F, GG >: G, R](other: ReductionRule2[FF, GG, R]) = new Rule6[A, B, C, D, E, R](append(other))
   def ~[GG >: G, R](other: ReductionRule1[GG, R]) = new Rule7[A, B, C, D, E, F, R](append(other))
   def ~(other: Rule0) = new Rule7[A, B, C, D, E, F, G](append(other))
-  def ~~>[R](f: G => R) = new Rule7[A, B, C, D, E, F, R](creator.appendSeq1(f))
-  def ~~>[R](f: (F, G) => R) = new Rule6[A, B, C, D, E, R](creator.appendSeq2(f))
-  def ~~>[R](f: (E, F, G) => R) = new Rule5[A, B, C, D, R](creator.appendSeq3(f))
-  def ~~>[R](f: (D, E, F, G) => R) = new Rule4[A, B, C, R](creator.appendSeq4(f))
-  def ~~>[R](f: (C, D, E, F, G) => R) = new Rule3[A, B, R](creator.appendSeq5(f))
-  def ~~>[R](f: (B, C, D, E, F, G) => R) = new Rule2[A, R](creator.appendSeq6(f))
-  def ~~>[R](f: (A, B, C, D, E, F, G) => R) = new Rule1[R](creator.appendSeq7(f))
-  def |[AA >: A, BB >: B, CC >: C, DD >: D, EE >: E, FF >: F, GG >: G](other: Rule7[AA, BB, CC, DD, EE, FF, GG]) = new Rule7[AA, BB, CC, DD, EE, FF, GG](creator.appendChoice(other.creator))
+  def ~~>[R](f: G => R) = new Rule7[A, B, C, D, E, F, R](appendSeq1(f))
+  def ~~>[R](f: (F, G) => R) = new Rule6[A, B, C, D, E, R](appendSeq2(f))
+  def ~~>[R](f: (E, F, G) => R) = new Rule5[A, B, C, D, R](appendSeq3(f))
+  def ~~>[R](f: (D, E, F, G) => R) = new Rule4[A, B, C, R](appendSeq4(f))
+  def ~~>[R](f: (C, D, E, F, G) => R) = new Rule3[A, B, R](appendSeq5(f))
+  def ~~>[R](f: (B, C, D, E, F, G) => R) = new Rule2[A, R](appendSeq6(f))
+  def ~~>[R](f: (A, B, C, D, E, F, G) => R) = new Rule1[R](appendSeq7(f))
+  def |[AA >: A, BB >: B, CC >: C, DD >: D, EE >: E, FF >: F, GG >: G](other: Rule7[AA, BB, CC, DD, EE, FF, GG]) = new Rule7[AA, BB, CC, DD, EE, FF, GG](appendChoice(other))
+  protected def withMatcher(matcher: Matcher) = new Rule7[A, B, C, D, E, F, G](matcher).asInstanceOf[this.type]
 }
 
-class CharRule(val c: Char) extends Rule0(new CharMatcher(c)) {
-  withLabel('\'' + escape(c) + '\'')
-  
+class CharRule(val c: Char) extends Rule0(new CharMatcher(c).label('\'' + escape(c) + '\'')) {
+
   override def -(upperBound: String) =
     if (upperBound == null || upperBound.length != 1)
       super.-(upperBound)
     else
-      new Rule0(new CharRangeMatcher(c, upperBound.charAt(0))).withLabel(c + ".." + upperBound)
+      new Rule0(new CharRangeMatcher(c, upperBound.charAt(0)).label(c + ".." + upperBound))
 }
