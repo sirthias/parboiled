@@ -13,48 +13,42 @@ class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
   val parser = new SimpleCalculator().withParseTreeBuilding()
 
   @Test
-  def verifyEasy() = {
+  def testSimpleCalculator() = {
     val rule = parser.InputLine
 
     assertEquals(Support.printRule(rule),
-            """InputLine: SequenceRule
-  Expression: SequenceRule
-    Term: SequenceRule
-      Factor: FirstOfRule
-        Number: SequenceRule
-          Digits: UnaryRule
-            Digit: SimpleRule
-          Action: SimpleRule
-        Parens: SequenceRule
-          SequenceRule
-            '(': CharRule
-            ProxyRule
-          ')': CharRule
-      ZeroOrMore: UnaryRule
-        FirstOfRule
-          SequenceRule
-            SequenceRule
-              '*': CharRule
-              Factor: FirstOfRule
-            Action: SimpleRule
-          SequenceRule
-            SequenceRule
-              '/': CharRule
-              Factor: FirstOfRule
-            Action: SimpleRule
-    ZeroOrMore: UnaryRule
-      FirstOfRule
-        SequenceRule
-          SequenceRule
-            '+': CharRule
-            Term: SequenceRule
-          Action: SimpleRule
-        SequenceRule
-          SequenceRule
-            '-': CharRule
-            Term: SequenceRule
-          Action: SimpleRule
-  EOI: SimpleRule
+            """InputLine: SequenceCreator
+  Factor: FirstOfCreator
+    Number: SequenceCreator
+      Digits: UnaryCreator
+        Digit: SimpleCreator
+      ActionCreator
+    Parens: SequenceCreator
+      '(': SimpleCreator
+      ProxyCreator
+        InputLine: SequenceCreator
+      ')': SimpleCreator
+  ZeroOrMore: UnaryCreator
+    FirstOfCreator
+      SequenceCreator
+        '*': SimpleCreator
+        Factor: FirstOfCreator
+        ActionCreator
+      SequenceCreator
+        '/': SimpleCreator
+        Factor: FirstOfCreator
+        ActionCreator
+  ZeroOrMore: UnaryCreator
+    FirstOfCreator
+      SequenceCreator
+        '+': SimpleCreator
+        InputLine: SequenceCreator
+        ActionCreator
+      SequenceCreator
+        '-': SimpleCreator
+        InputLine: SequenceCreator
+        ActionCreator
+  EOI: SimpleCreator
 """)
 
     val matcher = rule.toMatcher

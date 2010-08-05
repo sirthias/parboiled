@@ -31,7 +31,7 @@ abstract class MatcherCreator {
     }
   }
 
-  def appendSeq(other: MatcherCreator): MatcherCreator = new SequenceCreator(List(this, other))
+  def appendSeq(other: MatcherCreator): MatcherCreator = new SequenceCreator(List(other, this))
 
   def appendSeq(action: Action[Any]): MatcherCreator = appendSeq(new ActionCreator(action))
 
@@ -132,7 +132,7 @@ abstract class MatcherCreator {
     }
   })
 
-  def appendChoice(other: MatcherCreator): MatcherCreator = new FirstOfCreator(List(this, other))
+  def appendChoice(other: MatcherCreator): MatcherCreator = new FirstOfCreator(List(other, this))
 
   override def toString = (if (label != null) label + ": " else "") + getClass.getSimpleName
 }
@@ -145,16 +145,16 @@ class UnaryCreator(val sub: MatcherCreator, val creator: Matcher => Matcher) ext
   def createMatcher() = creator(sub.toMatcher)
 }
 
-abstract class NaryCreator(var subs: List[MatcherCreator]) extends MatcherCreator
+abstract class NaryCreator(val subs: List[MatcherCreator]) extends MatcherCreator
 
-class SequenceCreator(sbs: List[MatcherCreator]) extends NaryCreator(sbs) {
-  override def appendSeq(other: MatcherCreator) = {subs = other :: subs; this}
+class SequenceCreator(subs: List[MatcherCreator]) extends NaryCreator(subs) {
+  override def appendSeq(other: MatcherCreator) = new SequenceCreator(other :: subs)
 
   def createMatcher() = new SequenceMatcher(subs.reverse.map(_.toMatcher).toArray).label("Sequence")
 }
 
-class FirstOfCreator(sbs: List[MatcherCreator]) extends NaryCreator(sbs) {
-  override def appendChoice(other: MatcherCreator) = {subs = other :: subs; this}
+class FirstOfCreator(subs: List[MatcherCreator]) extends NaryCreator(subs) {
+  override def appendChoice(other: MatcherCreator) = new FirstOfCreator(other :: subs)
 
   def createMatcher() = new FirstOfMatcher(subs.reverse.map(_.toMatcher).toArray).label("FirstOf")
 }
@@ -164,6 +164,14 @@ class ActionCreator(val action: Action[_]) extends MatcherCreator {
 }
 
 class ProxyCreator extends MatcherCreator {
-  var creator: () => Matcher = _
-  def createMatcher() = creator()
+  var inner: Rule =  _
+
+  def createMatcher() = {
+    require(inner != null) // make sure we have been armed
+    val proxyMatcher = new ProxyMatcher()
+    inner.creator.registerProxy(proxyMatcher)
+    proxyMatcher
+  }
+
+  def arm(inner: Rule) { this.inner = inner }
 }

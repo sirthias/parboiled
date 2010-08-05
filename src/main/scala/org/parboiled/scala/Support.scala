@@ -10,7 +10,7 @@ object Support {
     try {
       throw new Throwable
     } catch {
-      case t: Throwable => t.getStackTrace()(4)
+      case t: Throwable => t.getStackTrace()(3)
     }
   }
 
@@ -28,7 +28,9 @@ object Support {
     sb += '\n'
     creator match {
       case c: UnaryCreator => printSub(c.sub)
-      case c: NaryCreator => for (sub <- c.subs) printSub(sub)
+      case c: NaryCreator => for (sub <- c.subs.reverse) printSub(sub)
+      case c: ProxyCreator => printSub(c.inner.creator) 
+      case _ =>
     }
     sb
   }

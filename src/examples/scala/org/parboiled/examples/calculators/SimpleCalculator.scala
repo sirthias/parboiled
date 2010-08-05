@@ -11,25 +11,25 @@ class SimpleCalculator extends Parser {
 
   def Expression: Rule1[Int] = rule {
     Term ~ zeroOrMore(
-      '+' ~ Term --> ((a:Int, b) => a + b)
-    | '-' ~ Term --> ((a:Int, b) => a - b)
+      "+" ~ Term ~~> ((a:Int, b) => a + b)
+    | "-" ~ Term ~~> ((a:Int, b) => a - b)
     )
   }
 
   def Term = rule {
     Factor ~ zeroOrMore(
-      '*' ~ Factor --> ((a:Int, b) => a * b)
-    | '/' ~ Factor --> ((a:Int, b) => a / b)
+      "*" ~ Factor ~~> ((a:Int, b) => a * b)
+    | "/" ~ Factor ~~> ((a:Int, b) => a / b)
     )
   }
 
   def Factor = rule { Number | Parens }
 
-  def Parens = rule { '(' ~ Expression ~ ')' }
+  def Parens = rule { "(" ~ Expression ~ ")" }
 
   def Number = rule { Digits ~> (_.toInt) }
 
   def Digits = rule { oneOrMore(Digit) }
 
-  def Digit = rule { '0' -- '9' }
+  def Digit = rule { "0" - "9" }
 }
