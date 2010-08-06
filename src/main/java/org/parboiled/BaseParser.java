@@ -36,6 +36,21 @@ import static org.parboiled.common.StringUtils.escape;
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
+     * Matches the EOI (end of input) character.
+     */
+    public static final Rule EOI = new CharMatcher(Characters.EOI).label("EOI");
+
+    /**
+     * Matches any character except {@link Characters#EOI}.
+     */
+    public static final Rule ANY = new AnyMatcher().label("ANY");
+
+    /**
+     * Matches nothing and therefore always succeeds.
+     */
+    public static final Rule EMPTY = new EmptyMatcher().label("EMPTY");
+
+    /**
      * Creates a new instance of this parsers class using the no-arg constructor. If no no-arg constructor
      * exists this method will fail with a java.lang.NoSuchMethodError.
      * Using this method is faster than using {@link Parboiled#createParser(Class, Object...)} for creating
@@ -356,36 +371,6 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Label("ZeroOrMore")
     public Rule ZeroOrMore(Object rule) {
         return new ZeroOrMoreMatcher(ToRule(rule));
-    }
-
-    /**
-     * Matches the EOI (end of input) character.
-     *
-     * @return a new rule
-     */
-    @Label("EOI")
-    public Rule Eoi() {
-        return Ch(Characters.EOI);
-    }
-
-    /**
-     * Matches any character except {@link Characters#EOI}.
-     *
-     * @return a new rule
-     */
-    @Label("ANY")
-    public Rule Any() {
-        return new AnyMatcher();
-    }
-
-    /**
-     * Matches nothing and therefore always succeeds.
-     *
-     * @return a new rule
-     */
-    @Label("EMPTY")
-    public Rule Empty() {
-        return new EmptyMatcher();
     }
 
     ///************************* "MAGIC" METHODS ***************************///
