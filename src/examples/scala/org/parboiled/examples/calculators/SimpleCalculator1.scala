@@ -3,9 +3,10 @@ package org.parboiled.examples.calculators
 import org.parboiled.scala._
 
 /**
- * A very simple calculator language supporting the 4 basic calculation types on integers.
+ * A parser for a simple calculator language supporting the 4 basic calculation types on integers.
+ * The actual calculations are performed by inline parser actions using the parsers value stack as temporary storage.
  */
-class SimpleCalculator extends Parser {
+class SimpleCalculator1 extends Parser {
 
   def InputLine = rule { Expression ~ EOI }
 

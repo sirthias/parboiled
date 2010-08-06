@@ -19,6 +19,7 @@ package org.parboiled.examples.calculators;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.common.StringUtils;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
 import org.parboiled.support.Var;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
@@ -43,9 +44,9 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 Term(),
                 ZeroOrMore(
                         Sequence(
-                                // we use a FirstOf(...) instead of a CharSet so we can use the FromCharLiteral
-                                // transformation, which automatically consumes any whitespace
-                                FirstOf('+', '-'), op.set(matchedChar()),
+                                // we use a FirstOf(...) instead of a CharSet so we can use the FromStringLiteral
+                                // transformation (see below), which automatically consumes trailing whitespace
+                                FirstOf("+ ", "- "), op.set(matchedChar()),
                                 Term(),
 
                                 // same as in CalculatorParser2
@@ -61,7 +62,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 Factor(),
                 ZeroOrMore(
                         Sequence(
-                                FirstOf('*', '/'), op.set(matchedChar()),
+                                FirstOf("* ", "/ "), op.set(matchedChar()),
                                 Factor(),
                                 push(new CalcNode(op.get(), pop(1), pop()))
                         )
@@ -74,7 +75,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 Atom(),
                 ZeroOrMore(
                         Sequence(
-                                '^',
+                                "^ ",
                                 Atom(),
                                 push(new CalcNode('^', pop(1), pop()))
                         )
@@ -88,7 +89,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
     public Rule SquareRoot() {
         return Sequence(
-                "SQRT",
+                "SQRT ",
                 Parens(),
 
                 // create a new AST node with a special operator 'R' and only one child
@@ -97,7 +98,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Parens() {
-        return Sequence('(', Expression(), ')');
+        return Sequence("( ", Expression(), ") ");
     }
 
     public Rule Number() {
@@ -105,9 +106,9 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 // we use another Sequence in the "Number" Sequence so we can easily access the input text matched
                 // by the three enclosed rules with "lastText()"
                 Sequence(
-                        Optional(Ch('-')),
+                        Optional('-'),
                         OneOrMore(Digit()),
-                        Optional(Sequence(Ch('.'), OneOrMore(Digit())))
+                        Optional(Sequence('.', OneOrMore(Digit())))
                 ),
 
                 // the match() call returns the matched input text of the immediately preceding rule
@@ -124,20 +125,15 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         return ZeroOrMore(CharSet(" \t\f"));
     }
 
-    // we redefine the rule creation for character literals to also match trailing whitespace this way we don't have
-    // to insert extra whitespace() rules after each character literal
-    // however, we now have to wrap character matching rules we don't want to be "space swallowing"
-    // with the Ch(...) rule creator
+    // we redefine the rule creation for string literals to automatically match trailing whitespace if the string
+    // literal ends with a space character, this way we don't have to insert extra whitespace() rules after each
+    // character or string literal
 
-    @Override
-    protected Rule FromCharLiteral(char c) {
-        return Sequence(Ch(c), WhiteSpace());
-    }
-
-    // same thing for String literals
     @Override
     protected Rule FromStringLiteral(@NotNull String string) {
-        return Sequence(String(string), WhiteSpace());
+        return string.endsWith(" ") ?
+                Sequence(String(string.substring(0, string.length() - 1)), WhiteSpace()) :
+                String(string);
     }
 
     //****************************************************************

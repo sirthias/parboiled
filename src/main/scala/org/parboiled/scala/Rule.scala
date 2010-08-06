@@ -6,9 +6,16 @@ import annotation.unchecked.uncheckedVariance
 import org.parboiled.Action
 import org.parboiled.Context
 
+/**
+ * The base class of all scala parser rules.
+ */
 abstract class Rule(val matcher: Matcher) {
 
+  /**
+   * Creates a "NOT" syntactic predicate according to the PEG formalism.
+   */
   def unary_!() = new Rule0(new TestNotMatcher(matcher))
+  
   def withLabel(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
   def withNodeSuppressed(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
   def withSubnodesSuppressed(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
@@ -136,55 +143,91 @@ abstract class Rule(val matcher: Matcher) {
   })
 }
 
+/**
+ * The base class of all reduction rules, which take a certain number of input values and produce one output value.
+ */
 abstract class ReductionRule(matcher: Matcher) extends Rule(matcher)
 
+/**
+ * A rule taking one value off the value stack and replacing it with another value.
+ */
 class ReductionRule1[Z, R](matcher: Matcher) extends ReductionRule(matcher) {
   def |(other: ReductionRule1[Z, R]) = new ReductionRule1[Z, R](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new ReductionRule1[Z, R](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule taking two values off the value stack and replacing them with one other value.
+ */
 class ReductionRule2[Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
   def |(other: ReductionRule2[Y, Z, R]) = new ReductionRule2[Y, Z, R](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new ReductionRule2[Y, Z, R](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule taking three values off the value stack and replacing them with one other value.
+ */
 class ReductionRule3[X, Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
   def |(other: ReductionRule3[X, Y, Z, R]) = new ReductionRule3[X, Y, Z, R](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new ReductionRule3[X, Y, Z, R](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * The base class of all rules simply removing a certain number of elements off the top of the value stack.
+ */
 abstract class PopRule(matcher: Matcher) extends Rule(matcher)
 
+/**
+ * A rule removing the top value stack element with a given type.
+ */
 class PopRule1[Z](matcher: Matcher) extends PopRule(matcher) {
   def |(other: PopRule1[Z]) = new PopRule1[Z](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRule1[Z](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule removing the top two value stack elements with given types.
+ */
 class PopRule2[Y, Z](matcher: Matcher) extends PopRule(matcher) {
   def |(other: PopRule2[Y, Z]) = new PopRule2[Y, Z](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRule2[Y, Z](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule removing the top three value stack elements with given types.
+ */
 class PopRule3[X, Y, Z](matcher: Matcher) extends PopRule(matcher) {
   def |(other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRule3[X, Y, Z](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule removing the top value stack element independently of its type.
+ */
 class PopRuleN1(matcher: Matcher) extends PopRule(matcher) {
   def |(other: PopRuleN1) = new PopRuleN1(appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRuleN1(matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule removing the top two value stack elements independently of their type.
+ */
 class PopRuleN2(matcher: Matcher) extends PopRule(matcher) {
   def |(other: PopRuleN2) = new PopRuleN2(appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRuleN2(matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule removing the top three value stack elements independently of their type.
+ */
 class PopRuleN3(matcher: Matcher) extends PopRule(matcher) {
   def |(other: PopRuleN3) = new PopRuleN3(appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRuleN3(matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule which does not affect the parsers value stack.
+ */
 class Rule0(matcher: Matcher) extends Rule(matcher) {
   def ~[X, Y, Z](other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](append(other))
   def ~[Y, Z](other: PopRule2[Y, Z]) = new PopRule2[Y, Z](append(other))
@@ -212,8 +255,14 @@ class Rule0(matcher: Matcher) extends Rule(matcher) {
   protected def withMatcher(matcher: Matcher) = new Rule0(matcher).asInstanceOf[this.type]
 }
 
+/**
+ * The base class of all rules pushing a certain number of elements onto the parser value stack.
+ */
 sealed abstract class PushRule(matcher: Matcher) extends Rule(matcher)
 
+/**
+ * A rule pushing one new value of a given type onto the parsers value stack.
+ */
 class Rule1[+A](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[Y, Z, AA >: A](other: PopRule3[Y, Z, AA]) = new PopRule2[Y, Z](append(other))
   def ~[Z, AA >: A](other: PopRule2[Z, AA]) = new PopRule1[Z](append(other))
@@ -240,6 +289,9 @@ class Rule1[+A](matcher: Matcher) extends PushRule(matcher: Matcher) {
   protected def withMatcher(matcher: Matcher) = new Rule1[A](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule pushing two new values of given types onto the parsers value stack.
+ */
 class Rule2[+A, +B](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[Z, AA >: A, BB >: B](other: PopRule3[Z, AA, BB]) = new PopRule1[Z](append(other))
   def ~[AA >: A, BB >: B](other: PopRule2[AA, BB]) = new Rule0(append(other))
@@ -266,6 +318,9 @@ class Rule2[+A, +B](matcher: Matcher) extends PushRule(matcher: Matcher) {
   protected def withMatcher(matcher: Matcher) = new Rule2[A, B](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule pushing 3 new values of given types onto the parsers value stack.
+ */
 class Rule3[+A, +B, +C](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[AA >: A, BB >: B, CC >: C](other: PopRule3[AA, BB, CC]) = new Rule0(append(other))
   def ~[BB >: B, CC >: C](other: PopRule2[BB, CC]) = new Rule1[A](append(other))
@@ -292,6 +347,9 @@ class Rule3[+A, +B, +C](matcher: Matcher) extends PushRule(matcher: Matcher) {
   protected def withMatcher(matcher: Matcher) = new Rule3[A, B, C](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule pushing 4 new values of given types onto the parsers value stack.
+ */
 class Rule4[+A, +B, +C, +D](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[BB >: B, CC >: C, DD >: D](other: PopRule3[BB, CC, DD]) = new Rule1[A](append(other))
   def ~[CC >: C, DD >: D](other: PopRule2[CC, DD]) = new Rule2[A, B](append(other))
@@ -318,6 +376,9 @@ class Rule4[+A, +B, +C, +D](matcher: Matcher) extends PushRule(matcher: Matcher)
   protected def withMatcher(matcher: Matcher) = new Rule4[A, B, C, D](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule pushing 5 new values of given types onto the parsers value stack.
+ */
 class Rule5[+A, +B, +C, +D, +E](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[CC >: C, DD >: D, EE >: E](other: PopRule3[CC, DD, EE]) = new Rule2[A, B](append(other))
   def ~[DD >: D, EE >: E](other: PopRule2[DD, EE]) = new Rule3[A, B, C](append(other))
@@ -343,6 +404,9 @@ class Rule5[+A, +B, +C, +D, +E](matcher: Matcher) extends PushRule(matcher: Matc
   protected def withMatcher(matcher: Matcher) = new Rule5[A, B, C, D, E](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule pushing 6 new values of given types onto the parsers value stack.
+ */
 class Rule6[+A, +B, +C, +D, +E, +F](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[DD >: D, EE >: E, FF >: F](other: PopRule3[DD, EE, FF]) = new Rule3[A, B, C](append(other))
   def ~[EE >: E, FF >: F](other: PopRule2[EE, FF]) = new Rule4[A, B, C, D](append(other))
@@ -367,6 +431,9 @@ class Rule6[+A, +B, +C, +D, +E, +F](matcher: Matcher) extends PushRule(matcher: 
   protected def withMatcher(matcher: Matcher) = new Rule6[A, B, C, D, E, F](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule pushing 7 new values of given types onto the parsers value stack.
+ */
 class Rule7[+A, +B, +C, +D, +E, +F, +G](matcher: Matcher) extends PushRule(matcher: Matcher) {
   def ~[EE >: E, FF >: F, GG >: G](other: PopRule3[EE, FF, GG]) = new Rule4[A, B, C, F](append(other))
   def ~[FF >: F, GG >: G](other: PopRule2[FF, GG]) = new Rule5[A, B, C, D, F](append(other))
@@ -389,11 +456,26 @@ class Rule7[+A, +B, +C, +D, +E, +F, +G](matcher: Matcher) extends PushRule(match
   protected def withMatcher(matcher: Matcher) = new Rule7[A, B, C, D, E, F, G](matcher).asInstanceOf[this.type]
 }
 
+/**
+ * A rule matching one single character.
+ */
 class CharRule(val c: Char) extends Rule0(new CharMatcher(c).label('\'' + escape(c) + '\'')) {
 
+  /**
+   * Creates a rule matching the range of characters between the character of this rule and the given character
+   * (inclusively).
+   */
   override def -(upperBound: String) =
     if (upperBound == null || upperBound.length != 1)
       super.-(upperBound)
     else
       new Rule0(new CharRangeMatcher(c, upperBound.charAt(0)).label(c + ".." + upperBound))
+}
+
+object Rule0 {
+  implicit def toRule(rule: Rule0): org.parboiled.Rule = rule.matcher
+}
+
+object Rule1 {
+  implicit def toRule(rule: Rule1[_]): org.parboiled.Rule = rule.matcher
 }

@@ -1,78 +1,106 @@
 package org.parboiled.examples.json
 
 import org.parboiled.scala._
+import java.lang.String
+import org.parboiled.errors.{ErrorUtils, ParsingException}
 
+/**
+ * A complete JSON parser producing an AST representation of the parsed JSON source.
+ */
 class JsonParser extends Parser {
+
+  /**
+   * These case classes form the nodes of the AST.
+   */
   sealed abstract class AstNode
   case class ObjectNode(members: List[MemberNode]) extends AstNode
   case class MemberNode(key: String, value: AstNode) extends AstNode
-  case class ArrayNode(elements: Array[AstNode]) extends AstNode
+  case class ArrayNode(elements: List[AstNode]) extends AstNode
   case class StringNode(text: String) extends AstNode
   case class NumberNode(value: BigDecimal) extends AstNode
   case object True extends AstNode
   case object False extends AstNode
   case object Null extends AstNode
 
-  def Object: Rule1[AstNode] = rule {
-    WS ~ ws("{") ~ (Members | push(List.empty[MemberNode])) ~ ws("}") ~~> (ObjectNode(_))
+  // the root rule
+  def JsonObject: Rule1[ObjectNode] = rule {
+    WhiteSpace ~ "{ " ~ (Members | push(List.empty[MemberNode])) ~ "} " ~~> (list => ObjectNode(list.reverse))
   }
 
   def Members = rule {
-    Pair_ ~~> (List(_)) ~ zeroOrMore(ws(",") ~ Pair_ ~~> ((list: List[MemberNode], p) => p :: list))
+    Pair ~~> (List(_)) ~ zeroOrMore(", " ~ Pair ~~> ((list: List[MemberNode], pair) => pair :: list))
   }
 
-  def Pair_ = rule {
-    String_ ~ ws(":") ~ Value ~~> ((k, v) => MemberNode(k.text, v))
+  def Pair = rule {
+    JsonString ~ ": " ~ Value ~~> ((key, value) => MemberNode(key.text, value))
   }
 
   def Value: Rule1[AstNode] = rule {
-    String_ | Number_ | Object | Array_ | True_ | False_ | Null_
+    JsonString | JsonNumber | JsonObject | JsonArray | JsonTrue | JsonFalse | JsonNull
   }
 
-  def String_ = rule {
-    "\"" ~ zeroOrMore(Char_) ~> (StringNode(_)) ~ ws("\"")
+  def JsonString = rule {
+    "\"" ~ zeroOrMore(Character) ~> (StringNode(_)) ~ "\" "
   }
 
-  def Number_ = rule {
-    (Int_ ~ ws(optional(Frac ~ optional(Exp)))) ~> (s => NumberNode(BigDecimal(s)))
+  def JsonNumber = rule {
+    group(Integer ~ optional(Frac ~ optional(Exp))) ~> (s => NumberNode(BigDecimal(s))) ~ WhiteSpace
   }
 
-  def Array_ = rule {
-    ws("[") ~ Elements ~ ws("]") ~~> (l => ArrayNode(l.toArray))
+  def JsonArray = rule {
+    "[ " ~ Elements ~ "] " ~~> (elements => ArrayNode(elements.reverse))
   }
 
   def Elements = rule {
-    Value ~~> (List(_)) ~ zeroOrMore(ws(",") ~ Value ~~> ((list: List[AstNode], v) => v :: list))
+    Value ~~> (List(_)) ~ zeroOrMore(", " ~ Value ~~> ((list: List[AstNode], value) => value :: list))
   }
 
-  def Char_ = rule {EscapedChar | NormalChar}
+  def Character = rule { EscapedChar | NormalChar }
 
-  def EscapedChar = rule {"\\" ~ (anyOf("\"\\/bfnrt") | Unicode)}
+  def EscapedChar = rule { "\\" ~ (anyOf("\"\\/bfnrt") | Unicode) }
 
-  def NormalChar = rule {!anyOf("\"\\") ~ ANY}
+  def NormalChar = rule { !anyOf("\"\\") ~ ANY }
 
-  def Unicode = rule {"u" ~ HexDigit ~ HexDigit ~ HexDigit ~ HexDigit}
+  def Unicode = rule { "u" ~ HexDigit ~ HexDigit ~ HexDigit ~ HexDigit }
 
-  def Int_ = rule {optional("-") ~ (("1" - "9") ~ Digits | Digit)}
+  def Integer = rule { optional("-") ~ (("1" - "9") ~ Digits | Digit) }
 
-  def Digits = rule {oneOrMore(Digit)}
+  def Digits = rule { oneOrMore(Digit) }
 
-  def Digit = rule {"0" - "9"}
+  def Digit = rule { "0" - "9" }
 
-  def HexDigit = rule {"0" - "9" | "a" - "f" | "A" - "Z"}
+  def HexDigit = rule { "0" - "9" | "a" - "f" | "A" - "Z" }
 
-  def Frac = rule {"." ~ Digits}
+  def Frac = rule { "." ~ Digits }
 
-  def Exp = rule {ignoreCase("e") ~ optional(anyOf("+-"))}
+  def Exp = rule { ignoreCase("e") ~ optional(anyOf("+-")) ~ Digits }
 
-  def True_ = ws("true") ~ push(True)
+  def JsonTrue = rule { "true " ~ push(True) }
 
-  def False_ = ws("false") ~ push(False)
+  def JsonFalse = rule { "false " ~ push(False) }
 
-  def Null_ = ws("null") ~ push(Null)
+  def JsonNull = rule { "null " ~ push(Null) }
 
-  def WS = rule {zeroOrMore(anyOf(" \n\r\t\f"))}
+  def WhiteSpace = rule { zeroOrMore(anyOf(" \n\r\t\f")) }
 
-  def ws(sub: Rule0) = sub ~ WS
+  /**
+   * We redefine the default string-to-rule conversion to also match trailing whitespace if the string ends with
+   * a blank, this keeps the rules free from most whitespace matching clutter
+   */
+  override implicit def toRule(string: String) =
+    if (string.endsWith(" "))
+      str(string.trim) ~ WhiteSpace
+    else
+      str(string)
+
+  /**
+   * The main parsing method. Uses a ReportingParseRunner (which only reports the first error) for simplicity.
+   */
+  def parseJson(json: String): ObjectNode = {
+    val result = ReportingParseRunner.run(JsonObject, json)
+    if (result.hasErrors)
+      throw new ParsingException("Invalid JSON source:\n" + ErrorUtils.printParseErrors(result))
+    return result.resultValue
+  }
 
 }

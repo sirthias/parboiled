@@ -12,7 +12,7 @@ import org.parboiled.errors.ErrorUtils.printParseErrors
 import org.parboiled.support.ParseTreeUtils.printNodeTree
 
 class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
-  val parser = new SimpleCalculator().withParseTreeBuilding()
+  val parser = new SimpleCalculator1().withParseTreeBuilding()
 
   @Test
   def testSimpleCalculatorMatcherBuilding() = {

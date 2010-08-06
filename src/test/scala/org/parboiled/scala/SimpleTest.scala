@@ -40,7 +40,7 @@ class SimpleTest extends AbstractTest with TestNGSuite {
   EOI
 """);
 
-    val res = testWithoutRecovery(rule.matcher, "1+2a",
+    val res = testWithoutRecovery(rule, "1+2a",
       """[Clause] '1+2a'
   [Digit] '1'
   [ClauseRest] '+2a'

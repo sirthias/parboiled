@@ -27,7 +27,7 @@ class RecursionTest extends AbstractTest with TestNGSuite {
     LotsOfAs
 """);
 
-    val res = testWithoutRecovery(rule.matcher, "aAAAa",
+    val res = testWithoutRecovery(rule, "aAAAa",
       """[LotsOfAs] 'aAAAa'
   ['a/A'] 'a'
   [Optional] 'AAAa'
