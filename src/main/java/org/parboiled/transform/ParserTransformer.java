@@ -91,8 +91,7 @@ public class ParserTransformer {
                 new BodyWithSuperCallReplacer(),
                 new VarFramingGenerator(),
                 new LabellingGenerator(),
-                new SuppressNodeGenerator(),
-                new SkipNodeGenerator(),
+                new FlagMarkingGenerator(),
                 new CachingGenerator()
         );
     }

@@ -61,7 +61,8 @@ public class JavaTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 14\n" +
-                "    VarFramingMatchers: 0\n");
+                "    VarFramingMatchers: 0\n" +
+                "MemoMismatchesMatchers: 2\n");
 
         ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {

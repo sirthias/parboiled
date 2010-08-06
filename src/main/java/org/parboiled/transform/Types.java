@@ -50,6 +50,7 @@ interface Types {
     static final String DONT_SKIP_ACTIONS_IN_PREDICATES_DESC = Type.getType(DontSkipActionsInPredicates.class).getDescriptor();
     static final String BUILD_PARSE_TREE_DESC = Type.getType(BuildParseTree.class).getDescriptor();
     static final String SKIP_NODE_DESC = Type.getType(SkipNode.class).getDescriptor();
+    static final String MEMO_MISMATCHES_DESC = Type.getType(MemoMismatches.class).getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();
     static final String VAR_DESC = VAR.getDescriptor();

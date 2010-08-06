@@ -127,7 +127,8 @@ public class ActionTest extends AbstractTest {
                 "\n" +
                 "    Action Classes    : 8\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n");
+                "    VarFramingMatchers: 0\n" +
+                "MemoMismatchesMatchers: 0\n");
 
         assertEquals(stats.printActionClassInstances(), "" +
                 "Action classes and their instances for rule 'A':\n" +

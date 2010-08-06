@@ -61,4 +61,11 @@ public interface Rule {
      */
     Rule skipNode();
 
+    /**
+     * Instructs parboiled to memoize consecutive mismatches of this rule.
+     *
+     * @return this rule
+     */
+    Rule memoMismatches();
+
 }

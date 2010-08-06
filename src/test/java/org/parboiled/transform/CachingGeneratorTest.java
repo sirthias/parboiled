@@ -30,7 +30,7 @@ public class CachingGeneratorTest extends TransformationTest {
     private final List<RuleMethodProcessor> processors = ImmutableList.<RuleMethodProcessor>of(
             new BodyWithSuperCallReplacer(),
             new LabellingGenerator(),
-            new SuppressNodeGenerator(),
+            new FlagMarkingGenerator(),
             new CachingGenerator()
     );
 

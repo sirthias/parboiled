@@ -34,7 +34,7 @@ public class SparqlParser extends BaseParser<Object> {
     // <Parser>
     public Rule Query() {
         return Sequence(WS(), Prologue(), FirstOf(SelectQuery(),
-                ConstructQuery(), DescribeQuery(), AskQuery()), Eoi());
+                ConstructQuery(), DescribeQuery(), AskQuery()), EOI);
     }
 
     public Rule Prologue() {
@@ -538,7 +538,7 @@ public class SparqlParser extends BaseParser<Object> {
     public Rule IRI_REF() {
         return Sequence(LESS_NO_COMMENT(), //
                 ZeroOrMore(Sequence(TestNot(FirstOf(LESS_NO_COMMENT(), GREATER(), '"', OPEN_CURLY_BRACE(),
-                        CLOSE_CURLY_BRACE(), '|', '^', '\\', '`', CharRange('\u0000', '\u0020'))), Any())), //
+                        CLOSE_CURLY_BRACE(), '|', '^', '\\', '`', CharRange('\u0000', '\u0020'))), ANY)), //
                 GREATER());
     }
 
@@ -609,23 +609,23 @@ public class SparqlParser extends BaseParser<Object> {
 
     public Rule STRING_LITERAL1() {
         return Sequence("'", ZeroOrMore(FirstOf(Sequence(TestNot(FirstOf("'",
-                '\\', '\n', '\r')), Any()), ECHAR())), "'", WS());
+                '\\', '\n', '\r')), ANY), ECHAR())), "'", WS());
     }
 
     public Rule STRING_LITERAL2() {
         return Sequence('"', ZeroOrMore(FirstOf(Sequence(TestNot(FirstOf('"',
-                '\\', '\n', '\r')), Any()), ECHAR())), '"', WS());
+                '\\', '\n', '\r')), ANY), ECHAR())), '"', WS());
     }
 
     public Rule STRING_LITERAL_LONG1() {
         return Sequence("'''", ZeroOrMore(Sequence(
                 Optional(FirstOf("''", "'")), FirstOf(Sequence(TestNot(FirstOf(
-                        "'", "\\")), Any()), ECHAR()))), "'''", WS());
+                        "'", "\\")), ANY), ECHAR()))), "'''", WS());
     }
 
     public Rule STRING_LITERAL_LONG2() {
         return Sequence("\"\"\"", ZeroOrMore(Sequence(Optional(FirstOf("\"\"", "\"")),
-                FirstOf(Sequence(TestNot(FirstOf("\"", "\\")), Any()), ECHAR()))), "\"\"\"", WS());
+                FirstOf(Sequence(TestNot(FirstOf("\"", "\\")), ANY), ECHAR()))), "\"\"\"", WS());
     }
 
     public Rule ECHAR() {
@@ -678,7 +678,7 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule COMMENT() {
-        return Sequence('#', ZeroOrMore(Sequence(TestNot(EOL()), Any())), EOL());
+        return Sequence('#', ZeroOrMore(Sequence(TestNot(EOL()), ANY)), EOL());
     }
 
     public Rule EOL() {

@@ -88,7 +88,7 @@ public class DefaultValueStack<V> implements ValueStack<V> {
     }
 
     public void push(V value) {
-        push(0, value);
+        head = new Element(value, head);
     }
 
     public void push(int down, V value) {

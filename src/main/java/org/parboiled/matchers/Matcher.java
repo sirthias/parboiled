@@ -50,6 +50,11 @@ public interface Matcher extends Rule, GraphNode<Matcher> {
     boolean isNodeSkipped();
 
     /**
+     * @return true if this matcher has been marked with @MemoMismatches
+     */
+    boolean areMismatchesMemoed();
+
+    /**
      * Creates a context for the matching of this matcher using the given parent context.
      *
      * @param context the parent context

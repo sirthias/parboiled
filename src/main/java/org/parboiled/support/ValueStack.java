@@ -189,4 +189,5 @@ public interface ValueStack<V> extends Iterable<V> {
      *          if the stack does not contain at least 5 elements
      */
     void swap6();
+
 }

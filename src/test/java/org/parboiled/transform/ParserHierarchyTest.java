@@ -30,7 +30,7 @@ public class ParserHierarchyTest {
     static class Parser1 extends BaseParser<Object> {
 
         Rule A() {
-            return Empty();
+            return EMPTY;
         }
 
         Rule B() {
@@ -38,7 +38,7 @@ public class ParserHierarchyTest {
         }
 
         Rule C() {
-            return Any();
+            return ANY;
         }
 
     }
@@ -83,9 +83,8 @@ public class ParserHierarchyTest {
 
         assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("$A()Lorg/parboiled/Rule;")), "" +
                 "Method '$A':\n" +
-                " 0     ALOAD 0\n" +
-                " 1     INVOKEVIRTUAL org/parboiled/transform/ParserHierarchyTest$Parser1.Empty ()Lorg/parboiled/Rule;\n" +
-                " 2     ARETURN\n");
+                " 0     GETSTATIC org/parboiled/transform/ParserHierarchyTest$Parser1.EMPTY : Lorg/parboiled/Rule;\n" +
+                " 1     ARETURN\n");
         assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("A()Lorg/parboiled/Rule;")), "" +
                 "Method 'A':\n" +
                 " 0     ALOAD 0\n" +

@@ -35,10 +35,10 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
 
     @Override
     public Rule InputLine() {
-        return Sequence(Expression(), Eoi());
+        return Sequence(Expression(), EOI);
     }
 
-    public Rule Expression() {
+    Rule Expression() {
         Var<Character> op = new Var<Character>();
         return Sequence(
                 Term(),
@@ -56,7 +56,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         );
     }
 
-    public Rule Term() {
+    Rule Term() {
         Var<Character> op = new Var<Character>();
         return Sequence(
                 Factor(),
@@ -70,7 +70,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         );
     }
 
-    public Rule Factor() {
+    Rule Factor() {
         return Sequence(
                 Atom(),
                 ZeroOrMore(
@@ -83,11 +83,11 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         );
     }
 
-    public Rule Atom() {
+    Rule Atom() {
         return FirstOf(Number(), SquareRoot(), Parens());
     }
 
-    public Rule SquareRoot() {
+    Rule SquareRoot() {
         return Sequence(
                 "SQRT ",
                 Parens(),
@@ -97,11 +97,11 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         );
     }
 
-    public Rule Parens() {
+    Rule Parens() {
         return Sequence("( ", Expression(), ") ");
     }
 
-    public Rule Number() {
+    Rule Number() {
         return Sequence(
                 // we use another Sequence in the "Number" Sequence so we can easily access the input text matched
                 // by the three enclosed rules with "lastText()"
@@ -117,11 +117,11 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         );
     }
 
-    public Rule Digit() {
+    Rule Digit() {
         return CharRange('0', '9');
     }
 
-    public Rule WhiteSpace() {
+    Rule WhiteSpace() {
         return ZeroOrMore(CharSet(" \t\f"));
     }
 

@@ -22,19 +22,20 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 /**
- * Adds a skipNode() call before the return instruction.
+ * Adds the required flag marking calls before the return instruction.
  */
-class SkipNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
+class FlagMarkingGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.hasSkipNodeAnnotation();
+        return method.hasSuppressNodeAnnotation() || method.hasSuppressSubnodesAnnotation() ||
+                method.hasSkipNodeAnnotation() || method.hasMemoMismatchesAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
         
         InsnList instructions = method.instructions;
-        
+
         AbstractInsnNode ret = instructions.getLast();
         while (ret.getOpcode() != ARETURN) {
             ret = ret.getPrevious();
@@ -46,11 +47,20 @@ class SkipNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
         LabelNode isNullLabel = new LabelNode();
         instructions.insertBefore(ret, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
-        instructions.insertBefore(ret, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
-                "skipNode", "()" + RULE.getDescriptor()));
+
+        if (method.hasSuppressNodeAnnotation()) generateMarkerCall(instructions, ret, "suppressNode");
+        if (method.hasSuppressSubnodesAnnotation()) generateMarkerCall(instructions, ret, "suppressSubnodes");
+        if (method.hasSkipNodeAnnotation()) generateMarkerCall(instructions, ret, "skipNode");
+        if (method.hasMemoMismatchesAnnotation()) generateMarkerCall(instructions, ret, "memoMismatches");
+        
         // stack: <rule>
         instructions.insertBefore(ret, isNullLabel);
         // stack: <rule>
+    }
+
+    private void generateMarkerCall(InsnList instructions, AbstractInsnNode ret, String call) {
+        instructions.insertBefore(ret, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(), call,
+                "()" + RULE.getDescriptor()));
     }
 
 }

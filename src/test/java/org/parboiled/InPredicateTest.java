@@ -30,7 +30,7 @@ public class InPredicateTest extends AbstractTest {
         public int count = 0;
 
         public Rule Number() {
-            return Sequence(OneOrMore(Digit()), Eoi());
+            return Sequence(OneOrMore(Digit()), EOI);
         }
 
         public Rule Digit() {

@@ -26,7 +26,7 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
     public static class Parser extends BaseParser<Object> {
 
         Rule Clause() {
-            return Sequence(Subject(), Verb(), Object(), Eoi());
+            return Sequence(Subject(), Verb(), Object(), EOI);
         }
 
         Rule Subject() {

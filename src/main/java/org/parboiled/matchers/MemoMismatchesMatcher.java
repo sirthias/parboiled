@@ -20,44 +20,48 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.support.MatcherVisitor;
-import org.parboiled.support.Var;
 
 import java.util.List;
 
 /**
- * Special wrapping matcher that manages the creation and destruction of execution frames for a number of action vars.
+ * Special wrapping matcher that performs memoization of the last mismatch of the wrapped sub rule.
  */
-public class VarFramingMatcher implements Matcher {
+public class MemoMismatchesMatcher implements Matcher {
 
     private Matcher inner;
-    private final Var[] variables;
 
-    public VarFramingMatcher(@NotNull Rule inner, @NotNull Var[] variables) {
+    // we use an int field as memoization flag, it has the following semantics
+    // memo >= 0 : last match failed at position memo
+    // memo == Integer.MIN_VALUE: this match was either never tried or succeeded the last time it was tried
+    private int memo;
+
+    public MemoMismatchesMatcher(@NotNull Rule inner) {
         this.inner = (Matcher) inner;
-        this.variables = variables;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <V> boolean match(@NotNull MatcherContext<V> context) {
-        for (Var var : variables) {
-            var.enterFrame();
+        int pos = context.getCurrentIndex();
+        if (memo == pos) {
+            return false;
         }
-
-        boolean matched = inner.match(context);
-
-        for (Var var : variables) {
-            var.exitFrame();
+        if (inner.match(context)) {
+            memo = Integer.MIN_VALUE;
+            return true;
         }
-
-        return matched;
+        memo = pos;
+        return false;
     }
 
     // GraphNode
+
     @NotNull
     public List<Matcher> getChildren() {
         return inner.getChildren();
     }
 
     // Rule
+
     public Rule label(String label) {
         inner = (Matcher) inner.label(label);
         return this;
@@ -79,11 +83,11 @@ public class VarFramingMatcher implements Matcher {
     }
 
     public Rule memoMismatches() {
-        inner = (Matcher) inner.skipNode();
-        return this;
+        return this; // already done
     }
 
     // Matcher
+
     public String getLabel() {return inner.getLabel();}
 
     public boolean isNodeSuppressed() {return inner.isNodeSuppressed();}
@@ -92,12 +96,12 @@ public class VarFramingMatcher implements Matcher {
 
     public boolean isNodeSkipped() {return inner.isNodeSkipped();}
 
-    public boolean areMismatchesMemoed() { return inner.areMismatchesMemoed(); }
+    public boolean areMismatchesMemoed() { return true; }
 
     public void setTag(Object tagObject) { inner.setTag(tagObject); }
 
     public Object getTag() { return inner.getTag(); }
-    
+
     public MatcherContext getSubContext(MatcherContext context) {
         MatcherContext subContext = inner.getSubContext(context);
         subContext.setMatcher(this); // we need to inject ourselves here otherwise we get cut out
@@ -110,15 +114,15 @@ public class VarFramingMatcher implements Matcher {
     public String toString() { return inner.toString(); }
 
     /**
-     * Retrieves the innermost Matcher that is not a VarFramingMatcher.
+     * Retrieves the innermost Matcher that is not a MemoMismatchesMatcher.
      *
      * @param matcher the matcher to unwrap
-     * @return the given instance if it is not a VarFramingMatcher, otherwise the innermost Matcher
+     * @return the given instance if it is not a MemoMismatchesMatcher, otherwise the innermost Matcher
      */
-    public static  Matcher unwrap(Matcher matcher) {
-        if (matcher instanceof VarFramingMatcher) {
-            VarFramingMatcher varFramingMatcher = (VarFramingMatcher) matcher;
-            return unwrap(varFramingMatcher.inner);
+    public static Matcher unwrap(Matcher matcher) {
+        if (matcher instanceof MemoMismatchesMatcher) {
+            MemoMismatchesMatcher memoMismatchesMatcher = (MemoMismatchesMatcher) matcher;
+            return unwrap(memoMismatchesMatcher.inner);
         }
         return matcher;
     }

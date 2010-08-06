@@ -65,6 +65,10 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
         return nodeSkipped;
     }
 
+    public boolean areMismatchesMemoed() {
+        return false;
+    }
+
     public String getLabel() {
         return label;
     }
@@ -100,6 +104,10 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
         AbstractMatcher clone = createClone();
         clone.nodeSkipped = true;
         return clone;
+    }
+
+    public Rule memoMismatches() {
+        return new MemoMismatchesMatcher(this);
     }
 
     public Object getTag() {

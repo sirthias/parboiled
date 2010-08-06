@@ -22,19 +22,19 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 /**
- * Adds a suppressNode() / suppressSubnodes() call before the return instruction.
+ * Adds a memoMismatches() call before the return instruction.
  */
-class SuppressNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
+class MemoMismatchesGenerator implements RuleMethodProcessor, Opcodes, Types {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return method.hasSuppressNodeAnnotation() || method.hasSuppressSubnodesAnnotation();
+        return method.hasMemoMismatchesAnnotation();
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
         Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
         
         InsnList instructions = method.instructions;
-
+        
         AbstractInsnNode ret = instructions.getLast();
         while (ret.getOpcode() != ARETURN) {
             ret = ret.getPrevious();
@@ -47,7 +47,7 @@ class SuppressNodeGenerator implements RuleMethodProcessor, Opcodes, Types {
         instructions.insertBefore(ret, new JumpInsnNode(IFNULL, isNullLabel));
         // stack: <rule>
         instructions.insertBefore(ret, new MethodInsnNode(INVOKEINTERFACE, RULE.getInternalName(),
-                method.hasSuppressNodeAnnotation() ? "suppressNode" : "suppressSubnodes", "()" + RULE.getDescriptor()));
+                "memoMismatch", "()" + RULE.getDescriptor()));
         // stack: <rule>
         instructions.insertBefore(ret, isNullLabel);
         // stack: <rule>

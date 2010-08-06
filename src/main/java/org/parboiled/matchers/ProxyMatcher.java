@@ -34,6 +34,7 @@ public class ProxyMatcher implements Matcher, Cloneable {
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
     private boolean nodeSkipped;
+    private boolean memoMismatches;
     private boolean dirty;
 
     @NotNull
@@ -47,23 +48,28 @@ public class ProxyMatcher implements Matcher, Cloneable {
         updateDirtyFlag();
     }
 
-    public void setNodeSuppressed(boolean nodeSuppressed) {
+    private void setNodeSuppressed(boolean nodeSuppressed) {
         this.nodeSuppressed = nodeSuppressed;
         updateDirtyFlag();
     }
 
-    public void setSubnodesSuppressed(boolean subnodesSuppressed) {
+    private void setSubnodesSuppressed(boolean subnodesSuppressed) {
         this.subnodesSuppressed = subnodesSuppressed;
         updateDirtyFlag();
     }
 
-    public void setNodeSkipped(boolean nodeSkipped) {
+    private void setNodeSkipped(boolean nodeSkipped) {
         this.nodeSkipped = nodeSkipped;
         updateDirtyFlag();
     }
 
+    private void setMemoMismatches(boolean memoMismatches) {
+        this.memoMismatches = memoMismatches;
+        updateDirtyFlag();
+    }
+
     private void updateDirtyFlag() {
-        dirty = label != null || nodeSuppressed || subnodesSuppressed || nodeSkipped;
+        dirty = label != null || nodeSuppressed || subnodesSuppressed || nodeSkipped || memoMismatches;
     }
 
     public <V> boolean match(@NotNull MatcherContext<V> context) {
@@ -89,6 +95,11 @@ public class ProxyMatcher implements Matcher, Cloneable {
     public boolean isNodeSkipped() {
         if (dirty) apply();
         return target.isNodeSkipped();
+    }
+
+    public boolean areMismatchesMemoed() {
+        if (dirty) apply();
+        return target.areMismatchesMemoed();
     }
 
     public void setTag(Object tagObject) {
@@ -185,6 +196,20 @@ public class ProxyMatcher implements Matcher, Cloneable {
         return target;
     }
 
+    public Rule memoMismatches() {
+        if (target == null) {
+            // if we have no target yet we need to save the marker and "apply" it later
+            setMemoMismatches(true);
+            return this;
+        }
+
+        // we already have a target to which we can directly apply the marker
+        Rule inner = unwrap(target);
+        target = (Matcher) inner.memoMismatches(); // since this might change the instance we have to update it
+        setMemoMismatches(false);
+        return target;
+    }
+
     /**
      * Supplies this ProxyMatcher with its underlying delegate.
      *
@@ -200,7 +225,7 @@ public class ProxyMatcher implements Matcher, Cloneable {
      * @param matcher the matcher to unwrap
      * @return the given instance if it is not a ProxyMatcher, otherwise the innermost non-proxy Matcher
      */
-    public static  Matcher unwrap(Matcher matcher) {
+    public static Matcher unwrap(Matcher matcher) {
         if (matcher instanceof ProxyMatcher) {
             ProxyMatcher proxyMatcher = (ProxyMatcher) matcher;
             if (proxyMatcher.dirty) proxyMatcher.apply();

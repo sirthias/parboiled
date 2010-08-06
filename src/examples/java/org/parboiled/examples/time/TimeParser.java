@@ -32,18 +32,18 @@ public class TimeParser extends BaseParser<Object> {
     }
 
     // h(h)?:mm(:ss)?
-    public Rule Time_HH_MM_SS() {
+    Rule Time_HH_MM_SS() {
         return Sequence(
                 OneOrTwoDigits(), ':',
                 TwoDigits(),
                 FirstOf(Sequence(':', TwoDigits()), push(0)),
-                Eoi(),
+                EOI,
                 swap3() && push(convertToTime(popAsInt(), popAsInt(), popAsInt()))
         );
     }
 
     // hh(mm(ss)?)?
-    public Rule Time_HHMMSS() {
+    Rule Time_HHMMSS() {
         return Sequence(
                 TwoDigits(),
                 FirstOf(
@@ -53,34 +53,34 @@ public class TimeParser extends BaseParser<Object> {
                         ),
                         pushAll(0, 0)
                 ),
-                Eoi(),
+                EOI,
                 swap3() && push(convertToTime(popAsInt(), popAsInt(), popAsInt()))
         );
     }
 
     // h(mm)?
-    public Rule Time_HMM() {
+    Rule Time_HMM() {
         return Sequence(
                 OneDigit(),
                 FirstOf(TwoDigits(), push(0)),
-                Eoi(),
+                EOI,
                 swap() && push(convertToTime(popAsInt(), popAsInt()))
         );
     }
 
-    public Rule OneOrTwoDigits() {
+    Rule OneOrTwoDigits() {
         return FirstOf(TwoDigits(), OneDigit());
     }
 
-    public Rule OneDigit() {
+    Rule OneDigit() {
         return Sequence(Digit(), push(Integer.parseInt(match())));
     }
 
-    public Rule TwoDigits() {
+    Rule TwoDigits() {
         return Sequence(Sequence(Digit(), Digit()), push(Integer.parseInt(match())));
     }
 
-    public Rule Digit() {
+    Rule Digit() {
         return CharRange('0', '9');
     }
 

@@ -22,6 +22,7 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.DoWithMatcherVisitor;
 import org.parboiled.support.HasCustomLabelVisitor;
+import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.ValueStack;
 
 import java.util.*;
@@ -190,6 +191,13 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             }
         };
 
+        public static final Predicate<RuleReport> namedNonLeafRules = new Predicate<RuleReport>() {
+            public boolean apply(RuleReport rep) {
+                return rep.getMatcher().accept(new HasCustomLabelVisitor()) &&
+                        !rep.getMatcher().accept(new IsSingleCharMatcherVisitor());
+            }
+        };
+
         public final int totalRuns;
         public final int totalInvocations;
         public final int totalMatches;
@@ -231,6 +239,9 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             sb.append("\n");
             sb.append("Top 20 named rules by reinvocations:\n");
             sb.append(sortByReinvocations().printTopRules(20, namedRules));
+            sb.append("\n");
+            sb.append("Top 20 named non-leaf rules by remismatches:\n");
+            sb.append(sortByRemismatches().printTopRules(20, namedNonLeafRules));
             return sb.toString();
         }
 
@@ -349,7 +360,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             return this;
         }
 
-        public Report sortByReailures() {
+        public Report sortByRemismatches() {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
                     return intCompare(a.getRemismatches(), b.getRemismatches());

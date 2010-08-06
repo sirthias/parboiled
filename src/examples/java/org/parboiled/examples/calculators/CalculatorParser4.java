@@ -31,7 +31,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
 
     @Override
     public Rule InputLine() {
-        return Sequence(Expression(), Eoi());
+        return Sequence(Expression(), EOI);
     }
 
     public Rule Expression() {

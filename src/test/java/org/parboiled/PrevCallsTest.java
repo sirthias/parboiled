@@ -36,7 +36,7 @@ public class PrevCallsTest extends AbstractTest {
                     Digits(), a.set(pop()),
                     Operator(), op.set(matchedChar()),
                     Digits(), b.set(pop()),
-                    Eoi(),
+                    EOI,
                     push(op.get() == '+' ? a.get() + b.get() : a.get() - b.get())
             );
         }

@@ -46,6 +46,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     private final Set<Class<?>> actionClasses = new HashSet<Class<?>>();
     private final Set<ProxyMatcher> proxyMatchers = new HashSet<ProxyMatcher>();
     private final Set<VarFramingMatcher> varFramingMatchers = new HashSet<VarFramingMatcher>();
+    private final Set<MemoMismatchesMatcher> memoMismatchesMatchers = new HashSet<MemoMismatchesMatcher>();
 
     @SuppressWarnings({"unchecked"})
     public static  ParserStatistics generateFor(@NotNull Rule rule) {
@@ -222,6 +223,8 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
             proxyMatchers.add((ProxyMatcher) matcher);
         } else if (matcher instanceof VarFramingMatcher) {
             varFramingMatchers.add((VarFramingMatcher) matcher);
+        } else if (matcher instanceof MemoMismatchesMatcher) {
+            memoMismatchesMatchers.add((MemoMismatchesMatcher) matcher);
         }
     }
 
@@ -248,6 +251,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
                 .append("    Action Classes    : ").append(actionClasses.size()).append('\n')
                 .append("    ProxyMatchers     : ").append(proxyMatchers.size()).append('\n')
                 .append("    VarFramingMatchers: ").append(varFramingMatchers.size()).append('\n')
+                .append("MemoMismatchesMatchers: ").append(memoMismatchesMatchers.size()).append('\n')
                 .toString();
     }
 

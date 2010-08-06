@@ -63,6 +63,7 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
     private boolean hasSuppressNodeAnnotation;
     private boolean hasSuppressSubnodesAnnotation;
     private boolean hasSkipNodeAnnotation;
+    private boolean hasMemoMismatchesAnnotation;
     private boolean hasSkipActionsInPredicatesAnnotation;
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
@@ -152,6 +153,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         return hasSkipNodeAnnotation;
     }
 
+    public boolean hasMemoMismatchesAnnotation() {
+        return hasMemoMismatchesAnnotation;
+    }
+
     public int getNumberOfReturns() {
         return numberOfReturns;
     }
@@ -221,6 +226,10 @@ class RuleMethod extends MethodNode implements Opcodes, Types {
         }
         if (SKIP_NODE_DESC.equals(desc)) {
             hasSkipNodeAnnotation = true;
+            return null; // we do not need to record this annotation
+        }
+        if (MEMO_MISMATCHES_DESC.equals(desc)) {
+            hasMemoMismatchesAnnotation = true;
             return null; // we do not need to record this annotation
         }
         if (SKIP_ACTIONS_IN_PREDICATES_DESC.equals(desc)) {

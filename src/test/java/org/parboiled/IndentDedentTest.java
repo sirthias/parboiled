@@ -43,7 +43,7 @@ public class IndentDedentTest extends AbstractTest {
         }
 
         public Rule LineChar() {
-            return Sequence(TestNot(Newline()), Any());
+            return Sequence(TestNot(Newline()), ANY);
         }
 
         public Rule Newline() {

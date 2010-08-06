@@ -89,7 +89,8 @@ public class CachingTest extends AbstractTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n");
+                "    VarFramingMatchers: 0\n" +
+                "MemoMismatchesMatchers: 0\n");
 
         assertEquals(ParserStatistics.generateFor(parser.Rule2()).toString(), "" +
                 "Parser statistics for rule 'Rule2':\n" +
@@ -112,7 +113,8 @@ public class CachingTest extends AbstractTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n");
+                "    VarFramingMatchers: 0\n" +
+                "MemoMismatchesMatchers: 0\n");
     }
 
 }

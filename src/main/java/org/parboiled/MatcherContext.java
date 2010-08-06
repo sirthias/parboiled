@@ -197,7 +197,7 @@ public class MatcherContext<V> implements Context<V> {
 
     private void checkActionContext() {
         // make sure all the constraints are met
-        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(matcher)) instanceof SequenceMatcher &&
+        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
                         intTag > 0 && subContext.matcher instanceof ActionMatcher,
                 "Illegal call to getMatch(), getMatchStartIndex() or getMatchEndIndex(), " +
                         "only valid in Sequence rule actions that are not in first position");

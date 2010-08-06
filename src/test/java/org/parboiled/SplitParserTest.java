@@ -31,7 +31,7 @@ public class SplitParserTest extends AbstractTest {
                     primitives.Digit(),
                     primitives.Operator(),
                     primitives.Digit(),
-                    Eoi()
+                    EOI
             );
         }
     }

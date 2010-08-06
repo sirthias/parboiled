@@ -29,10 +29,10 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
 
     @Override
     public Rule InputLine() {
-        return Sequence(Expression(), Eoi());
+        return Sequence(Expression(), EOI);
     }
 
-    public Rule Expression() {
+    Rule Expression() {
         return Sequence(
                 Term(), // a successful match of a Term pushes one Integer value onto the value stack
                 ZeroOrMore(
@@ -49,7 +49,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         );
     }
 
-    public Rule Term() {
+    Rule Term() {
         return Sequence(
                 Factor(), // a successful match of a Factor pushes one Integer value onto the value stack
                 ZeroOrMore(
@@ -66,15 +66,15 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         );
     }
 
-    public Rule Factor() {
+    Rule Factor() {
         return FirstOf(Number(), Parens()); // a factor "produces" exactly one Integer value on the value stack
     }
 
-    public Rule Parens() {
+    Rule Parens() {
         return Sequence('(', Expression(), ')');
     }
 
-    public Rule Number() {
+    Rule Number() {
         return Sequence(
                 Digits(),
 
@@ -84,12 +84,12 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         );
     }
     
-    public Rule Digits() {
+    Rule Digits() {
         return OneOrMore(Digit());
     }
 
     @SuppressNode
-    public Rule Digit() {
+    Rule Digit() {
         return CharRange('0', '9');
     }
 

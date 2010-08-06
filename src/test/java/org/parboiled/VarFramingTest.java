@@ -87,7 +87,8 @@ public class VarFramingTest extends AbstractTest {
                 "\n" +
                 "    Action Classes    : 4\n" +
                 "    ProxyMatchers     : 1\n" +
-                "    VarFramingMatchers: 1\n");
+                "    VarFramingMatchers: 1\n" +
+                "MemoMismatchesMatchers: 0\n");
 
         testWithoutRecovery(rule, "1+2+3", "" +
                 "[Clause, {1}] '1+2+3'\n" +
