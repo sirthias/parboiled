@@ -53,7 +53,7 @@ class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
 """)
   }
 
-  @Test
+  @Test(dependsOnMethods = Array("testSimpleCalculatorMatcherBuilding"))
   def testCalculations() = {
     test("1+2", 3)
     test("1+2-3+4", 4)
