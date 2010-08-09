@@ -118,9 +118,11 @@ public class ActionTest extends AbstractTest {
                 "        CharSet       : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 0\n" +
+                "        FirstOfStrings: 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 4\n" +
+                "        String        : 0\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 0\n" +
                 "        ZeroOrMore    : 0\n" +

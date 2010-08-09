@@ -51,10 +51,12 @@ public class JavaTest {
                 "        CharRange     : 9\n" +
                 "        CharSet       : 16\n" +
                 "        Empty         : 0\n" +
-                "        FirstOf       : 68\n" +
+                "        FirstOf       : 64\n" +
+                "        FirstOfStrings: 4\n" +
                 "        OneOrMore     : 7\n" +
                 "        Optional      : 40\n" +
-                "        Sequence      : 389\n" +
+                "        Sequence      : 309\n" +
+                "        String        : 80\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 13\n" +
                 "        ZeroOrMore    : 51\n" +

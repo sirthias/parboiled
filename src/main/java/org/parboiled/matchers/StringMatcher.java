@@ -26,7 +26,7 @@ import org.parboiled.Rule;
  */
 public class StringMatcher extends SequenceMatcher {
 
-    private final char[] characters;
+    public final char[] characters;
 
     public StringMatcher(@NotNull Rule[] charMatchers, char[] characters) {
         super(charMatchers);

@@ -35,9 +35,11 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     private final Set<CharSetMatcher> charSetMatchers = new HashSet<CharSetMatcher>();
     private final Set<EmptyMatcher> emptyMatchers = new HashSet<EmptyMatcher>();
     private final Set<FirstOfMatcher> firstOfMatchers = new HashSet<FirstOfMatcher>();
+    private final Set<FirstOfStringsMatcher> firstOfStringMatchers = new HashSet<FirstOfStringsMatcher>();
     private final Set<OneOrMoreMatcher> oneOrMoreMatchers = new HashSet<OneOrMoreMatcher>();
     private final Set<OptionalMatcher> optionalMatchers = new HashSet<OptionalMatcher>();
     private final Set<SequenceMatcher> sequenceMatchers = new HashSet<SequenceMatcher>();
+    private final Set<StringMatcher> stringMatchers = new HashSet<StringMatcher>();
     private final Set<TestMatcher> testMatchers = new HashSet<TestMatcher>();
     private final Set<TestNotMatcher> testNotMatchers = new HashSet<TestNotMatcher>();
     private final Set<ZeroOrMoreMatcher> zeroOrMoreMatchers = new HashSet<ZeroOrMoreMatcher>();
@@ -179,7 +181,9 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     }
 
     public ParserStatistics visit(FirstOfMatcher matcher) {
-        return visit(matcher, firstOfMatchers);
+        return matcher instanceof FirstOfStringsMatcher ?
+                visit((FirstOfStringsMatcher)matcher, firstOfStringMatchers) :
+                visit(matcher, firstOfMatchers);
     }
 
     public ParserStatistics visit(OneOrMoreMatcher matcher) {
@@ -191,7 +195,9 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     }
 
     public ParserStatistics visit(SequenceMatcher matcher) {
-        return visit(matcher, sequenceMatchers);
+        return matcher instanceof StringMatcher ?
+                visit((StringMatcher)matcher, stringMatchers) :
+                visit(matcher, sequenceMatchers);
     }
 
     public ParserStatistics visit(TestMatcher matcher) {
@@ -241,9 +247,11 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
                 .append("        CharSet       : ").append(charSetMatchers.size()).append('\n')
                 .append("        Empty         : ").append(emptyMatchers.size()).append('\n')
                 .append("        FirstOf       : ").append(firstOfMatchers.size()).append('\n')
+                .append("        FirstOfStrings: ").append(firstOfStringMatchers.size()).append('\n')
                 .append("        OneOrMore     : ").append(oneOrMoreMatchers.size()).append('\n')
                 .append("        Optional      : ").append(optionalMatchers.size()).append('\n')
                 .append("        Sequence      : ").append(sequenceMatchers.size()).append('\n')
+                .append("        String        : ").append(stringMatchers.size()).append('\n')
                 .append("        Test          : ").append(testMatchers.size()).append('\n')
                 .append("        TestNot       : ").append(testNotMatchers.size()).append('\n')
                 .append("        ZeroOrMore    : ").append(zeroOrMoreMatchers.size()).append('\n')

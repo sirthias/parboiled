@@ -256,7 +256,20 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Label("FirstOf")
     public Rule FirstOf(@NotNull Object[] rules) {
-        return rules.length == 1 ? ToRule(rules[0]) : new FirstOfMatcher(ToRules(rules));
+        if (rules.length == 1) {
+            return ToRule(rules[0]);
+        }
+        Rule[] convertedRules = ToRules(rules);
+        char[][] chars = new char[rules.length][];
+        for (int i = 0, convertedRulesLength = convertedRules.length; i < convertedRulesLength; i++) {
+            Object rule = convertedRules[i];
+            if (rule instanceof StringMatcher) {
+                chars[i] = ((StringMatcher)rule).characters;
+            } else {
+                return new FirstOfMatcher(convertedRules);
+            }
+        }
+        return new FirstOfStringsMatcher(convertedRules, chars);
     }
 
     /**

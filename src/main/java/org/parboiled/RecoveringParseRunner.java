@@ -100,7 +100,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     protected boolean attemptRecordingMatch() {
         RecordingParseRunner.Handler handler = new RecordingParseRunner.Handler(getInnerHandler());
-        boolean matched = runRootContext(handler, false);
+        boolean matched = runRootContext(handler, false); // run without fast string matching
         errorIndex = handler.getErrorIndex();
         return matched;
     }

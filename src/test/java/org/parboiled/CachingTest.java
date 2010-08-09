@@ -80,9 +80,11 @@ public class CachingTest extends AbstractTest {
                 "        CharSet       : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 1\n" +
+                "        FirstOfStrings: 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 1\n" +
+                "        String        : 0\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 0\n" +
                 "        ZeroOrMore    : 0\n" +
@@ -104,9 +106,11 @@ public class CachingTest extends AbstractTest {
                 "        CharSet       : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
+                "        FirstOfStrings: 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 1\n" +
+                "        String        : 0\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 0\n" +
                 "        ZeroOrMore    : 0\n" +
