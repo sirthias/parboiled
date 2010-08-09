@@ -22,10 +22,12 @@ import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.DoWithMatcherVisitor;
 import org.parboiled.support.HasCustomLabelVisitor;
-import org.parboiled.support.IsSingleCharMatcherVisitor;
 import org.parboiled.support.ValueStack;
 
+import java.text.DecimalFormat;
 import java.util.*;
+
+import static org.parboiled.common.Utils.humanize;
 
 public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
@@ -57,7 +59,8 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
                 ruleReport = new RuleReport(matcher);
                 ruleReports.put(matcher, ruleReport);
             }
-            ruleReport.update(ruleStats.matches, ruleStats.mismatches, rematches, remismatches, ruleStats.nanoTime);
+            ruleReport.update(ruleStats.matches, ruleStats.matchSubs, ruleStats.mismatches, ruleStats.mismatchSubs,
+                    rematches, ruleStats.rematchSubs, remismatches, ruleStats.remismatchSubs, ruleStats.nanoTime);
         }
     };
 
@@ -93,6 +96,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
     public class Handler implements MatchHandler {
         private long timeCorrection;
+        private int totalMatches;
 
         public boolean matchRoot(MatcherContext<?> rootContext) {
             rootContext.getMatcher().accept(new DoWithMatcherVisitor(new DoWithMatcherVisitor.Action() {
@@ -107,6 +111,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
                 }
             }));
 
+            totalMatches = 0;
             long timeStamp = System.nanoTime() - timeCorrection;
             boolean matched = rootContext.runMatcher();
             totalNanoTime += System.nanoTime() - timeCorrection - timeStamp;
@@ -120,7 +125,12 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             Matcher matcher = context.getMatcher();
             RuleStats ruleStats = ((RuleStats) matcher.getTag());
             int pos = context.getCurrentIndex();
-            Integer posMatches = ruleStats.positionMatches.get(pos);
+
+            int subMatches = -++totalMatches;
+            int matchSubs = ruleStats.matchSubs;
+            int rematchSubs = ruleStats.rematchSubs;
+            int mismatchSubs = ruleStats.mismatchSubs;
+            int remismatchSubs = ruleStats.remismatchSubs;
 
             long time = System.nanoTime();
             timeCorrection += time - timeStamp;
@@ -132,21 +142,28 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             ruleStats.nanoTime += time - timeCorrection - timeStamp;
             timeStamp = time;
 
+            subMatches += totalMatches;
+
+            Integer posMatches = ruleStats.positionMatches.get(pos);
             if (matched) {
                 ruleStats.matches++;
+                ruleStats.matchSubs = matchSubs + subMatches;
                 if (posMatches == null) {
                     posMatches = 1;
                 } else if (posMatches > 0) {
                     posMatches++;
+                    ruleStats.rematchSubs = rematchSubs + subMatches;
                 } else if (posMatches < 0) {
                     posMatches = 0;
                 }
             } else {
                 ruleStats.mismatches++;
+                ruleStats.mismatchSubs = mismatchSubs + subMatches;
                 if (posMatches == null) {
                     posMatches = -1;
                 } else if (posMatches < 0) {
                     posMatches--;
+                    ruleStats.remismatchSubs = remismatchSubs + subMatches;
                 } else if (posMatches > 0) {
                     posMatches = 0;
                 }
@@ -160,6 +177,10 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
     private static class RuleStats {
         private int matches;
         private int mismatches;
+        private int matchSubs;
+        private int mismatchSubs;
+        private int rematchSubs;
+        private int remismatchSubs;
         private long nanoTime;
 
         // map Index -> matches at that position
@@ -173,12 +194,18 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
         private void clear() {
             matches = 0;
             mismatches = 0;
+            matchSubs = 0;
+            mismatchSubs = 0;
+            rematchSubs = 0;
+            remismatchSubs = 0;
             nanoTime = 0;
             positionMatches.clear();
         }
     }
 
     public static class Report {
+        private final static DecimalFormat fmt = new DecimalFormat("0.###");
+
         public static final Predicate<RuleReport> allRules = new Predicate<RuleReport>() {
             public boolean apply(RuleReport rep) {
                 return true;
@@ -188,13 +215,6 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
         public static final Predicate<RuleReport> namedRules = new Predicate<RuleReport>() {
             public boolean apply(RuleReport rep) {
                 return rep.getMatcher().accept(new HasCustomLabelVisitor());
-            }
-        };
-
-        public static final Predicate<RuleReport> namedNonLeafRules = new Predicate<RuleReport>() {
-            public boolean apply(RuleReport rep) {
-                return rep.getMatcher().accept(new HasCustomLabelVisitor()) &&
-                        !rep.getMatcher().accept(new IsSingleCharMatcherVisitor());
             }
         };
 
@@ -210,8 +230,8 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
         public final long totalNanoTime;
         public final List<RuleReport> ruleReports;
 
-        public Report(int totalRuns, int totalMatches, int totalMismatches, int rematches,
-                      int remismatches, long totalNanoTime, List<RuleReport> ruleReports) {
+        public Report(int totalRuns, int totalMatches, int totalMismatches, int rematches, int remismatches,
+                      long totalNanoTime, List<RuleReport> ruleReports) {
             this.totalRuns = totalRuns;
             this.totalInvocations = totalMatches + totalMismatches;
             this.totalMatches = totalMatches;
@@ -234,14 +254,20 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             sb.append("Top 20 named rules by invocations:\n");
             sb.append(sortByInvocations().printTopRules(20, namedRules));
             sb.append("\n");
-            sb.append("Top 20 named rules by time per invocation:\n");
-            sb.append(sortByTimePerInvocation().printTopRules(20, namedRules));
+            sb.append("Top 20 named rules by sub-invocations:\n");
+            sb.append(sortBySubInvocations().printTopRules(20, namedRules));
             sb.append("\n");
-            sb.append("Top 20 named rules by reinvocations:\n");
+            sb.append("Top 20 named rules by re-invocations:\n");
             sb.append(sortByReinvocations().printTopRules(20, namedRules));
             sb.append("\n");
-            sb.append("Top 20 named non-leaf rules by remismatches:\n");
-            sb.append(sortByRemismatches().printTopRules(20, namedNonLeafRules));
+            sb.append("Top 20 named rules by re-sub-invocations:\n");
+            sb.append(sortByResubinvocations().printTopRules(20, namedRules));
+            sb.append("\n");
+            sb.append("Top 20 named rules by re-mismatches:\n");
+            sb.append(sortByRemismatches().printTopRules(20, namedRules));
+            sb.append("\n");
+            sb.append("Top 20 named rules by re-sub-mismatches:\n");
+            sb.append(sortByResubmismatches().printTopRules(20, namedRules));
             return sb.toString();
         }
 
@@ -263,26 +289,26 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
         public String printTopRules(int count, @NotNull Predicate<RuleReport> filter) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Rule                           | Net-Time  | Invocations |   Matches   | Mismatches  |   Time/Invoc.   | Match %  |  Re-Invocs  | Re-Matches  | Re-Mismatch | Re-Invoc %\n");
-            sb.append("-------------------------------|-----------|-------------|-------------|-------------|-----------------|----------|-------------|-------------|-------------|-----------\n");
+            sb.append("Rule                           | Net-Time  |   Invocations   |     Matches     |   Mismatches    |   Time/Invoc.   | Match % |    Re-Invocs    |   Re-Matches    |   Re-Mismatch   |     Re-Invoc %    \n");
+            sb.append("-------------------------------|-----------|-----------------|-----------------|-----------------|-----------------|---------|-----------------|-----------------|-----------------|-------------------\n");
             for (int i = 0; i < Math.min(ruleReports.size(), count); i++) {
                 RuleReport rep = ruleReports.get(i);
                 if (!filter.apply(rep)) {
                     count++;
                     continue;
                 }
-                sb.append(String.format("%-30s | %6.0f ms | %,11d | %,11d | %,11d | %,12.0f ns | %6.2f %% | %,11d | %,11d | %,11d | %6.2f %%\n",
+                sb.append(String.format("%-30s | %6.0f ms | %6s / %6s | %6s / %6s | %6s / %6s | %,12.0f ns | %6.2f%% | %6s / %6s | %6s / %6s | %6s / %6s | %6.2f%% / %6.2f%%\n",
                         StringUtils.left(rep.getMatcher().toString() + ": " + rep.getMatcher().getClass().getSimpleName().replace("Matcher", ""), 30),
                         rep.getNanoTime() / 1000000.0,
-                        rep.getInvocations(),
-                        rep.getMatches(),
-                        rep.getMismatches(),
+                        humanize(rep.getInvocations()), humanize(rep.getInvocationSubs()),
+                        humanize(rep.getMatches()), humanize(rep.getMatchSubs()),
+                        humanize(rep.getMismatches()), humanize(rep.getMismatchSubs()),
                         rep.getNanoTime() / (double)rep.getInvocations(),
                         rep.getMatchShare() * 100,
-                        rep.getReinvocations(),
-                        rep.getRematches(),
-                        rep.getRemismatches(),
-                        rep.getReinvocationShare() * 100
+                        humanize(rep.getReinvocations()), humanize(rep.getReinvocationSubs()),
+                        humanize(rep.getRematches()), humanize(rep.getRematchSubs()),
+                        humanize(rep.getRemismatches()), humanize(rep.getRemismatchSubs()),
+                        rep.getReinvocationShare() * 100, rep.getReinvocationShare2() * 100
                 ));
             }
             return sb.toString();
@@ -292,6 +318,15 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
                     return intCompare(a.getInvocations(), b.getInvocations());
+                }
+            });
+            return this;
+        }
+
+        public Report sortBySubInvocations() {
+            Collections.sort(ruleReports, new Comparator<RuleReport>() {
+                public int compare(RuleReport a, RuleReport b) {
+                    return intCompare(a.getInvocationSubs(), b.getInvocationSubs());
                 }
             });
             return this;
@@ -333,19 +368,19 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             return this;
         }
 
-        public Report sortByMatchShare() {
+        public Report sortByReinvocations() {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
-                    return doubleCompare(a.getMatchShare(), b.getMatchShare());
+                    return intCompare(a.getReinvocations(), b.getReinvocations());
                 }
             });
             return this;
         }
 
-        public Report sortByReinvocations() {
+        public Report sortByResubinvocations() {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
-                    return intCompare(a.getReinvocations(), b.getReinvocations());
+                    return doubleCompare(a.getReinvocationSubs(), b.getReinvocationSubs());
                 }
             });
             return this;
@@ -369,10 +404,10 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             return this;
         }
 
-        public Report sortByReinvocationShare() {
+        public Report sortByResubmismatches() {
             Collections.sort(ruleReports, new Comparator<RuleReport>() {
                 public int compare(RuleReport a, RuleReport b) {
-                    return doubleCompare(a.getReinvocationShare(), b.getReinvocationShare());
+                    return doubleCompare(a.getRemismatchSubs(), b.getRemismatchSubs());
                 }
             });
             return this;
@@ -394,9 +429,13 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
     public static class RuleReport {
         private final Matcher matcher;
         private int matches;
+        private int matchSubs;
         private int mismatches;
+        private int mismatchSubs;
         private int rematches;
+        private int rematchSubs;
         private int remismatches;
+        private int remismatchSubs;
         private long nanoTime;
 
         public RuleReport(Matcher matcher) {
@@ -405,21 +444,36 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
         public Matcher getMatcher() { return matcher; }
         public int getInvocations() { return matches + mismatches; }
+        public int getInvocationSubs() { return matchSubs + mismatchSubs; }
         public int getMatches() { return matches; }
+        public int getMatchSubs() { return matchSubs; }
         public int getMismatches() { return mismatches; }
+        public int getMismatchSubs() { return mismatchSubs; }
         public double getMatchShare() { return ((double) matches) / getInvocations(); }
+        public double getMatchShare2() { return ((double) matchSubs) / getInvocationSubs(); }
         public int getReinvocations() { return rematches + remismatches; }
+        public int getReinvocationSubs() { return rematchSubs + remismatchSubs; }
         public int getRematches() { return rematches; }
+        public int getRematchSubs() { return rematchSubs; }
         public int getRemismatches() { return remismatches; }
+        public int getRemismatchSubs() { return remismatchSubs; }
         public double getReinvocationShare() { return ((double) getReinvocations()) / getInvocations(); }
+        public double getReinvocationShare2() { return ((double) getReinvocationSubs()) / getInvocationSubs(); }
         public long getNanoTime() { return nanoTime; }
 
-        public void update(int matchesDelta, int mismatchesDelta, int rematchesDelta, int remismatchesDelta,
+        public void update(int matchesDelta, int matchSubsDelta,
+                           int mismatchesDelta, int mismatchSubsDelta,
+                           int rematchesDelta, int rematchSubsDelta,
+                           int remismatchesDelta, int remismatchSubsDelta,
                            long nanoTimeDelta) {
             matches += matchesDelta;
+            matchSubs += matchSubsDelta;
             mismatches += mismatchesDelta;
+            mismatchSubs += mismatchSubsDelta;
             rematches += rematchesDelta;
+            rematchSubs += rematchSubsDelta;
             remismatches += remismatchesDelta;
+            remismatchSubs += remismatchSubsDelta;
             nanoTime += nanoTimeDelta;
         }
     }

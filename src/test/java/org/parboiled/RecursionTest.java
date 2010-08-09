@@ -27,7 +27,7 @@ public class RecursionTest extends AbstractTest {
 
         @SuppressWarnings({"InfiniteRecursion"})
         public Rule LotsOfAs() {
-            return Sequence(CharIgnoreCase('a'), Optional(LotsOfAs()));
+            return Sequence(IgnoreCase('a'), Optional(LotsOfAs()));
         }
 
     }

@@ -791,7 +791,7 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule StringIgnoreCaseWS(String string) {
-        return Sequence(StringIgnoreCase(string), WS());
+        return Sequence(IgnoreCase(string), WS());
     }
 
 }

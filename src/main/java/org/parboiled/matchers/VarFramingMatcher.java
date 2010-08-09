@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class VarFramingMatcher implements Matcher {
 
-    private Matcher inner;
+    private final Matcher inner;
     private final Var[] variables;
 
     public VarFramingMatcher(@NotNull Rule inner, @NotNull Var[] variables) {
@@ -59,28 +59,23 @@ public class VarFramingMatcher implements Matcher {
 
     // Rule
     public Rule label(String label) {
-        inner = (Matcher) inner.label(label);
-        return this;
+        return new VarFramingMatcher(inner.label(label), variables);
     }
 
     public Rule suppressNode() {
-        inner = (Matcher) inner.suppressNode();
-        return this;
+        return new VarFramingMatcher(inner.suppressNode(), variables);
     }
 
     public Rule suppressSubnodes() {
-        inner = (Matcher) inner.suppressSubnodes();
-        return this;
+        return new VarFramingMatcher(inner.suppressSubnodes(), variables);
     }
 
     public Rule skipNode() {
-        inner = (Matcher) inner.skipNode();
-        return this;
+        return new VarFramingMatcher(inner.skipNode(), variables);
     }
 
     public Rule memoMismatches() {
-        inner = (Matcher) inner.skipNode();
-        return this;
+        return new VarFramingMatcher(inner.memoMismatches(), variables);
     }
 
     // Matcher

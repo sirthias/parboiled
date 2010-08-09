@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class MemoMismatchesMatcher implements Matcher {
 
-    private Matcher inner;
+    private final Matcher inner;
 
     // we use an int field as memoization flag, it has the following semantics
     // memo >= 0 : last match failed at position memo
@@ -63,23 +63,19 @@ public class MemoMismatchesMatcher implements Matcher {
     // Rule
 
     public Rule label(String label) {
-        inner = (Matcher) inner.label(label);
-        return this;
+        return new MemoMismatchesMatcher(inner.label(label));
     }
 
     public Rule suppressNode() {
-        inner = (Matcher) inner.suppressNode();
-        return this;
+        return new MemoMismatchesMatcher(inner.suppressNode());
     }
 
     public Rule suppressSubnodes() {
-        inner = (Matcher) inner.suppressSubnodes();
-        return this;
+        return new MemoMismatchesMatcher(inner.suppressSubnodes());
     }
 
     public Rule skipNode() {
-        inner = (Matcher) inner.skipNode();
-        return this;
+        return new MemoMismatchesMatcher(inner.skipNode());
     }
 
     public Rule memoMismatches() {

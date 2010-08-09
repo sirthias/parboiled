@@ -42,11 +42,11 @@ public class JavaTest {
 
         assertEquals(ParserStatistics.generateFor(compilationUnit).toString(), "" +
                 "Parser statistics for rule 'CompilationUnit':\n" +
-                "    Total rules       : 679\n" +
+                "    Total rules       : 681\n" +
                 "        Actions       : 0\n" +
                 "        Any           : 1\n" +
-                "        CharIgnoreCase: 0\n" +
-                "        Char          : 85\n" +
+                "        CharIgnoreCase: 1\n" +
+                "        Char          : 86\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 9\n" +
                 "        CharSet       : 16\n" +
@@ -62,7 +62,7 @@ public class JavaTest {
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 14\n" +
                 "    VarFramingMatchers: 0\n" +
-                "MemoMismatchesMatchers: 2\n");
+                "MemoMismatchesMatchers: 7\n");
 
         ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
         if (parsingResult.hasErrors()) {

@@ -607,6 +607,7 @@ public class JavaParser extends BaseParser<Object> {
         return FirstOf(Arguments(), Sequence(DOT, Identifier(), Optional(Arguments())));
     }
 
+    @MemoMismatches
     Rule BasicType() {
         return Sequence(
                 FirstOf("byte", "short", "char", "int", "long", "float", "double", "boolean"),
@@ -797,6 +798,7 @@ public class JavaParser extends BaseParser<Object> {
         return Sequence(DEFAULT, ElementValue());
     }
 
+    @MemoMismatches
     Rule Annotation() {
         return Sequence(AT, QualifiedIdentifier(), Optional(AnnotationRest()));
     }
@@ -861,6 +863,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     @SuppressSubnodes
+    @MemoMismatches
     Rule Identifier() {
         return Sequence(TestNot(Keyword()), Letter(), ZeroOrMore(LetterOrDigit()), Spacing());
     }
@@ -963,8 +966,10 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     @SuppressSubnodes
+
+    @MemoMismatches
     Rule HexNumeral() {
-        return Sequence(FirstOf("0x", "0X"), OneOrMore(HexDigit()));
+        return Sequence('0', IgnoreCase('x'), OneOrMore(HexDigit()));
     }
 
     Rule HexDigit() {
