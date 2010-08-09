@@ -26,11 +26,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A specialized FirstOfMatcher that handles FirstOf(string, string, ...) rules much faster that the regular
+ * FirstOfMatcher. If fast string matching is enabled this matcher uses a prebuilt character tree to efficiently
+ * determine whether the next input characters match the rule expression.
+ */
 public class FirstOfStringsMatcher extends FirstOfMatcher {
 
+    // a node in the character tree
     static class Record {
-        final char[] chars;
-        final Record[] subs;
+        final char[] chars; // the sub characters of this node
+        final Record[] subs; // the sub records corresponding to the respective character
 
         private Record(char[] chars, Record[] subs) {
             this.chars = chars;
@@ -38,7 +44,7 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
         }
     }
 
-    private final Record root;
+    private final Record root; // the root of the character tree
 
     public FirstOfStringsMatcher(@NotNull Rule[] subRules, char[][] strings) {
         super(subRules);
@@ -51,8 +57,27 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
             return super.match(context);
         }
 
-        int endIx = test(root, context.getCurrentChar(), context.getInputBuffer(), context.getCurrentIndex());
-        if (endIx == -1) {
+        Record rec = root;
+        int endIx = context.getCurrentIndex();
+        InputBuffer buffer = context.getInputBuffer();
+        char c = context.getCurrentChar();
+
+        loop:
+        while (true) {
+            char[] chars = rec.chars;
+            for (int i = 0; i < chars.length; i++) {
+                if (c == chars[i]) {
+                    endIx++;
+                    Record sub = rec.subs[i];
+                    if (sub == null) {
+                        break loop; // success, we complected a tree path to a leave
+                    }
+                    rec = sub;
+                    c = buffer.charAt(endIx);
+                    continue loop;
+                }
+            }
+            // we checked all sub branches of the current node, none matched, therefore fail
             return false;
         }
 
@@ -73,7 +98,7 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
             }
             charStrings.add(s);
         }
-        
+
         if (map.isEmpty()) return null;
 
         char[] chars = new char[map.size()];
@@ -84,22 +109,6 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
             subs[i++] = createRecord(pos + 1, entry.getValue().toArray(new char[entry.getValue().size()][]));
         }
         return new Record(chars, subs);
-    }
-
-    private static int test(Record rec, char c, InputBuffer buffer, int ix) {
-        char[] chars = rec.chars;
-        for (int i = 0; i < chars.length; i++) {
-            if (c == chars[i]) {
-                Record sub = rec.subs[i];
-                ix++;
-                if (sub == null) {
-                    return ix;
-                } else {
-                    return test(sub, buffer.charAt(ix), buffer, ix);
-                }
-            }
-        }
-        return -1;
     }
 
 }
