@@ -90,7 +90,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @DontLabel
-    public Rule CharIgnoreCase(char c) {
+    public Rule IgnoreCase(char c) {
         if (Character.isLowerCase(c) == Character.isUpperCase(c)) {
             return Ch(c);
         }
@@ -204,8 +204,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule StringIgnoreCase(@NotNull String string) {
-        return StringIgnoreCase(string.toCharArray());
+    public Rule IgnoreCase(@NotNull String string) {
+        return IgnoreCase(string.toCharArray());
     }
 
     /**
@@ -219,11 +219,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @SuppressSubnodes
     @DontLabel
-    public Rule StringIgnoreCase(char... characters) {
-        if (characters.length == 1) return CharIgnoreCase(characters[0]); // optimize one-char strings
+    public Rule IgnoreCase(char... characters) {
+        if (characters.length == 1) return IgnoreCase(characters[0]); // optimize one-char strings
         Rule[] matchers = new Rule[characters.length];
         for (int i = 0; i < characters.length; i++) {
-            matchers[i] = CharIgnoreCase(characters[i]);
+            matchers[i] = IgnoreCase(characters[i]);
         }
         return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"');
     }
