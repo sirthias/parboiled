@@ -32,11 +32,11 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.parboiled.BaseParser;
 import org.parboiled.ContextAware;
-import org.parboiled.Rule;
 import org.parboiled.support.Var;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,11 +60,16 @@ class AsmUtils {
     public static Class<?> getClassForInternalName(@NotNull String classDesc) {
         Class<?> clazz = classForDesc.get(classDesc);
         if (clazz == null) {
-            String className = classDesc.replace('/', '.');
-            try {
-                clazz = Class.forName(className);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
+            if (classDesc.charAt(0) == '[') {
+                Class<?> compType = getClassForType(Type.getType(classDesc.substring(1)));
+                clazz = Array.newInstance(compType, 0).getClass();
+            } else {
+                String className = classDesc.replace('/', '.');
+                try {
+                    clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
+                }
             }
             classForDesc.put(classDesc, clazz);
         }
@@ -288,13 +293,6 @@ class AsmUtils {
         if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isAssignableTo(mi.owner, ContextAware.class);
-    }
-
-    public static boolean isCallToRuleCreationMethod(@NotNull AbstractInsnNode insn) {
-        if (insn.getType() != AbstractInsnNode.METHOD_INSN) return false;
-        MethodInsnNode mi = (MethodInsnNode) insn;
-        Type type = Type.getReturnType(mi.desc);
-        return type.getSort() == Type.OBJECT && isAssignableTo(type.getInternalName(), Rule.class);
     }
 
 }
