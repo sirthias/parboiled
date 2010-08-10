@@ -1,5 +1,3 @@
 parboiled.iml
 .idea/
-build/
-classes/
-test-output/
+target/
