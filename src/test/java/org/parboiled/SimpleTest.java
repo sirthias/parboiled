@@ -26,11 +26,11 @@ public class SimpleTest extends AbstractTest {
     static class Parser extends BaseParser<Object> {
 
         public Rule Clause() {
-            return Sequence(Digit(), Operator(), Digit(), CharSet("abcd"), EOI);
+            return Sequence(Digit(), Operator(), Digit(), FirstOf("abcd"), EOI);
         }
 
         public Rule Operator() {
-            return FirstOf('+', '-');
+            return FirstOf(Ch('+'), '-');
         }
 
         public Rule Digit() {

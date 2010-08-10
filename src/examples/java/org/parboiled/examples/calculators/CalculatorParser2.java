@@ -41,7 +41,7 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                    CharSet("+-"),
+                    FirstOf("+-"),
                     op.set(matchedChar()), // set the action variable to the matched operator char
                     Term(),
 
@@ -59,7 +59,7 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                    CharSet("*/"),
+                    FirstOf("*/"),
                     op.set(matchedChar()), // set the action variable to the matched operator char
                     Factor(),
 
@@ -86,7 +86,8 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
 
                 // parse the input text matched by the preceding "Digits" rule,
                 // convert it into an Integer and push a new AST node for it onto the value stack
-                push(new CalcNode(Integer.parseInt(match())))
+                // the action uses a default string in case it is run during error recovery (resynchronization)
+                push(new CalcNode(Integer.parseInt(matchOrDefault("0"))))
         );
     }
 

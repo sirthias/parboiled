@@ -35,16 +35,16 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Expression() {
-        return OperatorRule(Term(), FirstOf('+', '-'));
+        return OperatorRule(Term(), FirstOf("+ ", "- "));
     }
 
     public Rule Term() {
-        return OperatorRule(Factor(), FirstOf('*', '/'));
+        return OperatorRule(Factor(), FirstOf("* ", "/ "));
     }
 
     public Rule Factor() {
-        // by using ToRule('^') instead of Ch('^') we make use of the FromCharLiteral(...) transformation below
-        return OperatorRule(Atom(), ToRule('^'));
+        // by using ToRule("^ ") instead of Ch('^') we make use of the FromCharLiteral(...) transformation below
+        return OperatorRule(Atom(), ToRule("^ "));
     }
 
     public Rule OperatorRule(Rule subRule, Rule operatorRule) {
@@ -68,7 +68,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Parens() {
-        return Sequence('(', Expression(), ')');
+        return Sequence("( ", Expression(), ") ");
     }
 
     public Rule Number() {
@@ -78,7 +78,8 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                         OneOrMore(Digit()),
                         Optional(Ch('.'), OneOrMore(Digit()))
                 ),
-                push(new CalcNode(Double.parseDouble(match()))),
+                // the action uses a default string in case it is run during error recovery (resynchronization)
+                push(new CalcNode(Double.parseDouble(matchOrDefault("0")))),
                 WhiteSpace()
         );
     }
@@ -88,17 +89,17 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     public Rule WhiteSpace() {
-        return ZeroOrMore(CharSet(" \t\f"));
+        return ZeroOrMore(FirstOf(" \t\f"));
     }
 
-    @Override
-    protected Rule FromCharLiteral(char c) {
-        return Sequence(Ch(c), WhiteSpace());
-    }
-
+    // we redefine the rule creation for string literals to automatically match trailing whitespace if the string
+    // literal ends with a space character, this way we don't have to insert extra whitespace() rules after each
+    // character or string literal
     @Override
     protected Rule FromStringLiteral(@NotNull String string) {
-        return Sequence(String(string), WhiteSpace());
+        return string.endsWith(" ") ?
+                Sequence(String(string.substring(0, string.length() - 1)), WhiteSpace()) :
+                String(string);
     }
 
     //**************** MAIN ****************

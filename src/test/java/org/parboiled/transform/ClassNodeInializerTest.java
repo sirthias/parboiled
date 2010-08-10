@@ -65,7 +65,7 @@ public class ClassNodeInializerTest extends TransformationTest {
                 "RuleWithIndirectImplicitAction,RuleWithDirectExplicitAction,RuleWithIndirectExplicitAction," +
                 "RuleWithDirectImplicitUpAction,RuleWithIndirectExplicitDownAction,RuleWithCapture1,RuleWithCapture2," +
                 "RuleWithCachedAnd2Params,RuleWithCaptureInAction,RuleWithActionAccessingPrivateField," +
-                "RuleWithActionAccessingPrivateMethod,Ch,IgnoreCase,CharRange,CharSet,String,IgnoreCase," +
+                "RuleWithActionAccessingPrivateMethod,Ch,IgnoreCase,CharRange,FirstOf,String,IgnoreCase," +
                 "FirstOf,OneOrMore,Optional,Sequence,Test,TestNot,ZeroOrMore,Eoi,Any,Empty");
 
         assertEqualsMultiline(join(classNode.getRuleMethods().values(), new Predicate<RuleMethod>() {

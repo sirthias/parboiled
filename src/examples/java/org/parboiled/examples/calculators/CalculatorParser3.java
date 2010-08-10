@@ -42,8 +42,8 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                        // we use a FirstOf(...) instead of a CharSet so we can use the FromStringLiteral
-                        // transformation (see below), which automatically consumes trailing whitespace
+                        // we use a FirstOf(String, String) instead of a FirstOf(String) so we can use the
+                        // FromStringLiteral transformation (see below), which automatically consumes trailing whitespace
                         FirstOf("+ ", "- "), op.set(matchedChar()),
                         Term(),
 
@@ -105,7 +105,8 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 ),
 
                 // the match() call returns the matched input text of the immediately preceding rule
-                push(new CalcNode(Double.parseDouble(match()))),
+                // the action uses a default string in case it is run during error recovery (resynchronization)
+                push(new CalcNode(Double.parseDouble(matchOrDefault("0")))),
                 WhiteSpace()
         );
     }
@@ -115,7 +116,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     }
 
     Rule WhiteSpace() {
-        return ZeroOrMore(CharSet(" \t\f"));
+        return ZeroOrMore(FirstOf(" \t\f"));
     }
 
     // we redefine the rule creation for string literals to automatically match trailing whitespace if the string

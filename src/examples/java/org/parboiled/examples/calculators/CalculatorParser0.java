@@ -31,11 +31,11 @@ public class CalculatorParser0 extends CalculatorParser<Integer> {
     }
 
     Rule Expression() {
-        return Sequence(Term(), ZeroOrMore(CharSet("+-"), Term()));
+        return Sequence(Term(), ZeroOrMore(FirstOf("+-"), Term()));
     }
 
     Rule Term() {
-        return Sequence(Factor(), ZeroOrMore(CharSet("*/"), Factor()));
+        return Sequence(Factor(), ZeroOrMore(FirstOf("*/"), Factor()));
     }
 
     Rule Factor() {

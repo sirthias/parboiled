@@ -842,7 +842,7 @@ public class JavaParser extends BaseParser<Object> {
         return ZeroOrMore(FirstOf(
 
                 // whitespace
-                OneOrMore(CharSet(" \t\r\n\f")),
+                OneOrMore(FirstOf(" \t\r\n\f")),
 
                 // traditional comment
                 Sequence("/*", ZeroOrMore(TestNot("*/"), ANY), "*/"),
@@ -850,7 +850,7 @@ public class JavaParser extends BaseParser<Object> {
                 // end of line comment
                 Sequence(
                         "//",
-                        ZeroOrMore(TestNot(CharSet("\r\n")), ANY),
+                        ZeroOrMore(TestNot(FirstOf("\r\n")), ANY),
                         FirstOf("\r\n", '\r', '\n', EOI)
                 )
         ));
@@ -955,7 +955,7 @@ public class JavaParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     Rule IntegerLiteral() {
-        return Sequence(FirstOf(HexNumeral(), OctalNumeral(), DecimalNumeral()), Optional(CharSet("lL")));
+        return Sequence(FirstOf(HexNumeral(), OctalNumeral(), DecimalNumeral()), Optional(FirstOf("lL")));
     }
 
     @SuppressSubnodes
@@ -986,15 +986,15 @@ public class JavaParser extends BaseParser<Object> {
     @SuppressSubnodes
     Rule DecimalFloat() {
         return FirstOf(
-                Sequence(OneOrMore(Digit()), '.', ZeroOrMore(Digit()), Optional(Exponent()), Optional(CharSet("fFdD"))),
-                Sequence('.', OneOrMore(Digit()), Optional(Exponent()), Optional(CharSet("fFdD"))),
-                Sequence(OneOrMore(Digit()), Exponent(), Optional(CharSet("fFdD"))),
-                Sequence(OneOrMore(Digit()), Optional(Exponent()), CharSet("fFdD"))
+                Sequence(OneOrMore(Digit()), '.', ZeroOrMore(Digit()), Optional(Exponent()), Optional(FirstOf("fFdD"))),
+                Sequence('.', OneOrMore(Digit()), Optional(Exponent()), Optional(FirstOf("fFdD"))),
+                Sequence(OneOrMore(Digit()), Exponent(), Optional(FirstOf("fFdD"))),
+                Sequence(OneOrMore(Digit()), Optional(Exponent()), FirstOf("fFdD"))
         );
     }
 
     Rule Exponent() {
-        return Sequence(CharSet("eE"), Optional(CharSet("+-")), OneOrMore(Digit()));
+        return Sequence(FirstOf("eE"), Optional(FirstOf("+-")), OneOrMore(Digit()));
     }
 
     Rule Digit() {
@@ -1003,7 +1003,7 @@ public class JavaParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     Rule HexFloat() {
-        return Sequence(HexSignificant(), BinaryExponent(), Optional(CharSet("fFdD")));
+        return Sequence(HexSignificant(), BinaryExponent(), Optional(FirstOf("fFdD")));
     }
 
     Rule HexSignificant() {
@@ -1014,13 +1014,13 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     Rule BinaryExponent() {
-        return Sequence(CharSet("pP"), Optional(CharSet("+-")), OneOrMore(Digit()));
+        return Sequence(FirstOf("pP"), Optional(FirstOf("+-")), OneOrMore(Digit()));
     }
 
     Rule CharLiteral() {
         return Sequence(
                 '\'',
-                FirstOf(Escape(), Sequence(TestNot(CharSet("'\\")), ANY)).suppressSubnodes(),
+                FirstOf(Escape(), Sequence(TestNot(FirstOf("'\\")), ANY)).suppressSubnodes(),
                 '\''
         );
     }
@@ -1031,7 +1031,7 @@ public class JavaParser extends BaseParser<Object> {
                 ZeroOrMore(
                         FirstOf(
                                 Escape(),
-                                Sequence(TestNot(CharSet("\r\n\"\\")), ANY)
+                                Sequence(TestNot(FirstOf("\r\n\"\\")), ANY)
                         )
                 ).suppressSubnodes(),
                 '"'
@@ -1039,7 +1039,7 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     Rule Escape() {
-        return Sequence('\\', FirstOf(CharSet("btnfr\"\'\\"), OctalEscape(), UnicodeEscape()));
+        return Sequence('\\', FirstOf(FirstOf("btnfr\"\'\\"), OctalEscape(), UnicodeEscape()));
     }
 
     Rule OctalEscape() {
@@ -1059,7 +1059,7 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     final Rule AT = Terminal("@");
-    final Rule AND = Terminal("&", CharSet("=&"));
+    final Rule AND = Terminal("&", FirstOf("=&"));
     final Rule ANDAND = Terminal("&&");
     final Rule ANDEQU = Terminal("&=");
     final Rule BANG = Terminal("!", Ch('='));
@@ -1075,7 +1075,7 @@ public class JavaParser extends BaseParser<Object> {
     final Rule EQU = Terminal("=", Ch('='));
     final Rule EQUAL = Terminal("==");
     final Rule GE = Terminal(">=");
-    final Rule GT = Terminal(">", CharSet("=>"));
+    final Rule GT = Terminal(">", FirstOf("=>"));
     final Rule HAT = Terminal("^", Ch('='));
     final Rule HATEQU = Terminal("^=");
     final Rule INC = Terminal("++");
@@ -1083,17 +1083,17 @@ public class JavaParser extends BaseParser<Object> {
     final Rule LE = Terminal("<=");
     final Rule LPAR = Terminal("(");
     final Rule LPOINT = Terminal("<");
-    final Rule LT = Terminal("<", CharSet("=<"));
+    final Rule LT = Terminal("<", FirstOf("=<"));
     final Rule LWING = Terminal("{");
-    final Rule MINUS = Terminal("-", CharSet("=-"));
+    final Rule MINUS = Terminal("-", FirstOf("=-"));
     final Rule MINUSEQU = Terminal("-=");
     final Rule MOD = Terminal("%", Ch('='));
     final Rule MODEQU = Terminal("%=");
     final Rule NOTEQUAL = Terminal("!=");
-    final Rule OR = Terminal("|", CharSet("=|"));
+    final Rule OR = Terminal("|", FirstOf("=|"));
     final Rule OREQU = Terminal("|=");
     final Rule OROR = Terminal("||");
-    final Rule PLUS = Terminal("+", CharSet("=+"));
+    final Rule PLUS = Terminal("+", FirstOf("=+"));
     final Rule PLUSEQU = Terminal("+=");
     final Rule QUERY = Terminal("?");
     final Rule RBRK = Terminal("]");
@@ -1103,7 +1103,7 @@ public class JavaParser extends BaseParser<Object> {
     final Rule SEMI = Terminal(";");
     final Rule SL = Terminal("<<", Ch('='));
     final Rule SLEQU = Terminal("<<=");
-    final Rule SR = Terminal(">>", CharSet("=>"));
+    final Rule SR = Terminal(">>", FirstOf("=>"));
     final Rule SREQU = Terminal(">>=");
     final Rule STAR = Terminal("*", Ch('='));
     final Rule STAREQU = Terminal("*=");

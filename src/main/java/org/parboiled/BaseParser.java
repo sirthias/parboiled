@@ -123,8 +123,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule CharSet(@NotNull String characters) {
-        return CharSet(characters.toCharArray());
+    public Rule FirstOf(@NotNull String characters) {
+        return FirstOf(characters.toCharArray());
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule CharSet(@NotNull char... characters) {
+    public Rule FirstOf(@NotNull char... characters) {
         Preconditions.checkArgument(characters.length > 0);
         return characters.length == 1 ? Ch(characters[0]) : CharSet(Characters.of(characters));
     }
