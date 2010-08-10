@@ -17,14 +17,16 @@
 package org.parboiled;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ObjectArrays;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.InvalidInputError;
-import org.parboiled.matchers.Matcher;
-import org.parboiled.matchers.SequenceMatcher;
-import org.parboiled.matchers.TestMatcher;
+import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A {@link ParseRunner} implementation that is able to recover from {@link InvalidInputError}s in the input and therefore
@@ -61,7 +63,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     /**
      * Creates a new RecoveringParseRunner instance for the given rule.
      *
-     * @param rule  the parser rule
+     * @param rule the parser rule
      */
     public RecoveringParseRunner(@NotNull Rule rule) {
         super(rule);
@@ -70,8 +72,8 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     /**
      * Creates a new RecoveringParseRunner instance for the given rule using the given ValueStack instance.
      *
-     * @param rule  the parser rule
-     * @param valueStack  the value stack
+     * @param rule       the parser rule
+     * @param valueStack the value stack
      */
     public RecoveringParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
         super(rule, valueStack);
@@ -233,7 +235,6 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         private final InvalidInputError currentError;
         private int fringeIndex;
         private MatcherPath lastMatchPath;
-        private Object lastMatchValueStackSnapshot;
 
         /**
          * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its endIndex
@@ -263,9 +264,6 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
 
             if (matcher.match(context)) {
-                // remember the last good value stack state, since in case we have to resync we need to restore that
-                // state in order to reverse the reset the failed (and to be resynced) SequenceMatcher has done
-                lastMatchValueStackSnapshot = context.getValueStack().takeSnapshot();
                 return true;
             }
 
@@ -334,12 +332,18 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             context.clearNodeSuppression();
             context.markError();
 
-            // by resyncing we flip an unmatched sequence to a matched one, so we have to reverse the value stack reset
-            // the SequenceMatcher has done when it determined the now-to-be-resynced sequence as "not-matched"
-            context.getValueStack().restoreSnapshot(lastMatchValueStackSnapshot);
-
             // create a node for the failed Sequence, taking ownership of all sub nodes created so far
             context.createNode();
+
+            // by resyncing we flip an unmatched sequence to a matched one, so in order to keep the value stack
+            // consistent we go into a special "error action mode" and execute the minimal set of actions underneath
+            // the resync sequence
+            List<ActionMatcher> actions = context.getMatcher().accept(new CollectResyncActionsVisitor());
+            Matcher[] rules = ObjectArrays
+                    .concat((Matcher) BaseParser.EMPTY, actions.toArray(new Matcher[actions.size()]));
+            for (Matcher matcher : rules) {
+                matcher.getSubContext(context).runMatcher();
+            }
 
             // skip over all characters that are not legal followers of the failed Sequence
             context.advanceIndex(1); // gobble RESYNC marker
@@ -367,6 +371,58 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
                 context.advanceIndex(1);
             }
             return context.getCurrentIndex();
+        }
+    }
+
+    /**
+     * This MatcherVisitor collects the minimal set of actions that has to run underneath a resyncronization sequence
+     * in order to maintain a consistent Value Stack state.
+     */
+    private static class CollectResyncActionsVisitor extends DefaultMatcherVisitor<List<ActionMatcher>> {
+
+        private final Set<Matcher> visited = new HashSet<Matcher>();
+        private final List<ActionMatcher> actions = new ArrayList<ActionMatcher>();
+
+        @Override
+        public List<ActionMatcher> visit(ActionMatcher matcher) {
+            actions.add(matcher);
+            return actions;
+        }
+
+        @Override
+        public List<ActionMatcher> visit(FirstOfMatcher matcher) {
+            // go through all subs in reverse order (because the simplest fall-back cases are often in last position)
+            // and try all of them until we hit a path that does not lead to a recursion
+            List<Matcher> children = matcher.getChildren();
+            for (int i = children.size() - 1; i >= 0; i--) {
+                if (children.get(i).accept(this) != null) return actions;
+            }
+            throw new IllegalStateException(); // a FirstOf where all subs lead to recursions?
+        }
+
+        @Override
+        public List<ActionMatcher> visit(OneOrMoreMatcher matcher) {
+            return matcher.subMatcher.accept(this);
+        }
+
+        @Override
+        public List<ActionMatcher> visit(SequenceMatcher matcher) {
+            if (visited.contains(matcher)) {
+                // we hit a recursion, so signal to the next FirstOf parent that we need to take another path in order
+                // to collect all actions
+                return null;
+            }
+
+            visited.add(matcher);
+            for (Matcher sub : matcher.getChildren()) {
+                sub.accept(this);
+            }
+            return actions;
+        }
+
+        @Override
+        public List<ActionMatcher> defaultValue(AbstractMatcher matcher) {
+            return actions;
         }
     }
 

@@ -60,6 +60,21 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
+     * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
+     * being evaluated. If the matched input text is empty the given default string is returned.
+     * This call can only be used in actions that are part of a Sequence rule and are not at first
+     * position in this Sequence.</p>
+     *
+     * @param defaultString the default string to return if the matched input text is empty
+     * @return the input text matched by the immediately preceeding subrule or the default string
+     */
+    public String matchOrDefault(String defaultString) {
+        check();
+        String match = context.getMatch();
+        return match.length() == 0 ? defaultString : match;
+    }
+
+    /**
      * <p>Returns the first character of the input text matched by the context immediately preceeding the action
      * expression that is currently being evaluated. This call can only be used in actions that are part of a Sequence
      * rule and are not at first position in this Sequence.</p>

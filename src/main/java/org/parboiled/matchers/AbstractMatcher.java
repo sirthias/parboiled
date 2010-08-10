@@ -33,15 +33,15 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     private boolean nodeSkipped;
     private Object tag;
 
-    AbstractMatcher() {
+    public AbstractMatcher() {
         this(new Rule[0]);
     }
 
-    AbstractMatcher(@NotNull Rule subRule) {
+    public AbstractMatcher(@NotNull Rule subRule) {
         this(new Rule[] {subRule});
     }
 
-    AbstractMatcher(@NotNull Rule[] subRules) {
+    public AbstractMatcher(@NotNull Rule[] subRules) {
         super(ImmutableList.<Matcher>of(toMatchers(subRules)));
     }
 

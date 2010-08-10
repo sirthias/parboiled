@@ -80,7 +80,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
 
                 // parse the input text matched by the preceding "Digits" rule,
                 // convert it into an Integer and push it onto the value stack
-                push(Integer.parseInt(match()))
+                push(Integer.parseInt(matchOrDefault("0")))
         );
     }
     
