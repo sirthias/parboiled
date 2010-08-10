@@ -1,3 +1,22 @@
+Version 0.9.8.0 (2010-08-10)
+----------------------------
+- BREAKING CHANGES:
+  - Added a parser "Value Stack", retired parser value handling via parse tree decoration
+  - Removed all action expression helpers for the old parse-tree-based value handling
+  - Changed default parsing behavior from parse-tree-building to parse-tree-less, added @BuildParseTree annotation
+  - Changed Eoi(), Any() and Empty() to public static final fields on the BaseParser
+  - Renamed BaseParser.CharIgnoreCase and BaseParser.StringIgnoreCase to BaseParser.IgnoreCase
+- Fixed bug provoking an exception at the 65536th input character
+- Fixed bug in Test-/TestNotMatchers
+- Fixed some problems in Java Parser example
+- Added Scala facade for parser building without byte code manipulation, featuring static type checking on all value stack operations
+- Added a complete JsonParser as an example for using the Scala facade
+- Added a matcher specialization for fast string matching also in FirstOf-Rules
+- Added @MemoMismatches and respective implementation (which is a first step towards "packratting" support)
+- Added ProfilingParseRunner and JavaParserProfiler example
+- Adapted build process to build two independent libraries, one for Java, one for Scala
+- Changed source directory structure to "Maven-style"
+
 Version 0.9.7.3 (2010-07-09)
 ----------------------------
 - Fixed several problems in parse error recovery

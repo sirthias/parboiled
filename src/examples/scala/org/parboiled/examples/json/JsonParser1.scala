@@ -6,8 +6,10 @@ import org.parboiled.errors.{ErrorUtils, ParsingException}
 
 /**
  * A complete JSON parser producing an AST representation of the parsed JSON source.
+ * The syntactical grammar is identical to the {@link JsonParser0} example, however this parser adds the parser
+ * actions required to build an AST during the parsing run.
  */
-class JsonParser extends Parser {
+class JsonParser1 extends Parser {
 
   /**
    * These case classes form the nodes of the AST.

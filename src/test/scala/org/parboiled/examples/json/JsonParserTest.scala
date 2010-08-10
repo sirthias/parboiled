@@ -9,7 +9,7 @@ import org.parboiled.errors.ErrorUtils.printParseErrors
 import org.parboiled.support.ParseTreeUtils.printNodeTree
 
 class JsonParserTest extends AbstractTest with TestNGSuite {
-  val parser = new JsonParser()
+  val parser = new JsonParser1()
 
   @Test
   def testJsonParser() = {
@@ -52,12 +52,12 @@ class JsonParserTest extends AbstractTest with TestNGSuite {
 }""")
   }
 
-  private def printAst(node: JsonParser#AstNode, indent: String): String = node match {
-    case n: JsonParser#ObjectNode => "{\n" + (for (sub <- n.members) yield printAst(sub, indent + "  ")).mkString + indent + "}"
-    case n: JsonParser#MemberNode => indent + '"' + n.key + "\" : " + printAst(n.value, indent) + "\n"
-    case n: JsonParser#ArrayNode => '[' + (for (sub <- n.elements) yield printAst(sub, indent + "  ")).mkString(", ") + "]"
-    case n: JsonParser#StringNode => '"' + n.text + '"'
-    case n: JsonParser#NumberNode => n.value.toString
+  private def printAst(node: JsonParser1#AstNode, indent: String): String = node match {
+    case n: JsonParser1#ObjectNode => "{\n" + (for (sub <- n.members) yield printAst(sub, indent + "  ")).mkString + indent + "}"
+    case n: JsonParser1#MemberNode => indent + '"' + n.key + "\" : " + printAst(n.value, indent) + "\n"
+    case n: JsonParser1#ArrayNode => '[' + (for (sub <- n.elements) yield printAst(sub, indent + "  ")).mkString(", ") + "]"
+    case n: JsonParser1#StringNode => '"' + n.text + '"'
+    case n: JsonParser1#NumberNode => n.value.toString
     case parser.True => "true"
     case parser.False => "false"
     case parser.Null => "null"
