@@ -32,7 +32,7 @@ public class AbcParser extends BaseParser<Object> {
 
     public Rule S() {
         return Sequence(
-                Test(Sequence(A(), 'c')),
+                Test(A(), 'c'),
                 OneOrMore('a'),
                 B(),
                 TestNot(FirstOf('a', 'b', 'c'))

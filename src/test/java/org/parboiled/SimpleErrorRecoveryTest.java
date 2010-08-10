@@ -32,7 +32,7 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
         Rule Subject() {
             return Sequence(
                     Name(),
-                    ZeroOrMore(Sequence(FirstOf(" and ", " or "), Name()))
+                    ZeroOrMore(FirstOf(" and ", " or "), Name())
             );
         }
 

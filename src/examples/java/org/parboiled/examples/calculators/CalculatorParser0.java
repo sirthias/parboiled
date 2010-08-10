@@ -31,17 +31,11 @@ public class CalculatorParser0 extends CalculatorParser<Integer> {
     }
 
     Rule Expression() {
-        return Sequence(
-                Term(),
-                ZeroOrMore(Sequence(CharSet("+-"), Term()))
-        );
+        return Sequence(Term(), ZeroOrMore(CharSet("+-"), Term()));
     }
 
     Rule Term() {
-        return Sequence(
-                Factor(),
-                ZeroOrMore(Sequence(CharSet("*/"), Factor()))
-        );
+        return Sequence(Factor(), ZeroOrMore(CharSet("*/"), Factor()));
     }
 
     Rule Factor() {

@@ -41,17 +41,15 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                        Sequence(
-                                CharSet("+-"),
-                                op.set(matchedChar()), // set the action variable to the matched operator char
-                                Term(),
+                    CharSet("+-"),
+                    op.set(matchedChar()), // set the action variable to the matched operator char
+                    Term(),
 
-                                // create an AST node for the operation that was just matched
-                                // we consume the two top stack elements and replace them with a new AST node
-                                // we use an alternative technique to the one shown in CalculatorParser1 to reverse
-                                // the order of the two top value stack elements
-                                swap() && push(new CalcNode(op.get(), pop(), pop()))
-                        )
+                    // create an AST node for the operation that was just matched
+                    // we consume the two top stack elements and replace them with a new AST node
+                    // we use an alternative technique to the one shown in CalculatorParser1 to reverse
+                    // the order of the two top value stack elements
+                    swap() && push(new CalcNode(op.get(), pop(), pop()))
                 )
         );
     }
@@ -61,17 +59,15 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                        Sequence(
-                                CharSet("*/"),
-                                op.set(matchedChar()), // set the action variable to the matched operator char
-                                Factor(),
+                    CharSet("*/"),
+                    op.set(matchedChar()), // set the action variable to the matched operator char
+                    Factor(),
 
-                                // create an AST node for the operation that was just matched
-                                // we consume the two top stack elements and replace them with a new AST node
-                                // we use an alternative technique to the one shown in CalculatorParser1 to reverse
-                                // the order of the two top value stack elements
-                                swap() && push(new CalcNode(op.get(), pop(), pop()))
-                        )
+                    // create an AST node for the operation that was just matched
+                    // we consume the two top stack elements and replace them with a new AST node
+                    // we use an alternative technique to the one shown in CalculatorParser1 to reverse
+                    // the order of the two top value stack elements
+                    swap() && push(new CalcNode(op.get(), pop(), pop()))
                 )
         );
     }

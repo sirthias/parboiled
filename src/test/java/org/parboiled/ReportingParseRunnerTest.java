@@ -99,7 +99,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
 
     public static class Parser extends BaseParser<Object> {
         Rule Line() {
-            return Sequence("Text;", OneOrMore(Sequence(TestNot(';'), ANY)), ';', EOI);
+            return Sequence("Text;", OneOrMore(TestNot(';'), ANY), ';', EOI);
         }
     }
 

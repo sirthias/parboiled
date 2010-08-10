@@ -38,10 +38,8 @@ public class VarFramingTest extends AbstractTest {
                     Digits(), a.set(peek()),
                     SomeRule(a),
                     Optional(
-                            Sequence(
-                                    '+',
-                                    Clause(), push(a.get())
-                            )
+                        '+',
+                        Clause(), push(a.get())
                     )
             );
         }

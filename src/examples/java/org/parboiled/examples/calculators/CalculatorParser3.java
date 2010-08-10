@@ -19,7 +19,6 @@ package org.parboiled.examples.calculators;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.common.StringUtils;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
 import org.parboiled.support.Var;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
@@ -43,15 +42,13 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                        Sequence(
-                                // we use a FirstOf(...) instead of a CharSet so we can use the FromStringLiteral
-                                // transformation (see below), which automatically consumes trailing whitespace
-                                FirstOf("+ ", "- "), op.set(matchedChar()),
-                                Term(),
+                        // we use a FirstOf(...) instead of a CharSet so we can use the FromStringLiteral
+                        // transformation (see below), which automatically consumes trailing whitespace
+                        FirstOf("+ ", "- "), op.set(matchedChar()),
+                        Term(),
 
-                                // same as in CalculatorParser2
-                                push(new CalcNode(op.get(), pop(1), pop()))
-                        )
+                        // same as in CalculatorParser2
+                        push(new CalcNode(op.get(), pop(1), pop()))
                 )
         );
     }
@@ -61,11 +58,9 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                        Sequence(
-                                FirstOf("* ", "/ "), op.set(matchedChar()),
-                                Factor(),
-                                push(new CalcNode(op.get(), pop(1), pop()))
-                        )
+                        FirstOf("* ", "/ "), op.set(matchedChar()),
+                        Factor(),
+                        push(new CalcNode(op.get(), pop(1), pop()))
                 )
         );
     }
@@ -74,11 +69,9 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Atom(),
                 ZeroOrMore(
-                        Sequence(
-                                "^ ",
-                                Atom(),
-                                push(new CalcNode('^', pop(1), pop()))
-                        )
+                        "^ ",
+                        Atom(),
+                        push(new CalcNode('^', pop(1), pop()))
                 )
         );
     }
@@ -108,7 +101,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
                 Sequence(
                         Optional('-'),
                         OneOrMore(Digit()),
-                        Optional(Sequence('.', OneOrMore(Digit())))
+                        Optional('.', OneOrMore(Digit()))
                 ),
 
                 // the match() call returns the matched input text of the immediately preceding rule

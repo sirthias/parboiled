@@ -52,11 +52,9 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
         return Sequence(
                 subRule,
                 ZeroOrMore(
-                        Sequence(
-                                operatorRule, op.set(matchedChar()),
-                                subRule,
-                                push(new CalcNode(op.get(), pop(1), pop()))
-                        )
+                    operatorRule, op.set(matchedChar()),
+                    subRule,
+                    push(new CalcNode(op.get(), pop(1), pop()))
                 )
         );
     }
@@ -78,7 +76,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
                 Sequence(
                         Optional(Ch('-')),
                         OneOrMore(Digit()),
-                        Optional(Sequence(Ch('.'), OneOrMore(Digit())))
+                        Optional(Ch('.'), OneOrMore(Digit()))
                 ),
                 push(new CalcNode(Double.parseDouble(match()))),
                 WhiteSpace()

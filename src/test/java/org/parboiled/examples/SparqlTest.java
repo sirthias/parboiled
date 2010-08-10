@@ -69,7 +69,7 @@ public class SparqlTest {
                 //System.err.println(textInfo.text + " --> " + textInfo.result + "\n\n");
             }
         }
-        Assert.assertEquals(12, failures); // currently 12 tests require semantic validation and therefore fail
+        Assert.assertEquals(failures, 12); // currently 12 tests require semantic validation and therefore fail
     }
 
     protected List<TextInfo> getTextInfos() throws Exception {
