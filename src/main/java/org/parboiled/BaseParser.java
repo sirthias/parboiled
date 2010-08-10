@@ -288,8 +288,24 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
+     * Creates a new rule that tries repeated matches of a sequence of the given subrules and succeeds if the sequence
+     * matches at least once. If the sequence does not match at least once this rule fails.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rule      the first subrule
+     * @param rule2     the second subrule
+     * @param moreRules the other subrules
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule OneOrMore(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return OneOrMore(Sequence(rule, rule2, moreRules));
+    }
+
+    /**
      * Creates a new rule that tries a match on its subrule and always succeeds, independently of the matching
-     * success of its subrule.
+     * success of its sub rule.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -300,6 +316,22 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Label("Optional")
     public Rule Optional(Object rule) {
         return new OptionalMatcher(ToRule(rule));
+    }
+
+    /**
+     * Creates a new rule that tries a match on the sequence of the given subrules and always succeeds, independently
+     * of the matching success of its sub sequence.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rule      the first subrule
+     * @param rule2     the second subrule
+     * @param moreRules the other subrules
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule Optional(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return Optional(Sequence(rule, rule2, moreRules));
     }
 
     /**
@@ -332,12 +364,13 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Creates a new rule that acts as a syntactic predicate, i.e. tests the given subrule against the current
-     * input position without actually matching any characters. Succeeds if the subrule succeeds and fails if the
-     * subrule rails. Since this rule does not actually consume any input it will never create a parse tree node.
-     * Also it carries a {@link SuppressNode} annotation, which means all subnodes will also never create a parse
-     * tree node. This can be important for actions contained in subrules of this rule that otherwise expect the
+     * <p>Creates a new rule that acts as a syntactic predicate, i.e. tests the given sub rule against the current
+     * input position without actually matching any characters. Succeeds if the sub rule succeeds and fails if the
+     * sub rule rails. Since this rule does not actually consume any input it will never create a parse tree node.</p>
+     * <p>Also it carries a {@link SuppressNode} annotation, which means all sub nodes will also never create a parse
+     * tree node. This can be important for actions contained in sub rules of this rule that otherwise expect the
      * presence of certain parse tree structures in their context.
+     * Also see {@link org.parboiled.annotations.SkipActionsInPredicates}</p>
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -352,12 +385,35 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Creates a new rule that acts as an inverse syntactic predicate, i.e. tests the given subrule against the current
-     * input position without actually matching any characters. Succeeds if the subrule fails and fails if the
-     * subrule succeeds. Since this rule does not actually consume any input it will never create a parse tree node.
-     * Also it carries a {@link SuppressNode} annotation, which means all subnodes will also never create a parse
-     * tree node. This can be important for actions contained in subrules of this rule that otherwise expect the
+     * <p>Creates a new rule that acts as a syntactic predicate, i.e. tests the sequence of the given sub rule against
+     * the current input position without actually matching any characters. Succeeds if the sub sequence succeeds and
+     * fails if the sub sequence rails. Since this rule does not actually consume any input it will never create a
+     * parse tree node.</p>
+     * <p>Also it carries a {@link SuppressNode} annotation, which means all sub nodes will also never create a parse
+     * tree node. This can be important for actions contained in sub rules of this rule that otherwise expect the
      * presence of certain parse tree structures in their context.
+     * Also see {@link org.parboiled.annotations.SkipActionsInPredicates}</p>
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rule      the first subrule
+     * @param rule2     the second subrule
+     * @param moreRules the other subrules
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule Test(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return Test(Sequence(rule, rule2, moreRules));
+    }
+
+    /**
+     * <p>Creates a new rule that acts as an inverse syntactic predicate, i.e. tests the given sub rule against the
+     * current input position without actually matching any characters. Succeeds if the sub rule fails and fails if the
+     * sub rule succeeds. Since this rule does not actually consume any input it will never create a parse tree node.</p>
+     * <p>Also it carries a {@link SuppressNode} annotation, which means all sub nodes will also never create a parse
+     * tree node. This can be important for actions contained in sub rules of this rule that otherwise expect the
+     * presence of certain parse tree structures in their context.
+     * Also see {@link org.parboiled.annotations.SkipActionsInPredicates}</p>
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -369,6 +425,28 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule TestNot(Object rule) {
         Rule subMatcher = ToRule(rule);
         return new TestNotMatcher(subMatcher).label("!(" + subMatcher + ")");
+    }
+
+    /**
+     * <p>Creates a new rule that acts as an inverse syntactic predicate, i.e. tests the sequence of the given sub rules
+     * against the current input position without actually matching any characters. Succeeds if the sub sequence fails
+     * and fails if the sub sequence succeeds. Since this rule does not actually consume any input it will never create
+     * a parse tree node.</p>
+     * <p>Also it carries a {@link SuppressNode} annotation, which means all sub nodes will also never create a parse
+     * tree node. This can be important for actions contained in sub rules of this rule that otherwise expect the
+     * presence of certain parse tree structures in their context.
+     * Also see {@link org.parboiled.annotations.SkipActionsInPredicates}</p>
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rule      the first subrule
+     * @param rule2     the second subrule
+     * @param moreRules the other subrules
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule TestNot(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return TestNot(Sequence(rule, rule2, moreRules));
     }
 
     /**
@@ -384,6 +462,22 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Label("ZeroOrMore")
     public Rule ZeroOrMore(Object rule) {
         return new ZeroOrMoreMatcher(ToRule(rule));
+    }
+
+    /**
+     * Creates a new rule that tries repeated matches of the sequence of the given sub rules.
+     * Succeeds always, even if the sub sequence doesn't match even once.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param rule      the first subrule
+     * @param rule2     the second subrule
+     * @param moreRules the other subrules
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule ZeroOrMore(Object rule, Object rule2, @NotNull Object... moreRules) {
+        return ZeroOrMore(Sequence(rule, rule2, moreRules));
     }
 
     ///************************* "MAGIC" METHODS ***************************///
