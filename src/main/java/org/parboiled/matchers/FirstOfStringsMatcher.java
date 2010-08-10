@@ -21,10 +21,7 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.support.InputBuffer;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A specialized FirstOfMatcher that handles FirstOf(string, string, ...) rules much faster that the regular
@@ -87,7 +84,7 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
     }
 
     static Record createRecord(int pos, char[][] strings) {
-        Map<Character, Set<char[]>> map = new HashMap<Character, Set<char[]>>();
+        Map<Character, Set<char[]>> map = new TreeMap<Character, Set<char[]>>();
         for (char[] s : strings) {
             if (s == null || s.length <= pos) continue;
             char c = s[pos];

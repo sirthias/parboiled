@@ -35,16 +35,16 @@ public class FirstOfStringsMatcherTest {
                 "Delto",
                 "x")), "", sb);
         assertEquals(sb.toString(), "\n" +
-                "Delt\n" +
-                "    o\n" +
-                "    a\n" +
                 "Alpha\n" +
-                "C\n" +
-                " harlie\n" +
-                " laudia\n" +
                 "Be\n" +
                 "  rtram\n" +
                 "  ta\n" +
+                "C\n" +
+                " harlie\n" +
+                " laudia\n" +
+                "Delt\n" +
+                "    a\n" +
+                "    o\n" +
                 "x\n");
     }
 

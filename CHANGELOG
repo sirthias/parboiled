@@ -9,9 +9,12 @@ Version 0.9.8.0 (2010-08-10)
 - Fixed bug provoking an exception at the 65536th input character
 - Fixed bug in Test-/TestNotMatchers
 - Fixed some problems in Java Parser example
-- Added Scala facade for parser building without byte code manipulation, featuring static type checking on all value stack operations
+- Added Scala facade for efficient parser building without byte code manipulation,
+  featuring DSL elements for value stack operations with complete static type checking
 - Added a complete JsonParser as an example for using the Scala facade
-- Added a matcher specialization for fast string matching also in FirstOf-Rules
+- Added a matcher specialization for fast string matching also in FirstOf-Rules (~10% speedup in JavaParser example)
+- Added overloads to standard rule builders OneOrMore(...), Optional(...), Test(...), TestNot(...) and ZeroOrMore(...)
+  directly taking several sub rules as a sequence
 - Added @MemoMismatches and respective implementation (which is a first step towards "packratting" support)
 - Added ProfilingParseRunner and JavaParserProfiler example
 - Adapted build process to build two independent libraries, one for Java, one for Scala
