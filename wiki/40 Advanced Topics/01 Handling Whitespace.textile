@@ -1,0 +1,32 @@
+One disadvantage of "PEGs":http://en.wikipedia.org/wiki/Parsing_expression_grammar over lexer based
+"CFGs":http://en.wikipedia.org/wiki/Context-free_grammar can be the handling of white space. In a traditional CFG based
+parser with a separate lexer (scanner) phase this lexer might simply skip all white space and only generate tokens for
+the actual parser to operate on. This can free the actual parser grammar from all white space treatment.
+Since PEGs do not have a lexer but directly operate on the raw input they have to deal with white space in the grammar
+itself. Language designers with little experience in PEGs can sometime be unsure of how to best handle white space in
+their grammar.
+A common and highly recommended pattern is to match white space always immediately after a terminal (a single character
+or string) but not in any other place.
+
+With _parboiled_ you can take this rule even one step further and factor out most whitespace handling to only one
+helper method. One way to go is shown in the "CalculatorParser3":http://github.com/sirthias/parboiled/blob/master/src/examples/java/org/parboiled/examples/calculators/CalculatorParser3.java
+example for _parboiled for Java_ and the "JSON Parser":http://github.com/sirthias/parboiled/blob/master/src/examples/scala/org/parboiled/examples/json/JsonParser1.scala
+example for _parboiled for Scala_.
+The technique is to override the default String-to-Rule conversion method and inject custom logic. The two examples listed
+above define a special rule building construct for string literals ending with a blank. These literals are wrapped in
+a sequence rule that automatically matches all trailing whitespace after the string (or character).
+
+The result is that everywhere you use string literals ending with a blank in your grammar any trailing white space will
+automatically be consumed as well. This can make your grammar rules much more compact, readable and therefore maintainable.
+However there are a few things to remember when you use this solution:
+
+# All input text matched for rules containing "whitespace-enabled" string literals will now also have an unknown number
+of white space in their matched input texts, which can in some cases throw off parser action methods expecting otherwise.
+# "CharRange":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#CharRange(char,%20char) rules
+and "FirstOf(String)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#FirstOf(java.lang.String)
+are not affected by this solution, i.e. you still have to "manually" take care of matching trailing white space.
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

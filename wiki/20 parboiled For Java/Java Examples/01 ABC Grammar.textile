@@ -1,0 +1,16 @@
+This example lives in the package "org.parboiled.examples.abc":http://github.com/sirthias/parboiled/tree/master/src/examples/java/org/parboiled/examples/abc/
+and is a very simple demo of the classic non-context free language example { a^n b^n c^n : n >= 1 }:
+
+bq. S ← &(A c) a+ B !(a|b|c)
+A ← a A? b
+B ← b B? c
+
+See the [[Java Examples]] page for instructions on how to easily run this example on your machine.
+The grammar is a very straightforward _parboiled for Java_ representation of the grammar shown above. It uses both
+syntactic predicates available in Parsing Expression Grammars.
+Since no actions are used this example is a very simple recognizer for the above language, nothing more.
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

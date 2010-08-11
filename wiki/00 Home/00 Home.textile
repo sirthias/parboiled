@@ -1,0 +1,52 @@
+<span style="color:lightsteelblue;font-size:72px;font-weight:bold">parboiled</span>
+
+_parboiled_ is a mixed Java/Scala library providing for lightweight and easy-to-use, yet powerful and elegant parsing of arbitrary input text based on "Parsing expression grammars":http://en.wikipedia.org/wiki/Parsing_expression_grammar (PEGs). PEGs are an alternative to "context free grammars":http://en.wikipedia.org/wiki/Context-free_grammar (CFGs) for formally specifying syntax, they make a good replacement for regular expressions and generally have quite a few advantages over the "traditional" way of building parsers via CFGs. _parboiled_ is released under the "Apache License 2.0":http://en.wikipedia.org/wiki/Apache_license.
+
+* [[Motivation]]
+* [[Features]]
+* [[RegEx vs. parboiled vs. Parser Generators]]
+* Concepts
+** [[The Big Picture]]
+** [[The Rule Tree]]
+** [[The Value Stack]]
+** [[The Parse Tree]]
+** [[AST Construction]]
+** [[Parse Error Handling]]
+* [[parboiled for Java]]
+** [[Simple Java Example]]
+** [[Rule Construction in Java]]
+** [[Parser Action Expressions]]
+** [[Working with the Value Stack]]
+** [[Action Variables]]
+** [[Parser Extension in Detail]]
+** [[Style Guide]]
+** [[Java Examples]]
+*** [[ABC Grammar]]
+*** [[Calculators]]
+*** [[Time Parser]]
+*** [[Java Parser]]
+*** [[Markdown processor]]
+* [[parboiled for Scala]]
+** [[Simple Scala Example]]
+** [[Rule Construction in Scala]]
+** [[Parser Actions in Scala]]
+** [[Scala Examples]]
+*** [[Simple Calculator]]
+*** [[JSON Parser]]
+* Advanced Topics
+** [[Handling Whitespace]]
+** [[Parsing Performance Tuning]]
+** [[The ProfilingParseRunner]]
+** [[Grammar and Parser Debugging]]
+** [[Thread Safety]]
+* [[Building parboiled]]
+* "Javadoc API documentation":http://sirthias.github.com/parboiled/javadoc/
+* "Scaladoc API documentation":http://sirthias.github.com/parboiled/scaladoc/
+* "Change Log":http://github.com/sirthias/parboiled/blob/master/CHANGELOG
+
+p=. *For support / feedback / general discussion please use the _parboiled_ User Mailing List / Forum at "users.parboiled.org":http://users.parboiled.org !*
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

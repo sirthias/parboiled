@@ -1,0 +1,18 @@
+Starting with release 0.9.8.0 _parboiled_ comes with a library variant called _parboiled for Scala_.
+_parboild for Scala_ provides a concise internal Scala DSL for parser rule building that enables the use of the
+_parboiled_ parsing engine from Scala code without having to resort to the "clunky" Java DSL and "heavy-lifting"
+parser extension.
+
+_parboiled_ for Scala uses the exact same parsing engine for rule execution as _parboiled for Java_. The only difference
+lies in rule construction, which is done by special Scala DSL constructs. _parboiled for Scala_ offers the following
+advantages over its Java counterpart:
+
+* More concise rule building DSL (making use of Scalas higher expressiveness)
+* Increased type safety by hiding the parser value stack behind further abstractions (largely enabled by Scalas type inference)
+* Faster initial rule building (no expensive parser extension phase)
+* Somewhat smaller library size (since parser extension logic is not required)
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

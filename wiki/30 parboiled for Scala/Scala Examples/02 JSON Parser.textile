@@ -1,0 +1,10 @@
+The JSON Parser examples live in the "org.parboiled.examples.json":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/json/
+package and shows a complete JSON Parser built with _parboiled for Scala_.
+
+It builds an AST representation of the parsed JSON source and exercises many of _parboileds_ features.
+As such it is a very good starting point for your own _parboiled for Scala_ project. 
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

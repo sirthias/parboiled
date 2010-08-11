@@ -1,0 +1,21 @@
+The calculator examples live in the "org.parboiled.examples.calculators":http://github.com/sirthias/parboiled/tree/master/src/examples/java/org/parboiled/examples/calculators/
+package and are a series of example parsers show-casing various _parboiled_ solution approaches around a simple
+calculator language. See the [[Java Examples]] page for instructions on how to easily run these examples on your machine.
+
+The first one, the "CalculatorParser0":http://github.com/sirthias/parboiled/blob/master/src/examples/java/org/parboiled/examples/calculators/CalculatorParser0.java
+is a simple recognizer for the following basic grammar, without any parser actions:
+
+bq. Expression ← Term (('+' / '-') Term)*
+Term ← Factor (('*' / '/') Factor)*
+Factor ← Number / Parens
+Number ← Digit+
+Parents ← '(' expression ')'
+Digit ← [0-9]
+
+The calculator examples 1 through 4 gradually add more functionality to the parser and are a worthy source of
+inspiration for _parboiled_ newbies and advanced users alike.
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

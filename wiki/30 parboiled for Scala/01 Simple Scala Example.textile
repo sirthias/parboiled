@@ -1,0 +1,46 @@
+To give you a feel for what grammar specification looks like with _parboiled for Scala_ consider the following classic
+"calculator" example, with these rules in a simple pseudo notation:
+
+bq. Expression ← Term (('+' / '-') Term)*
+Term ←       Factor (('*' / '/') Factor)*
+Factor ←     Number / '(' Expression ')'
+Number ←     [0-9]+
+
+A _parboiled_ parser definition, complete and in ready-to-compile Scala code would look like this:
+
+bc.. class SimpleCalculator extends Parser {
+
+  def Expression: Rule0 = rule { Term ~ zeroOrMore(anyOf("+-") ~ Term) }
+
+  def Term = rule { Factor ~ zeroOrMore(anyOf("*/") ~ Factor) }
+
+  def Factor = rule { Number | "(" ~ Expression ~ ")" }
+
+  def Number = rule { oneOrMore("0" - "9") }
+}
+
+p. As you can see, the rule description from above translates directly into readable Scala code.
+The class defines your parser rules (yet without any actions), which can be used to parse actual input like this:
+
+bc. (1) val input = "1+2"
+(2) val parser = new SimpleCalculator().withParseTreeBuilding()
+(3) val result = ReportingParseRunner.run(parser.Expression, input)
+(4) val parseTreePrintOut = ParseTreeUtils.printNodeTree(result)
+(5) Console.println(parseTreePrintOut)
+
+Line 3 uses the "ReportingParseRunner":http://sirthias.github.com/parboiled/scaladoc/org/parboiled/scala/ReportingParseRunner$.html
+to perform an actual parsing run and create a "ParsingResult":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/ParsingResult.html
+object. Apart from the information whether the input was successfully matched the ParsingResult object contains the
+root of the parse tree for the expression (if parse tree building is enabled), the result value (which is null in this
+parser without actions) and a list of parse errors.
+A quick way for understanding how your parser digested the input is to print the created parse tree with
+"ParseTreeUtils.printNodeTree(...)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/ParseTreeUtils.html#printNodeTree(org.parboiled.support.ParsingResult)
+as shown in line 4 and 5.
+
+In general _parboiled for Scala_ was designed to make your rule specification as clean and readable as possible under the
+constraints of the Scala syntax. For more examples (including actions, AST construction, etc.) please see the [[Scala Examples]].
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

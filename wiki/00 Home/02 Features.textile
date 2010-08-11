@@ -20,10 +20,8 @@ These are the main features _parboiled_ offers:
 ** Small, simple API
 ** Library is ca. 300 Kb with no further dependencies
 
-Even though _parboiled_ was originally designed less for speed than for ease-of-use and manageability its parsing
-performance has improved significantly since its early releases and is now more than sufficient for most applications.
-It can parse its own Java 5 sources (see the [[Java Parser]] example) at a rate of approx. 50,000 lines or 1.8 million
-characters per second on one core of a 2.4 GHz Intel Core i5 (under OS/X Java 6).
+Even though _parboiled_ was originally designed less for speed than for ease-of-use and manageability its parsing performance has improved significantly since its early releases and is now more than sufficient for most applications. It can parse its own Java 5 sources (see the [[Java Parser]] example) at a rate of approx. 50,000 lines or 1.8 million characters per second on one core of a 2.4 GHz Intel Core i5 (under OS/X Java 6).
+
 
 <!-- please do not remove the GA tracking snippet below -->
 <script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

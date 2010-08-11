@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="parboiled" default="compile.main">
+<project name="parboiled" default="compile">
 
     <!-- can be overridden at the command line with -Dversion= -->
     <property name="version" value="snapshot"/>
@@ -97,6 +97,8 @@
     </target>
 
     <target name="compile.tests" depends="compile.tests.java, compile.tests.scala" description="Compile all test sources"/>
+
+    <target name="compile" depends="compile.main, compile.examples, compile.tests" description="Compile everything"/>
 
     <target name="test.java" depends="compile.tests.java" description="Run all java tests">
         <testng parallel="true" suitename="All Tests" outputdir="target/test-out" haltonfailure="true">
@@ -378,6 +380,5 @@
             <arg line="${base}"/>
         </java>
     </target>
-
 
 </project>

@@ -1,0 +1,55 @@
+A "PEG":http://en.wikipedia.org/wiki/Parsing_expression_grammar consists of an arbitrary number of *rules* (also called _expressions_ or _productions_) that are compositions of other rules, _terminals_ (essentially characters or strings) and the seven primitive rules in the following table (where _a_ and _b_ denote other parsing rules).
+
+|_<. Name |_<. Common Notation |_<. _parboiled_ Primitive |
+| Sequence | _a_ _b_ | "Sequence":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#Sequence(java.lang.Object,%20java.lang.Object,%20java.lang.Object...) (a, b) |
+| Ordered Choice | _a_ / _b_ | "FirstOf":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#FirstOf(java.lang.Object,%20java.lang.Object,%20java.lang.Object...) (a, b) |
+| Zero-or-more | _a_ * | "ZeroOrMore":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#ZeroOrMore(java.lang.Object) (a) |
+| One-or-more | _a_ + | "OneOrMore":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#OneOrMore(java.lang.Object) (a) |
+| Optional | _a_ ? | "Optional":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#Optional(java.lang.Object) (a) |
+| And-predicate | & _a_ | "Test":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#Test(java.lang.Object) (a) |
+| Not-predicate | ! _a_ | "TestNot":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#TestNot(java.lang.Object) (a) |
+
+The _parboiled_ primitive rules are simple instance methods of the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html class, which is the required base class of any custom _parboiled for Java_ parser. You define your own parsing grammar by deriving a custom class from the abstract base class "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html. Any method with the return type "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html will then serve as a grammar rule definition.
+
+The following grammar for example will match any string containing a number of 'a' characters followed by the same number of 'b' characters:
+
+bq. Expression ← a Expression* b
+
+The _parboiled_ parser for this language would look like this:
+
+bc. class ABExpressionParser extends BaseParser<Object> {
+    Rule Expression() {
+        return Sequence('a', ZeroOrMore(Expression()), 'b');
+    }
+}
+
+Your IDE might warn you that this method will create an infinite recursion. With normal Java code this would be the case, however, _parboiled_ will prevent infinite recursions by inserting caching code and proxy objects where required. You can therefore ignore the warning or disable the respective IDE inspection for the class. (Note that, by default, _parboiled_ will only instrument parameter-less rule creating methods with this functionality, if you define rule creating methods with parameters you will have to either apply the "@Cached":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/Cached.html annotation or prevent infinite recursions yourself). One requirement that results from this parser class instrumentation is that you must not create your parser object instance by directly calling its constructor. You have to use the "Parboiled.createParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Parboiled.html#createParser(java.lang.Class,%20java.lang.Object...) method to construct your instance. You can, however, still make use of constructors with arbitrary parameters.
+
+When you look at the signature of the primitive rule creation methods from the table above you will see that they take one or more Object arguments. These arguments can be one of the following:
+
+* A "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html instance (most often created by a call to another rule method)
+* A character literal
+* A string literal
+* A char array
+* An action expression (see [[Parser Action Expressions]])
+* An instance of a class implementing the "Action":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Action.html interface
+
+Additionally to the primitive methods listed in the table above the following primitives are also available.
+
+|_. Method/Field |_. Description |
+| "ANY":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#ANY | Matches any single character except "EOI":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/Characters.html#EOI |
+| "EMPTY":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#EMPTY | Explicitly matches nothing |
+| "EOI":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#EOI | Matches the special "EOI":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/Characters.html#EOI character |
+| "Ch(char)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#Ch(char) | Explicitly creates a rule matching one single character |
+| "CharRange(char, char)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#CharRange(char,%20char) | Matches a character from a given range |
+| "FirstOf(string)":http://sirthias.github.com/parboiled/api/org/parboiled/BaseParser.html#CharSet(java.lang.String) | Matches any one of the given strings characters |
+| "IgnoreCase(char)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#CharIgnoreCase(char) | Matching one single character case-independently |
+| "IgnoreCase(string)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#StringIgnoreCase(java.lang.String) | Matching a given string case-independently |
+| "String(string)":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#String(java.lang.String) | Explicitly creates a rule matching a given string |
+
+Your parser also inherits a number of helper methods from the "BaseActions":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseActions.html class. These are used primarily within [[Parser Action Expressions]].
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>

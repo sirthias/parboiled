@@ -1,0 +1,16 @@
+The Markdown processor "pegdown":http://github.com/sirthias/pegdown is implemented around a "_parboiled_ parser for the
+Markdown syntax":http://github.com/sirthias/pegdown/blob/master/src/org/pegdown/Parser.java (plus certain extensions)
+and serves as a good example for a complete application realized with _parboiled_.
+
+_pegdowns_ Markdown parser builds an abstract syntax tree representing the structure of the underlying Markdown document
+that is subsequently written out to HTML.
+One speciality of _pegdowns_ parsing approach is that for some Markdown elements (like blockquotes or list items)
+_pegdowns_ parser first builds an "inner source" string that is then fed to another, inner parser instance to run a
+separate, recursive parse whose root AST node is then attached to the outer AST at the respective position.
+This recursive parser invocation strategy simplifies the grammar design as only one level of the respective language
+structures has to be modeled.
+
+
+<!-- please do not remove the GA tracking snippet below -->
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-11564948-1"); pageTracker._trackPageview();} catch(err) {}</script>
