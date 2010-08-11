@@ -20,6 +20,7 @@ abstract class Rule(val matcher: Matcher) {
   def withNodeSuppressed(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
   def withSubnodesSuppressed(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
   def withNodeSkipped(): this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
+  def withMismatchesMemoed(): this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
   override def toString = getClass.getSimpleName +  ": " + matcher.toString
 
   protected def withMatcher(matcher: Matcher): this.type

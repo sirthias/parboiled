@@ -37,10 +37,15 @@ trait Parser {
    */
   case object SkipNode extends RuleOption
 
+  /**
+   * Enables memoization of rule mismatches for consecutive rule applications at the same input location.
+   */
+  case object MemoMismatches extends RuleOption
+
   private val cache = mutable.Map.empty[RuleMethod, Rule]
 
   /**
-   * Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
+   *  Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
    * This flag has to be set before the root is being built in order to have any effect.
    */
   var buildParseTree = false
@@ -77,6 +82,7 @@ trait Parser {
         if (!buildParseTree || options.contains(SuppressNode)) rule = rule.withNodeSuppressed
         if (options.contains(SuppressSubnodes)) rule = rule.withSubnodesSuppressed
         if (options.contains(SkipNode)) rule = rule.withNodeSkipped
+        if (options.contains(MemoMismatches)) rule = rule.withMismatchesMemoed
         proxy.arm(rule.matcher) // arm the proxy in case it is in use
         cache += key -> rule // replace the cache value with the actual rule (overwriting the proxy rule)
         rule

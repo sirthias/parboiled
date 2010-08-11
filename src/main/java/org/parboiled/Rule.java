@@ -62,7 +62,7 @@ public interface Rule {
     Rule skipNode();
 
     /**
-     * Instructs parboiled to memoize consecutive mismatches of this rule.
+     * Enables memoization of rule mismatches for consecutive rule applications at the same input location.
      *
      * @return this rule
      */
