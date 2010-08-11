@@ -9,9 +9,7 @@ import java.lang.String
  */
 class JsonParser0 extends Parser {
 
-  def JsonObject: Rule0 = rule { WhiteSpace ~ "{ " ~ optional(Members) ~ "} " }
-
-  def Members = rule { Pair ~ zeroOrMore(", " ~ Pair) }
+  def JsonObject: Rule0 = rule { WhiteSpace ~ "{ " ~ zeroOrMore(Pair, ", ") ~ "} " }
 
   def Pair = rule { JsonString ~ ": " ~ Value }
 
@@ -21,9 +19,7 @@ class JsonParser0 extends Parser {
 
   def JsonNumber = rule { Integer ~ optional(Frac ~ optional(Exp)) ~ WhiteSpace }
 
-  def JsonArray = rule { "[ " ~ Elements ~ "] " }
-
-  def Elements = rule { Value ~ zeroOrMore(", " ~ Value) }
+  def JsonArray = rule { "[ " ~ zeroOrMore(Value, ", ") ~ "] " }
 
   def Character = rule { EscapedChar | NormalChar }
 

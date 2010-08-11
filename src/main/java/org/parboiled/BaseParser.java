@@ -136,7 +136,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule FirstOf(@NotNull char... characters) {
+    public Rule FirstOf(@NotNull char[] characters) {
         Preconditions.checkArgument(characters.length > 0);
         return characters.length == 1 ? Ch(characters[0]) : CharSet(Characters.of(characters));
     }

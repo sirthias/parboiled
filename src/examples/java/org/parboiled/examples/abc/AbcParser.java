@@ -35,7 +35,7 @@ public class AbcParser extends BaseParser<Object> {
                 Test(A(), 'c'),
                 OneOrMore('a'),
                 B(),
-                TestNot(FirstOf('a', 'b', 'c'))
+                TestNot(FirstOf("abc"))
         );
     }
 

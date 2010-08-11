@@ -116,7 +116,41 @@ trait Parser {
     new ReductionRule1[Z, Z](new ZeroOrMoreMatcher(sub.matcher).label("ZeroOrMore"))
 
   /**
-   * Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+   * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
+   * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+   */
+  def zeroOrMore[A](sub: Rule1[A]): Rule1[List[A]] =
+    push(Nil) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> ((list: List[A]) => list.reverse)
+
+  /**
+   * <p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
+   * separator rule has to match. So this rule matches following sequences:</p>
+   * <ul>
+   * <li>{nothing}</li>
+   * <li>{sub}</li>
+   * <li>{sub} {separator} {sub}</li>
+   * <li>{sub} {separator} {sub} {separator} {sub}</li>
+   * <li>...</li>
+   * </ul>
+   */
+  def zeroOrMore(sub: Rule0, separator: Rule0): Rule0 = optional(oneOrMore(sub, separator))
+
+  /**
+   * <p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
+   * separator rule has to match. So this rule matches following sequences:</p>
+   * <ul>
+   * <li>{nothing}</li>
+   * <li>{sub}</li>
+   * <li>{sub} {separator} {sub}</li>
+   * <li>{sub} {separator} {sub} {separator} {sub}</li>
+   * <li>...</li>
+   * </ul>
+   * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+   */
+  def zeroOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = oneOrMore(sub, separator) | push(Nil)
+
+  /**
+   *  Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
    */
   def oneOrMore(sub: Rule0) = new Rule0(new OneOrMoreMatcher(sub.matcher).label("OneOrMore"))
 
@@ -125,6 +159,40 @@ trait Parser {
    */
   def oneOrMore[Z](sub: ReductionRule1[Z, Z]) =
     new ReductionRule1[Z, Z](new OneOrMoreMatcher(sub.matcher).label("OneOrMore"))
+
+  /**
+   * Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+   * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+   * If the sub rule did not match at all the pushed list will be empty.
+   */
+  def oneOrMore[A](sub: Rule1[A]): Rule1[List[A]] =
+    push(Nil) ~ oneOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
+
+  /**
+   * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
+   * separator rule has to match. So this rule matches following sequences:</p>
+   * <ul>
+   * <li>{sub}</li>
+   * <li>{sub} {separator} {sub}</li>
+   * <li>{sub} {separator} {sub} {separator} {sub}</li>
+   * <li>...</li>
+   * </ul>
+   */
+  def oneOrMore(sub: Rule0, separator: Rule0): Rule0 = sub ~ zeroOrMore(separator ~ sub)
+
+  /**
+   * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
+   * separator rule has to match. So this rule matches following sequences:</p>
+   * <ul>
+   * <li>{sub}</li>
+   * <li>{sub} {separator} {sub}</li>
+   * <li>{sub} {separator} {sub} {separator} {sub}</li>
+   * <li>...</li>
+   * </ul>
+   * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+   */
+  def oneOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] =
+    sub ~~> (List(_)) ~ zeroOrMore(separator ~ sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
 
   /**
    * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole

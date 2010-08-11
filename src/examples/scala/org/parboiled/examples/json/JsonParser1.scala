@@ -26,11 +26,7 @@ class JsonParser1 extends Parser {
 
   // the root rule
   def JsonObject: Rule1[ObjectNode] = rule {
-    WhiteSpace ~ "{ " ~ (Members | push(List.empty[MemberNode])) ~ "} " ~~> (list => ObjectNode(list.reverse))
-  }
-
-  def Members = rule {
-    Pair ~~> (List(_)) ~ zeroOrMore(", " ~ Pair ~~> ((list: List[MemberNode], pair) => pair :: list))
+    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, ", ") ~ "} " ~~> (ObjectNode(_))
   }
 
   def Pair = rule {
@@ -41,21 +37,13 @@ class JsonParser1 extends Parser {
     JsonString | JsonNumber | JsonObject | JsonArray | JsonTrue | JsonFalse | JsonNull
   }
 
-  def JsonString = rule {
-    "\"" ~ zeroOrMore(Character) ~> (StringNode(_)) ~ "\" "
-  }
+  def JsonString = rule { "\"" ~ zeroOrMore(Character) ~> (StringNode(_)) ~ "\" " }
 
   def JsonNumber = rule {
     group(Integer ~ optional(Frac ~ optional(Exp))) ~> (s => NumberNode(BigDecimal(s))) ~ WhiteSpace
   }
 
-  def JsonArray = rule {
-    "[ " ~ Elements ~ "] " ~~> (elements => ArrayNode(elements.reverse))
-  }
-
-  def Elements = rule {
-    Value ~~> (List(_)) ~ zeroOrMore(", " ~ Value ~~> ((list: List[AstNode], value) => value :: list))
-  }
+  def JsonArray = rule { "[ " ~ zeroOrMore(Value, ", ") ~ "] " ~~> (ArrayNode(_)) }
 
   def Character = rule { EscapedChar | NormalChar }
 
