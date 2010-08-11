@@ -16,11 +16,11 @@ abstract class Rule(val matcher: Matcher) {
    */
   def unary_!() = new Rule0(new TestNotMatcher(matcher))
   
-  def withLabel(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
-  def withNodeSuppressed(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
-  def withSubnodesSuppressed(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
-  def withNodeSkipped(): this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
-  def withMismatchesMemoed(): this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
+  def label(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
+  def suppressNode(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
+  def suppressSubnodes(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
+  def skipNode(): this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
+  def memoMismatches(): this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
   override def toString = getClass.getSimpleName +  ": " + matcher.toString
 
   protected def withMatcher(matcher: Matcher): this.type

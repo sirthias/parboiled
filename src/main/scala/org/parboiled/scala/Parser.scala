@@ -78,11 +78,11 @@ trait Parser {
         val proxy = new ProxyMatcher
         // protect block from infinite recursion by immediately caching a new Rule of type T wrapping the proxy creator
         cache += key -> manifest.erasure.getConstructor(classOf[Matcher]).newInstance(proxy).asInstanceOf[T]
-        var rule = block.withLabel(label) // evaluate rule definition block
-        if (!buildParseTree || options.contains(SuppressNode)) rule = rule.withNodeSuppressed
-        if (options.contains(SuppressSubnodes)) rule = rule.withSubnodesSuppressed
-        if (options.contains(SkipNode)) rule = rule.withNodeSkipped
-        if (options.contains(MemoMismatches)) rule = rule.withMismatchesMemoed
+        var rule = block.label(label) // evaluate rule definition block
+        if (!buildParseTree || options.contains(SuppressNode)) rule = rule.suppressNode
+        if (options.contains(SuppressSubnodes)) rule = rule.suppressSubnodes
+        if (options.contains(SkipNode)) rule = rule.skipNode
+        if (options.contains(MemoMismatches)) rule = rule.memoMismatches
         proxy.arm(rule.matcher) // arm the proxy in case it is in use
         cache += key -> rule // replace the cache value with the actual rule (overwriting the proxy rule)
         rule
@@ -204,7 +204,7 @@ trait Parser {
    * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole
    * group rather than only the immediately preceeding sub rule.
    */
-  def group[T <: Rule](rule: T) = rule.withLabel("group")
+  def group[T <: Rule](rule: T) = rule.label("group")
 
   /**
    * Creates a rule that matches the given character independently of its case.
