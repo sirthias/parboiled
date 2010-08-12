@@ -1,8 +1,8 @@
-Contrary to the parse tree, which is very closely tied to the grammar by its direct relation to the grammar rules, the "Abstract Syntax Tree":http://en.wikipedia.org/wiki/Abstract_syntax_tree you might want to construct for your language heavily depends on your exact project needs. This is why _parboiled_ takes a very open and flexible approach to supporting it. There are for example absolutely no restrictions on the type of your AST nodes. _parboiled_ does provide a number of immutable and mutable base classes you might choose to use, however, there is nothing that forces you to do so. Take a look at the "org.parboiled.trees":http://sirthias.github.com/parboiled/javadoc/org/parboiled/trees/package-summary.html package to get started.
+Contrary to the parse tree, which is very closely tied to the grammar by its direct relation to the grammar rules, the "Abstract Syntax Tree":http://en.wikipedia.org/wiki/Abstract_syntax_tree you might want to construct for your language heavily depends on your exact project needs. This is why _parboiled_ takes a very open and flexible approach to supporting it.
+There are absolutely no restrictions on the type of your AST nodes. _parboiled_ does provide a number of immutable and mutable base classes you might choose to use, however, there is nothing that forces you to do so. Take a look at the "org.parboiled.trees":http://sirthias.github.com/parboiled/javadoc/org/parboiled/trees/package-summary.html package to get started.
 
 Typically you would use the parser value stack as the "work bench" for constructing your AST. If you work with _parboiled for Java_ you should take a look at the "Calculator":http://github.com/sirthias/parboiled/tree/master/src/examples/java/org/parboiled/examples/calculators/ examples to get an understanding of how this might be done.
-
-For _parboiled for Scala_ the "JsonParser":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/json example is worth a look.
+For _parboiled for Scala_ the "JSON Parser":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/json examples are worth a look.
 
 
 <!-- please do not remove the GA tracking snippet below -->

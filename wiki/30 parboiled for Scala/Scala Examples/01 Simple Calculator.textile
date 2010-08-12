@@ -1,9 +1,6 @@
-The Simple Calculator examples live in the "org.parboiled.examples.calculators":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/calculators/
-package and are a set of two example parsers show-casing a simple recognizer and an actual calculator built with
-_parboiled for Scala_.
+The Simple Calculator example lives in the "org.parboiled.examples.calculators":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/calculators/ package and is a set of two example parsers show-casing a simple recognizer and an actual calculator built with _parboiled for Scala_.
 
-The first one, the "SimpleCalculator0":http://github.com/sirthias/parboiled/blob/master/src/examples/scala/org/parboiled/examples/calculators/SimpleCalculator0.scala
-is a simple recognizer for the following basic grammar, without any parser actions:
+The first one, the "SimpleCalculator0":http://github.com/sirthias/parboiled/blob/master/src/examples/scala/org/parboiled/examples/calculators/SimpleCalculator0.scala is a simple recognizer for the following basic grammar, without any parser actions:
 
 bq. Expression ← Term (('+' / '-') Term)*
 Term ← Factor (('*' / '/') Factor)*
@@ -12,9 +9,7 @@ Number ← Digit+
 Parents ← '(' expression ')'
 Digit ← [0-9]
 
-The "SimpleCalculator1":http://github.com/sirthias/parboiled/blob/master/src/examples/scala/org/parboiled/examples/calculators/SimpleCalculator0.scala
-examples adds parser actions that perform the actual calculations directly on the parsers value stack, without first
-creating an AST for the expression.
+The "SimpleCalculator1":http://github.com/sirthias/parboiled/blob/master/src/examples/scala/org/parboiled/examples/calculators/SimpleCalculator1.scala examples adds parser actions that perform the actual calculations directly on the parsers value stack, without first creating an AST for the expression.
 
 
 <!-- please do not remove the GA tracking snippet below -->

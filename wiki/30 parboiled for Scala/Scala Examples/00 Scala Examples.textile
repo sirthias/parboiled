@@ -1,9 +1,9 @@
-The package "org.parboiled.examples":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/
-contains subpackages for each _parboiled for Scala example.
+The package "org.parboiled.examples":http://github.com/sirthias/parboiled/tree/master/src/examples/scala/org/parboiled/examples/ contains sub packages for each _parboiled for Scala_ example.
 
 Currently _parboiled_ has at least these examples for you to look at:
 * [[Simple Calculator]]
 * [[JSON Parser]]
+
 
 <!-- please do not remove the GA tracking snippet below -->
 <script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

@@ -1,10 +1,10 @@
-In any non-trivial parsing project your parser actions will want to create custom objects corresponding in some way to the structure of the parse input test. _parboiled for Java_ gives you two tools to support you in the management of the custom objects created by your parser rules:
-* The Value Stack
+In any non-trivial parsing project your parser actions will want to create custom objects corresponding in some way to the structure of the parsed input test. _parboiled for Java_ gives you two tools to support you in the management of the custom objects created by your parser rules:
+* The Value Stack (discussed here)
 * [[Action Variables]]
 
-The value stack is a simple stack construct that serves as temporary storage for your custom objects. Your parser actions can push objects onto the stack, pop them off the stack, peek and poke into the stack, swap objects around, and so on. The value stack implementation is hidden behind the "ValueStack":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/ValueStack.html interface, which defines a number of methods for working with the value stack.
+The value stack is a simple stack construct that serves as temporary storage for your custom objects. Your parser actions can push objects onto the stack, pop them off the stack, peek and poke into the stack, swap objects around, and so on. The value stack implementation is hidden behind the "ValueStack":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/ValueStack.html interface, which defines a number of methods for operating on the stack.
 
-All parser actions generally have access to the current value stack instance through the "getValueStack":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Context.html#getValueStack() method of the current "Context":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Context.html. In order to make operations on the value stack less verbose the "BaseActions":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseActions.html class (which is the parent class of the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseActions.html and therefore a direct ancestor of your parser class) additionally defines shortcuts for most value stack operations that can directly be used without prefix in inline [[Parser Action Expressions]].
+All parser actions generally have access to the current value stack instance through the "getValueStack":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Context.html#getValueStack() method of the current "Context":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Context.html. In order to make operations on the value stack less verbose the "BaseActions":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseActions.html class (which is the parent class of the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseActions.html and therefore an ancestor of your parser class) additionally defines shortcuts for most value stack operations that can directly be used without prefix in inline [[Parser Action Expressions]].
 
 The way the value stack is typically used by the parser rules is as follows:
 * Rules matching separators, whitespace, and other "helper structures" generally do not affect the value stack
@@ -16,7 +16,8 @@ Most of the time, after a rule has completely matched, it has not pushed more th
 
 h3. Things to keep in mind during rule design
 
-Since in _parboiled for Java_ you work directly with the value stack without further structural support (which is difficult to achieve under the constraints of the Java syntax) it is important to keep a few things in mind, when designing your rules and parser actions. The most important principle is that a rule should always supply a "stable" behaviour with regard to its value stack operations, no matter what input it is confronted with. So, if a rule adds one value object of a certain type to the value stack, it should do so for every possible input. If this wasn't the case outside rules referencing the rule would not be able to make assumptions on the state of the value stack after the rule has matched which would greatly complicate action design.
+Since in _parboiled for Java_ you work directly with the value stack without further structural support (which is difficult to achieve under the constraints of the Java syntax) it is important to keep a few things in mind, when designing your rules and parser actions.
+The most important principle is that a rule should always supply a *stable behaviour* with regard to its value stack operations, no matter what input it is confronted with. So, if a rule adds one value object of a certain type to the value stack, it should do so for every possible input. If this wasn't the case outside rules referencing the rule would not be able to make assumptions on the state of the value stack after the rule has matched, which would greatly complicate action design.
 The following discussion looks at the various PEG primitives and what to pay attention to when using them with parser actions affecting the value stack.
 
 h4. Sequence rules
@@ -32,12 +33,11 @@ bc. Rule R() {
     return FirstOf(A(), B(), C());
 }
 
-If sub rule A adds one value object to the stack sub rule B and C should too. If, for example, a match of rule B resulted in two more value objects on the stack any rule calling R would not be sure, whether the stack now has one or two additional objects, a clear violation of the "stable behavior" principle!
+If sub rule A adds one value object to the stack sub rules B and C should too. If, for example, a match of rule B resulted in two more value objects on the stack any rule calling R would not be sure, whether the stack now has one or two additional objects, a clear violation of the "stable behavior" principle!
 
 h4. Optional rules
 
-The sub rules of optional rules generally should not add or remove objects from the stack. Since an Optional rule matches always, even when its sub rule doesn't any change to the number of objects on the value stack would violate the "stable behavior" principle.
-
+The sub rules of optional rules generally should not add or remove objects from the stack. Since an Optional rule matches always, even when its sub rule doesn't, any change to the number of objects on the value stack would violate the "stable behavior" principle.
 However, Optional rules can very well transform the contents of the stack without resulting in unstable behavior!
 Consider the following example in a hypothetical BaseParser<Integer> derived parser:
 
@@ -56,7 +56,7 @@ The end result of rule R is stable since it always adds one Integer to the stack
 
 h4. ZeroOrMore and OneOrMore rules
 
-Similar to Optional rules ZeroOrMore and OneOrMore rules are only stable with regard to their value stack behavior if their sub rules do not add or remove value stack elements. And as with Optional rules this does not mean that they are not allowed to alter existing stack values. The example in the discussion of the Optional rules above would just as well work when the Optional rule is replaced with either a ZeroOrMore or a OneOrMore rule.
+Similar to Optional rules ZeroOrMore and OneOrMore rules are only stable with regard to their value stack behavior if their sub rules do not add or remove value stack elements. And as with Optional rules this does not mean that they are not allowed to alter existing stack values. The example in the discussion of the Optional rules above would work just as well when the Optional rule is replaced with either a ZeroOrMore or a OneOrMore rule.
  
 
 <!-- please do not remove the GA tracking snippet below -->

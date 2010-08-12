@@ -36,7 +36,7 @@ class CalculatorParser extends CalculatorParser<Object> {
     }
 }
 
-p. As you can see, the rule description from above translates directly into readable Java code (which is formatted here for readability, not minimization of line count). The class defines your parser rules (yet without any actions), which can be used to parse actual input like this:
+p. As you can see, the rule description from above translates directly into readable Java code (which is formatted here for readability, not minimization of line count). The class defines the parser rules (yet without any actions), which can be used to parse actual input like this:
 
 bc. (1) String input = "1+2";
 (2) CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);

@@ -18,6 +18,8 @@ bc.. class MyParser extends BaseParser<Object> {
     }
 }
 
+p. If you follow this approach your action classes can also implement the "SkippableAction":http://sirthias.github.com/parboiled/javadoc/org/parboiled/SkippableAction.html to tell the parsing engine whether to skip the action when run inside syntactic predicates (respectively).
+
 h3. Anonymous inner classes implementing the Action interface
 
 Many times your parser actions will only consist of a few lines of code, e.g. reading or writing [[Action Variables]], operating on the value stack or calling some action method. Defining separate classes for all of these little pieces of code would likely introduce a lot of overhead and clutter up your project space. You could therefore use anonymous inner classes to move the action code right into the rule definition:
@@ -100,7 +102,9 @@ bc. Rule Number() {
     );
 }
 
-The internal logic _parboiled_ uses to determine whether an expression is an implicit action expression, is the following: Since the default rule creators defined in the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html all have parameters of the general Java Object type the Java compiler automatically converts the result of a primitive boolean expression passed as an argument to a Boolean object (the process called "boxing"). It does so by invisibly inserting calls to "Boolean.valueOf(boolean)":http://java.sun.com/javase/6/docs/api/java/lang/Boolean.html#valueOf(boolean) after the code of your boolean action expression. _parboiled_ looks for these calls in your rule method byte code and treats the respective expression as an implicit action expression, if its result is directly used as an argument to a rule creating method. Normally this process is very robust and should allow _parboiled_ to properly recognize implicit action expressions without any problems. However, if for some reason you would like to disable the support for implicit action expressions you can do so with an "@ExplicitActionsOnly":http://sirthias.github.com/parboiled/javadoc/org/parboiled/annotations/ExplicitActionsOnly.html annotation either on the rule method or the parser class (the latter disabling implicit action support for all rule methods).
+The internal logic _parboiled_ uses to determine whether an expression is an implicit action expression, is the following:
+Since the default rule creators defined in the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html all have parameters of the general Java Object type the Java compiler automatically converts the result of a primitive boolean expression passed as an argument to a Boolean object (the process called "boxing"). It does so by invisibly inserting calls to "Boolean.valueOf(boolean)":http://java.sun.com/javase/6/docs/api/java/lang/Boolean.html#valueOf(boolean) after the code of your boolean action expression. _parboiled_ looks for these calls in your rule method byte code and treats the respective expression as an implicit action expression, if its result is directly used as an argument to a rule creating method.
+Normally this process is very robust and should allow _parboiled_ to properly recognize implicit action expressions without any problems. However, if for some reason you would like to disable the support for implicit action expressions you can do so with an "@ExplicitActionsOnly":http://sirthias.github.com/parboiled/javadoc/org/parboiled/annotations/ExplicitActionsOnly.html annotation either on the rule method or the parser class (the latter disabling implicit action support for all rule methods).
 
 h3. Return Values
 

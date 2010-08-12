@@ -1,16 +1,7 @@
-Especially for larger parser projects implemented with _parboiled for Java_ it makes sense to adhere to a few code style
-conventions so as to increase readability and therefore maintainability.
-_parboiled_ adheres to the commonly accepted Java naming conventions except for two occasions. Parser methods returning
-"Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html instances are subject to _parboiled for Java_ parser
-extension logic and therefore unlike "normal" Java methods. They are rewritten to include automatic labeling, caching,
-proxy object creation, action expression wrapping, and so on. In order to visually separate Rule creation methods from
-all other (action) methods _parboiled_ names for these methods begin with an uppercase letter. Since your IDE normally
-provides for intelligent syntax highlighting there should be little confusion with other identifiers beginning with an
-uppercase character like classes or interfaces.
+Especially for larger parser projects implemented with _parboiled for Java_ it makes sense to adhere to a few code style conventions so as to increase readability and therefore maintainability.
+_parboiled_ adheres to the commonly accepted Java naming conventions except for two occasions. Parser methods returning "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html instances are subject to _parboiled for Java_ parser extension logic and therefore unlike "normal" Java methods. They are rewritten to include automatic labeling, caching, proxy object creation, action expression wrapping, and so on. In order to visually separate Rule creation methods from all other (action) methods _parboiled_ names for these methods begin with an uppercase letter. Since your IDE normally provides for intelligent syntax highlighting there should be little confusion with other identifiers beginning with an uppercase character like classes or interfaces.
 
-The special method ACTION defined in the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html
-class has an all-cap names since it's completely different from regular Java methods. It does not execute any code but
-merely serve as a marker for _parboiled_ parser extension logic.
+The special method ACTION defined in the "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html class has an all-cap names since it's completely different from regular Java methods. It does not execute any code but merely serve as a marker for _parboiled_ parser extension logic.
 
 
 <!-- please do not remove the GA tracking snippet below -->

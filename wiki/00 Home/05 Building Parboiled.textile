@@ -1,5 +1,5 @@
 For building _parboiled_ yourself follow these steps:
-* Clone the source repository, you have two options
+* Clone the source repository; you have two options
 ** The master branch: @git clone git://github.com/sirthias/parboiled.git@
 ** A specific version, choose a tagged version of the repository from the "Downloads":http://github.com/sirthias/parboiled/downloads page
 * Run @ant@ or @ant compile@ to compile all sources (main, examples, tests)

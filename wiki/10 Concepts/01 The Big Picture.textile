@@ -4,21 +4,22 @@ Your grammar specification can include parser actions, which perform arbitrary l
 h3. Two Phases
 
 Your code interacts with _parboiled_ in two phases. In the first phase, the "rule construction" phase, _parboiled_ builds a tree (or rather a directed graph) of parser rules in the way your Java or Scala DSL code specifies. This phase is independent from actual input and only has to be performed once during the lifetime of an JVM instance (i.e. the built rule tree is reusable).
-The second phase is the actual parsing phase in which your rules are run against a specific input text (the "rule execution" phase). The end result of that phase is the following information:
+The second phase is the actual parsing phase, in which your rules are run against a specific input text (the "rule execution" phase). The end result of that phase is the following information:
 * Boolean flag determining whether the input matched or did not match the root rule
 * List of potentially encountered parse errors
 * One or more value object(s) constructed by your parser actions
 
-h3. Rules
+h3. Rule Construction
 
-Rule construction happens by executing the rule construction code of your Java or Scala code. _parboiled_ provides two separate DSLs (one for Java, one for Scala) that try to make rule definition as "comfortable" as possible under the constraints of the respective source language.
+Rule construction happens by executing the rule defining code in your Java or Scala sources. _parboiled_ provides two separate DSLs (one for Java, one for Scala) that try to make rule definition as "comfortable" as possible under the constraints of the respective source language.
 
-In Java you derive a custom class from "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html, the required base class of all _parboiled for Java_ parsers, and define methods returning "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html instances. These methods construct a rule instance from other rules, terminals, predefined primitives and action expressions. Because the Java syntax is somewhat restrictive _parboiled_ employs a process called "Parser extension" (see [[Parser extension in Detail]]) to support more concise rule construction code than otherwise possible.
+In Java you derive a custom class from "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html, the required base class of all _parboiled for Java_ parsers, and define methods returning "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html instances. These methods construct a rule instance from other rules, terminals, predefined primitives and action expressions. Because the Java syntax is somewhat restrictive _parboiled_ employs a process called "Parser extension" (see [[Parser Extension in Detail]]) to support more concise rule construction code than otherwise possible.
+
 Because Scala is much more expressive by itself _parboiled for Scala_ does not need a separate parser extension step. In Scala your parser rule "tree" is being built directly from the _parboiled for Scala_ language elements.
 
 h3. Parser Actions
 
-In order for your parser to be more than just a "recognizer" (i.e. a piece of code determining whether a given input text conforms to the language defined by your grammar) your parser needs to include parser actions. Parser actions are snippets of custom code that are executed at specific points during rule execution. Apart from inspecting the parser state (e.g. by looking at matched input text segments) Parser actions typically construct parser "values" (e.g. AST nodes) and can actively influence the parsing process as semantic predicates.
+In order for your parser to be more than just a "recognizer" (i.e. a piece of code determining whether a given input conforms to the language defined by your grammar) your parser needs to include parser actions. Parser actions are snippets of custom code that are executed at specific points during rule execution. Apart from inspecting the parser state (e.g. by looking at matched input text segments) parser actions typically construct parser "values" (e.g. AST nodes) and can actively influence the parsing process as semantic predicates.
 
 h3. The Value Stack
 

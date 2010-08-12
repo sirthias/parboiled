@@ -1,18 +1,15 @@
-_parboiled_ was born out of frustration over existing parser building tools for Java. The huge increase in popularity dynamic languages (like Ruby or Groovy) have seen in recent years stems to a good part from the ease with which they lend themselves to the modelling of "Domain Specific Languages":http://en.wikipedia.org/wiki/Domain_Specific_Language (DSLs).
+_parboiled_ was born out of frustration over existing parser building tools for the JVM. The huge increase in popularity dynamic languages (like Ruby or Groovy) have seen in recent years stems to a good part from the ease with which they lend themselves to the modelling of "Domain Specific Languages":http://en.wikipedia.org/wiki/Domain_Specific_Language (DSLs).
 
-For many projects a small DSL can make an elegant "user interface", providing rich expressiveness and flexibility without the need for a complex GUI. Even though DSLs are far from the only use case for "parsers":http://en.wikipedia.org/wiki/Parsers they are one area, where traditional parsing support tools for languages like Java don't really shine.
+For many projects a small DSL can make an elegant "user interface", providing rich expressiveness and flexibility without the need for a complex GUI. Even though DSLs are far from the only use case for "parsers":http://en.wikipedia.org/wiki/Parsers they are one area, where traditional parsing support tools for languages like Java don't really shine. Many times supporting a DSL is not the centerpiece of a project (as it is for example in a compiler) but rather an elegant way of solving one of many problems. Therefore you might not want to dedicate too much time to the theory of "context free grammars":http://en.wikipedia.org/wiki/Context-free_grammar, "lexing":http://en.wikipedia.org/wiki/Lexing and the intricacies of external parser generators. You just want to somehow specify what your parsing grammar looks like and get it to work quickly and easily.
+_parboiled_ tries to deliver just that.
 
 Here are some disadvantages of "old-school" parser generators (like "ANTLR":http://www.antlr.org):
-* Special, non-java grammar syntax in separate project files
+* Special, non-java grammar syntax in separate project files (i.e. an _external_ DSL)
 * No built-in IDE support for grammar files (no syntax highlighting, no inline validation, no refactoring, no code navigation, etc.)
 * Special build steps required to run external parser generator
 * "Untouchable", generated java source files in your project which need to be kept in sync with the grammar specification
 * More complicated design and maintenance through divided parsing process in lexing (token generation) and token parsing phases
 * General footprint (the ANTLR distribution (generator + runtime) for example is greater than 1.8 MB in size)
-
-Many times supporting a DSL is not the centerpiece of a project (as it is for example in a compiler) but rather an elegant way of solving one of many problems. Therefore you might not want to dedicate too much time to the theory of "context free grammars":http://en.wikipedia.org/wiki/Context-free_grammar, "lexing":http://en.wikipedia.org/wiki/Lexing and external parser generators. You just want to somehow specify what your parsing grammar looks like and get it to work quickly and easily.
-
-Enter _parboiled_!
 
 
 <!-- please do not remove the GA tracking snippet below -->

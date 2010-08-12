@@ -1,9 +1,10 @@
-_parboiled for Java_ contains all of _parboileds_ library elements except for all Scala classes. It is distributed as a single JAR named "parboiled4j-<version>.jar".
+_parboiled for Java_ contains all of _parboileds_ library elements except for all Scala classes. It is distributed as a single JAR named "parboiled4j-{version}.jar".
 
 These are the steps required for using _parboiled for Java_:
 
-# Download the "parboiled4j-<version>.jar" and put it into your classpath
-# Derive your parser class from "BaseParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html and add one or more rule methods with return type "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html.
+# Download the latest "parboiled4j-{version}.jar" and put it into your classpath
+# Decide on the type _V_ you would like your parser value stack to be parameterized with and create a custom parser class deriving from "BaseParser<V>":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html
+# Add one or more non-private rule methods with return type "Rule":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Rule.html.
 # Create an instance of your parser with a call to "Parboiled.createParser":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Parboiled.html#createParser(java.lang.Class,%20java.lang.Object...)
 # Call the rule method of your parser that builds the root rule of your grammar to create the rule tree
 # Choose one of the standard "ParseRunner":http://sirthias.github.com/parboiled/javadoc/org/parboiled/ParseRunner.html implementations and call its "run" method passing the root rule and the to-be-parsed input text.

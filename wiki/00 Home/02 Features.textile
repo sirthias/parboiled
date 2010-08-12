@@ -6,7 +6,7 @@ These are the main features _parboiled_ offers:
 ** No break in IDE support (syntax highlighting, code navigation, refactoring, etc.)
 # *Real-world ready*
 ** Full expressive power of "Parsing Expression Grammars":http://en.wikipedia.org/wiki/Parsing_expression_grammar
-** Support for powerful and flexible [[Action Expressions]]
+** Support for powerful and flexible parser actions
 ** Excellent parse error reporting and recovery
 ** Good performance
 # *Very easy integration*
