@@ -231,6 +231,14 @@ class.</p>
       </span>
       </h4>
       
+    </li><li visbl="pub" name="org.parboiled.scala.Parser.MemoMismatches">
+      <h4 class="signature"><a href="Parser$MemoMismatches$.html">
+      <span class="kind">object</span>
+      <span class="symbol">
+        <span class="name">MemoMismatches</span><span class="result"> extends RuleOption with Product</span>
+      </span>
+      </a></h4>
+      <p class="comment cmt">Enables memoization of rule mismatches for consecutive rule applications at the same input location.</p>
     </li><li visbl="pub" name="org.parboiled.scala.Parser.SkipNode">
       <h4 class="signature"><a href="Parser$SkipNode$.html">
       <span class="kind">object</span>
@@ -339,8 +347,8 @@ part of compilation it is not possible to check whether the contents of the list
       </span>
       </h4>
       
-            <p class="shortcomment cmt">Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
+            <p class="shortcomment cmt"> Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.</p>
+            <div class="fullcomment"><div class="comment cmt"><p> Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
 This flag has to be set before the root is being built in order to have any effect.
 </p></div>
             
@@ -674,6 +682,60 @@ possible to check whether the contents of the list are of the requested typed.
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
+        <span class="name">oneOrMore</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="sub">sub: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[A]</span>, <span name="separator">separator: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>)</span><span class="result">: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[<span class="extype" name="scala.collection.immutable.List">List</span>[A]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that one or more times tries to match a given sub rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
+separator rule has to match. So this rule matches following sequences:</p><ul><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul><p>This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+</p></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#oneOrMore">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">oneOrMore</span><span class="params">(<span name="sub">sub: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>, <span name="separator">separator: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that one or more times tries to match a given sub rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
+separator rule has to match. So this rule matches following sequences:</p><ul><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#oneOrMore">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">oneOrMore</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="sub">sub: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[A]</span>)</span><span class="result">: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[<span class="extype" name="scala.collection.immutable.List">List</span>[A]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that tries the given sub rule repeatedly until it fails.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+If the sub rule did not match at all the pushed list will be empty.
+</p></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#oneOrMore">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
         <span class="name">oneOrMore</span><span class="tparams">[<span name="Z">Z</span>]</span><span class="params">(<span name="sub">sub: <a href="ReductionRule1.html" class="extype" name="org.parboiled.scala.ReductionRule1">ReductionRule1</a>[Z, Z]</span>)</span><span class="result">: <a href="ReductionRule1.html" class="extype" name="org.parboiled.scala.ReductionRule1">ReductionRule1</a>[Z, Z]</span>
       </span>
       </h4>
@@ -695,8 +757,8 @@ possible to check whether the contents of the list are of the requested typed.
       </span>
       </h4>
       
-            <p class="shortcomment cmt">Creates a rule that tries the given sub rule repeatedly until it fails.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+            <p class="shortcomment cmt"> Creates a rule that tries the given sub rule repeatedly until it fails.</p>
+            <div class="fullcomment"><div class="comment cmt"><p> Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
 </p></div>
             
             
@@ -947,14 +1009,13 @@ Labels the constructed rule with the given labell and optionally marks it accord
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">run</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+        <span class="name">run</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
       </span>
       </h4>
       
-            <p class="shortcomment cmt">Creates a simple parser action taking the current parsing context as input.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action taking the current parsing context as input.
-Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-elements remain compatible with the relevant subset of the other parser actions)!
+            <p class="shortcomment cmt">Creates a simple parser action taking the input text matched by the immediately preceeding peer rule as input.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action taking the input text matched by the immediately preceeding peer rule as input.
+Note that this rule is only valid in sequence rules and must not appear in first position!
 </p></div>
             
             
@@ -972,24 +1033,6 @@ elements remain compatible with the relevant subset of the other parser actions)
       
             <p class="shortcomment cmt">Creates a simple parser action.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action.
-</p></div>
-            
-            
-            
-            
-          </div>
-          
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#runOnMatch">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">runOnMatch</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-            <p class="shortcomment cmt">Creates a simple parser action taking the input text matched by the immediately preceeding peer rule as input.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action taking the input text matched by the immediately preceeding peer rule as input.
-Note that this rule is only valid in sequence rules and must not appear in first position!
 </p></div>
             
             
@@ -1050,14 +1093,13 @@ Note that this rule is only valid in sequence rules and must not appear in first
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">test</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+        <span class="name">test</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
       </span>
       </h4>
       
-            <p class="shortcomment cmt">Creates a semantic predicate taking the current parsing context as input.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate taking the current parsing context as input.
-Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-elements remain compatible with the relevant subset of the other parser actions)!
+            <p class="shortcomment cmt">Creates a semantic predicate on the input text matched by the immediately preceeding peer rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the input text matched by the immediately preceeding peer rule.
+Note that this rule is only valid in sequence rules and must not appear in first position!
 </p></div>
             
             
@@ -1075,24 +1117,6 @@ elements remain compatible with the relevant subset of the other parser actions)
       
             <p class="shortcomment cmt">Creates a semantic predicate.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate.
-</p></div>
-            
-            
-            
-            
-          </div>
-          
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#testMatch">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">testMatch</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-            <p class="shortcomment cmt">Creates a semantic predicate on the input text matched by the immediately preceeding peer rule.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the input text matched by the immediately preceeding peer rule.
-Note that this rule is only valid in sequence rules and must not appear in first position!
 </p></div>
             
             
@@ -1157,6 +1181,27 @@ Note that this rule is only valid in sequence rules and must not appear in first
             
           </div>
           
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#toRunAction">
+      <h4 class="signature">
+      <span class="kind">implicit def</span>
+      <span class="symbol">
+        <span class="name">toRunAction</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a simple parser action taking the current parsing context as input.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action taking the current parsing context as input.
+Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
+elements remain compatible with the relevant subset of the other parser actions)!
+</p></div><div class="block">
+          attributes: implicit 
+        </div>
+            
+            
+            
+            
+          </div>
+          
     </li><li visbl="pub" name="scala.AnyRef#toString">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -1169,6 +1214,27 @@ Note that this rule is only valid in sequence rules and must not appear in first
             <div class="fullcomment"><div class="comment cmt"><p>Returns a string representation of the object.</p><p>The default representation is platform dependent.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a string representation of the object.</p></dd></dl><div class="block">
           definition classes: AnyRef → Any
+        </div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#toTestAction">
+      <h4 class="signature">
+      <span class="kind">implicit def</span>
+      <span class="symbol">
+        <span class="name">toTestAction</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a semantic predicate taking the current parsing context as input.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate taking the current parsing context as input.
+Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
+elements remain compatible with the relevant subset of the other parser actions)!
+</p></div><div class="block">
+          attributes: implicit 
         </div>
             
             
@@ -1232,6 +1298,59 @@ Note that this rule is only valid in sequence rules and must not appear in first
             <p class="shortcomment cmt">Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
 </p>
             <div class="fullcomment"><div class="comment cmt"><p>Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
+</p></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#zeroOrMore">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">zeroOrMore</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="sub">sub: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[A]</span>, <span name="separator">separator: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>)</span><span class="result">: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[<span class="extype" name="scala.collection.immutable.List">List</span>[A]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that zero or more times tries to match a given sub rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
+separator rule has to match. So this rule matches following sequences:</p><ul><li>{nothing}</li><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul><p>This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+</p></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#zeroOrMore">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">zeroOrMore</span><span class="params">(<span name="sub">sub: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>, <span name="separator">separator: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that zero or more times tries to match a given sub rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
+separator rule has to match. So this rule matches following sequences:</p><ul><li>{nothing}</li><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#zeroOrMore">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">zeroOrMore</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="sub">sub: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[A]</span>)</span><span class="result">: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[<span class="extype" name="scala.collection.immutable.List">List</span>[A]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that tries the given sub rule repeatedly until it fails.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
+This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
 </p></div>
             
             
