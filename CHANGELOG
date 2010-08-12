@@ -1,3 +1,14 @@
+Version 0.9.8.1 (2010-08-12)
+----------------------------
+- BREAKING CHANGES:
+  - Renamed BaseParser.CharSet methods to BaseParser.FirstOf overloads
+- Fixed bug in RecoveringParseRunner producing inconsistenst value stack states during rule resynchronization
+- Added BaseParser.matchOrDefault() helper
+- Added ability to set ClassLoader for auxiliary classes (for parser extension) via the threads ContextClassLoader
+- Added a few more convenience overloads to Parser.zeroOrMore(...) and Parser.oneOrMore(...) in Scala facade
+- Added MemoMismatches rule option to Scala facade
+- Improved Javadoc and Scaladoc documentation as well as Scala examples
+
 Version 0.9.8.0 (2010-08-10)
 ----------------------------
 - BREAKING CHANGES:
