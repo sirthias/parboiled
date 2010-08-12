@@ -5,9 +5,12 @@ import java.lang.String
 import org.parboiled.errors.{ErrorUtils, ParsingException}
 
 /**
- * A complete JSON parser producing an AST representation of the parsed JSON source.
- * The syntactical grammar is identical to the {@link JsonParser0} example, however this parser adds the parser
- * actions required to build an AST during the parsing run.
+ * <p>A complete JSON parser producing an AST representation of the parsed JSON source.</p>
+ * <p>The syntactical grammar is identical to the JsonParser0 example, however this parser adds the parser
+ * actions required to build an AST during the parsing run.</p>
+ * <p>You might also want to look at the functionally equivalent JsonParser2 class in this example. It makes
+ * most of the type information explicit that is left out in JsonParser1 and can make the parsers workings
+ * easier to understand for first-time users </p>
  */
 class JsonParser1 extends Parser {
 

@@ -272,42 +272,24 @@ trait Parser {
   /**
    * Creates a semantic predicate.
    */
-  def test(f: => Boolean): Rule0 = test((c: Context[Any]) => f)
-
-  /**
-   * Creates a semantic predicate taking the current parsing context as input.
-   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-   * elements remain compatible with the relevant subset of the other parser actions)!
-   */
-  def test(f: Context[Any] => Boolean): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = f(context)
-  }).label("TestAction"))
+  def test(f: => Boolean) = toTestAction((c: Context[Any]) => f)
 
   /**
    * Creates a semantic predicate on the input text matched by the immediately preceeding peer rule.
    * Note that this rule is only valid in sequence rules and must not appear in first position!
    */
-  def testMatch(f: String => Boolean) = test((c: Context[Any]) => f(c.getMatch))
+  def test(f: String => Boolean) = toTestAction((c: Context[Any]) => f(c.getMatch))
 
   /**
    * Creates a simple parser action.
    */
-  def run(f: => Unit): Rule0 = run((c: Context[Any]) => f)
-
-  /**
-   * Creates a simple parser action taking the current parsing context as input.
-   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-   * elements remain compatible with the relevant subset of the other parser actions)!
-   */
-  def run(f: Context[Any] => Unit): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {f(context); true}
-  }).label("RunAction"))
+  def run(f: => Unit) = toRunAction((c: Context[Any]) => f)
 
   /**
    * Creates a simple parser action taking the input text matched by the immediately preceeding peer rule as input.
    * Note that this rule is only valid in sequence rules and must not appear in first position!
    */
-  def runOnMatch(f: String => Unit) = run((c: Context[Any]) => f(c.getMatch))
+  def run(f: String => Unit) = toRunAction((c: Context[Any]) => f(c.getMatch))
 
   /**
    * Create a parser action whose result value is pushed onto the value stack.
@@ -437,4 +419,22 @@ trait Parser {
    * Converts the given symbol into a corresponding parser rule.
    */
   implicit def toRule(symbol: Symbol): Rule0 = str(symbol.name)
+
+  /**
+   * Creates a semantic predicate taking the current parsing context as input.
+   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
+   * elements remain compatible with the relevant subset of the other parser actions)!
+   */
+  implicit def toTestAction(f: Context[Any] => Boolean): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
+    def run(context: Context[Any]): Boolean = f(context)
+  }).label("TestAction"))
+
+  /**
+   * Creates a simple parser action taking the current parsing context as input.
+   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
+   * elements remain compatible with the relevant subset of the other parser actions)!
+   */
+  implicit def toRunAction(f: Context[Any] => Unit): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
+    def run(context: Context[Any]): Boolean = {f(context); true}
+  }).label("RunAction"))
 }

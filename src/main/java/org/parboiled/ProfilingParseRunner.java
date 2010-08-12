@@ -29,6 +29,13 @@ import java.util.*;
 
 import static org.parboiled.common.Utils.humanize;
 
+/**
+ * <p>The ProfilingParseRunner is a special {@link ParseRunner} implementation that "watches" a parser digest a number
+ * of inputs and collects all sorts of statistical data on the what rules have matched how many times, the number
+ * of reincovations of rules at identical input locations, and so on.</p>
+ * <p>The ProfilingParseRunner is typically used during parser debugging and optimization, not in production.</p>
+ * @param <V>
+ */
 public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
     private final Map<Rule, RuleReport> ruleReports = new HashMap<Rule, RuleReport>();

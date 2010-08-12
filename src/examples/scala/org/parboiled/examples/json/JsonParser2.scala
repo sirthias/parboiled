@@ -1,0 +1,103 @@
+package org.parboiled.examples.json
+
+import org.parboiled.scala._
+import java.lang.String
+import org.parboiled.errors.{ErrorUtils, ParsingException}
+
+/**
+ * <p>A complete JSON parser producing an AST representation of the parsed JSON source.</p>
+ * <p>The syntactical grammar is identical to the {@link JsonParser0} example, however this parser adds the parser
+ * actions required to build an AST during the parsing run.</p>
+ * <p>As opposed to the functionally equivalent JsonParser1 class this class contains type specifications that could
+ * be left out due to Scalas type inference but might make the parsers workings easier to understand for first-time
+ * users.</p>
+ */
+class JsonParser2 extends Parser {
+
+  /**
+   * These case classes form the nodes of the AST.
+   */
+  sealed abstract class AstNode
+  case class ObjectNode(members: List[MemberNode]) extends AstNode
+  case class MemberNode(key: String, value: AstNode) extends AstNode
+  case class ArrayNode(elements: List[AstNode]) extends AstNode
+  case class StringNode(text: String) extends AstNode
+  case class NumberNode(value: BigDecimal) extends AstNode
+  case object True extends AstNode
+  case object False extends AstNode
+  case object Null extends AstNode
+
+  // the root rule
+  def JsonObject: Rule1[ObjectNode] = rule {
+    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, ", ") ~ "} " ~~> ((members: List[MemberNode]) => ObjectNode(members))
+  }
+
+  def Pair: Rule1[MemberNode] = rule {
+    JsonString ~ ": " ~ Value ~~> ((key: StringNode, value: AstNode) => MemberNode(key.text, value))
+  }
+
+  def Value: Rule1[AstNode] = rule {
+    JsonString | JsonNumber | JsonObject | JsonArray | JsonTrue | JsonFalse | JsonNull
+  }
+
+  def JsonString: Rule1[StringNode] = rule {
+    "\"" ~ zeroOrMore(Character) ~> ((matched: String) => StringNode(matched)) ~ "\" "
+  }
+
+  def JsonNumber: Rule1[NumberNode] = rule {
+    group(Integer ~ optional(Frac ~ optional(Exp))) ~> ((matched: String) => NumberNode(BigDecimal(matched))) ~ WhiteSpace
+  }
+
+  def JsonArray: Rule1[ArrayNode] = rule {
+    "[ " ~ zeroOrMore(Value, ", ") ~ "] " ~~> ((elements: List[AstNode]) => ArrayNode(elements))
+  }
+
+  def Character: Rule0 = rule { EscapedChar | NormalChar }
+
+  def EscapedChar: Rule0 = rule { "\\" ~ (anyOf("\"\\/bfnrt") | Unicode) }
+
+  def NormalChar: Rule0 = rule { !anyOf("\"\\") ~ ANY }
+
+  def Unicode: Rule0 = rule { "u" ~ HexDigit ~ HexDigit ~ HexDigit ~ HexDigit }
+
+  def Integer: Rule0 = rule { optional("-") ~ (("1" - "9") ~ Digits | Digit) }
+
+  def Digits: Rule0 = rule { oneOrMore(Digit) }
+
+  def Digit: Rule0 = rule { "0" - "9" }
+
+  def HexDigit: Rule0 = rule { "0" - "9" | "a" - "f" | "A" - "Z" }
+
+  def Frac: Rule0 = rule { "." ~ Digits }
+
+  def Exp: Rule0 = rule { ignoreCase("e") ~ optional(anyOf("+-")) ~ Digits }
+
+  def JsonTrue: Rule1[AstNode] = rule { "true " ~ push(True) }
+
+  def JsonFalse: Rule1[AstNode] = rule { "false " ~ push(False) }
+
+  def JsonNull: Rule1[AstNode] = rule { "null " ~ push(Null) }
+
+  def WhiteSpace: Rule0 = rule { zeroOrMore(anyOf(" \n\r\t\f")) }
+
+  /**
+   * We redefine the default string-to-rule conversion to also match trailing whitespace if the string ends with
+   * a blank, this keeps the rules free from most whitespace matching clutter
+   */
+  override implicit def toRule(string: String) =
+    if (string.endsWith(" "))
+      str(string.trim) ~ WhiteSpace
+    else
+      str(string)
+
+  /**
+   * The main parsing method. Uses a ReportingParseRunner (which only reports the first error) for simplicity.
+   */
+  def parseJson(json: String): ObjectNode = {
+    val result = ReportingParseRunner.run(JsonObject, json)
+    if (result.hasErrors)
+      throw new ParsingException("Invalid JSON source:\n" + ErrorUtils.printParseErrors(result))
+    return result.resultValue
+  }
+
+}
