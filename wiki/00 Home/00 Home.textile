@@ -2,6 +2,16 @@
 
 _parboiled_ is a mixed Java/Scala library providing for lightweight and easy-to-use, yet powerful and elegant parsing of arbitrary input text based on "Parsing expression grammars":http://en.wikipedia.org/wiki/Parsing_expression_grammar (PEGs). PEGs are an alternative to "context free grammars":http://en.wikipedia.org/wiki/Context-free_grammar (CFGs) for formally specifying syntax, they make a good replacement for regular expressions and generally have quite a few advantages over the "traditional" way of building parsers via CFGs. _parboiled_ is released under the "Apache License 2.0":http://en.wikipedia.org/wiki/Apache_license.
 
+<p style="border:1px solid #CCCCCC; padding: 5px; margin: 20px 0 !important;">*Latest Blog Posts:*
+&rarr; "parboiled 0.9.8 released":http://www.decodified.com/parboiled/2010/08/12/parboiled_0.9.8_released.html
+</p>
+
+<p style="border:1px solid #CCCCCC; padding: 5px; margin: 20px 0 !important;">*Support, Feedback, General Discussion:*
+Please use the _parboiled_ mailing list and forum at "users.parboiled.org":http://users.parboiled.org !
+</p>
+
+h3. Documentation
+
 * [[Motivation]]
 * [[Features]]
 * [[RegEx vs. parboiled vs. Parser Generators]]
@@ -43,8 +53,6 @@ _parboiled_ is a mixed Java/Scala library providing for lightweight and easy-to-
 * "Javadoc API documentation":http://sirthias.github.com/parboiled/javadoc/
 * "Scaladoc API documentation":http://sirthias.github.com/parboiled/scaladoc/
 * "Change Log":http://github.com/sirthias/parboiled/blob/master/CHANGELOG
-
-p=. *For support / feedback / general discussion please use the _parboiled_ User Mailing List / Forum at "users.parboiled.org":http://users.parboiled.org !*
 
 
 <!-- please do not remove the GA tracking snippet below -->
