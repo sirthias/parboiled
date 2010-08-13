@@ -49,7 +49,7 @@ public class JavaTest {
                 "        Char          : 86\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 9\n" +
-                "        CharSet       : 16\n" +
+                "        AnyOf         : 16\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 64\n" +
                 "        FirstOfStrings: 4\n" +

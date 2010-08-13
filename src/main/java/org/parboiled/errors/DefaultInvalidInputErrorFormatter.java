@@ -18,7 +18,7 @@ package org.parboiled.errors;
 
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
-import org.parboiled.matchers.CharSetMatcher;
+import org.parboiled.matchers.AnyOfMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
 
@@ -58,15 +58,15 @@ public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInput
     }
 
     /**
-     * Gets the labels corresponding to the given matcher, CharSetMatchers are treated specially in that their
+     * Gets the labels corresponding to the given matcher, AnyOfMatchers are treated specially in that their
      * label is constructed as a list of their contents
      *
      * @param matcher the matcher
      * @return the labels
      */
     public String[] getLabels(Matcher matcher) {
-        if (matcher instanceof CharSetMatcher) {
-            CharSetMatcher cMatcher = (CharSetMatcher) matcher;
+        if (matcher instanceof AnyOfMatcher) {
+            AnyOfMatcher cMatcher = (AnyOfMatcher) matcher;
             if (!cMatcher.characters.isSubtractive()) {
                 String[] labels = new String[cMatcher.characters.getChars().length];
                 for (int i = 0; i < labels.length; i++) {

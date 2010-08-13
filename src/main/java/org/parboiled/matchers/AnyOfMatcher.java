@@ -25,11 +25,11 @@ import org.parboiled.support.MatcherVisitor;
 /**
  * A {@link Matcher} matching a single character out of a given {@link org.parboiled.support.Characters} set.
  */
-public class CharSetMatcher extends AbstractMatcher {
+public class AnyOfMatcher extends AbstractMatcher {
 
     public final Characters characters;
 
-    public CharSetMatcher(@NotNull Characters characters) {
+    public AnyOfMatcher(@NotNull Characters characters) {
         Preconditions.checkArgument(!characters.equals(Characters.NONE));
         this.characters = characters;
     }

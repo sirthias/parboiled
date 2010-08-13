@@ -70,7 +70,7 @@ public class MemoMismatchesTest {
                 "        Char          : 6\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 0\n" +
-                "        CharSet       : 0\n" +
+                "        AnyOf         : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
                 "        FirstOfStrings: 0\n" +
@@ -117,7 +117,7 @@ public class MemoMismatchesTest {
                 "        Char          : 6\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 0\n" +
-                "        CharSet       : 0\n" +
+                "        AnyOf         : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
                 "        FirstOfStrings: 0\n" +

@@ -73,7 +73,7 @@ public class VarFramingTest extends AbstractTest {
                 "        Char          : 1\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 1\n" +
-                "        CharSet       : 0\n" +
+                "        AnyOf         : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 0\n" +
                 "        FirstOfStrings: 0\n" +

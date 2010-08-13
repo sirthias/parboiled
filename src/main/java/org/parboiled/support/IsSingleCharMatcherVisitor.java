@@ -44,7 +44,7 @@ public class IsSingleCharMatcherVisitor implements MatcherVisitor<Boolean> {
         return true;
     }
 
-    public Boolean visit(CharSetMatcher matcher) {
+    public Boolean visit(AnyOfMatcher matcher) {
         return true;
     }
 

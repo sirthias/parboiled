@@ -257,7 +257,7 @@ trait Parser {
     if (!chars.isSubtractive && chars.getChars().length == 1)
       ch(chars.getChars()(0))
     else
-      new Rule0(new CharSetMatcher(chars).label(chars.toString))
+      new Rule0(new AnyOfMatcher(chars).label(chars.toString))
   }
 
   /**

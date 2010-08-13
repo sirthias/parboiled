@@ -44,7 +44,7 @@ public class CanMatchEmptyVisitor implements MatcherVisitor<Boolean> {
         return false;
     }
 
-    public Boolean visit(CharSetMatcher matcher) {
+    public Boolean visit(AnyOfMatcher matcher) {
         return false;
     }
 

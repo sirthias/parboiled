@@ -51,7 +51,7 @@ public class IsStarterCharVisitor implements MatcherVisitor<Boolean> {
         return matcher.cLow <= starterChar && starterChar <= matcher.cHigh;
     }
 
-    public Boolean visit(CharSetMatcher matcher) {
+    public Boolean visit(AnyOfMatcher matcher) {
         return matcher.characters.contains(starterChar);
     }
 

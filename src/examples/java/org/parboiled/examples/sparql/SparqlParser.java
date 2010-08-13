@@ -613,7 +613,7 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule STRING_LITERAL2() {
-        return Sequence('"', ZeroOrMore(FirstOf(Sequence(TestNot(FirstOf("\"\\\n\r")), ANY), ECHAR())), '"', WS());
+        return Sequence('"', ZeroOrMore(FirstOf(Sequence(TestNot(AnyOf("\"\\\n\r")), ANY), ECHAR())), '"', WS());
     }
 
     public Rule STRING_LITERAL_LONG1() {
@@ -628,7 +628,7 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule ECHAR() {
-        return Sequence('\\', FirstOf("tbnrf\\\"\'"));
+        return Sequence('\\', AnyOf("tbnrf\\\"\'"));
     }
 
     public Rule PN_CHARS_U() {
@@ -681,7 +681,7 @@ public class SparqlParser extends BaseParser<Object> {
     }
 
     public Rule EOL() {
-        return FirstOf("\n\r");
+        return AnyOf("\n\r");
     }
 
     public Rule REFERENCE() {

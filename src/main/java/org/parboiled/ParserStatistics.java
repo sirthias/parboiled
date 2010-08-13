@@ -32,7 +32,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     private final Set<CharMatcher> charMatchers = new HashSet<CharMatcher>();
     private final Set<CustomMatcher> customMatchers = new HashSet<CustomMatcher>();
     private final Set<CharRangeMatcher> charRangeMatchers = new HashSet<CharRangeMatcher>();
-    private final Set<CharSetMatcher> charSetMatchers = new HashSet<CharSetMatcher>();
+    private final Set<AnyOfMatcher> anyOfMatchers = new HashSet<AnyOfMatcher>();
     private final Set<EmptyMatcher> emptyMatchers = new HashSet<EmptyMatcher>();
     private final Set<FirstOfMatcher> firstOfMatchers = new HashSet<FirstOfMatcher>();
     private final Set<FirstOfStringsMatcher> firstOfStringMatchers = new HashSet<FirstOfStringsMatcher>();
@@ -89,8 +89,8 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
         return charRangeMatchers;
     }
 
-    public Set<CharSetMatcher> getCharSetMatchers() {
-        return charSetMatchers;
+    public Set<AnyOfMatcher> getAnyOfMatchers() {
+        return anyOfMatchers;
     }
 
     public Set<EmptyMatcher> getEmptyMatchers() {
@@ -172,8 +172,8 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
         return visit(matcher, charRangeMatchers);
     }
 
-    public ParserStatistics visit(CharSetMatcher matcher) {
-        return visit(matcher, charSetMatchers);
+    public ParserStatistics visit(AnyOfMatcher matcher) {
+        return visit(matcher, anyOfMatchers);
     }
 
     public ParserStatistics visit(EmptyMatcher matcher) {
@@ -244,7 +244,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
                 .append("        Char          : ").append(charMatchers.size()).append('\n')
                 .append("        Custom        : ").append(customMatchers.size()).append('\n')
                 .append("        CharRange     : ").append(charRangeMatchers.size()).append('\n')
-                .append("        CharSet       : ").append(charSetMatchers.size()).append('\n')
+                .append("        AnyOf         : ").append(anyOfMatchers.size()).append('\n')
                 .append("        Empty         : ").append(emptyMatchers.size()).append('\n')
                 .append("        FirstOf       : ").append(firstOfMatchers.size()).append('\n')
                 .append("        FirstOfStrings: ").append(firstOfStringMatchers.size()).append('\n')

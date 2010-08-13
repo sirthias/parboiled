@@ -89,7 +89,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     public Rule WhiteSpace() {
-        return ZeroOrMore(FirstOf(" \t\f"));
+        return ZeroOrMore(AnyOf(" \t\f"));
     }
 
     // we redefine the rule creation for string literals to automatically match trailing whitespace if the string

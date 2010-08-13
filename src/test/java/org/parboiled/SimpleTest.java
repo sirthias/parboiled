@@ -26,7 +26,7 @@ public class SimpleTest extends AbstractTest {
     static class Parser extends BaseParser<Object> {
 
         public Rule Clause() {
-            return Sequence(Digit(), Operator(), Digit(), FirstOf("abcd"), EOI);
+            return Sequence(Digit(), Operator(), Digit(), AnyOf("abcd"), EOI);
         }
 
         public Rule Operator() {

@@ -41,7 +41,7 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                    FirstOf("+-"),
+                    AnyOf("+-"),
                     op.set(matchedChar()), // set the action variable to the matched operator char
                     Term(),
 
@@ -59,7 +59,7 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                    FirstOf("*/"),
+                    AnyOf("*/"),
                     op.set(matchedChar()), // set the action variable to the matched operator char
                     Factor(),
 

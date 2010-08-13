@@ -38,7 +38,7 @@ public interface MatcherVisitor<R> {
 
     R visit(CharRangeMatcher matcher);
 
-    R visit(CharSetMatcher matcher);
+    R visit(AnyOfMatcher matcher);
 
     R visit(EmptyMatcher matcher);
 

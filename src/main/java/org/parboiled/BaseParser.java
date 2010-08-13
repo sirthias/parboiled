@@ -123,8 +123,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule FirstOf(@NotNull String characters) {
-        return FirstOf(characters.toCharArray());
+    public Rule AnyOf(@NotNull String characters) {
+        return AnyOf(characters.toCharArray());
     }
 
     /**
@@ -136,9 +136,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule FirstOf(@NotNull char[] characters) {
+    public Rule AnyOf(@NotNull char[] characters) {
         Preconditions.checkArgument(characters.length > 0);
-        return characters.length == 1 ? Ch(characters[0]) : CharSet(Characters.of(characters));
+        return characters.length == 1 ? Ch(characters[0]) : AnyOf(Characters.of(characters));
     }
 
     /**
@@ -151,11 +151,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @DontLabel
-    public Rule CharSet(@NotNull Characters characters) {
+    public Rule AnyOf(@NotNull Characters characters) {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return Ch(characters.getChars()[0]);
         }
-        return new CharSetMatcher(characters).label(characters.toString());
+        return new AnyOfMatcher(characters).label(characters.toString());
     }
 
     /**

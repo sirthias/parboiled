@@ -46,7 +46,7 @@ public class DefaultMatcherVisitor<R> implements MatcherVisitor<R> {
         return defaultValue(matcher);
     }
 
-    public R visit(CharSetMatcher matcher) {
+    public R visit(AnyOfMatcher matcher) {
         return defaultValue(matcher);
     }
 

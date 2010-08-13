@@ -16,10 +16,10 @@
 
 package org.parboiled.support;
 
+import org.parboiled.matchers.AnyOfMatcher;
 import org.parboiled.matchers.CharIgnoreCaseMatcher;
 import org.parboiled.matchers.CharMatcher;
 import org.parboiled.matchers.CharRangeMatcher;
-import org.parboiled.matchers.CharSetMatcher;
 
 import java.util.Random;
 
@@ -30,7 +30,7 @@ import java.util.Random;
 public class GetAStarterCharVisitor extends DefaultMatcherVisitor<Character> {
 
     @Override
-    public Character visit(CharSetMatcher matcher) {
+    public Character visit(AnyOfMatcher matcher) {
         Characters characters = matcher.characters;
         if (!characters.isSubtractive()) {
             return characters.getChars()[0];

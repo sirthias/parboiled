@@ -42,7 +42,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                        // we use a FirstOf(String, String) instead of a FirstOf(String) so we can use the
+                        // we use a FirstOf(String, String) instead of a AnyOf(String) so we can use the
                         // FromStringLiteral transformation (see below), which automatically consumes trailing whitespace
                         FirstOf("+ ", "- "), op.set(matchedChar()),
                         Term(),
@@ -116,7 +116,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     }
 
     Rule WhiteSpace() {
-        return ZeroOrMore(FirstOf(" \t\f"));
+        return ZeroOrMore(AnyOf(" \t\f"));
     }
 
     // we redefine the rule creation for string literals to automatically match trailing whitespace if the string

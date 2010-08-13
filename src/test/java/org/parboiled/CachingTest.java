@@ -77,7 +77,7 @@ public class CachingTest extends AbstractTest {
                 "        Char          : 2\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 1\n" +
-                "        CharSet       : 0\n" +
+                "        AnyOf         : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 1\n" +
                 "        FirstOfStrings: 0\n" +
@@ -103,7 +103,7 @@ public class CachingTest extends AbstractTest {
                 "        Char          : 2\n" +
                 "        Custom        : 0\n" +
                 "        CharRange     : 1\n" +
-                "        CharSet       : 0\n" +
+                "        AnyOf         : 0\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
                 "        FirstOfStrings: 0\n" +
