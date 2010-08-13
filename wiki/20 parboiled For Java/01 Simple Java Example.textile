@@ -13,14 +13,14 @@ class CalculatorParser extends CalculatorParser<Object> {
     Rule Expression() {
         return Sequence(
             Term(),
-            ZeroOrMore(FirstOf("+-"), Term())
+            ZeroOrMore(AnyOf("+-"), Term())
         );
     }
 
     Rule Term() {
         return Sequence(
             Factor(),
-            ZeroOrMore(FirstOf("*/"), Factor())
+            ZeroOrMore(AnyOf("*/"), Factor())
         );
     }
 

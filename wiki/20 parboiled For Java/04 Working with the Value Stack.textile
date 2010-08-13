@@ -17,7 +17,7 @@ Most of the time, after a rule has completely matched, it has not pushed more th
 h3. Things to keep in mind during rule design
 
 Since in _parboiled for Java_ you work directly with the value stack without further structural support (which is difficult to achieve under the constraints of the Java syntax) it is important to keep a few things in mind, when designing your rules and parser actions.
-The most important principle is that a rule should always supply a *stable behaviour* with regard to its value stack operations, no matter what input it is confronted with. So, if a rule adds one value object of a certain type to the value stack, it should do so for every possible input. If this wasn't the case outside rules referencing the rule would not be able to make assumptions on the state of the value stack after the rule has matched, which would greatly complicate action design.
+The most important principle is that a rule should always supply a *stable behavior* with regard to its value stack operations, no matter what input it is confronted with. So, if a rule adds one value object of a certain type to the value stack, it should do so for every possible input. If this wasn't the case outside rules referencing the rule would not be able to make assumptions on the state of the value stack after the rule has matched, which would greatly complicate action design.
 The following discussion looks at the various PEG primitives and what to pay attention to when using them with parser actions affecting the value stack.
 
 h4. Sequence rules
@@ -26,7 +26,7 @@ Since they do not offer any optional components Sequence rules are rather straig
 
 h4. FirstOf rules
 
-FirstOf rules offer several alternative sub rule matches. In order to provide a stable "output" to the outside it is important that *all* alternatives exhibit compatible value stack behaviour.
+FirstOf rules offer several alternative sub rule matches. In order to provide a stable "output" to the outside it is important that *all* alternatives exhibit compatible value stack behavior.
 Consider this example:
 
 bc. Rule R() {

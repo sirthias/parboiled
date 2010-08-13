@@ -42,9 +42,9 @@ Additionally to the primitive methods listed in the table above the following pr
 | "EOI":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#EOI | Matches the special "EOI":http://sirthias.github.com/parboiled/javadoc/org/parboiled/support/Characters.html#EOI character |
 | "Ch":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#Ch(char) (char) | Explicitly creates a rule matching one single character |
 | "CharRange":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#CharRange(char,%20char) (char, char) | Matches a character from a given range |
-| "FirstOf":http://sirthias.github.com/parboiled/api/org/parboiled/BaseParser.html#CharSet(java.lang.String) (string) | Matches any one of the given strings characters |
-| "IgnoreCase":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#CharIgnoreCase(char) (char) | Matching one single character case-independently |
-| "IgnoreCase":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#StringIgnoreCase(java.lang.String) (string) | Matching a given string case-independently |
+| "AnyOf":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#AnyOf(java.lang.String) (string) | Matches any one of the given strings characters (faster than a similar _FirstOf_ ) |
+| "IgnoreCase":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#IgnoreCase(char) (char) | Matching one single character case-independently |
+| "IgnoreCase":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#IgnoreCase(java.lang.String) (string) | Matching a given string case-independently |
 | "String":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseParser.html#String(java.lang.String) (string) | Explicitly creates a rule matching a given string |
 
 Your parser also inherits a number of helper methods from the "BaseActions":http://sirthias.github.com/parboiled/javadoc/org/parboiled/BaseActions.html class. These are used primarily within [[Parser Action Expressions]].

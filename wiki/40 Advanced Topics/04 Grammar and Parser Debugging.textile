@@ -57,7 +57,7 @@ boolean debug(Var<Integer> i) {
 
 p. You can pass the values that you would like to inspect directly to your debugging method.
 
-One simple trick to ease parser debugging during grammar development is to keep a small debug method around in the parser with a permantly set breakpoint in it. This way you can always simply drop an action call to this method anywhere in your grammar and the next debugging run will properly stop at the right point during parser runtime. If you make your debug method take a "Context":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Context.html parameter and call it with debug(getContext()) you have immediate access to the current parsing context right from the breakpoint:
+One simple trick to ease parser debugging during grammar development is to keep a small debug method around in the parser with a permanently set breakpoint in it. This way you can always simply drop an action call to this method anywhere in your grammar and the next debugging run will properly stop at the right point during parser runtime. If you make your debug method take a "Context":http://sirthias.github.com/parboiled/javadoc/org/parboiled/Context.html parameter and call it with debug(getContext()) you have immediate access to the current parsing context right from the breakpoint:
 
 bc. boolean debug(Context context) {
     return true; // set permanent breakpoint here

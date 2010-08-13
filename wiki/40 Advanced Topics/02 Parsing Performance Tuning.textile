@@ -89,7 +89,7 @@ Since building a parse tree can be quite expensive (time- and memory-wise) it is
 
 h4. Profiling your grammar with the ProfilingParseRunner
 
-Many times it is not that easy to completely foresee, how a large and possibly complicated parser digests common input. Profiling common scenarios with [[The ProfilingParseRunner]] can yield valueable insights into which areas of your grammar are particularly stressed and where grammar optimization might be most beneficial.
+Many times it is not that easy to completely foresee, how a large and possibly complicated parser digests common input. Profiling common scenarios with [[The ProfilingParseRunner]] can yield valuable insights into which areas of your grammar are particularly stressed and where grammar optimization might be most beneficial.
 
 h4. @MemoMismatches
 

@@ -1,4 +1,4 @@
-The package "org.parboiled.examples":http://github.com/sirthias/parboiled/tree/master/src/examples/java/org/parboiled/examples/ contains subpackages for each _parboiled for Java_ example. Each example contains a _Main_ class with a _public static main_ method entry point.
+The package "org.parboiled.examples":http://github.com/sirthias/parboiled/tree/master/src/examples/java/org/parboiled/examples/ contains sub packages for each _parboiled for Java_ example. Each example contains a _Main_ class with a _public static main_ method entry point.
 
 You can run an example by following these steps:
 # Clone the source repository (either from the master branch or a specific version tag)
