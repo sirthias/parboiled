@@ -33,7 +33,7 @@ public class MemoMismatchesMatcher implements Matcher {
     // we use an int field as memoization flag, it has the following semantics
     // memo >= 0 : last match failed at position memo
     // memo == Integer.MIN_VALUE: this match was either never tried or succeeded the last time it was tried
-    private int memo;
+    private int memo = Integer.MIN_VALUE;
 
     public MemoMismatchesMatcher(@NotNull Rule inner) {
         this.inner = (Matcher) inner;

@@ -140,14 +140,14 @@ public class MemoMismatchesTest {
                 "Runs                     :               1\n" +
                 "Active rules             :              13\n" +
                 "Total net rule time      :           0.000 s\n" +
-                "Total rule invocations   :              15\n" +
+                "Total rule invocations   :              17\n" +
                 "Total rule matches       :               8\n" +
-                "Total rule mismatches    :               7\n" +
-                "Total match share        :           53.33 %\n" +
+                "Total rule mismatches    :               9\n" +
+                "Total match share        :           47.06 %\n" +
                 "Rule re-invocations      :               4\n" +
                 "Rule re-matches          :               2\n" +
                 "Rule re-mismatches       :               2\n" +
-                "Rule re-invocation share :           26.67 %\n");
+                "Rule re-invocation share :           23.53 %\n");
     }
 
 }
