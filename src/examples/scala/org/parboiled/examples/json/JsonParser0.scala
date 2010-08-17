@@ -9,6 +9,8 @@ import java.lang.String
  */
 class JsonParser0 extends Parser {
 
+  def Json = rule { JsonObject | JsonArray }
+
   def JsonObject: Rule0 = rule { WhiteSpace ~ "{ " ~ zeroOrMore(Pair, ", ") ~ "} " }
 
   def Pair = rule { JsonString ~ ": " ~ Value }
