@@ -172,7 +172,7 @@ trait Parser {
    * If the sub rule did not match at all the pushed list will be empty.
    */
   def oneOrMore[A](sub: Rule1[A]): Rule1[List[A]] =
-    push(Nil) ~ oneOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
+    sub ~~> (List(_)) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
 
   /**
    * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
