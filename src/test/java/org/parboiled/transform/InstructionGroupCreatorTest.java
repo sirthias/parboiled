@@ -18,7 +18,7 @@ package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.test.FileUtils;
+import org.parboiled.common.FileUtils;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;

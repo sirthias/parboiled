@@ -15,7 +15,5 @@ object BasicParseRunner {
 }
 
 class BasicParseRunner[V](val inner: PBasicParseRunner[V]) {
-  def run(input: String) = ParsingResult(inner.run(input))
-
-  def run(input: InputBuffer) = ParsingResult(inner.run(input))
+  def run(input: Input) = ParsingResult(inner.run(input.inputBuffer))
 }

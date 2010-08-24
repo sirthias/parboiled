@@ -15,7 +15,5 @@ object ReportingParseRunner {
 }
 
 class ReportingParseRunner[V](val inner: PReportingParseRunner[V]) {
-  def run(input: String): ParsingResult[V] = ParsingResult(inner.run(input))
-
-  def run(input: InputBuffer): ParsingResult[V] = ParsingResult(inner.run(input))
+  def run(input: Input) = ParsingResult(inner.run(input.inputBuffer))
 }

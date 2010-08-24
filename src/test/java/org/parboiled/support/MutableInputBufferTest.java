@@ -24,12 +24,12 @@ public class MutableInputBufferTest {
 
     @Test
     public void testMutableInputBuffer() {
-        MutableInputBuffer buf = new MutableInputBuffer(new DefaultInputBuffer("" +
+        MutableInputBuffer buf = new MutableInputBuffer(new DefaultInputBuffer(("" +
                 "abcd\n" +
                 "ef\r\n" +
                 "\n" +
                 "gh\n" +
-                "\n"
+                "\n").toCharArray()
         ));
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(5), 'e');

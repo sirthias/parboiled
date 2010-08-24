@@ -15,7 +15,5 @@ object RecoveringParseRunner {
 }
 
 class RecoveringParseRunner[V](val inner: PRecoveringParseRunner[V]) {
-  def run(input: String) = ParsingResult(inner.run(input))
-
-  def run(input: InputBuffer) = ParsingResult(inner.run(input))
+  def run(input: Input) = ParsingResult(inner.run(input.inputBuffer))
 }

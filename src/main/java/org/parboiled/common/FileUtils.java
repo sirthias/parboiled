@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.test;
+package org.parboiled.common;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -64,6 +64,47 @@ public class FileUtils {
         StringWriter writer = new StringWriter();
         copyAll(reader, writer);
         return writer.toString();
+    }
+    
+    public static char[] readAllCharsFromResource(@NotNull String resource) {
+        return readAllChars(ClassLoader.getSystemClassLoader().getResourceAsStream(resource));
+    }
+
+    public static char[] readAllCharsFromResource(@NotNull String resource, @NotNull Charset charset) {
+        return readAllChars(ClassLoader.getSystemClassLoader().getResourceAsStream(resource), charset);
+    }
+
+    public static char[] readAllChars(@NotNull String filename) {
+        return readAllChars(new File(filename));
+    }
+
+    public static char[] readAllChars(@NotNull String filename, @NotNull Charset charset) {
+        return readAllChars(new File(filename), charset);
+    }
+
+    public static char[] readAllChars(@NotNull File file) {
+        return readAllChars(file, Charset.forName("UTF8"));
+    }
+
+    public static char[] readAllChars(@NotNull File file, @NotNull Charset charset) {
+        try {
+            return readAllChars(new FileInputStream(file), charset);
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
+    }
+
+    public static char[] readAllChars(InputStream stream) {
+        return readAllChars(stream, Charset.forName("UTF8"));
+    }
+
+    public static char[] readAllChars(InputStream stream, @NotNull Charset charset) {
+        if (stream == null) return null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
+        CharArrayWriter writer = new CharArrayWriter();
+        copyAll(reader, writer);
+        return writer.toCharArray();
     }
 
     public static byte[] readAllBytesFromResource(@NotNull String resource) {
@@ -124,6 +165,43 @@ public class FileUtils {
 
     public static void writeAllText(String text, @NotNull OutputStream stream, @NotNull Charset charset) {
         StringReader reader = new StringReader(text != null ? text : "");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, charset));
+        copyAll(reader, writer);
+    }
+    
+    public static void writeAllChars(char[] chars, @NotNull String filename) {
+        writeAllChars(chars, new File(filename));
+    }
+
+    public static void writeAllChars(char[] chars, @NotNull String filename, @NotNull Charset charset) {
+        writeAllChars(chars, new File(filename), charset);
+    }
+
+    public static void writeAllChars(char[] chars, @NotNull File file) {
+        try {
+            ensureParentDir(file);
+            writeAllChars(chars, new FileOutputStream(file), Charset.forName("UTF8"));
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void writeAllChars(char[] chars, @NotNull File file, @NotNull Charset charset) {
+        try {
+            writeAllChars(chars, new FileOutputStream(file), charset);
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void writeAllChars(char[] chars, @NotNull OutputStream stream) {
+        writeAllChars(chars, stream, Charset.forName("UTF8"));
+    }
+
+    public static void writeAllChars(char[] chars, @NotNull OutputStream stream, @NotNull Charset charset) {
+        CharArrayReader reader = new CharArrayReader(chars != null ? chars : new char[0]);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, charset));
         copyAll(reader, writer);
     }
@@ -203,18 +281,6 @@ public class FileUtils {
             if (!directory.mkdirs()) {
                 throw new IOException("Unable to create directory " + directory);
             }
-        }
-    }
-
-    public static String createTempFileName(String prefix) {
-        return createTempFileName(prefix, null);
-    }
-
-    private static String createTempFileName(String prefix, String suffix) {
-        try {
-            return File.createTempFile(prefix, suffix).getCanonicalPath();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create temp file", e);
         }
     }
 

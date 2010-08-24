@@ -20,10 +20,10 @@ import org.parboiled.Parboiled;
 import org.parboiled.ParserStatistics;
 import org.parboiled.RecoveringParseRunner;
 import org.parboiled.Rule;
+import org.parboiled.common.FileUtils;
 import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.test.FileUtils;
 import org.parboiled.trees.Filters;
 import org.testng.annotations.Test;
 

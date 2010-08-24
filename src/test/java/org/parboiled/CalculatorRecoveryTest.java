@@ -16,10 +16,10 @@
 
 package org.parboiled;
 
+import org.parboiled.common.FileUtils;
 import org.parboiled.examples.calculators.CalculatorParser;
 import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.test.AbstractTest;
-import org.parboiled.test.FileUtils;
 import org.testng.annotations.Test;
 
 public class CalculatorRecoveryTest extends AbstractTest {

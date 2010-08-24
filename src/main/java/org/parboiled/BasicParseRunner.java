@@ -75,6 +75,10 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     }
 
     public ParsingResult<V> run(@NotNull String input) {
+        return run(input.toCharArray());
+    }
+
+    public ParsingResult<V> run(@NotNull char[] input) {
         return run(new DefaultInputBuffer(input));
     }
 

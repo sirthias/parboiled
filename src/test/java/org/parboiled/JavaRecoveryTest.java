@@ -18,7 +18,7 @@ package org.parboiled;
 
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
-import org.parboiled.test.FileUtils;
+import org.parboiled.common.FileUtils;
 import org.parboiled.trees.Filters;
 import org.testng.annotations.Test;
 

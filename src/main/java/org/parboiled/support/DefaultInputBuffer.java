@@ -31,15 +31,6 @@ public class DefaultInputBuffer implements InputBuffer {
     private final int[] newlines;
 
     /**
-     * The input text to create the InputBuffer from.
-     *
-     * @param inputText the text
-     */
-    public DefaultInputBuffer(@NotNull String inputText) {
-        this(inputText.toCharArray());
-    }
-
-    /**
      * The input buffer to wrap.
      * CAUTION: For performance reasons the given char array is not defensively copied.
      *
