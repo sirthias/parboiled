@@ -31,7 +31,7 @@ class JsonParser2 extends Parser {
   def Json: Rule1[AstNode] = rule { JsonObject | JsonArray }
   
   def JsonObject: Rule1[ObjectNode] = rule {
-    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, ", ") ~ "} " ~~> ((members: List[MemberNode]) => ObjectNode(members))
+    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ((members: List[MemberNode]) => ObjectNode(members))
   }
 
   def Pair: Rule1[MemberNode] = rule {
@@ -51,7 +51,7 @@ class JsonParser2 extends Parser {
   }
 
   def JsonArray: Rule1[ArrayNode] = rule {
-    "[ " ~ zeroOrMore(Value, ", ") ~ "] " ~~> ((elements: List[AstNode]) => ArrayNode(elements))
+    "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> ((elements: List[AstNode]) => ArrayNode(elements))
   }
 
   def Character: Rule0 = rule { EscapedChar | NormalChar }

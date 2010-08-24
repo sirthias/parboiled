@@ -15,7 +15,7 @@ abstract class Rule(val matcher: Matcher) {
    * Creates a "NOT" syntactic predicate according to the PEG formalism.
    */
   def unary_!() = new Rule0(new TestNotMatcher(matcher))
-  
+
   def label(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
   def suppressNode(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
   def suppressSubnodes(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
@@ -153,6 +153,16 @@ abstract class ReductionRule(matcher: Matcher) extends Rule(matcher)
  * A rule taking one value off the value stack and replacing it with another value.
  */
 class ReductionRule1[Z, R](matcher: Matcher) extends ReductionRule(matcher) {
+  def ~[X, Y](other: PopRule3[X, Y, R]) = new PopRule3[X, Y, Z](append(other))
+  def ~[Y](other: PopRule2[Y, R]) = new PopRule2[Y, Z](append(other))
+  def ~(other: PopRule1[R]) = new PopRule1[Z](append(other))
+  def ~(other: PopRuleN3) = new PopRuleN3(append(other))
+  def ~(other: PopRuleN2) = new PopRuleN2(append(other))
+  def ~(other: PopRuleN1) = new PopRule1[Z](append(other))
+  def ~[X, Y, T](other: ReductionRule3[X, Y, R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
+  def ~[Y, T](other: ReductionRule2[Y, R, T]) = new ReductionRule2[Y, Z, T](append(other))
+  def ~[T](other: ReductionRule1[R, T]) = new ReductionRule1[Z, T](append(other))
+  def ~(other: Rule0) = new ReductionRule1[Z, R](append(other))
   def |(other: ReductionRule1[Z, R]) = new ReductionRule1[Z, R](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new ReductionRule1[Z, R](matcher).asInstanceOf[this.type]
 }
@@ -161,6 +171,13 @@ class ReductionRule1[Z, R](matcher: Matcher) extends ReductionRule(matcher) {
  * A rule taking two values off the value stack and replacing them with one other value.
  */
 class ReductionRule2[Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
+  def ~[X](other: PopRule2[X, R]) = new PopRule3[X, Y, Z](append(other))
+  def ~(other: PopRule1[R]) = new PopRule2[Y, Z](append(other))
+  def ~(other: PopRuleN2) = new PopRuleN3(append(other))
+  def ~(other: PopRuleN1) = new PopRuleN2(append(other))
+  def ~[X, T](other: ReductionRule2[X, R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
+  def ~[T](other: ReductionRule1[R, T]) = new ReductionRule2[Y, Z, T](append(other))
+  def ~(other: Rule0) = new ReductionRule2[Y, Z, R](append(other))
   def |(other: ReductionRule2[Y, Z, R]) = new ReductionRule2[Y, Z, R](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new ReductionRule2[Y, Z, R](matcher).asInstanceOf[this.type]
 }
@@ -169,6 +186,10 @@ class ReductionRule2[Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
  * A rule taking three values off the value stack and replacing them with one other value.
  */
 class ReductionRule3[X, Y, Z, R](matcher: Matcher) extends ReductionRule(matcher) {
+  def ~(other: PopRule1[R]) = new PopRule3[X, Y, Z](append(other))
+  def ~(other: PopRuleN1) = new PopRuleN3(append(other))
+  def ~[T](other: ReductionRule1[R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
+  def ~(other: Rule0) = new ReductionRule3[X, Y, Z, R](append(other))
   def |(other: ReductionRule3[X, Y, Z, R]) = new ReductionRule3[X, Y, Z, R](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new ReductionRule3[X, Y, Z, R](matcher).asInstanceOf[this.type]
 }
@@ -182,6 +203,12 @@ abstract class PopRule(matcher: Matcher) extends Rule(matcher)
  * A rule removing the top value stack element with a given type.
  */
 class PopRule1[Z](matcher: Matcher) extends PopRule(matcher) {
+  def ~[X, Y](other: PopRule2[X, Y]) = new PopRule3[X, Y, Z](append(other))
+  def ~[Y](other: PopRule1[Y]) = new PopRule2[Y, Z](append(other))
+  def ~(other: PopRuleN2) = new PopRuleN3(append(other))
+  def ~(other: PopRuleN1) = new PopRuleN2(append(other))
+  def ~(other: Rule0) = new PopRule1[Z](append(other))
+  def ~[A](other: Rule1[A]) = new ReductionRule1[Z, A](append(other))
   def |(other: PopRule1[Z]) = new PopRule1[Z](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRule1[Z](matcher).asInstanceOf[this.type]
 }
@@ -190,6 +217,10 @@ class PopRule1[Z](matcher: Matcher) extends PopRule(matcher) {
  * A rule removing the top two value stack elements with given types.
  */
 class PopRule2[Y, Z](matcher: Matcher) extends PopRule(matcher) {
+  def ~[X](other: PopRule1[X]) = new PopRule3[X, Y, Z](append(other))
+  def ~(other: PopRuleN1) = new PopRuleN3(append(other))
+  def ~(other: Rule0) = new PopRule2[Y, Z](append(other))
+  def ~[A](other: Rule1[A]) = new ReductionRule2[Y, Z, A](append(other))
   def |(other: PopRule2[Y, Z]) = new PopRule2[Y, Z](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRule2[Y, Z](matcher).asInstanceOf[this.type]
 }
@@ -198,6 +229,8 @@ class PopRule2[Y, Z](matcher: Matcher) extends PopRule(matcher) {
  * A rule removing the top three value stack elements with given types.
  */
 class PopRule3[X, Y, Z](matcher: Matcher) extends PopRule(matcher) {
+  def ~(other: Rule0) = new PopRule3[X, Y, Z](append(other))
+  def ~[A](other: Rule1[A]) = new ReductionRule3[X, Y, Z, A](append(other))
   def |(other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRule3[X, Y, Z](matcher).asInstanceOf[this.type]
 }
@@ -206,6 +239,9 @@ class PopRule3[X, Y, Z](matcher: Matcher) extends PopRule(matcher) {
  * A rule removing the top value stack element independently of its type.
  */
 class PopRuleN1(matcher: Matcher) extends PopRule(matcher) {
+  def ~(other: PopRuleN2) = new PopRuleN3(append(other))
+  def ~(other: PopRuleN1) = new PopRuleN2(append(other))
+  def ~(other: Rule0) = new PopRuleN1(append(other))
   def |(other: PopRuleN1) = new PopRuleN1(appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRuleN1(matcher).asInstanceOf[this.type]
 }
@@ -214,6 +250,8 @@ class PopRuleN1(matcher: Matcher) extends PopRule(matcher) {
  * A rule removing the top two value stack elements independently of their type.
  */
 class PopRuleN2(matcher: Matcher) extends PopRule(matcher) {
+  def ~(other: PopRuleN1) = new PopRuleN3(append(other))
+  def ~(other: Rule0) = new PopRuleN2(append(other))
   def |(other: PopRuleN2) = new PopRuleN2(appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRuleN2(matcher).asInstanceOf[this.type]
 }
@@ -222,6 +260,7 @@ class PopRuleN2(matcher: Matcher) extends PopRule(matcher) {
  * A rule removing the top three value stack elements independently of their type.
  */
 class PopRuleN3(matcher: Matcher) extends PopRule(matcher) {
+  def ~(other: Rule0) = new PopRuleN3(append(other))
   def |(other: PopRuleN3) = new PopRuleN3(appendChoice(other))
   protected def withMatcher(matcher: Matcher) = new PopRuleN3(matcher).asInstanceOf[this.type]
 }

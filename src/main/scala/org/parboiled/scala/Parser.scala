@@ -201,6 +201,67 @@ trait Parser {
     sub ~~> (List(_)) ~ zeroOrMore(separator ~ sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
 
   /**
+   * Matches the given sub rule a specified number of times.
+   * If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes(times: Int, sub: Rule0): Rule0 = nTimes(times, sub, null)
+
+  /**
+   * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+   * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes(times: Int, sub: Rule0, separator: Rule0): Rule0 = times match {
+    case 0 => EMPTY
+    case 1 => sub
+    case n if n > 1 =>
+      (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
+    case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
+  }
+
+  /**
+   * Matches the given sub rule a specified number of times.
+   * If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] = nTimes(times, sub, null)
+
+  /**
+   * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+   * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z], separator: Rule0): ReductionRule1[Z, Z] = times match {
+    case 0 => new ReductionRule1[Z, Z](EMPTY.matcher)
+    case 1 => sub
+    case n if n > 1 =>
+      (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
+    case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
+  }
+
+  /**
+   * Matches the given sub rule a specified number of times.
+   * If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes[A](times: Int, sub: Rule1[A]): Rule1[List[A]] = nTimes(times, sub, null)
+
+  /**
+   * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+   * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes[A](times: Int, sub: Rule1[A], separator: Rule0): Rule1[List[A]] = times match {
+    case 0 => push(Nil)
+    case 1 => sub ~~> (List(_))
+    case n if n > 1 => nTimesInternal(times, sub, separator) ~~> (_.reverse)
+    case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
+  }
+
+  private def nTimesInternal[A](times: Int, sub: Rule1[A], separator: Rule0): Rule1[List[A]] = times match {
+    case 1 => sub ~~> (List(_))
+    case n if n > 1 =>
+      (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub ~~>
+              ((list: List[A], subRet) => subRet :: list)
+    case _ => throw new IllegalStateException
+  }
+
+  /**
    * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole
    * group rather than only the immediately preceeding sub rule.
    */

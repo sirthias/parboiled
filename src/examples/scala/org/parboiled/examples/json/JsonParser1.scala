@@ -31,7 +31,7 @@ class JsonParser1 extends Parser {
   def Json = rule { JsonObject | JsonArray }
 
   def JsonObject: Rule1[ObjectNode] = rule {
-    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, ", ") ~ "} " ~~> (ObjectNode(_))
+    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> (ObjectNode(_))
   }
 
   def Pair = rule {
@@ -48,7 +48,7 @@ class JsonParser1 extends Parser {
     group(Integer ~ optional(Frac ~ optional(Exp))) ~> (s => NumberNode(BigDecimal(s))) ~ WhiteSpace
   }
 
-  def JsonArray = rule { "[ " ~ zeroOrMore(Value, ", ") ~ "] " ~~> (ArrayNode(_)) }
+  def JsonArray = rule { "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> (ArrayNode(_)) }
 
   def Character = rule { EscapedChar | NormalChar }
 
