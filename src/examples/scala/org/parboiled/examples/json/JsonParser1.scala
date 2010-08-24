@@ -92,7 +92,7 @@ class JsonParser1 extends Parser {
    * The main parsing method. Uses a ReportingParseRunner (which only reports the first error) for simplicity.
    */
   def parseJson(json: String): ObjectNode = {
-    val result = ReportingParseRunner.run(JsonObject, json)
+    val result = ReportingParseRunner(JsonObject).run(json)
     if (result.hasErrors)
       throw new ParsingException("Invalid JSON source:\n" + ErrorUtils.printParseErrors(result))
     return result.resultValue

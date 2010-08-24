@@ -256,8 +256,10 @@ trait Parser {
   private def nTimesInternal[A](times: Int, sub: Rule1[A], separator: Rule0): Rule1[List[A]] = times match {
     case 1 => sub ~~> (List(_))
     case n if n > 1 =>
-      (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub ~~>
-              ((list: List[A], subRet) => subRet :: list)
+      (if (separator != null)
+        nTimesInternal(times - 1, sub, separator) ~ separator
+      else
+        nTimesInternal(times - 1, sub, null)) ~ sub ~~> ((list: List[A], subRet) => subRet :: list)
     case _ => throw new IllegalStateException
   }
 

@@ -1,19 +1,21 @@
 package org.parboiled.scala
 
-import org.parboiled.support.ParsingResult
+import org.parboiled.{ReportingParseRunner => PReportingParseRunner}
+import org.parboiled.support.InputBuffer
 
 /**
- * <p>A simple wrapper around the {@link org.parboiled.ReportingParseRunner} which returns a properly parameterized
- * {@link ParsingResult} for the given rule.</p>
- * <p>Note that the ParseRunner only accepts rules with zero or one value type parameter, as parsers leaving more
- * than one value on the value stack are considered to be somewhat bad style.</p>
+ * A simple wrapper for org.parboiled.ReportingParseRunner which returns a scala ParsingResult.
+ * Note that the ParseRunner only accepts rules with zero or one value type parameter, as parsers leaving more
+ * than one value on the value stack are considered to be bad style.
  */
 object ReportingParseRunner {
+  def apply(rule: Rule0) = new ReportingParseRunner[Nothing](new PReportingParseRunner[Nothing](rule))
 
-  def run(rule: Rule0, input: String) =
-    org.parboiled.ReportingParseRunner.run(rule, input)
+  def apply[V](rule: Rule1[V]) = new ReportingParseRunner[V](new PReportingParseRunner[V](rule))
+}
 
-  def run[V](rule: Rule1[V], input: String) =
-    org.parboiled.ReportingParseRunner.run(rule, input).asInstanceOf[ParsingResult[V]]
+class ReportingParseRunner[V](val inner: PReportingParseRunner[V]) {
+  def run(input: String): ParsingResult[V] = ParsingResult(inner.run(input))
 
+  def run(input: InputBuffer): ParsingResult[V] = ParsingResult(inner.run(input))
 }
