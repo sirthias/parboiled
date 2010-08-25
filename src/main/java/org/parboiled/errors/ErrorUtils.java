@@ -21,9 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
-import org.parboiled.matchers.Matcher;
-import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.matchers.SequenceMatcher;
+import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
 import java.util.List;
@@ -61,9 +59,16 @@ public final class ErrorUtils {
                 // a sequence should never be the deepest matcher of a failed matcher path
                 Preconditions.checkState(ix.get() + 1 < failedMatcherPath.length());
 
-                // we only accept the sequence name as a good label if the failed matcher is its first child
+                // we only accept the sequence name as a good label if the failed matcher is its first "real" child
                 Matcher failedSub = failedMatcherPath.get(ix.get() + 1);
-                Matcher firstSub = ProxyMatcher.unwrap(matcher.getChildren().get(0));
+                Matcher firstSub = null;
+                for (int i = 0; i < matcher.getChildren().size(); i++) {
+                    Matcher sub = matcher.getChildren().get(i);
+                    // OptionalMatchers and zeroOrMoreMatchers do not count
+                    if (sub instanceof OptionalMatcher || sub instanceof ZeroOrMoreMatcher) continue;
+                    firstSub = ProxyMatcher.unwrap(sub);
+                    break;
+                }
                 return firstSub == failedSub;
             }
         };
