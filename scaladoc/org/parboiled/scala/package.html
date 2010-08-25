@@ -42,7 +42,15 @@
         
         <div class="members" id="types">
               <h3>Type Members</h3>
-              <ol><li visbl="pub" name="org.parboiled.scala.CharRule">
+              <ol><li visbl="pub" name="org.parboiled.scala.BasicParseRunner">
+      <h4 class="signature"><a href="BasicParseRunner.html">
+      <span class="kind">class</span>
+      <span class="symbol">
+        <span class="name">BasicParseRunner</span><span class="tparams">[<span name="V">V</span>]</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.CharRule">
       <h4 class="signature"><a href="CharRule.html">
       <span class="kind">class</span>
       <span class="symbol">
@@ -50,6 +58,15 @@
       </span>
       </a></h4>
       <p class="comment cmt">A rule matching one single character.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.Input">
+      <h4 class="signature"><a href="Input.html">
+      <span class="kind">class</span>
+      <span class="symbol">
+        <span class="name">Input</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      <p class="comment cmt">Simple wrapper around the default InputBuffer implementation to provide a place for the implicit conversions
+defined in the companion object.</p>
     </li><li visbl="pub" name="org.parboiled.scala.Parser">
       <h4 class="signature"><a href="Parser.html">
       <span class="kind">trait</span>
@@ -58,6 +75,14 @@
       </span>
       </a></h4>
       <p class="comment cmt">The main Parser trait for scala parboiled parsers.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.ParsingResult">
+      <h4 class="signature"><a href="ParsingResult.html">
+      <span class="kind">class</span>
+      <span class="symbol">
+        <span class="name">ParsingResult</span><span class="tparams">[<span name="V">+V</span>]</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
     </li><li visbl="pub" name="org.parboiled.scala.PopRule">
       <h4 class="signature"><a href="PopRule.html">
       <span class="kind">class</span>
@@ -122,6 +147,14 @@
       </span>
       </a></h4>
       <p class="comment cmt">The base class of all rules pushing a certain number of elements onto the parser value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.RecoveringParseRunner">
+      <h4 class="signature"><a href="RecoveringParseRunner.html">
+      <span class="kind">class</span>
+      <span class="symbol">
+        <span class="name">RecoveringParseRunner</span><span class="tparams">[<span name="V">V</span>]</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
     </li><li visbl="pub" name="org.parboiled.scala.ReductionRule">
       <h4 class="signature"><a href="ReductionRule.html">
       <span class="kind">class</span>
@@ -154,6 +187,14 @@
       </span>
       </a></h4>
       <p class="comment cmt">A rule taking three values off the value stack and replacing them with one other value.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.ReportingParseRunner">
+      <h4 class="signature"><a href="ReportingParseRunner.html">
+      <span class="kind">class</span>
+      <span class="symbol">
+        <span class="name">ReportingParseRunner</span><span class="tparams">[<span name="V">V</span>]</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
     </li><li visbl="pub" name="org.parboiled.scala.Rule">
       <h4 class="signature"><a href="Rule.html">
       <span class="kind">class</span>
@@ -238,7 +279,23 @@
         <span class="name">BasicParseRunner</span><span class="result"> extends AnyRef</span>
       </span>
       </a></h4>
-      <p class="comment cmt">A simple wrapper around the {@link org.</p>
+      <p class="comment cmt">A simple wrapper for org.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.Input">
+      <h4 class="signature"><a href="Input$.html">
+      <span class="kind">object</span>
+      <span class="symbol">
+        <span class="name">Input</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.ParsingResult">
+      <h4 class="signature"><a href="ParsingResult$.html">
+      <span class="kind">object</span>
+      <span class="symbol">
+        <span class="name">ParsingResult</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
     </li><li visbl="pub" name="org.parboiled.scala.RecoveringParseRunner">
       <h4 class="signature"><a href="RecoveringParseRunner$.html">
       <span class="kind">object</span>
@@ -246,7 +303,7 @@
         <span class="name">RecoveringParseRunner</span><span class="result"> extends AnyRef</span>
       </span>
       </a></h4>
-      <p class="comment cmt">A simple wrapper around the {@link org.</p>
+      <p class="comment cmt">A simple wrapper for org.</p>
     </li><li visbl="pub" name="org.parboiled.scala.ReportingParseRunner">
       <h4 class="signature"><a href="ReportingParseRunner$.html">
       <span class="kind">object</span>
@@ -254,7 +311,7 @@
         <span class="name">ReportingParseRunner</span><span class="result"> extends AnyRef</span>
       </span>
       </a></h4>
-      <p class="comment cmt">A simple wrapper around the {@link org.</p>
+      <p class="comment cmt">A simple wrapper for org.</p>
     </li><li visbl="pub" name="org.parboiled.scala.Rule0">
       <h4 class="signature"><a href="Rule0$.html">
       <span class="kind">object</span>
@@ -276,6 +333,14 @@
       <span class="kind">object</span>
       <span class="symbol">
         <span class="name">Support</span><span class="result"> extends AnyRef</span>
+      </span>
+      </a></h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.test">
+      <h4 class="signature"><a href="test/package.html">
+      <span class="kind">package</span>
+      <span class="symbol">
+        <span class="name">test</span>
       </span>
       </a></h4>
       

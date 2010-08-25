@@ -26,10 +26,12 @@
         <span class="name">RecoveringParseRunner</span><span class="result"> extends AnyRef</span>
       </span>
       </h4>
-      <div class="fullcomment" id="comment"><div class="comment cmt"><p>A simple wrapper around the {@link org.parboiled.RecoveringParseRunner} which returns a properly parameterized
-{@link ParsingResult} for the given rule.</p><p>Note that the ParseRunner only accepts rules with zero or one value type parameter, as parsers leaving more
-than one value on the value stack are considered to be somewhat bad style.
-</p></div>
+      <div class="fullcomment" id="comment"><div class="comment cmt"><p>A simple wrapper for org.parboiled.RecoveringParseRunner which returns a scala ParsingResult.
+Note that the ParseRunner only accepts rules with zero or one value type parameter, as parsers leaving more
+than one value on the value stack are considered to be bad style.
+</p></div><div class="block">
+            go to: <a href="RecoveringParseRunner.html">companion</a>
+          </div>
             
             
             
@@ -179,6 +181,22 @@ than one value on the value stack are considered to be somewhat bad style.
             
           </div>
           
+    </li><li visbl="pub" name="org.parboiled.scala.RecoveringParseRunner#apply">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">apply</span><span class="tparams">[<span name="V">V</span>]</span><span class="params">(<span name="rule">rule: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[V]</span>)</span><span class="result">: <a href="RecoveringParseRunner.html" class="extype" name="org.parboiled.scala.RecoveringParseRunner">RecoveringParseRunner</a>[V]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.RecoveringParseRunner#apply">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">apply</span><span class="params">(<span name="rule">rule: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>)</span><span class="result">: <a href="RecoveringParseRunner.html" class="extype" name="org.parboiled.scala.RecoveringParseRunner">RecoveringParseRunner</a>[<span class="extype" name="scala.Nothing">Nothing</span>]</span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="scala.Any#asInstanceOf">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -435,22 +453,6 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.RecoveringParseRunner#run">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">run</span><span class="tparams">[<span name="V">V</span>]</span><span class="params">(<span name="rule">rule: <a href="Rule1.html" class="extype" name="org.parboiled.scala.Rule1">Rule1</a>[V]</span>, <span name="input">input: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="org.parboiled.support.ParsingResult">ParsingResult</span>[V]</span>
-      </span>
-      </h4>
-      
-    </li><li visbl="pub" name="org.parboiled.scala.RecoveringParseRunner#run">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">run</span><span class="params">(<span name="rule">rule: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>, <span name="input">input: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="org.parboiled.support.ParsingResult">ParsingResult</span>[<span class="extype" name="scala.Nothing">Nothing</span>]</span>
-      </span>
-      </h4>
-      
     </li><li visbl="pub" name="scala.AnyRef#synchronized">
       <h4 class="signature">
       <span class="kind">def</span>
