@@ -1,60 +1,63 @@
 package org.parboiled.examples.calculators
 
 import org.testng.annotations.Test
-import org.parboiled.test.AbstractTest
 import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.{Filters, GraphUtils}
-import org.parboiled.ReportingParseRunner
 import org.parboiled.support.ToStringFormatter
-import org.parboiled.errors.ErrorUtils.printParseErrors
-import org.parboiled.support.ParseTreeUtils.printNodeTree
+import org.parboiled.scala.test.TypedParboiledTest
 
-class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
+class SimpleCalculatorTest extends TypedParboiledTest[Int] with TestNGSuite {
   val parser = new SimpleCalculator1().withParseTreeBuilding()
 
   @Test
-  def testSimpleCalculatorMatcherBuilding() = {
+  def testSimpleCalculatorMatcherBuilding() {
     assertEquals(GraphUtils.printTree(parser.InputLine.matcher, new ToStringFormatter[Matcher](), Filters.preventLoops),
-      """InputLine
-  Expression
-    Term
-      Factor
-        Number
-          Digits
-            Digit
-          Action
-        Parens
-          '('
-          Expression
-          ')'
-      ZeroOrMore
-        FirstOf
-          Sequence
-            '*'
-            Factor
-            Action
-          Sequence
-            '/'
-            Factor
-            Action
-    ZeroOrMore
-      FirstOf
-        Sequence
-          '+'
-          Term
-          Action
-        Sequence
-          '-'
-          Term
-          Action
-  EOI
-""")
+       """|InputLine
+          |  Expression
+          |    Term
+          |      Factor
+          |        Number
+          |          Digits
+          |            Digit
+          |          Action
+          |        Parens
+          |          '('
+          |          Expression
+          |          ')'
+          |      ZeroOrMore
+          |        FirstOf
+          |          Sequence
+          |            '*'
+          |            Factor
+          |            Action
+          |          Sequence
+          |            '/'
+          |            Factor
+          |            Action
+          |    ZeroOrMore
+          |      FirstOf
+          |        Sequence
+          |          '+'
+          |          Term
+          |          Action
+          |        Sequence
+          |          '-'
+          |          Term
+          |          Action
+          |  EOI
+          |""".stripMargin)
   }
 
-  @Test(dependsOnMethods = Array("testSimpleCalculatorMatcherBuilding"))
-  def testCalculations() = {
+  @Test
+  def testCalculations() {
+    def test(input: String, expected: Int) {
+      parse(parser.InputLine, input) {
+        assertEquals(resultValue, expected)
+      }
+    }
+    test("1+2", 3)
     test("1+2", 3)
     test("1+2-3+4", 4)
     test("1-2-3", -4)
@@ -68,18 +71,6 @@ class SimpleCalculatorTest extends AbstractTest with TestNGSuite {
     test("1-2*3-4*5-6", -31)
     test("1-24/6/2-(5+7)", -13)
     test("((1+2)*3-(4-5))/5", 2)
-  }
-
-  private def test(input: String, expectedResult: Int) {
-    val result = ReportingParseRunner.run(parser.InputLine.matcher, input)
-    if (result.hasErrors) {
-      fail("\n--- ParseErrors ---\n" +
-              printParseErrors(result) +
-              "\n--- ParseTree ---\n" +
-              printNodeTree(result)
-        )
-    }
-    assertEquals(result.resultValue, expectedResult);
   }
 
 }
