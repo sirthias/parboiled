@@ -26,11 +26,11 @@ public class FileUtils {
     private FileUtils() {}
 
     public static String readAllTextFromResource(@NotNull String resource) {
-        return readAllText(ClassLoader.getSystemClassLoader().getResourceAsStream(resource));
+        return readAllText(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
     }
 
     public static String readAllTextFromResource(@NotNull String resource, @NotNull Charset charset) {
-        return readAllText(ClassLoader.getSystemClassLoader().getResourceAsStream(resource), charset);
+        return readAllText(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), charset);
     }
 
     public static String readAllText(@NotNull String filename) {
@@ -67,11 +67,11 @@ public class FileUtils {
     }
     
     public static char[] readAllCharsFromResource(@NotNull String resource) {
-        return readAllChars(ClassLoader.getSystemClassLoader().getResourceAsStream(resource));
+        return readAllChars(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
     }
 
     public static char[] readAllCharsFromResource(@NotNull String resource, @NotNull Charset charset) {
-        return readAllChars(ClassLoader.getSystemClassLoader().getResourceAsStream(resource), charset);
+        return readAllChars(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), charset);
     }
 
     public static char[] readAllChars(@NotNull String filename) {
@@ -108,7 +108,7 @@ public class FileUtils {
     }
 
     public static byte[] readAllBytesFromResource(@NotNull String resource) {
-        return readAllBytes(ClassLoader.getSystemClassLoader().getResourceAsStream(resource));
+        return readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
     }
 
     public static byte[] readAllBytes(@NotNull String filename) {
