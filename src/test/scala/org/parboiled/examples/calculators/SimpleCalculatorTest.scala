@@ -6,10 +6,11 @@ import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.{Filters, GraphUtils}
 import org.parboiled.support.ToStringFormatter
-import org.parboiled.scala.test.TypedParboiledTest
+import org.parboiled.scala.test.ParboiledTest
 
-class SimpleCalculatorTest extends TypedParboiledTest[Int] with TestNGSuite {
+class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
   val parser = new SimpleCalculator1().withParseTreeBuilding()
+  type Result = Int
 
   @Test
   def testSimpleCalculatorMatcherBuilding() {

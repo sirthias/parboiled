@@ -3,10 +3,12 @@ package org.parboiled.examples.json
 import org.testng.annotations.Test
 import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
-import org.parboiled.scala.test.TypedParboiledTest
+import org.parboiled.scala.test.ParboiledTest
 
-class JsonParserTest extends TypedParboiledTest[JsonParser1#AstNode] with TestNGSuite {
+class JsonParserTest extends ParboiledTest with TestNGSuite {
   val parser = new JsonParser1()
+
+  type Result = parser.ObjectNode
 
   @Test
   def testJsonParser() {
