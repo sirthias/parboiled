@@ -85,14 +85,13 @@
         </copy>
     </target>
 
-    <target name="compile.tests.scala" depends="compile.examples.scala, compile.tests.java" description="Compile scala test sources">
+    <target name="compile.tests.scala" depends="compile.examples.scala" description="Compile scala test sources">
         <mkdir dir="target/test/scala"/>
         <scalac srcdir="src/test/scala" destdir="target/test/scala">
             <classpath refid="compile.classpath.scala"/>
             <classpath location="target/main/java"/>
             <classpath location="target/main/scala"/>
 			<classpath location="target/examples/scala"/>
-            <classpath location="target/test/java"/>
         </scalac>
     </target>
 
@@ -117,7 +116,6 @@
             <classpath location="target/main/java"/>
             <classpath location="target/main/scala"/>
 			<classpath location="target/examples/scala"/>
-            <classpath location="target/test/java"/>
             <classpath location="target/test/scala"/>
         </testng>
     </target>
@@ -257,7 +255,6 @@
             <classfileset dir="target/test/scala" includes="**/*Test.class" />
             <classpath refid="compile.classpath.scala"/>
             <classpath location="target/parboiled4s-${version}.jar"/>
-            <classpath location="target/test/java"/>
             <classpath location="target/test/scala"/>
 			<classpath location="target/examples/scala"/>
         </testng>

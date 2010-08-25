@@ -50,6 +50,8 @@ trait Parser {
    */
   var buildParseTree = false
 
+  private val lock = new AnyRef()
+
   /**
    * Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
    */
@@ -72,20 +74,22 @@ trait Parser {
   }
 
   private def rule[T <: Rule](label: String, key: RuleMethod, options: Seq[RuleOption], block: => T, manifest: Manifest[T]): T =
-    cache.get(key) match {
-      case Some(rule) => rule.asInstanceOf[T]
-      case None => {
-        val proxy = new ProxyMatcher
-        // protect block from infinite recursion by immediately caching a new Rule of type T wrapping the proxy creator
-        cache += key -> manifest.erasure.getConstructor(classOf[Matcher]).newInstance(proxy).asInstanceOf[T]
-        var rule = block.label(label) // evaluate rule definition block
-        if (!buildParseTree || options.contains(SuppressNode)) rule = rule.suppressNode
-        if (options.contains(SuppressSubnodes)) rule = rule.suppressSubnodes
-        if (options.contains(SkipNode)) rule = rule.skipNode
-        if (options.contains(MemoMismatches)) rule = rule.memoMismatches
-        proxy.arm(rule.matcher) // arm the proxy in case it is in use
-        cache += key -> rule // replace the cache value with the actual rule (overwriting the proxy rule)
-        rule
+    lock.synchronized {
+      cache.get(key) match {
+        case Some(rule) => rule.asInstanceOf[T]
+        case None => {
+          val proxy = new ProxyMatcher
+          // protect block from infinite recursion by immediately caching a new Rule of type T wrapping the proxy creator
+          cache += key -> manifest.erasure.getConstructor(classOf[Matcher]).newInstance(proxy).asInstanceOf[T]
+          var rule = block.label(label) // evaluate rule definition block
+          if (!buildParseTree || options.contains(SuppressNode)) rule = rule.suppressNode
+          if (options.contains(SuppressSubnodes)) rule = rule.suppressSubnodes
+          if (options.contains(SkipNode)) rule = rule.skipNode
+          if (options.contains(MemoMismatches)) rule = rule.memoMismatches
+          proxy.arm(rule.matcher) // arm the proxy in case it is in use
+          cache += key -> rule // replace the cache value with the actual rule (overwriting the proxy rule)
+          rule
+        }
       }
     }
 

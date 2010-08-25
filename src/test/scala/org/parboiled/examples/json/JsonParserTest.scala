@@ -8,7 +8,7 @@ import org.parboiled.scala.test.TypedParboiledTest
 class JsonParserTest extends TypedParboiledTest[JsonParser1#AstNode] with TestNGSuite {
   val parser = new JsonParser1()
 
-  //@Test
+  @Test
   def testJsonParser() {
     val json = """|{
                   |  "simpleKey" : "some value",
