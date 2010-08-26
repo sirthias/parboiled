@@ -6,7 +6,7 @@ import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.support.ToStringFormatter
 import org.parboiled.trees.{Filters, GraphUtils}
-import test.ParboiledTest
+import testing.ParboiledTest
 
 class RecursionTest extends ParboiledTest with TestNGSuite {
 

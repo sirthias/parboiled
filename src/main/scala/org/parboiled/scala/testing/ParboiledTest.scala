@@ -1,4 +1,4 @@
-package org.parboiled.scala.test
+package org.parboiled.scala.testing
 
 import util.DynamicVariable
 import org.parboiled.scala._

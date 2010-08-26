@@ -6,7 +6,7 @@ import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.{Filters, GraphUtils}
 import org.parboiled.support.ToStringFormatter
-import org.parboiled.scala.test.ParboiledTest
+import org.parboiled.scala.testing.ParboiledTest
 
 class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
   val parser = new SimpleCalculator1().withParseTreeBuilding()

@@ -2,45 +2,15 @@ package org.parboiled.scala
 
 import org.parboiled.matchers._
 import _root_.scala.collection.mutable
-import org.parboiled.common.StringUtils.escape
-import Support._
 import org.parboiled.{Action, Context}
 import org.parboiled.support.{ValueStack, Characters}
+import org.parboiled.common.StringUtils
 
 /**
  * The main Parser trait for scala parboiled parsers. Defines the basic rule building methods as well as the
  * caching and proxying logic.
  */
 trait Parser {
-
-  /**
-   * Rule building expressions can take a number of options which are implemented as case objects derived from this
-   * class.
-   */
-  sealed abstract class RuleOption
-
-  /**
-   * This rule option advises parboiled to not create a parse tree node for this rule and all sub rules
-   * (in case that parse tree building is enabled on the parser).
-   */
-  case object SuppressNode extends RuleOption
-
-  /**
-   * This rule option advises parboiled to not create a parse tree node for the sub rules of this rule
-   * (in case that parse tree building is enabled on the parser).
-   */
-  case object SuppressSubnodes extends RuleOption
-
-  /**
-   * This rule option advises parboiled to not create a parse tree node for this rule
-   * (in case that parse tree building is enabled on the parser).
-   */
-  case object SkipNode extends RuleOption
-
-  /**
-   * Enables memoization of rule mismatches for consecutive rule applications at the same input location.
-   */
-  case object MemoMismatches extends RuleOption
 
   private val cache = mutable.Map.empty[RuleMethod, Rule]
 
@@ -60,27 +30,27 @@ trait Parser {
   /**
    * Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
    */
-  def rule[T <: Rule](block: => T)(implicit manifest: Manifest[T]): T = {
+  def rule[T <: Rule](block: => T)(implicit creator: Matcher => T): T = {
     val ruleMethod = getCurrentRuleMethod
-    rule(ruleMethod.getMethodName, ruleMethod, Seq.empty, block, manifest)
+    rule(ruleMethod.getMethodName, ruleMethod, Seq.empty, block, creator)
   }
 
   /**
    * Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
-   * Labels the constructed rule with the given labell and optionally marks it according to the given rule options.
+   * Labels the constructed rule with the given label and optionally marks it according to the given rule options.
    */
-  def rule[T <: Rule](label: String, options: RuleOption*)(block: => T)(implicit manifest: Manifest[T]): T = {
-    rule(label, getCurrentRuleMethod, options, block, manifest)
+  def rule[T <: Rule](label: String, options: RuleOption*)(block: => T)(implicit creator: Matcher => T): T = {
+    rule(label, getCurrentRuleMethod, options, block, creator)
   }
 
-  private def rule[T <: Rule](label: String, key: RuleMethod, options: Seq[RuleOption], block: => T, manifest: Manifest[T]): T =
+  private def rule[T <: Rule](label: String, key: RuleMethod, options: Seq[RuleOption], block: => T, creator: Matcher => T): T =
     lock.synchronized {
       cache.get(key) match {
         case Some(rule) => rule.asInstanceOf[T]
         case None => {
           val proxy = new ProxyMatcher
           // protect block from infinite recursion by immediately caching a new Rule of type T wrapping the proxy creator
-          cache += key -> manifest.erasure.getConstructor(classOf[Matcher]).newInstance(proxy).asInstanceOf[T]
+          cache += key -> creator(proxy)
           var rule = block.label(label) // evaluate rule definition block
           if (!buildParseTree || options.contains(SuppressNode)) rule = rule.suppressNode
           if (options.contains(SuppressSubnodes)) rule = rule.suppressSubnodes
@@ -93,10 +63,9 @@ trait Parser {
       }
     }
 
-  /**
-   * Creates an "AND" syntactic predicate according to the PEG formalism.
-   */
-  def &(sub: Rule) = new Rule0(new TestMatcher(sub.matcher).label("Test"))
+  // the following rule creators should be moved to the package object to avoid bytecode duplication across different
+  // parsers, so far they cannot be moved due to the "package objects do not support overloaded methods" bug of the
+  // scala compiler (http://lampsvn.epfl.ch/trac/scala/ticket/1987)
 
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
@@ -268,26 +237,17 @@ trait Parser {
   }
 
   /**
-   * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole
-   * group rather than only the immediately preceeding sub rule.
-   */
-  def group[T <: Rule](rule: T) = rule.label("group")
-
-  /**
    * Creates a rule that matches the given character independently of its case.
    */
   def ignoreCase(c: Char): Rule0 =
-    new Rule0(new CharIgnoreCaseMatcher(c).label("'" + escape(c.toLower) + '/' + escape(c.toUpper) + "'"))
+    new Rule0(new CharIgnoreCaseMatcher(c).label(
+      "'" + StringUtils.escape(Character.toLowerCase(c)) + '/' + StringUtils.escape(Character.toUpperCase(c)) + "'"
+    ))
 
   /**
    * Creates a rule that matches the given string case-independently.
    */
   def ignoreCase(s: String): Rule0 = ignoreCase(s.toCharArray)
-
-  /**
-   * Creates a rule that matches any single character in the given string.
-   */
-  def anyOf(s: String): Rule0 = anyOf(s.toCharArray)
 
   /**
    * Creates a rule that matches the given character.
@@ -307,6 +267,11 @@ trait Parser {
     case 1 => ch(chars(0))
     case _ => new Rule0(new StringMatcher(chars.map(ch).map(_.matcher), chars).label("\"" + chars + '"'))
   }
+
+  /**
+   * Creates a rule that matches any single character in the given string.
+   */
+  def anyOf(s: String): Rule0 = anyOf(s.toCharArray)
 
   /**
    * Creates a rule that matches any single character in the given character array.
@@ -457,25 +422,13 @@ trait Parser {
     }
   }).label("PopN3Action"))
 
-  /**
-   * The EMPTY rule, a rule that always matches and consumes no input.
-   */
-  lazy val EMPTY = new Rule0(new EmptyMatcher().label("EMPTY"))
-
-  /**
-   * The ANY rule, which matches any single character except EOI.
-   */
-  lazy val ANY = new Rule0(new AnyMatcher().label("ANY"))
-
-  /**
-   * The EOI rule, which matches the End-Of-Input "character".
-   */
-  lazy val EOI = new Rule0(new CharMatcher(Characters.EOI).label("EOI"))
+  // the following implicits are defined here in the parser and not in the package object so there are available
+  // for overriding
 
   /**
    *   Converts the given string into a corresponding parser rule.
    */
-  implicit def toRule(string: String): Rule0 = str(string.toCharArray)
+  implicit def toRule(string: String): Rule0 = str(string)
 
   /**
    * Converts the given character array into a corresponding parser rule.
@@ -487,21 +440,4 @@ trait Parser {
    */
   implicit def toRule(symbol: Symbol): Rule0 = str(symbol.name)
 
-  /**
-   * Creates a semantic predicate taking the current parsing context as input.
-   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-   * elements remain compatible with the relevant subset of the other parser actions)!
-   */
-  implicit def toTestAction(f: Context[Any] => Boolean): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = f(context)
-  }).label("TestAction"))
-
-  /**
-   * Creates a simple parser action taking the current parsing context as input.
-   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-   * elements remain compatible with the relevant subset of the other parser actions)!
-   */
-  implicit def toRunAction(f: Context[Any] => Unit): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {f(context); true}
-  }).label("RunAction"))
 }
