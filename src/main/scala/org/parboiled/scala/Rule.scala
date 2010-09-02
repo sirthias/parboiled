@@ -5,6 +5,7 @@ import org.parboiled.common.StringUtils.escape
 import annotation.unchecked.uncheckedVariance
 import org.parboiled.Action
 import org.parboiled.Context
+import java.lang.String
 
 /**
  * The base class of all scala parser rules.
@@ -47,8 +48,13 @@ abstract class Rule(val matcher: Matcher) {
   }
 
   protected def appendSeqS[R](f: String => R): Matcher = append(new Action[Any] {
-    def run(c: Context[Any]): Boolean = {
-      c.getValueStack.push(f(c.getMatch)); true
+    def run(context: Context[Any]): Boolean = {
+      val r = f match {
+        case a: WithContextAction[String, R] => a.action(context.getMatch, context)
+        case _ => f(context.getMatch)
+      }
+      context.getValueStack.push(r)
+      true
     }
   })
 
@@ -56,7 +62,10 @@ abstract class Rule(val matcher: Matcher) {
     def run(context: Context[Any]): Boolean = {
       val vs = context.getValueStack
       val z = vs.pop.asInstanceOf[Z]
-      val r = f(z)
+      val r = f match {
+        case a: WithContextAction[Z, R] => a.action(z, context)
+        case _ => f(z)
+      }
       vs.push(r)
       true
     }
@@ -67,7 +76,10 @@ abstract class Rule(val matcher: Matcher) {
       val vs = context.getValueStack
       val z = vs.pop.asInstanceOf[Z]
       val y = vs.pop.asInstanceOf[Y]
-      val r = f(y, z)
+      val r = f match {
+        case a: WithContextAction2[Y, Z, R] => a.action(y, z, context)
+        case _ => f(y, z)
+      }
       vs.push(r)
       true
     }
@@ -79,7 +91,10 @@ abstract class Rule(val matcher: Matcher) {
       val z = vs.pop.asInstanceOf[Z]
       val y = vs.pop.asInstanceOf[Y]
       val x = vs.pop.asInstanceOf[X]
-      val r = f(x, y, z)
+      val r = f match {
+        case a: WithContextAction3[X, Y, Z, R] => a.action(x, y, z, context)
+        case _ => f(x, y, z)
+      }
       vs.push(r)
       true
     }
@@ -92,7 +107,10 @@ abstract class Rule(val matcher: Matcher) {
       val y = vs.pop.asInstanceOf[Y]
       val x = vs.pop.asInstanceOf[X]
       val w = vs.pop.asInstanceOf[W]
-      val r = f(w, x, y, z)
+      val r = f match {
+        case a: WithContextAction4[W, X, Y, Z, R] => a.action(w, x, y, z, context)
+        case _ => f(w, x, y, z)
+      }
       vs.push(r)
       true
     }
@@ -106,7 +124,10 @@ abstract class Rule(val matcher: Matcher) {
       val x = vs.pop.asInstanceOf[X]
       val w = vs.pop.asInstanceOf[W]
       val v = vs.pop.asInstanceOf[V]
-      val r = f(v, w, x, y, z)
+      val r = f match {
+        case a: WithContextAction5[V, W, X, Y, Z, R] => a.action(v, w, x, y, z, context)
+        case _ => f(v, w, x, y, z)
+      }
       vs.push(r)
       true
     }
@@ -121,7 +142,10 @@ abstract class Rule(val matcher: Matcher) {
       val w = vs.pop.asInstanceOf[W]
       val v = vs.pop.asInstanceOf[V]
       val u = vs.pop.asInstanceOf[U]
-      val r = f(u, v, w, x, y, z)
+      val r = f match {
+        case a: WithContextAction6[U, V, W, X, Y, Z, R] => a.action(u, v, w, x, y, z, context)
+        case _ => f(u, v, w, x, y, z)
+      }
       vs.push(r)
       true
     }
@@ -137,7 +161,10 @@ abstract class Rule(val matcher: Matcher) {
       val v = vs.pop.asInstanceOf[V]
       val u = vs.pop.asInstanceOf[U]
       val t = vs.pop.asInstanceOf[T]
-      val r = f(t, u, v, w, x, y, z)
+      val r = f match {
+        case a: WithContextAction7[T, U, V, W, X, Y, Z, R] => a.action(t, u, v, w, x, y, z, context)
+        case _ => f(t, u, v, w, x, y, z)
+      }
       vs.push(r)
       true
     }

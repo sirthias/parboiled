@@ -422,6 +422,14 @@ trait Parser {
     }
   }).label("PopN3Action"))
 
+  def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction[A, R](f)
+  def withContext[A, B, R](f: (A, B, Context[_]) => R) = new WithContextAction2[A, B, R](f)
+  def withContext[A, B, C, R](f: (A, B, C, Context[_]) => R) = new WithContextAction3[A, B, C, R](f)
+  def withContext[A, B, C, D, R](f: (A, B, C, D, Context[_]) => R) = new WithContextAction4[A, B, C, D, R](f)
+  def withContext[A, B, C, D, E, R](f: (A, B, C, D, E, Context[_]) => R) = new WithContextAction5[A, B, C, D, E, R](f)
+  def withContext[A, B, C, D, E, F, R](f: (A, B, C, D, E, F, Context[_]) => R) = new WithContextAction6[A, B, C, D, E, F, R](f)
+  def withContext[A, B, C, D, E, F, G, R](f: (A, B, C, D, E, F, G, Context[_]) => R) = new WithContextAction7[A, B, C, D, E, F, G, R](f)
+
   // the following implicits are defined here in the parser and not in the package object so there are available
   // for overriding
 
