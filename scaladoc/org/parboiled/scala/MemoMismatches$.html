@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Scaladoc for org.parboiled.scala.Parser.RuleOption</title>
+          <title>Scaladoc for org.parboiled.scala.MemoMismatches</title>
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		      <script type="text/javascript" src="../../../lib/jquery.js"></script>
           
@@ -11,28 +11,23 @@
       <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
     
         </head>
-        <body class="type">
+        <body class="value">
 
-      <p id="owner"><a href="../../package.html" class="extype" name="org">org</a>.<a href="../package.html" class="extype" name="org.parboiled">parboiled</a>.<a href="package.html" class="extype" name="org.parboiled.scala">scala</a>.<a href="Parser.html" class="extype" name="org.parboiled.scala.Parser">Parser</a></p>
+      <p id="owner"><a href="../../package.html" class="extype" name="org">org</a>.<a href="../package.html" class="extype" name="org.parboiled">parboiled</a>.<a href="package.html" class="extype" name="org.parboiled.scala">scala</a></p>
 
       <div id="definition">
-        <img src="../../../lib/class_big.png" />
-        <h1>RuleOption</h1>
+        <img src="../../../lib/object_big.png" />
+        <h1>MemoMismatches</h1>
       </div>
 
       <h4 class="signature" id="signature">
-      <span class="kind">class</span>
+      <span class="kind">object</span>
       <span class="symbol">
-        <span class="name">RuleOption</span><span class="result"> extends AnyRef</span>
+        <span class="name">MemoMismatches</span><span class="result"> extends <a href="RuleOption.html" class="extype" name="org.parboiled.scala.RuleOption">RuleOption</a> with <span class="extype" name="scala.Product">Product</span></span>
       </span>
       </h4>
-      <div class="fullcomment" id="comment"><div class="comment cmt"><p>Rule building expressions can take a number of options which are implemented as case objects derived from this
-class.
-</p></div><div class="block">
-          attributes: sealed abstract 
-        </div><div class="block">
-            known subclasses: <a href="Parser$MemoMismatches$.html" class="extype" name="org.parboiled.scala.Parser.MemoMismatches">MemoMismatches</a>, <a href="Parser$SkipNode$.html" class="extype" name="org.parboiled.scala.Parser.SkipNode">SkipNode</a>, <a href="Parser$SuppressSubnodes$.html" class="extype" name="org.parboiled.scala.Parser.SuppressSubnodes">SuppressSubnodes</a>, <a href="Parser$SuppressNode$.html" class="extype" name="org.parboiled.scala.Parser.SuppressNode">SuppressNode</a>
-          </div>
+      <div class="fullcomment" id="comment"><div class="comment cmt"><p>Enables memoization of rule mismatches for consecutive rule applications at the same input location.
+</p></div>
             
             
             
@@ -45,7 +40,7 @@ class.
           <div id="ancestors">
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall">Hide All</li><li class="showall">Show all</li></ol>
-                <ol id="linearization"><li class="in" name="scala.AnyRef">AnyRef</li><li class="in" name="scala.Any">Any</li></ol>
+                <ol id="linearization"><li class="in" name="scala.Product">Product</li><li class="in" name="scala.Equals">Equals</li><li class="in" name="org.parboiled.scala.RuleOption">RuleOption</li><li class="in" name="scala.AnyRef">AnyRef</li><li class="in" name="scala.Any">Any</li></ol>
               </div>
           <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -53,18 +48,7 @@ class.
           </div>
         </div>
         
-        <div class="members" id="constructors">
-              <h3>Instance constructors</h3>
-              <ol><li visbl="pub" name="org.parboiled.scala.Parser.RuleOption#this">
-      <h4 class="signature">
-      <span class="kind">new</span>
-      <span class="symbol">
-        <span class="name">RuleOption</span><span class="params">()</span>
-      </span>
-      </h4>
-      
-    </li></ol>
-            </div>        
+                
         
         
         
@@ -214,6 +198,19 @@ part of compilation it is not possible to check whether the contents of the list
             
             
           </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.MemoMismatches#canEqual">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">canEqual</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.MemoMismatches">MemoMismatches</a> → Equals
+        </div></div>
           
     </li><li visbl="prt" name="scala.AnyRef#clone">
       <h4 class="signature">
@@ -449,6 +446,86 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
+    </li><li visbl="pub" name="org.parboiled.scala.MemoMismatches#productArity">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">productArity</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.MemoMismatches">MemoMismatches</a> → Product
+        </div></div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.MemoMismatches#productElement">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">productElement</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Any">Any</span></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.MemoMismatches">MemoMismatches</a> → Product
+        </div></div>
+          
+    </li><li visbl="pub" name="scala.Product#productElements">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name deprecated">productElements</span><span class="result">: <span class="extype" name="scala.collection.Iterator">Iterator</span>[<span class="extype" name="scala.Any">Any</span>]</span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: Product
+        </div><div class="block"><ol>deprecated:
+          <li><p>use productIterator instead</p></li>
+        </ol></div></div>
+          
+    </li><li visbl="pub" name="scala.Product#productIterator">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">productIterator</span><span class="result">: <span class="extype" name="scala.collection.Iterator">Iterator</span>[<span class="extype" name="scala.Any">Any</span>]</span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: Product
+        </div></div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.MemoMismatches#productPrefix">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">productPrefix</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.MemoMismatches">MemoMismatches</a> → Product
+        </div></div>
+          
+    </li><li visbl="prt" name="org.parboiled.scala.MemoMismatches#readResolve">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">readResolve</span><span class="params">()</span><span class="result">: AnyRef</span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          attributes: protected 
+        </div></div>
+          
     </li><li visbl="pub" name="scala.AnyRef#synchronized">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -464,7 +541,7 @@ possible to check whether the contents of the list are of the requested typed.
           definition classes: AnyRef
         </div></div>
           
-    </li><li visbl="pub" name="scala.AnyRef#toString">
+    </li><li visbl="pub" name="org.parboiled.scala.MemoMismatches#toString">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
@@ -475,7 +552,9 @@ possible to check whether the contents of the list are of the requested typed.
             <p class="shortcomment cmt">Returns a string representation of the object.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Returns a string representation of the object.</p><p>The default representation is platform dependent.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a string representation of the object.</p></dd></dl><div class="block">
-          definition classes: AnyRef → Any
+          attributes: final 
+        </div><div class="block">
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.MemoMismatches">MemoMismatches</a> → AnyRef → Any
         </div>
             
             

@@ -51,19 +51,7 @@ caching and proxying logic.
         
                 
         
-        <div class="members" id="types">
-              <h3>Type Members</h3>
-              <ol><li visbl="pub" name="org.parboiled.scala.Parser.RuleOption">
-      <h4 class="signature"><a href="Parser$RuleOption.html">
-      <span class="kind">class</span>
-      <span class="symbol">
-        <span class="name">RuleOption</span><span class="result"> extends AnyRef</span>
-      </span>
-      </a></h4>
-      <p class="comment cmt">Rule building expressions can take a number of options which are implemented as case objects derived from this
-class.</p>
-    </li></ol>
-            </div>
+        
         
         <div class="members" id="values">
               <h3>Value Members</h3>
@@ -148,23 +136,6 @@ class.</p>
           definition classes: AnyRef
         </div></div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#&amp;">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">&amp;</span><span class="params">(<span name="sub">sub: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-            <p class="shortcomment cmt">Creates an &quot;AND&quot; syntactic predicate according to the PEG formalism.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates an &quot;AND&quot; syntactic predicate according to the PEG formalism.
-</p></div>
-            
-            
-            
-            
-          </div>
-          
     </li><li visbl="pub" name="scala.AnyRef#==">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -207,65 +178,6 @@ class.</p>
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#ANY">
-      <h4 class="signature">
-      <span class="kind">lazy val</span>
-      <span class="symbol">
-        <span class="name">ANY</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#EMPTY">
-      <h4 class="signature">
-      <span class="kind">lazy val</span>
-      <span class="symbol">
-        <span class="name">EMPTY</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#EOI">
-      <h4 class="signature">
-      <span class="kind">lazy val</span>
-      <span class="symbol">
-        <span class="name">EOI</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-    </li><li visbl="pub" name="org.parboiled.scala.Parser.MemoMismatches">
-      <h4 class="signature"><a href="Parser$MemoMismatches$.html">
-      <span class="kind">object</span>
-      <span class="symbol">
-        <span class="name">MemoMismatches</span><span class="result"> extends RuleOption with Product</span>
-      </span>
-      </a></h4>
-      <p class="comment cmt">Enables memoization of rule mismatches for consecutive rule applications at the same input location.</p>
-    </li><li visbl="pub" name="org.parboiled.scala.Parser.SkipNode">
-      <h4 class="signature"><a href="Parser$SkipNode$.html">
-      <span class="kind">object</span>
-      <span class="symbol">
-        <span class="name">SkipNode</span><span class="result"> extends RuleOption with Product</span>
-      </span>
-      </a></h4>
-      <p class="comment cmt">This rule option advises parboiled to not create a parse tree node for this rule
-(in case that parse tree building is enabled on the parser).</p>
-    </li><li visbl="pub" name="org.parboiled.scala.Parser.SuppressNode">
-      <h4 class="signature"><a href="Parser$SuppressNode$.html">
-      <span class="kind">object</span>
-      <span class="symbol">
-        <span class="name">SuppressNode</span><span class="result"> extends RuleOption with Product</span>
-      </span>
-      </a></h4>
-      <p class="comment cmt">This rule option advises parboiled to not create a parse tree node for this rule and all sub rules
-(in case that parse tree building is enabled on the parser).</p>
-    </li><li visbl="pub" name="org.parboiled.scala.Parser.SuppressSubnodes">
-      <h4 class="signature"><a href="Parser$SuppressSubnodes$.html">
-      <span class="kind">object</span>
-      <span class="symbol">
-        <span class="name">SuppressSubnodes</span><span class="result"> extends RuleOption with Product</span>
-      </span>
-      </a></h4>
-      <p class="comment cmt">This rule option advises parboiled to not create a parse tree node for the sub rules of this rule
-(in case that parse tree building is enabled on the parser).</p>
     </li><li visbl="pub" name="org.parboiled.scala.Parser#anyOf">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -495,25 +407,6 @@ there are no more references to the object.</p><p>The details of when and if the
         </div><div class="block">
           definition classes: AnyRef
         </div>
-            
-            
-            
-            
-          </div>
-          
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#group">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">group</span><span class="tparams">[<span name="T">T &lt;: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>]</span><span class="params">(<span name="rule">rule: T</span>)</span><span class="result">: T</span>
-      </span>
-      </h4>
-      
-            <p class="shortcomment cmt">Groups the given sub rule into one entity so that a following ~&gt; operator receives the text matched by the whole
-group rather than only the immediately preceeding sub rule.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Groups the given sub rule into one entity so that a following ~&gt; operator receives the text matched by the whole
-group rather than only the immediately preceeding sub rule.
-</p></div>
             
             
             
@@ -1085,13 +978,13 @@ If the sub rule did not match at all the pushed list will be empty.
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">rule</span><span class="tparams">[<span name="T">T &lt;: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>]</span><span class="params">(<span name="label">label: <span class="extype" name="java.lang.String">String</span></span>, <span name="options">options: <a href="Parser$RuleOption.html" class="extype" name="org.parboiled.scala.Parser.RuleOption">RuleOption</a>*</span>)</span><span class="params">(<span name="block">block: ⇒ T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="manifest">manifest: <span class="extype" name="scala.reflect.Manifest">Manifest</span>[T]</span>)</span><span class="result">: T</span>
+        <span class="name">rule</span><span class="tparams">[<span name="T">T &lt;: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>]</span><span class="params">(<span name="label">label: <span class="extype" name="java.lang.String">String</span></span>, <span name="options">options: <a href="RuleOption.html" class="extype" name="org.parboiled.scala.RuleOption">RuleOption</a>*</span>)</span><span class="params">(<span name="block">block: ⇒ T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="creator">creator: (<span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span>) ⇒ T</span>)</span><span class="result">: T</span>
       </span>
       </h4>
       
             <p class="shortcomment cmt">Defines a parser rule wrapping the given rule construction block with caching and recursion protection.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
-Labels the constructed rule with the given labell and optionally marks it according to the given rule options.
+Labels the constructed rule with the given label and optionally marks it according to the given rule options.
 </p></div>
             
             
@@ -1103,7 +996,7 @@ Labels the constructed rule with the given labell and optionally marks it accord
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">rule</span><span class="tparams">[<span name="T">T &lt;: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>]</span><span class="params">(<span name="block">block: ⇒ T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="manifest">manifest: <span class="extype" name="scala.reflect.Manifest">Manifest</span>[T]</span>)</span><span class="result">: T</span>
+        <span class="name">rule</span><span class="tparams">[<span name="T">T &lt;: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>]</span><span class="params">(<span name="block">block: ⇒ T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="creator">creator: (<span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span>) ⇒ T</span>)</span><span class="result">: T</span>
       </span>
       </h4>
       
@@ -1292,27 +1185,6 @@ Note that this rule is only valid in sequence rules and must not appear in first
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#toRunAction">
-      <h4 class="signature">
-      <span class="kind">implicit def</span>
-      <span class="symbol">
-        <span class="name">toRunAction</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-            <p class="shortcomment cmt">Creates a simple parser action taking the current parsing context as input.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action taking the current parsing context as input.
-Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-elements remain compatible with the relevant subset of the other parser actions)!
-</p></div><div class="block">
-          attributes: implicit 
-        </div>
-            
-            
-            
-            
-          </div>
-          
     </li><li visbl="pub" name="scala.AnyRef#toString">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -1325,27 +1197,6 @@ elements remain compatible with the relevant subset of the other parser actions)
             <div class="fullcomment"><div class="comment cmt"><p>Returns a string representation of the object.</p><p>The default representation is platform dependent.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a string representation of the object.</p></dd></dl><div class="block">
           definition classes: AnyRef → Any
-        </div>
-            
-            
-            
-            
-          </div>
-          
-    </li><li visbl="pub" name="org.parboiled.scala.Parser#toTestAction">
-      <h4 class="signature">
-      <span class="kind">implicit def</span>
-      <span class="symbol">
-        <span class="name">toTestAction</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
-      </span>
-      </h4>
-      
-            <p class="shortcomment cmt">Creates a semantic predicate taking the current parsing context as input.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate taking the current parsing context as input.
-Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-elements remain compatible with the relevant subset of the other parser actions)!
-</p></div><div class="block">
-          attributes: implicit 
         </div>
             
             
@@ -1398,6 +1249,62 @@ elements remain compatible with the relevant subset of the other parser actions)
           definition classes: AnyRef
         </div></div>
           
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>, <span name="C">C</span>, <span name="D">D</span>, <span name="E">E</span>, <span name="F">F</span>, <span name="G">G</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, B, C, D, E, F, G, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction7.html" class="extype" name="org.parboiled.scala.WithContextAction7">WithContextAction7</a>[A, B, C, D, E, F, G, R]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>, <span name="C">C</span>, <span name="D">D</span>, <span name="E">E</span>, <span name="F">F</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, B, C, D, E, F, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction6.html" class="extype" name="org.parboiled.scala.WithContextAction6">WithContextAction6</a>[A, B, C, D, E, F, R]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>, <span name="C">C</span>, <span name="D">D</span>, <span name="E">E</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, B, C, D, E, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction5.html" class="extype" name="org.parboiled.scala.WithContextAction5">WithContextAction5</a>[A, B, C, D, E, R]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>, <span name="C">C</span>, <span name="D">D</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, B, C, D, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction4.html" class="extype" name="org.parboiled.scala.WithContextAction4">WithContextAction4</a>[A, B, C, D, R]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>, <span name="C">C</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, B, C, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction3.html" class="extype" name="org.parboiled.scala.WithContextAction3">WithContextAction3</a>[A, B, C, R]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, B, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction2.html" class="extype" name="org.parboiled.scala.WithContextAction2">WithContextAction2</a>[A, B, R]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Parser#withContext">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">withContext</span><span class="tparams">[<span name="A">A</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (A, org.parboiled.Context[_]) ⇒ R</span>)</span><span class="result">: <a href="WithContextAction.html" class="extype" name="org.parboiled.scala.WithContextAction">WithContextAction</a>[A, R]</span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="org.parboiled.scala.Parser#withParseTreeBuilding">
       <h4 class="signature">
       <span class="kind">def</span>
