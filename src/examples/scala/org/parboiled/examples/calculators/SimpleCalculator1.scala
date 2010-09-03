@@ -1,6 +1,7 @@
 package org.parboiled.examples.calculators
 
 import org.parboiled.scala._
+import org.parboiled.errors.{ErrorUtils, ParsingException}
 
 /**
  * A parser for a simple calculator language supporting the 4 basic calculation types on integers.
@@ -33,4 +34,16 @@ class SimpleCalculator1 extends Parser {
   def Digits = rule { oneOrMore(Digit) }
 
   def Digit = rule { "0" - "9" }
+
+  /**
+   * The main parsing method. Uses a ReportingParseRunner (which only reports the first error) for simplicity.
+   */
+  def calculate(expression: String): Int = {
+    val parsingResult = ReportingParseRunner(InputLine).run(expression)
+    parsingResult.result match {
+      case Some(i) => i
+      case None => throw new ParsingException("Invalid calculation expression:\n" +
+              ErrorUtils.printParseErrors(parsingResult)) 
+    }
+  }
 }

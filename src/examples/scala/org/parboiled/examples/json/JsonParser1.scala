@@ -28,10 +28,10 @@ class JsonParser1 extends Parser {
   case object Null extends AstNode
 
   // the root rule
-  def Json = rule { JsonObject | JsonArray }
+  def Json = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ EOI }
 
   def JsonObject: Rule1[ObjectNode] = rule {
-    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> (ObjectNode(_))
+    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> (ObjectNode(_))
   }
 
   def Pair = rule {
@@ -76,7 +76,7 @@ class JsonParser1 extends Parser {
 
   def JsonNull = rule { "null " ~ push(Null) }
 
-  def WhiteSpace = rule { zeroOrMore(anyOf(" \n\r\t\f")) }
+  def WhiteSpace: Rule0 = rule { zeroOrMore(anyOf(" \n\r\t\f")) }
 
   /**
    * We redefine the default string-to-rule conversion to also match trailing whitespace if the string ends with
@@ -92,10 +92,12 @@ class JsonParser1 extends Parser {
    * The main parsing method. Uses a ReportingParseRunner (which only reports the first error) for simplicity.
    */
   def parseJson(json: String): AstNode = {
-    val result = ReportingParseRunner(Json).run(json)
-    if (result.hasErrors)
-      throw new ParsingException("Invalid JSON source:\n" + ErrorUtils.printParseErrors(result))
-    return result.resultValue
+    val parsingResult = ReportingParseRunner(Json).run(json)
+    parsingResult.result match {
+      case Some(astRoot) => astRoot
+      case None => throw new ParsingException("Invalid JSON source:\n" +
+              ErrorUtils.printParseErrors(parsingResult)) 
+    }
   }
 
 }

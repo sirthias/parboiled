@@ -8,7 +8,7 @@ import org.parboiled.scala.testing.ParboiledTest
 class JsonParserTest extends ParboiledTest with TestNGSuite {
   val parser = new JsonParser1()
 
-  type Result = parser.ObjectNode
+  type Result = parser.AstNode
 
   @Test
   def testJsonParser() {
@@ -52,9 +52,9 @@ class JsonParserTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testJsonParserError() {
-    failParse(parser.JsonObject, "XYZ") {
+    failParse(parser.Json, "XYZ") {
       assertEquals(errors,
-        """|Invalid input 'X', expected WhiteSpace or JsonObject (line 1, pos 1):
+        """|Invalid input 'X', expected WhiteSpace or Json (line 1, pos 1):
            |XYZ
            |^
            |""".stripMargin

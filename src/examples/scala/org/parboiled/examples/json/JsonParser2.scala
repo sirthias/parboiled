@@ -28,10 +28,10 @@ class JsonParser2 extends Parser {
   case object Null extends AstNode
 
   // the root rule
-  def Json: Rule1[AstNode] = rule { JsonObject | JsonArray }
+  def Json: Rule1[AstNode] = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ EOI }
   
   def JsonObject: Rule1[ObjectNode] = rule {
-    WhiteSpace ~ "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ((members: List[MemberNode]) => ObjectNode(members))
+    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ((members: List[MemberNode]) => ObjectNode(members))
   }
 
   def Pair: Rule1[MemberNode] = rule {
@@ -96,10 +96,12 @@ class JsonParser2 extends Parser {
    * The main parsing method. Uses a ReportingParseRunner (which only reports the first error) for simplicity.
    */
   def parseJson(json: String): AstNode = {
-    val result = ReportingParseRunner(Json).run(json)
-    if (result.hasErrors)
-      throw new ParsingException("Invalid JSON source:\n" + ErrorUtils.printParseErrors(result))
-    return result.resultValue
+    val parsingResult = ReportingParseRunner(Json).run(json)
+    parsingResult.result match {
+      case Some(astRoot) => astRoot
+      case None => throw new ParsingException("Invalid JSON source:\n" +
+              ErrorUtils.printParseErrors(parsingResult)) 
+    }
   }
 
 }
