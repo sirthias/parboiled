@@ -4,6 +4,7 @@ import util.DynamicVariable
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
 import org.parboiled.support.ParseTreeUtils
+import rules.{Rule1, Rule0}
 
 trait ParboiledTest {
   this: {def fail(msg: String): Nothing} =>

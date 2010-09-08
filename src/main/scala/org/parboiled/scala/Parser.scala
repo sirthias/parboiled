@@ -5,6 +5,7 @@ import _root_.scala.collection.mutable
 import org.parboiled.{Action, Context}
 import org.parboiled.support.{ValueStack, Characters}
 import org.parboiled.common.StringUtils
+import rules._
 
 /**
  * The main Parser trait for scala parboiled parsers. Defines the basic rule building methods as well as the
@@ -422,7 +423,8 @@ trait Parser {
     }
   }).label("PopN3Action"))
 
-  def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction[A, R](f)
+  def withContext[R](f: Context[_] => R) = new WithContextAction[R](f)
+  def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction1[A, R](f)
   def withContext[A, B, R](f: (A, B, Context[_]) => R) = new WithContextAction2[A, B, R](f)
   def withContext[A, B, C, R](f: (A, B, C, Context[_]) => R) = new WithContextAction3[A, B, C, R](f)
   def withContext[A, B, C, D, R](f: (A, B, C, D, Context[_]) => R) = new WithContextAction4[A, B, C, D, R](f)

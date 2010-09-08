@@ -2,6 +2,7 @@ package org.parboiled.examples.json
 
 import org.parboiled.scala._
 import java.lang.String
+import rules.Rule0
 
 /**
  * A complete JSON recognizer without any parser actions. When run with the RecoveringParseRunner this parser could be

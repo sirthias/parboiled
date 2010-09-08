@@ -1,7 +1,6 @@
 package org.parboiled.scala
 
 import org.parboiled.{RecoveringParseRunner => PRecoveringParseRunner}
-import org.parboiled.support.InputBuffer
 
 /**
  * A simple wrapper for org.parboiled.RecoveringParseRunner which returns a scala ParsingResult.

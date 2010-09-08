@@ -13,7 +13,7 @@ package object scala {
   /**
    * Creates an "AND" syntactic predicate according to the PEG formalism.
    */
-  def &(sub: scala.Rule) = new Rule0(new TestMatcher(sub.matcher).label("Test"))
+  def &(sub: scala.Rule): Rule0 = new TestMatcher(sub.matcher).label("Test")
 
   /**
    * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole
@@ -24,18 +24,37 @@ package object scala {
   /**
    * The EMPTY rule, a rule that always matches and consumes no input.
    */
-  lazy val EMPTY = new Rule0(new EmptyMatcher().label("EMPTY"))
+  lazy val EMPTY: Rule0 = new EmptyMatcher().label("EMPTY")
 
   /**
    * The ANY rule, which matches any single character except EOI.
    */
-  lazy val ANY = new Rule0(new AnyMatcher().label("ANY"))
+  lazy val ANY: Rule0 = new AnyMatcher().label("ANY")
 
   /**
    * The EOI rule, which matches the End-Of-Input "character".
    */
-  lazy val EOI = new Rule0(new CharMatcher(Characters.EOI).label("EOI"))
-    
+  lazy val EOI: Rule0 = new CharMatcher(Characters.EOI).label("EOI")
+
+  type Rule = rules.Rule
+  type PopRule1[Z] = rules.PopRule1[Z]
+  type PopRule2[Y, Z] = rules.PopRule2[Y, Z]
+  type PopRule3[X, Y, Z] = rules.PopRule3[X, Y, Z]
+  type PopRuleN1 = rules.PopRuleN1
+  type PopRuleN2 = rules.PopRuleN2
+  type PopRuleN3 = rules.PopRuleN3
+  type ReductionRule1[Z, R] = rules.ReductionRule1[Z, R]
+  type ReductionRule2[Y, Z, R] = rules.ReductionRule2[Y, Z, R]
+  type ReductionRule3[X, Y, Z, R] = rules.ReductionRule3[X, Y, Z, R]
+  type Rule0 = rules.Rule0
+  type Rule1[A] = rules.Rule1[A]
+  type Rule2[A, B] = rules.Rule2[A, B]
+  type Rule3[A, B, C] = rules.Rule3[A, B, C]
+  type Rule4[A, B, C, D] = rules.Rule4[A, B, C, D]
+  type Rule5[A, B, C, D, E] = rules.Rule5[A, B, C, D, E]
+  type Rule6[A, B, C, D, E, F] = rules.Rule6[A, B, C, D, E, F]
+  type Rule7[A, B, C, D, E, F, G] = rules.Rule7[A, B, C, D, E, F, G]
+  
   type RuleMethod = StackTraceElement
 
   private[scala] def getCurrentRuleMethod: StackTraceElement = {
@@ -46,23 +65,13 @@ package object scala {
     }
   }
 
-  /**
-   * Creates a semantic predicate taking the current parsing context as input.
-   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-   * elements remain compatible with the relevant subset of the other parser actions)!
-   */
-  implicit def toTestAction(f: Context[Any] => Boolean): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
+  implicit def toTestAction(f: Context[Any] => Boolean): Rule0 = new ActionMatcher(new Action[Any] {
     def run(context: Context[Any]): Boolean = f(context)
-  }).label("TestAction"))
+  }).label("TestAction")
 
-  /**
-   * Creates a simple parser action taking the current parsing context as input.
-   * Note that the action can read but should not alter the parsers value stack (unless the types of all value stack
-   * elements remain compatible with the relevant subset of the other parser actions)!
-   */
-  implicit def toRunAction(f: Context[Any] => Unit): Rule0 = new Rule0(new ActionMatcher(new Action[Any] {
+  implicit def toRunAction(f: Context[Any] => Unit): Rule0 = new ActionMatcher(new Action[Any] {
     def run(context: Context[Any]): Boolean = {f(context); true}
-  }).label("RunAction"))
+  }).label("RunAction")
 
   implicit def creator4PopRule1[Z](m: Matcher): PopRule1[Z] = new PopRule1[Z](m)
   implicit def creator4PopRule2[Y, Z](m: Matcher): PopRule2[Y, Z] = new PopRule2[Y, Z](m)
