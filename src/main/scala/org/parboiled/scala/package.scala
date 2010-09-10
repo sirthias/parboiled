@@ -3,12 +3,30 @@ package org.parboiled
 import matchers._
 import support.Characters
 import scala._
+import rules.Rule._
 
 /**
  * Main parboiled for Scala Module.
  * Use with "import org.parboiled.scala.Parboiled._"
  */
 package object scala {
+
+  // type aliases
+  type Rule = rules.Rule
+  type PopRule1[Z] = rules.PopRule1[Z]
+  type PopRule2[Y, Z] = rules.PopRule2[Y, Z]
+  type PopRule3[X, Y, Z] = rules.PopRule3[X, Y, Z]
+  type ReductionRule1[Z, R] = rules.ReductionRule1[Z, R]
+  type ReductionRule2[Y, Z, R] = rules.ReductionRule2[Y, Z, R]
+  type ReductionRule3[X, Y, Z, R] = rules.ReductionRule3[X, Y, Z, R]
+  type Rule0 = rules.Rule0
+  type Rule1[A] = rules.Rule1[A]
+  type Rule2[A, B] = rules.Rule2[A, B]
+  type Rule3[A, B, C] = rules.Rule3[A, B, C]
+  type Rule4[A, B, C, D] = rules.Rule4[A, B, C, D]
+  type Rule5[A, B, C, D, E] = rules.Rule5[A, B, C, D, E]
+  type Rule6[A, B, C, D, E, F] = rules.Rule6[A, B, C, D, E, F]
+  type Rule7[A, B, C, D, E, F, G] = rules.Rule7[A, B, C, D, E, F, G]
 
   /**
    * Creates an "AND" syntactic predicate according to the PEG formalism.
@@ -24,7 +42,7 @@ package object scala {
   /**
    * The EMPTY rule, a rule that always matches and consumes no input.
    */
-  lazy val EMPTY: Rule0 = new EmptyMatcher().label("EMPTY")
+  lazy val Empty: Rule0 = new EmptyMatcher().label("EMPTY")
 
   /**
    * The ANY rule, which matches any single character except EOI.
@@ -34,27 +52,23 @@ package object scala {
   /**
    * The EOI rule, which matches the End-Of-Input "character".
    */
-  lazy val EOI: Rule0 = new CharMatcher(Characters.EOI).label("EOI")
+  lazy val Eoi: Rule0 = new CharMatcher(Characters.EOI).label("EOI")
 
-  type Rule = rules.Rule
-  type PopRule1[Z] = rules.PopRule1[Z]
-  type PopRule2[Y, Z] = rules.PopRule2[Y, Z]
-  type PopRule3[X, Y, Z] = rules.PopRule3[X, Y, Z]
-  type PopRuleN1 = rules.PopRuleN1
-  type PopRuleN2 = rules.PopRuleN2
-  type PopRuleN3 = rules.PopRuleN3
-  type ReductionRule1[Z, R] = rules.ReductionRule1[Z, R]
-  type ReductionRule2[Y, Z, R] = rules.ReductionRule2[Y, Z, R]
-  type ReductionRule3[X, Y, Z, R] = rules.ReductionRule3[X, Y, Z, R]
-  type Rule0 = rules.Rule0
-  type Rule1[A] = rules.Rule1[A]
-  type Rule2[A, B] = rules.Rule2[A, B]
-  type Rule3[A, B, C] = rules.Rule3[A, B, C]
-  type Rule4[A, B, C, D] = rules.Rule4[A, B, C, D]
-  type Rule5[A, B, C, D, E] = rules.Rule5[A, B, C, D, E]
-  type Rule6[A, B, C, D, E, F] = rules.Rule6[A, B, C, D, E, F]
-  type Rule7[A, B, C, D, E, F, G] = rules.Rule7[A, B, C, D, E, F, G]
-  
+  /**
+   * A parser action removing the top element from the value stack.
+   */
+  lazy val Pop1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label("Pop1Action")
+
+  /**
+   * A parser action removing the top two elements from the value stack.
+   */
+  lazy val Pop2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label("Pop2Action")
+
+  /**
+   * A parser action removing the top three elements from the value stack.
+   */
+  lazy val Pop3: PopRule3[Any, Any, Any] = new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label("Pop3Action")
+
   type RuleMethod = StackTraceElement
 
   private[scala] def getCurrentRuleMethod: StackTraceElement = {
@@ -76,9 +90,6 @@ package object scala {
   implicit def creator4PopRule1[Z](m: Matcher): PopRule1[Z] = new PopRule1[Z](m)
   implicit def creator4PopRule2[Y, Z](m: Matcher): PopRule2[Y, Z] = new PopRule2[Y, Z](m)
   implicit def creator4PopRule3[X, Y, Z](m: Matcher): PopRule3[X, Y, Z] = new PopRule3[X, Y, Z](m)
-  implicit def creator4PopRuleN1(m: Matcher): PopRuleN1 = new PopRuleN1(m)
-  implicit def creator4PopRuleN2(m: Matcher): PopRuleN2 = new PopRuleN2(m)
-  implicit def creator4PopRuleN3(m: Matcher): PopRuleN3 = new PopRuleN3(m)
   implicit def creator4ReductionRule1[Z, R](m: Matcher): ReductionRule1[Z, R] = new ReductionRule1[Z, R](m)
   implicit def creator4ReductionRule2[Y, Z, R](m: Matcher): ReductionRule2[Y, Z, R] = new ReductionRule2[Y, Z, R](m)
   implicit def creator4ReductionRule3[X, Y, Z, R](m: Matcher): ReductionRule3[X, Y, Z, R] = new ReductionRule3[X, Y, Z, R](m)

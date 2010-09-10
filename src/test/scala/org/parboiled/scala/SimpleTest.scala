@@ -11,7 +11,7 @@ import testing.ParboiledTest
 class SimpleTest extends ParboiledTest with TestNGSuite {
 
   class SimpleParser extends Parser {
-    def Clause = rule {Digit ~ ClauseRest ~ EOI}
+    def Clause = rule {Digit ~ ClauseRest ~ Eoi}
 
     def ClauseRest = rule {zeroOrMore(Operator ~ Digit) ~ anyOf("abcd")}
 

@@ -6,6 +6,7 @@ import org.parboiled.{Action, Context}
 import org.parboiled.support.{ValueStack, Characters}
 import org.parboiled.common.StringUtils
 import rules._
+import Rule._
 
 /**
  * The main Parser trait for scala parboiled parsers. Defines the basic rule building methods as well as the
@@ -185,7 +186,7 @@ trait Parser {
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
   def nTimes(times: Int, sub: Rule0, separator: Rule0): Rule0 = times match {
-    case 0 => EMPTY
+    case 0 => Empty
     case 1 => sub
     case n if n > 1 =>
       (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
@@ -203,7 +204,7 @@ trait Parser {
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
   def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z], separator: Rule0): ReductionRule1[Z, Z] = times match {
-    case 0 => new ReductionRule1[Z, Z](EMPTY.matcher)
+    case 0 => new ReductionRule1[Z, Z](Empty.matcher)
     case 1 => sub
     case n if n > 1 =>
       (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
@@ -264,7 +265,7 @@ trait Parser {
    * Creates a rule that matches the given character array.
    */
   def str(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => EMPTY
+    case 0 => Empty
     case 1 => ch(chars(0))
     case _ => new Rule0(new StringMatcher(chars.map(ch).map(_.matcher), chars).label("\"" + chars + '"'))
   }
@@ -278,7 +279,7 @@ trait Parser {
    * Creates a rule that matches any single character in the given character array.
    */
   def anyOf(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => EMPTY
+    case 0 => Empty
     case 1 => ch(chars(0))
     case _ => anyOf(Characters.of(chars: _*))
   }
@@ -297,21 +298,15 @@ trait Parser {
    * Creates a rule that matches the given character array case-independently.
    */
   def ignoreCase(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => EMPTY
+    case 0 => Empty
     case 1 => ignoreCase(chars(0))
     case _ => new Rule0(new SequenceMatcher(chars.map(ignoreCase(_)).map(_.matcher)).label("\"" + chars + '"'))
   }
 
   /**
-   * Creates a semantic predicate.
+   * Creates a simple semantic predicate.
    */
   def test(f: => Boolean) = toTestAction((c: Context[Any]) => f)
-
-  /**
-   * Creates a semantic predicate on the input text matched by the immediately preceeding peer rule.
-   * Note that this rule is only valid in sequence rules and must not appear in first position!
-   */
-  def test(f: String => Boolean) = toTestAction((c: Context[Any]) => f(c.getMatch))
 
   /**
    * Creates a simple parser action.
@@ -319,109 +314,28 @@ trait Parser {
   def run(f: => Unit) = toRunAction((c: Context[Any]) => f)
 
   /**
-   * Creates a simple parser action taking the input text matched by the immediately preceeding peer rule as input.
-   * Note that this rule is only valid in sequence rules and must not appear in first position!
-   */
-  def run(f: String => Unit) = toRunAction((c: Context[Any]) => f(c.getMatch))
-
-  /**
    * Create a parser action whose result value is pushed onto the value stack.
    */
-  def push[A](f: => A) = new Rule1[A](new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {context.getValueStack.push(f); true}
-  }).label("Push1Action"))
+  def push[A](f: => A) = new Rule1[A](new ActionMatcher(action(ok(_.getValueStack.push(f)))).label("Push1Action"))
 
   /**
    * Create a parser action whose two result values are pushed onto the value stack.
    */
-  def push[A, B](a: => A, b: => B) = new Rule2[A, B](new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      val vs: ValueStack[Any] = context.getValueStack
-      vs.push(a)
-      vs.push(b)
-      true
-    }
-  }).label("Push2Action"))
+  def push[A, B](a: => A, b: => B) = new Rule2[A, B](new ActionMatcher(action(ok({ (c: Context[Any]) =>
+    val vs: ValueStack[Any] = c.getValueStack
+    vs.push(a)
+    vs.push(b)
+  }))).label("Push2Action"))
 
   /**
    * Create a parser action whose three result values are pushed onto the value stack.
    */
-  def push[A, B, C](a: => A, b: => B, c: => C) = new Rule3[A, B, C](new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      val vs: ValueStack[Any] = context.getValueStack
-      vs.push(a)
-      vs.push(b)
-      vs.push(c)
-      true
-    }
-  }).label("Push3Action"))
-
-  /**
-   * Create a parser action taking the top element popped of the value stack as input.
-   */
-  def pop[Z](f: Z => Unit) = new PopRule1[Z](new ActionMatcher(new Action[Z] {
-    def run(context: Context[Z]): Boolean = {f(context.getValueStack.pop()); true}
-  }).label("Pop1Action"))
-
-  /**
-   * Create a parser action taking the top two elements popped of the value stack as input.
-   */
-  def pop[Y, Z](f: (Y, Z) => Unit) = new PopRule2[Y, Z](new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      val vs = context.getValueStack
-      val z = vs.pop().asInstanceOf[Z]
-      val y = vs.pop().asInstanceOf[Y]
-      f(y, z)
-      true
-    }
-  }).label("Pop2Action"))
-
-  /**
-   * Create a parser action taking the top three elements popped of the value stack as input.
-   */
-  def pop[X, Y, Z](f: (X, Y, Z) => Unit) = new PopRule3[X, Y, Z](new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      val vs = context.getValueStack
-      val z = vs.pop().asInstanceOf[Z]
-      val y = vs.pop().asInstanceOf[Y]
-      val x = vs.pop().asInstanceOf[X]
-      f(x, y, z)
-      true
-    }
-  }).label("Pop3Action"))
-
-  /**
-   * Create a parser action removing the top element from the value stack.
-   */
-  def pop1() = new PopRuleN1(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      context.getValueStack.pop()
-      true
-    }
-  }).label("PopN1Action"))
-
-  /**
-   * Create a parser action removing the top two elements from the value stack.
-   */
-  def pop2() = new PopRuleN2(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      context.getValueStack.pop()
-      context.getValueStack.pop()
-      true
-    }
-  }).label("PopN2Action"))
-
-  /**
-   * Create a parser action removing the top three elements from the value stack.
-   */
-  def pop3() = new PopRuleN3(new ActionMatcher(new Action[Any] {
-    def run(context: Context[Any]): Boolean = {
-      context.getValueStack.pop()
-      context.getValueStack.pop()
-      context.getValueStack.pop()
-      true
-    }
-  }).label("PopN3Action"))
+  def push[A, B, C](a: => A, b: => B, c: => C) = new Rule3[A, B, C](new ActionMatcher(action(ok({ (c: Context[Any]) =>
+    val vs: ValueStack[Any] = c.getValueStack
+    vs.push(a)
+    vs.push(b)
+    vs.push(c)
+  }))).label("Push3Action"))
 
   def withContext[R](f: Context[_] => R) = new WithContextAction[R](f)
   def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction1[A, R](f)
