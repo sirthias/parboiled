@@ -23,7 +23,7 @@
       <h4 class="signature" id="signature">
       <span class="kind">class</span>
       <span class="symbol">
-        <span class="name">WithContextAction</span><span class="tparams">[<span name="A">A</span>, <span name="R">R</span>]</span><span class="result"> extends (A) ⇒ R</span>
+        <span class="name">WithContextAction</span><span class="tparams">[<span name="R">R</span>]</span><span class="result"> extends () ⇒ R</span>
       </span>
       </h4>
       <div class="fullcomment" id="comment"></div>
@@ -34,7 +34,7 @@
           <div id="ancestors">
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall">Hide All</li><li class="showall">Show all</li></ol>
-                <ol id="linearization"><li class="in" name="scala.Function1">Function1</li><li class="in" name="scala.AnyRef">AnyRef</li><li class="in" name="scala.Any">Any</li></ol>
+                <ol id="linearization"><li class="in" name="scala.Function0">Function0</li><li class="in" name="scala.AnyRef">AnyRef</li><li class="in" name="scala.Any">Any</li></ol>
               </div>
           <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -48,7 +48,7 @@
       <h4 class="signature">
       <span class="kind">new</span>
       <span class="symbol">
-        <span class="name">WithContextAction</span><span class="params">(<span name="action">action: (A, org.parboiled.Context[_]) ⇒ R</span>)</span>
+        <span class="name">WithContextAction</span><span class="params">(<span name="action">action: (org.parboiled.Context[_]) ⇒ R</span>)</span>
       </span>
       </h4>
       
@@ -186,34 +186,21 @@
       <h4 class="signature">
       <span class="kind">val</span>
       <span class="symbol">
-        <span class="name">action</span><span class="result">: (A, org.parboiled.Context[_]) ⇒ R</span>
+        <span class="name">action</span><span class="result">: (org.parboiled.Context[_]) ⇒ R</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="scala.Function1#andThen">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">andThen</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="g">g: (R) ⇒ A</span>)</span><span class="result">: (A) ⇒ A</span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          definition classes: Function1
-        </div></div>
-          
     </li><li visbl="pub" name="org.parboiled.scala.WithContextAction#apply">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="a">a: A</span>)</span><span class="result">: <span class="extype" name="scala.Nothing">Nothing</span></span>
+        <span class="name">apply</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Nothing">Nothing</span></span>
       </span>
       </h4>
       
             
             <div class="fullcomment"><div class="block">
-          definition classes: <a href="" class="extype" name="org.parboiled.scala.WithContextAction">WithContextAction</a> → Function1
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.WithContextAction">WithContextAction</a> → Function0
         </div></div>
           
     </li><li visbl="pub" name="scala.Any#asInstanceOf">
@@ -258,19 +245,6 @@ part of compilation it is not possible to check whether the contents of the list
             
             
           </div>
-          
-    </li><li visbl="pub" name="scala.Function1#compose">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">compose</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="g">g: (A) ⇒ A</span>)</span><span class="result">: (A) ⇒ R</span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          definition classes: Function1
-        </div></div>
           
     </li><li visbl="pub" name="scala.AnyRef#eq">
       <h4 class="signature">
@@ -500,7 +474,7 @@ possible to check whether the contents of the list are of the requested typed.
           definition classes: AnyRef
         </div></div>
           
-    </li><li visbl="pub" name="scala.Function1#toString">
+    </li><li visbl="pub" name="scala.Function0#toString">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
@@ -511,7 +485,7 @@ possible to check whether the contents of the list are of the requested typed.
             <p class="shortcomment cmt">Returns a string representation of the object.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Returns a string representation of the object.</p><p>The default representation is platform dependent.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a string representation of the object.</p></dd></dl><div class="block">
-          definition classes: Function1 → AnyRef → Any
+          definition classes: Function0 → AnyRef → Any
         </div>
             
             

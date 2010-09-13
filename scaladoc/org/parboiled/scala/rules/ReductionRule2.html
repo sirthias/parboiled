@@ -2,31 +2,31 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>Scaladoc for org.parboiled.scala.PopRuleN1</title>
+          <title>Scaladoc for org.parboiled.scala.rules.ReductionRule2</title>
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-		      <script type="text/javascript" src="../../../lib/jquery.js"></script>
+		      <script type="text/javascript" src="../../../../lib/jquery.js"></script>
           
-      <link href="../../../lib/template.css" rel="stylesheet" type="text/css" media="screen" />
-      <script type="text/javascript" src="../../../lib/template.js"></script>
-      <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
+      <link href="../../../../lib/template.css" rel="stylesheet" type="text/css" media="screen" />
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
     
         </head>
         <body class="type">
 
-      <p id="owner"><a href="../../package.html" class="extype" name="org">org</a>.<a href="../package.html" class="extype" name="org.parboiled">parboiled</a>.<a href="package.html" class="extype" name="org.parboiled.scala">scala</a></p>
+      <p id="owner"><a href="../../../package.html" class="extype" name="org">org</a>.<a href="../../package.html" class="extype" name="org.parboiled">parboiled</a>.<a href="../package.html" class="extype" name="org.parboiled.scala">scala</a>.<a href="package.html" class="extype" name="org.parboiled.scala.rules">rules</a></p>
 
       <div id="definition">
-        <img src="../../../lib/class_big.png" />
-        <h1>PopRuleN1</h1>
+        <img src="../../../../lib/class_big.png" />
+        <h1>ReductionRule2</h1>
       </div>
 
       <h4 class="signature" id="signature">
       <span class="kind">class</span>
       <span class="symbol">
-        <span class="name">PopRuleN1</span><span class="result"> extends <a href="PopRule.html" class="extype" name="org.parboiled.scala.PopRule">PopRule</a></span>
+        <span class="name">ReductionRule2</span><span class="tparams">[<span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="result"> extends <a href="ReductionRule.html" class="extype" name="org.parboiled.scala.rules.ReductionRule">ReductionRule</a></span>
       </span>
       </h4>
-      <div class="fullcomment" id="comment"><div class="comment cmt"><p>A rule removing the top value stack element independently of its type.
+      <div class="fullcomment" id="comment"><div class="comment cmt"><p>A rule taking two values off the value stack and replacing them with one other value.
 </p></div>
             
             
@@ -40,7 +40,7 @@
           <div id="ancestors">
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall">Hide All</li><li class="showall">Show all</li></ol>
-                <ol id="linearization"><li class="in" name="org.parboiled.scala.PopRule">PopRule</li><li class="in" name="org.parboiled.scala.Rule">Rule</li><li class="in" name="scala.AnyRef">AnyRef</li><li class="in" name="scala.Any">Any</li></ol>
+                <ol id="linearization"><li class="in" name="org.parboiled.scala.rules.ReductionRule">ReductionRule</li><li class="in" name="org.parboiled.scala.rules.Rule">Rule</li><li class="in" name="scala.AnyRef">AnyRef</li><li class="in" name="scala.Any">Any</li></ol>
               </div>
           <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -50,11 +50,11 @@
         
         <div class="members" id="constructors">
               <h3>Instance constructors</h3>
-              <ol><li visbl="pub" name="org.parboiled.scala.PopRuleN1#this">
+              <ol><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2#this">
       <h4 class="signature">
       <span class="kind">new</span>
       <span class="symbol">
-        <span class="name">PopRuleN1</span><span class="params">(<span name="matcher">matcher: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>)</span>
+        <span class="name">ReductionRule2</span><span class="params">(<span name="matcher">matcher: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>)</span>
       </span>
       </h4>
       
@@ -188,7 +188,7 @@
             
           </div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#append">
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
@@ -200,14 +200,14 @@
             <div class="fullcomment"><div class="block">
           attributes: protected 
         </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#append">
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">append</span><span class="params">(<span name="other">other: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
+        <span class="name">append</span><span class="params">(<span name="other">other: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
       </span>
       </h4>
       
@@ -215,10 +215,25 @@
             <div class="fullcomment"><div class="block">
           attributes: protected 
         </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#append">
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">append</span><span class="params">(<span name="f">f: (<span class="extype" name="org.parboiled.Context">Context</span>[<span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          attributes: protected 
+        </div><div class="block">
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
+        </div></div>
+          
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
@@ -230,10 +245,10 @@
             <div class="fullcomment"><div class="block">
           attributes: protected 
         </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendChoice">
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#appendChoice">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
@@ -245,14 +260,14 @@
             <div class="fullcomment"><div class="block">
           attributes: protected 
         </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendChoice">
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#appendChoice">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">appendChoice</span><span class="params">(<span name="other">other: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
+        <span class="name">appendChoice</span><span class="params">(<span name="other">other: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
       </span>
       </h4>
       
@@ -260,127 +275,7 @@
             <div class="fullcomment"><div class="block">
           attributes: protected 
         </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq1">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq1</span><span class="tparams">[<span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq2">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq2</span><span class="tparams">[<span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (Y, Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq3">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq3</span><span class="tparams">[<span name="X">X</span>, <span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (X, Y, Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq4">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq4</span><span class="tparams">[<span name="W">W</span>, <span name="X">X</span>, <span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (W, X, Y, Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq5">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq5</span><span class="tparams">[<span name="V">V</span>, <span name="W">W</span>, <span name="X">X</span>, <span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (V, W, X, Y, Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq6">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq6</span><span class="tparams">[<span name="U">U</span>, <span name="V">V</span>, <span name="W">W</span>, <span name="X">X</span>, <span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (U, V, W, X, Y, Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeq7">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeq7</span><span class="tparams">[<span name="T">T</span>, <span name="U">U</span>, <span name="V">V</span>, <span name="W">W</span>, <span name="X">X</span>, <span name="Y">Y</span>, <span name="Z">Z</span>, <span name="R">R</span>]</span><span class="params">(<span name="f">f: (T, U, V, W, X, Y, Z) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
-        </div></div>
-          
-    </li><li visbl="prt" name="org.parboiled.scala.Rule#appendSeqS">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">appendSeqS</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ R</span>)</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
-      </span>
-      </h4>
-      
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
     </li><li visbl="pub" name="scala.Any#asInstanceOf">
@@ -578,30 +473,30 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#label">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#label">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">label</span><span class="params">(<span name="label">label: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>
+        <span class="name">label</span><span class="params">(<span name="label">label: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
       </span>
       </h4>
       
             
             <div class="fullcomment"><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#memoMismatches">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#memoMismatches">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">memoMismatches</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>
+        <span class="name">memoMismatches</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
       </span>
       </h4>
       
             
             <div class="fullcomment"><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
     </li><li visbl="pub" name="scala.AnyRef#ne">
@@ -665,43 +560,43 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#skipNode">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#skipNode">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">skipNode</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>
+        <span class="name">skipNode</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
       </span>
       </h4>
       
             
             <div class="fullcomment"><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#suppressNode">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#suppressNode">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">suppressNode</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>
+        <span class="name">suppressNode</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
       </span>
       </h4>
       
             
             <div class="fullcomment"><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#suppressSubnodes">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#suppressSubnodes">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">suppressSubnodes</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a></span>
+        <span class="name">suppressSubnodes</span><span class="params">()</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
       </span>
       </h4>
       
             
             <div class="fullcomment"><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
     </li><li visbl="pub" name="scala.AnyRef#synchronized">
@@ -719,7 +614,7 @@ possible to check whether the contents of the list are of the requested typed.
           definition classes: AnyRef
         </div></div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#toString">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#toString">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
@@ -730,7 +625,7 @@ possible to check whether the contents of the list are of the requested typed.
             <p class="shortcomment cmt">Returns a string representation of the object.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Returns a string representation of the object.</p><p>The default representation is platform dependent.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a string representation of the object.</p></dd></dl><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a> → AnyRef → Any
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a> → AnyRef → Any
         </div>
             
             
@@ -738,18 +633,18 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Rule#unary_!">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#unary_!">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">unary_!</span><span class="params">()</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>
+        <span class="name">unary_!</span><span class="params">()</span><span class="result">: <a href="Rule0.html" class="extype" name="org.parboiled.scala.rules.Rule0">Rule0</a></span>
       </span>
       </h4>
       
             <p class="shortcomment cmt">Creates a &quot;NOT&quot; syntactic predicate according to the PEG formalism.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a &quot;NOT&quot; syntactic predicate according to the PEG formalism.
 </p></div><div class="block">
-          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div>
             
             
@@ -802,11 +697,11 @@ possible to check whether the contents of the list are of the requested typed.
           definition classes: AnyRef
         </div></div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.PopRuleN1#withMatcher">
+    </li><li visbl="prt" name="org.parboiled.scala.rules.ReductionRule2#withMatcher">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">withMatcher</span><span class="params">(<span name="matcher">matcher: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.PopRuleN1">PopRuleN1</a></span>
+        <span class="name">withMatcher</span><span class="params">(<span name="matcher">matcher: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.rules.ReductionRule2">ReductionRule2</a>[Y, Z, R]</span>
       </span>
       </h4>
       
@@ -814,41 +709,100 @@ possible to check whether the contents of the list are of the requested typed.
             <div class="fullcomment"><div class="block">
           attributes: protected 
         </div><div class="block">
-          definition classes: <a href="" class="extype" name="org.parboiled.scala.PopRuleN1">PopRuleN1</a> → <a href="Rule.html" class="extype" name="org.parboiled.scala.Rule">Rule</a>
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.rules.ReductionRule2">ReductionRule2</a> → <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.PopRuleN1#|">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2#|">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">|</span><span class="params">(<span name="other">other: <a href="" class="extype" name="org.parboiled.scala.PopRuleN1">PopRuleN1</a></span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.PopRuleN1">PopRuleN1</a></span>
+        <span class="name">|</span><span class="params">(<span name="other">other: <a href="" class="extype" name="org.parboiled.scala.rules.ReductionRule2">ReductionRule2</a>[Y, Z, R]</span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.rules.ReductionRule2">ReductionRule2</a>[Y, Z, R]</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.PopRuleN1#~">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2#~">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">~</span><span class="params">(<span name="other">other: <a href="Rule0.html" class="extype" name="org.parboiled.scala.Rule0">Rule0</a></span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.PopRuleN1">PopRuleN1</a></span>
+        <span class="name">~</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="other">other: <a href="ReductionRule1.html" class="extype" name="org.parboiled.scala.rules.ReductionRule1">ReductionRule1</a>[R, T]</span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.rules.ReductionRule2">ReductionRule2</a>[Y, Z, T]</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.PopRuleN1#~">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2#~">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">~</span><span class="params">(<span name="other">other: <a href="" class="extype" name="org.parboiled.scala.PopRuleN1">PopRuleN1</a></span>)</span><span class="result">: <a href="PopRuleN2.html" class="extype" name="org.parboiled.scala.PopRuleN2">PopRuleN2</a></span>
+        <span class="name">~</span><span class="tparams">[<span name="X">X</span>, <span name="T">T</span>]</span><span class="params">(<span name="other">other: <a href="" class="extype" name="org.parboiled.scala.rules.ReductionRule2">ReductionRule2</a>[X, R, T]</span>)</span><span class="result">: <a href="ReductionRule3.html" class="extype" name="org.parboiled.scala.rules.ReductionRule3">ReductionRule3</a>[X, Y, Z, T]</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.PopRuleN1#~">
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2#~">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">~</span><span class="params">(<span name="other">other: <a href="PopRuleN2.html" class="extype" name="org.parboiled.scala.PopRuleN2">PopRuleN2</a></span>)</span><span class="result">: <a href="PopRuleN3.html" class="extype" name="org.parboiled.scala.PopRuleN3">PopRuleN3</a></span>
+        <span class="name">~</span><span class="params">(<span name="other">other: <a href="PopRule1.html" class="extype" name="org.parboiled.scala.rules.PopRule1">PopRule1</a>[R]</span>)</span><span class="result">: <a href="PopRule2.html" class="extype" name="org.parboiled.scala.rules.PopRule2">PopRule2</a>[Y, Z]</span>
       </span>
       </h4>
       
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2#~">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">~</span><span class="tparams">[<span name="X">X</span>]</span><span class="params">(<span name="other">other: <a href="PopRule2.html" class="extype" name="org.parboiled.scala.rules.PopRule2">PopRule2</a>[X, R]</span>)</span><span class="result">: <a href="PopRule3.html" class="extype" name="org.parboiled.scala.rules.PopRule3">PopRule3</a>[X, Y, Z]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">~</span><span class="params">(<span name="other">other: <a href="Rule0.html" class="extype" name="org.parboiled.scala.rules.Rule0">Rule0</a></span>)</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
+        </div></div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~%">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">~%</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.
+</p></div><div class="block">
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
+        </div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~?">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">~?</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="java.lang.String">String</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a semantic predicate on the input text matched by the immediately preceding rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the input text matched by the immediately preceding rule.
+</p></div><div class="block">
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
+        </div>
+            
+            
+            
+            
+          </div>
+          
     </li></ol>
             </div>
                 
