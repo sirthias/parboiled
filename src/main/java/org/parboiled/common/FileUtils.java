@@ -141,17 +141,12 @@ public class FileUtils {
     }
 
     public static void writeAllText(String text, @NotNull File file) {
-        try {
-            ensureParentDir(file);
-            writeAllText(text, new FileOutputStream(file), Charset.forName("UTF8"));
-        }
-        catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        writeAllText(text, file, Charset.forName("UTF8"));
     }
 
     public static void writeAllText(String text, @NotNull File file, @NotNull Charset charset) {
         try {
+            ensureParentDir(file);
             writeAllText(text, new FileOutputStream(file), charset);
         }
         catch (FileNotFoundException e) {
@@ -178,17 +173,12 @@ public class FileUtils {
     }
 
     public static void writeAllChars(char[] chars, @NotNull File file) {
-        try {
-            ensureParentDir(file);
-            writeAllChars(chars, new FileOutputStream(file), Charset.forName("UTF8"));
-        }
-        catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        writeAllChars(chars, file, Charset.forName("UTF8"));
     }
 
     public static void writeAllChars(char[] chars, @NotNull File file, @NotNull Charset charset) {
         try {
+            ensureParentDir(file);
             writeAllChars(chars, new FileOutputStream(file), charset);
         }
         catch (FileNotFoundException e) {
