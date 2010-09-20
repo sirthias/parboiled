@@ -46,9 +46,14 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public static final Rule ANY = new AnyMatcher().label("ANY");
 
     /**
-     * Matches nothing and therefore always succeeds.
+     * Matches nothing and always succeeds.
      */
     public static final Rule EMPTY = new EmptyMatcher().label("EMPTY");
+
+    /**
+     * Matches nothing and always fails.
+     */
+    public static final Rule NOTHING = new NothingMatcher().label("NOTHING");
 
     /**
      * Creates a new instance of this parsers class using the no-arg constructor. If no no-arg constructor

@@ -62,6 +62,10 @@ public class DefaultMatcherVisitor<R> implements MatcherVisitor<R> {
         return defaultValue(matcher);
     }
 
+    public R visit(NothingMatcher matcher) {
+        return defaultValue(matcher);
+    }
+
     public R visit(OneOrMoreMatcher matcher) {
         return defaultValue(matcher);
     }

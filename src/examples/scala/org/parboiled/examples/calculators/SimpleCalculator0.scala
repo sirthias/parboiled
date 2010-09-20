@@ -9,7 +9,7 @@ import org.parboiled.scala._
  */
 class SimpleCalculator0 extends Parser {
 
-  def InputLine = rule { Expression ~ Eoi }
+  def InputLine = rule { Expression ~ EOI }
 
   def Expression: Rule0 = rule { Term ~ zeroOrMore(anyOf("+-") ~ Term) }
 

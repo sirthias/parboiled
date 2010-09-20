@@ -60,6 +60,10 @@ public class IsSingleCharMatcherVisitor implements MatcherVisitor<Boolean> {
         return false;
     }
 
+    public Boolean visit(NothingMatcher matcher) {
+        return false;
+    }
+
     public Boolean visit(OneOrMoreMatcher matcher) {
         return false;
     }

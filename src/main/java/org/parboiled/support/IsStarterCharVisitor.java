@@ -70,6 +70,10 @@ public class IsStarterCharVisitor implements MatcherVisitor<Boolean> {
         return false;
     }
 
+    public Boolean visit(NothingMatcher matcher) {
+        return false;
+    }
+
     public Boolean visit(OneOrMoreMatcher matcher) {
         return matcher.subMatcher.accept(this);
     }

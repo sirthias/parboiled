@@ -81,6 +81,7 @@ public class CachingTest extends AbstractTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 1\n" +
                 "        FirstOfStrings: 0\n" +
+                "        Nothing       : 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 1\n" +
@@ -107,6 +108,7 @@ public class CachingTest extends AbstractTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
                 "        FirstOfStrings: 0\n" +
+                "        Nothing       : 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 1\n" +

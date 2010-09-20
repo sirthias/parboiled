@@ -186,7 +186,7 @@ trait Parser {
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
   def nTimes(times: Int, sub: Rule0, separator: Rule0): Rule0 = times match {
-    case 0 => Empty
+    case 0 => EMPTY
     case 1 => sub
     case n if n > 1 =>
       (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
@@ -204,7 +204,7 @@ trait Parser {
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
   def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z], separator: Rule0): ReductionRule1[Z, Z] = times match {
-    case 0 => new ReductionRule1[Z, Z](Empty.matcher)
+    case 0 => new ReductionRule1[Z, Z](EMPTY.matcher)
     case 1 => sub
     case n if n > 1 =>
       (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
@@ -265,7 +265,7 @@ trait Parser {
    * Creates a rule that matches the given character array.
    */
   def str(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => Empty
+    case 0 => EMPTY
     case 1 => ch(chars(0))
     case _ => new Rule0(new StringMatcher(chars.map(ch).map(_.matcher), chars).label("\"" + chars + '"'))
   }
@@ -279,7 +279,7 @@ trait Parser {
    * Creates a rule that matches any single character in the given character array.
    */
   def anyOf(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => Empty
+    case 0 => EMPTY
     case 1 => ch(chars(0))
     case _ => anyOf(Characters.of(chars: _*))
   }
@@ -298,7 +298,7 @@ trait Parser {
    * Creates a rule that matches the given character array case-independently.
    */
   def ignoreCase(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => Empty
+    case 0 => EMPTY
     case 1 => ignoreCase(chars(0))
     case _ => new Rule0(new SequenceMatcher(chars.map(ignoreCase(_)).map(_.matcher)).label("\"" + chars + '"'))
   }

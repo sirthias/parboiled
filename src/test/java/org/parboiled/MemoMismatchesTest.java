@@ -74,6 +74,7 @@ public class MemoMismatchesTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
                 "        FirstOfStrings: 0\n" +
+                "        Nothing       : 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 4\n" +
@@ -121,6 +122,7 @@ public class MemoMismatchesTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 2\n" +
                 "        FirstOfStrings: 0\n" +
+                "        Nothing       : 0\n" +
                 "        OneOrMore     : 0\n" +
                 "        Optional      : 0\n" +
                 "        Sequence      : 4\n" +

@@ -36,6 +36,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     private final Set<EmptyMatcher> emptyMatchers = new HashSet<EmptyMatcher>();
     private final Set<FirstOfMatcher> firstOfMatchers = new HashSet<FirstOfMatcher>();
     private final Set<FirstOfStringsMatcher> firstOfStringMatchers = new HashSet<FirstOfStringsMatcher>();
+    private final Set<NothingMatcher> nothingMatchers = new HashSet<NothingMatcher>();
     private final Set<OneOrMoreMatcher> oneOrMoreMatchers = new HashSet<OneOrMoreMatcher>();
     private final Set<OptionalMatcher> optionalMatchers = new HashSet<OptionalMatcher>();
     private final Set<SequenceMatcher> sequenceMatchers = new HashSet<SequenceMatcher>();
@@ -51,7 +52,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     private final Set<MemoMismatchesMatcher> memoMismatchesMatchers = new HashSet<MemoMismatchesMatcher>();
 
     @SuppressWarnings({"unchecked"})
-    public static  ParserStatistics generateFor(@NotNull Rule rule) {
+    public static ParserStatistics generateFor(@NotNull Rule rule) {
         Matcher matcher = (Matcher) rule;
         return matcher.accept(new ParserStatistics(matcher));
     }
@@ -101,6 +102,18 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
         return firstOfMatchers;
     }
 
+    public Set<FirstOfStringsMatcher> getFirstOfStringMatchers() {
+        return firstOfStringMatchers;
+    }
+
+    public Set<MemoMismatchesMatcher> getMemoMismatchesMatchers() {
+        return memoMismatchesMatchers;
+    }
+
+    public Set<NothingMatcher> getNothingMatchers() {
+        return nothingMatchers;
+    }
+
     public Set<OneOrMoreMatcher> getOneOrMoreMatchers() {
         return oneOrMoreMatchers;
     }
@@ -111,6 +124,10 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
 
     public Set<SequenceMatcher> getSequenceMatchers() {
         return sequenceMatchers;
+    }
+
+    public Set<StringMatcher> getStringMatchers() {
+        return stringMatchers;
     }
 
     public Set<TestMatcher> getTestMatchers() {
@@ -186,6 +203,10 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
                 visit(matcher, firstOfMatchers);
     }
 
+    public ParserStatistics visit(NothingMatcher matcher) {
+        return visit(matcher, nothingMatchers);
+    }
+
     public ParserStatistics visit(OneOrMoreMatcher matcher) {
         return visit(matcher, oneOrMoreMatchers);
     }
@@ -248,6 +269,7 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
                 .append("        Empty         : ").append(emptyMatchers.size()).append('\n')
                 .append("        FirstOf       : ").append(firstOfMatchers.size()).append('\n')
                 .append("        FirstOfStrings: ").append(firstOfStringMatchers.size()).append('\n')
+                .append("        Nothing       : ").append(nothingMatchers.size()).append('\n')
                 .append("        OneOrMore     : ").append(oneOrMoreMatchers.size()).append('\n')
                 .append("        Optional      : ").append(optionalMatchers.size()).append('\n')
                 .append("        Sequence      : ").append(sequenceMatchers.size()).append('\n')

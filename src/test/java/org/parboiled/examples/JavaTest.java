@@ -53,6 +53,7 @@ public class JavaTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 64\n" +
                 "        FirstOfStrings: 4\n" +
+                "        Nothing       : 0\n" +
                 "        OneOrMore     : 7\n" +
                 "        Optional      : 40\n" +
                 "        Sequence      : 309\n" +

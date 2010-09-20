@@ -44,6 +44,8 @@ public interface MatcherVisitor<R> {
 
     R visit(FirstOfMatcher matcher);
 
+    R visit(NothingMatcher matcher);
+
     R visit(OneOrMoreMatcher matcher);
 
     R visit(OptionalMatcher matcher);

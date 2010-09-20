@@ -40,34 +40,39 @@ package object scala {
   def group[T <: scala.Rule](rule: T) = rule.label("group")
 
   /**
-   * The EMPTY rule, a rule that always matches and consumes no input.
+   * The Empty rule, a rule that always matches and consumes no input.
    */
-  lazy val Empty: Rule0 = new EmptyMatcher().label("EMPTY")
+  lazy val EMPTY: Rule0 = new EmptyMatcher().label("EMPTY")
 
   /**
-   * The ANY rule, which matches any single character except EOI.
+   * The Any rule, which matches any single character except EOI.
    */
   lazy val ANY: Rule0 = new AnyMatcher().label("ANY")
 
   /**
-   * The EOI rule, which matches the End-Of-Input "character".
+   * The Eoi rule, which matches the End-Of-Input "character".
    */
-  lazy val Eoi: Rule0 = new CharMatcher(Characters.EOI).label("EOI")
+  lazy val EOI: Rule0 = new CharMatcher(Characters.EOI).label("EOI")
+
+  /**
+   * The Nothing rule, which matches the End-Of-Input "character".
+   */
+  lazy val NOTHING: Rule0 = new NothingMatcher().label("NOTHING")
 
   /**
    * A parser action removing the top element from the value stack.
    */
-  lazy val Pop1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label("Pop1Action")
+  lazy val POP1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label("Pop1Action")
 
   /**
    * A parser action removing the top two elements from the value stack.
    */
-  lazy val Pop2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label("Pop2Action")
+  lazy val POP2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label("Pop2Action")
 
   /**
    * A parser action removing the top three elements from the value stack.
    */
-  lazy val Pop3: PopRule3[Any, Any, Any] = new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label("Pop3Action")
+  lazy val POP3: PopRule3[Any, Any, Any] = new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label("Pop3Action")
 
   type RuleMethod = StackTraceElement
 

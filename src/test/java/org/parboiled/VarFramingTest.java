@@ -77,6 +77,7 @@ public class VarFramingTest extends AbstractTest {
                 "        Empty         : 0\n" +
                 "        FirstOf       : 0\n" +
                 "        FirstOfStrings: 0\n" +
+                "        Nothing       : 0\n" +
                 "        OneOrMore     : 1\n" +
                 "        Optional      : 1\n" +
                 "        Sequence      : 3\n" +

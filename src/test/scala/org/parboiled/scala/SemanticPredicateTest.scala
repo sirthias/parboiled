@@ -8,7 +8,7 @@ import testing.ParboiledTest
 class SemanticPredicateTest extends ParboiledTest with TestNGSuite {
 
   class TestParser extends Parser {
-    def Clause = rule { Number ~ " " ~ Number ~ " " ~ Number ~~~? (_ + _ == _) ~ Eoi ~~> (_ + _ - _) }
+    def Clause = rule { Number ~ " " ~ Number ~ " " ~ Number ~~~? (_ + _ == _) ~ EOI ~~> (_ + _ - _) }
 
     def Number = rule { oneOrMore("0" - "9") ~> (_.toInt) }
   }

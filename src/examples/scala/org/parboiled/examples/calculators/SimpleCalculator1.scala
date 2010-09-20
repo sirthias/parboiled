@@ -9,7 +9,7 @@ import org.parboiled.errors.{ErrorUtils, ParsingException}
  */
 class SimpleCalculator1 extends Parser {
 
-  def InputLine = rule { Expression ~ Eoi }
+  def InputLine = rule { Expression ~ EOI }
 
   def Expression: Rule1[Int] = rule {
     Term ~ zeroOrMore(

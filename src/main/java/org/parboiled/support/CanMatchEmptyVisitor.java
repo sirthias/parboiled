@@ -63,6 +63,10 @@ public class CanMatchEmptyVisitor implements MatcherVisitor<Boolean> {
         return false;
     }
 
+    public Boolean visit(NothingMatcher matcher) {
+        return false;
+    }
+
     public Boolean visit(OneOrMoreMatcher matcher) {
         Checks.ensure(!matcher.subMatcher.accept(this),
                 "Rule '%s' must not allow empty matches as sub-rule of an OneOrMore-rule", matcher.subMatcher);

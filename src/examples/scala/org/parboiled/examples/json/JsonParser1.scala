@@ -28,7 +28,7 @@ class JsonParser1 extends Parser {
   case object Null extends AstNode
 
   // the root rule
-  def Json = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ Eoi }
+  def Json = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ EOI }
 
   def JsonObject: Rule1[ObjectNode] = rule {
     "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> (ObjectNode(_))
