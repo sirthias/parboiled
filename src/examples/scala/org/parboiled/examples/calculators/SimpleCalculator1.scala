@@ -40,7 +40,7 @@ class SimpleCalculator1 extends Parser {
    */
   def calculate(expression: String): Int = {
     val parsingResult = ReportingParseRunner(InputLine).run(expression)
-    parsingResult.result match {
+    parsingResult.resultOption match {
       case Some(i) => i
       case None => throw new ParsingException("Invalid calculation expression:\n" +
               ErrorUtils.printParseErrors(parsingResult)) 

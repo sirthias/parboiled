@@ -27,6 +27,7 @@ package object scala {
   type Rule5[+A, +B, +C, +D, +E] = rules.Rule5[A, B, C, D, E]
   type Rule6[+A, +B, +C, +D, +E, +F] = rules.Rule6[A, B, C, D, E, F]
   type Rule7[+A, +B, +C, +D, +E, +F, +G] = rules.Rule7[A, B, C, D, E, F, G]
+  type CharRule = rules.CharRule
 
   /**
    * Creates an "AND" syntactic predicate according to the PEG formalism.

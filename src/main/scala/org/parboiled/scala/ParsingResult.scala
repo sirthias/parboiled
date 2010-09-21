@@ -14,8 +14,8 @@ object ParsingResult {
 
 class ParsingResult[+V](val inner: PParsingResult[V] @uncheckedVariance) {
   val matched: Boolean = inner.matched
-  val resultValue: V = inner.resultValue
-  val result: Option[V] = if (inner.resultValue != null) Some(inner.resultValue) else None
+  val result: V = inner.resultValue
+  val resultOption: Option[V] = if (inner.resultValue != null) Some(inner.resultValue) else None
   val parseErrors: List[ParseError] = List(inner.parseErrors.toArray(new Array[ParseError](inner.parseErrors.size)): _*)
   val parseTreeRoot: Node[V] @uncheckedVariance = inner.parseTreeRoot
   val valueStack: ValueStack[Any] = inner.valueStack.asInstanceOf[ValueStack[Any]]

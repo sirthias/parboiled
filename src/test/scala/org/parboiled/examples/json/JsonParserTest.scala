@@ -29,7 +29,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuite {
                   |}""".stripMargin
 
     val rootNode = parser.parseJson(json)
-    assertEquals(printAst(rootNode, ""),
+    assertEquals(printAst(rootNode),
        """|{
           |  "simpleKey" : "some value"
           |  "key with spaces" : null
@@ -62,7 +62,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuite {
     }
   }
 
-  def printAst(node: JsonParser1#AstNode, indent: String): String = node match {
+  def printAst(node: JsonParser1#AstNode, indent: String = ""): String = node match {
     case n: JsonParser1#ObjectNode => "{\n" + (for (sub <- n.members) yield printAst(sub, indent + "  ")).mkString + indent + "}"
     case n: JsonParser1#MemberNode => indent + '"' + n.key + "\" : " + printAst(n.value, indent) + "\n"
     case n: JsonParser1#ArrayNode => '[' + (for (sub <- n.elements) yield printAst(sub, indent + "  ")).mkString(", ") + "]"
