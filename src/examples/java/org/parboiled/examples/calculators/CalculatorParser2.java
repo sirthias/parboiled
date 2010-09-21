@@ -19,7 +19,7 @@ package org.parboiled.examples.calculators;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.annotations.SuppressNode;
+import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.examples.calculators.CalculatorParser2.CalcNode;
 import org.parboiled.support.Var;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
@@ -41,15 +41,15 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Term(),
                 ZeroOrMore(
-                    AnyOf("+-"),
-                    op.set(matchedChar()), // set the action variable to the matched operator char
-                    Term(),
+                        AnyOf("+-"),
+                        op.set(matchedChar()), // set the action variable to the matched operator char
+                        Term(),
 
-                    // create an AST node for the operation that was just matched
-                    // we consume the two top stack elements and replace them with a new AST node
-                    // we use an alternative technique to the one shown in CalculatorParser1 to reverse
-                    // the order of the two top value stack elements
-                    swap() && push(new CalcNode(op.get(), pop(), pop()))
+                        // create an AST node for the operation that was just matched
+                        // we consume the two top stack elements and replace them with a new AST node
+                        // we use an alternative technique to the one shown in CalculatorParser1 to reverse
+                        // the order of the two top value stack elements
+                        swap() && push(new CalcNode(op.get(), pop(), pop()))
                 )
         );
     }
@@ -59,15 +59,15 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                    AnyOf("*/"),
-                    op.set(matchedChar()), // set the action variable to the matched operator char
-                    Factor(),
+                        AnyOf("*/"),
+                        op.set(matchedChar()), // set the action variable to the matched operator char
+                        Factor(),
 
-                    // create an AST node for the operation that was just matched
-                    // we consume the two top stack elements and replace them with a new AST node
-                    // we use an alternative technique to the one shown in CalculatorParser1 to reverse
-                    // the order of the two top value stack elements
-                    swap() && push(new CalcNode(op.get(), pop(), pop()))
+                        // create an AST node for the operation that was just matched
+                        // we consume the two top stack elements and replace them with a new AST node
+                        // we use an alternative technique to the one shown in CalculatorParser1 to reverse
+                        // the order of the two top value stack elements
+                        swap() && push(new CalcNode(op.get(), pop(), pop()))
                 )
         );
     }
@@ -91,11 +91,11 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
         );
     }
 
+    @SuppressSubnodes
     public Rule Digits() {
         return OneOrMore(Digit());
     }
 
-    @SuppressNode
     public Rule Digit() {
         return CharRange('0', '9');
     }

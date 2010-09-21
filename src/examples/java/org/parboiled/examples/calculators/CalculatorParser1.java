@@ -18,7 +18,7 @@ package org.parboiled.examples.calculators;
 
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.annotations.SuppressNode;
+import org.parboiled.annotations.SuppressSubnodes;
 
 /**
  * A calculator parser building calculation results directly in the parsers value stack.
@@ -84,12 +84,12 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
                 push(Integer.parseInt(matchOrDefault("0")))
         );
     }
-    
+
+    @SuppressSubnodes
     Rule Digits() {
         return OneOrMore(Digit());
     }
 
-    @SuppressNode
     Rule Digit() {
         return CharRange('0', '9');
     }
