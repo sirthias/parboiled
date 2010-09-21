@@ -18,7 +18,7 @@ package org.parboiled.examples.java;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
-import org.parboiled.ReportingParseRunner;
+import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.support.ParsingResult;
 

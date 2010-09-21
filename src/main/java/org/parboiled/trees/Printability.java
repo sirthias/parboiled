@@ -20,8 +20,24 @@ package org.parboiled.trees;
  * Simple enum describing what to do with a particular graph node during graph printing.
  */
 public enum Printability {
+
+    /**
+     * The node is printed and its sub nodes descended into.
+     */
     PrintAndDescend,
+
+    /**
+     * The node itself is printed, but all its sub nodes are skipped.
+     */
     Print,
+
+    /**
+     * The node itself is not printed, but all its sub nodes are descended into.
+     */
     Descend,
+
+    /**
+     * Neither the node nor any of its sub nodes are printed.
+     */
     Skip
 }

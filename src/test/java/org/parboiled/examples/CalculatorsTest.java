@@ -17,7 +17,7 @@
 package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
-import org.parboiled.ReportingParseRunner;
+import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.examples.calculators.*;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.ParsingResult;
@@ -141,7 +141,7 @@ public class CalculatorsTest extends AbstractTest {
     }
 
     private void test(CalculatorParser parser, String input, String value) {
-        ParsingResult result = ReportingParseRunner.run(parser.InputLine(), input);
+        ParsingResult<?> result = ReportingParseRunner.run(parser.InputLine(), input);
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     printParseErrors(result) +

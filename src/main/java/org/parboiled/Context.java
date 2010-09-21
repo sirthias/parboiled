@@ -102,7 +102,7 @@ public interface Context<V> {
      * character rules. When fast string matching is enabled strings are matched at once, without relying on inner
      * CharacterMatchers. Even though this can lead to significant increases of parsing performance it does not play
      * well with error reporting and recovery, which relies on character level matches.
-     * Therefore the {@link ReportingParseRunner} and {@link RecoveringParseRunner} implementations only enable fast
+     * Therefore the {@link org.parboiled.parserunners.ReportingParseRunner} and {@link org.parboiled.parserunners.RecoveringParseRunner} implementations only enable fast
      * string matching during their basic first parsing run and disable it once the input has proven to contain errors.
      * </p>
      *

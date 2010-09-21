@@ -17,7 +17,7 @@
 package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
-import org.parboiled.RecoveringParseRunner;
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.examples.time.TimeParser;
 import org.testng.annotations.Test;
 

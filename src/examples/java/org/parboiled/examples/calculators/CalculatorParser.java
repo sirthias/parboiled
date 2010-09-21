@@ -18,7 +18,7 @@ package org.parboiled.examples.calculators;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
-import org.parboiled.RecoveringParseRunner;
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.ParsingResult;

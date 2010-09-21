@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatchHandler;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.support.*;
 
@@ -86,8 +89,8 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
     }
 
     /**
-     * A {@link MatchHandler} implementation that reports the {@link InvalidInputError} at a given error index.
-     * For the actual matching this handler relies on another, inner {@link MatchHandler} instance it delegates to.
+     * A {@link org.parboiled.MatchHandler} implementation that reports the {@link InvalidInputError} at a given error index.
+     * For the actual matching this handler relies on another, inner {@link org.parboiled.MatchHandler} instance it delegates to.
      */
     public static class Handler implements MatchHandler {
         private final IsSingleCharMatcherVisitor isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor();

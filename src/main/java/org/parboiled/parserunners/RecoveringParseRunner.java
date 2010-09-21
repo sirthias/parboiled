@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ObjectArrays;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.BaseParser;
+import org.parboiled.MatchHandler;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;

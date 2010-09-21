@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * the parse tree building can be further tweaked by decorating certain rules with {@link SuppressNode},
  * {@link SuppressSubnodes} and/or {@link SkipNode}. When this annotation is not present on the parser class the listed
  * rule annotations do not have any effect because no parse tree is build at all.</p>
- * <p>Note: If the input contains parse errors and you use the {@link org.parboiled.RecoveringParseRunner} parboiled
+ * <p>Note: If the input contains parse errors and you use the {@link org.parboiled.parserunners.RecoveringParseRunner} parboiled
  * will create parse tree nodes for all rules that have recorded parse errors (note that this always includes the root
  * rule)</p>
  */

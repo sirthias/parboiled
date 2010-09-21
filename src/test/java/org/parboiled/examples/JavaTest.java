@@ -18,7 +18,7 @@ package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
 import org.parboiled.ParserStatistics;
-import org.parboiled.RecoveringParseRunner;
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.common.FileUtils;
 import org.parboiled.common.StringUtils;

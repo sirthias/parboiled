@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
+import org.parboiled.Parboiled;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.common.FileUtils;

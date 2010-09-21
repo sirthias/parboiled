@@ -28,6 +28,16 @@ package object scala {
   type Rule6[+A, +B, +C, +D, +E, +F] = rules.Rule6[A, B, C, D, E, F]
   type Rule7[+A, +B, +C, +D, +E, +F, +G] = rules.Rule7[A, B, C, D, E, F, G]
   type CharRule = rules.CharRule
+  
+  type ParseRunner[V] = scala.parserunners.ParseRunner[V]
+  type BasicParseRunner[V] = scala.parserunners.BasicParseRunner[V]
+  val BasicParseRunner = scala.parserunners.BasicParseRunner
+  type RecoveringParseRunner[V] = scala.parserunners.RecoveringParseRunner[V]
+  val RecoveringParseRunner = scala.parserunners.RecoveringParseRunner
+  type ReportingParseRunner[V] = scala.parserunners.ReportingParseRunner[V]
+  val ReportingParseRunner = scala.parserunners.ReportingParseRunner
+  type TracingParseRunner[V] = scala.parserunners.TracingParseRunner[V]
+  val TracingParseRunner = scala.parserunners.TracingParseRunner
 
   /**
    * Creates an "AND" syntactic predicate according to the PEG formalism.

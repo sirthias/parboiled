@@ -2,11 +2,10 @@ package org.parboiled.scala
 
 import org.parboiled.matchers._
 import _root_.scala.collection.mutable
-import org.parboiled.{Action, Context}
+import org.parboiled.Context
 import org.parboiled.support.{ValueStack, Characters}
 import org.parboiled.common.StringUtils
-import rules._
-import Rule._
+import rules.Rule._
 
 /**
  * The main Parser trait for scala parboiled parsers. Defines the basic rule building methods as well as the

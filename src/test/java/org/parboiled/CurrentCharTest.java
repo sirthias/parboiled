@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 

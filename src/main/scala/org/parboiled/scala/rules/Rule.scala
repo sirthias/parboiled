@@ -71,10 +71,10 @@ abstract class Rule(val matcher: Matcher) {
 
 object Rule {
 
-  private[scala] val GetMatchedChar: (Context[Any] => Char) = _.getFirstMatchChar
-  private[scala] val GetMatch: (Context[Any] => String) = _.getMatch
-  private[scala] val Pop = (vs:ValueStack[Any], _:Int) => vs.pop
-  private[scala] val Peek: ((ValueStack[Any], Int) => Any) = _.peek(_)
+  private[parboiled] val GetMatchedChar: (Context[Any] => Char) = _.getFirstMatchChar
+  private[parboiled] val GetMatch: (Context[Any] => String) = _.getMatch
+  private[parboiled] val Pop = (vs:ValueStack[Any], _:Int) => vs.pop
+  private[parboiled] val Peek: ((ValueStack[Any], Int) => Any) = _.peek(_)
 
   private def addSub(subs: java.util.List[Matcher], element: Matcher): Array[org.parboiled.Rule] = {
     val count = subs.size
@@ -84,40 +84,40 @@ object Rule {
     array
   }
 
-  private[scala] def action(f: Context[Any] => Boolean) = new Action[Any] {
+  private[parboiled] def action(f: Context[Any] => Boolean) = new Action[Any] {
     def run(context: Context[Any]) = f(context)
   }
 
-  private[scala] def push(f: Context[Any] => Any) = (context: Context[Any]) => {
+  private[parboiled] def push(f: Context[Any] => Any) = (context: Context[Any]) => {
     context.getValueStack.push(f(context))
     true
   }
 
-  private[scala] def ok[A](f: A => Any) = (a: A) => { f(a); true }
+  private[parboiled] def ok[A](f: A => Any) = (a: A) => { f(a); true }
 
-  private[scala] def stack1[Z](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => {
+  private[parboiled] def stack1[Z](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => {
     get(c.getValueStack, 0).asInstanceOf[Z]
   }
 
-  private[scala] def stack2[Z, Y](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
+  private[parboiled] def stack2[Z, Y](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
           get(c.getValueStack, 0).asInstanceOf[Z],
           get(c.getValueStack, 1).asInstanceOf[Y]
           )
 
-  private[scala] def stack3[Z, Y, X](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
+  private[parboiled] def stack3[Z, Y, X](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
           get(c.getValueStack, 0).asInstanceOf[Z],
           get(c.getValueStack, 1).asInstanceOf[Y],
           get(c.getValueStack, 2).asInstanceOf[X]
           )
 
-  private[scala] def stack4[Z, Y, X, W](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
+  private[parboiled] def stack4[Z, Y, X, W](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
           get(c.getValueStack, 0).asInstanceOf[Z],
           get(c.getValueStack, 1).asInstanceOf[Y],
           get(c.getValueStack, 2).asInstanceOf[X],
           get(c.getValueStack, 3).asInstanceOf[W]
           )
 
-  private[scala] def stack5[Z, Y, X, W, V](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
+  private[parboiled] def stack5[Z, Y, X, W, V](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
           get(c.getValueStack, 0).asInstanceOf[Z],
           get(c.getValueStack, 1).asInstanceOf[Y],
           get(c.getValueStack, 2).asInstanceOf[X],
@@ -125,7 +125,7 @@ object Rule {
           get(c.getValueStack, 4).asInstanceOf[V]
           )
 
-  private[scala] def stack6[Z, Y, X, W, V, U](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
+  private[parboiled] def stack6[Z, Y, X, W, V, U](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
           get(c.getValueStack, 0).asInstanceOf[Z],
           get(c.getValueStack, 1).asInstanceOf[Y],
           get(c.getValueStack, 2).asInstanceOf[X],
@@ -134,7 +134,7 @@ object Rule {
           get(c.getValueStack, 5).asInstanceOf[U]
           )
 
-  private[scala] def stack7[Z, Y, X, W, V, U, T](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
+  private[parboiled] def stack7[Z, Y, X, W, V, U, T](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => (
           get(c.getValueStack, 0).asInstanceOf[Z],
           get(c.getValueStack, 1).asInstanceOf[Y],
           get(c.getValueStack, 2).asInstanceOf[X],
@@ -144,12 +144,12 @@ object Rule {
           get(c.getValueStack, 6).asInstanceOf[T]
           )
 
-  private[scala] def exec(f: () => Any) = (context: Context[Any]) => f match {
+  private[parboiled] def exec(f: () => Any) = (context: Context[Any]) => f match {
     case a: WithContextAction[Any] => a.action(context)
     case _ => f
   }
 
-  private[scala] def exec[Z, R](extract: Context[Any] => Z, f: Z => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[Z, R](extract: Context[Any] => Z, f: Z => R) = (context: Context[Any]) => {
     val z = extract(context)
     f match {
       case a: WithContextAction1[Z, R] => a.action(z, context)
@@ -157,7 +157,7 @@ object Rule {
     }
   }
 
-  private[scala] def exec[Y, Z, R](extract: Context[Any] => (Z, Y), f: (Y, Z) => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[Y, Z, R](extract: Context[Any] => (Z, Y), f: (Y, Z) => R) = (context: Context[Any]) => {
     val (z, y) = extract(context)
     f match {
       case a: WithContextAction2[Y, Z, R] => a.action(y, z, context)
@@ -165,7 +165,7 @@ object Rule {
     }
   }
 
-  private[scala] def exec[X, Y, Z, R](extract: Context[Any] => (Z, Y, X), f: (X, Y, Z) => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[X, Y, Z, R](extract: Context[Any] => (Z, Y, X), f: (X, Y, Z) => R) = (context: Context[Any]) => {
     val (z, y, x) = extract(context)
     f match {
       case a: WithContextAction3[X, Y, Z, R] => a.action(x, y, z, context)
@@ -173,7 +173,7 @@ object Rule {
     }
   }
 
-  private[scala] def exec[W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W), f: (W, X, Y, Z) => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W), f: (W, X, Y, Z) => R) = (context: Context[Any]) => {
     val (z, y, x, w) = extract(context)
     f match {
       case a: WithContextAction4[W, X, Y, Z, R] => a.action(w, x, y, z, context)
@@ -181,7 +181,7 @@ object Rule {
     }
   }
 
-  private[scala] def exec[V, W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W, V), f: (V, W, X, Y, Z) => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[V, W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W, V), f: (V, W, X, Y, Z) => R) = (context: Context[Any]) => {
     val (z, y, x, w, v) = extract(context)
     f match {
       case a: WithContextAction5[V, W, X, Y, Z, R] => a.action(v, w, x, y, z, context)
@@ -189,7 +189,7 @@ object Rule {
     }
   }
 
-  private[scala] def exec[U, V, W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W, V, U), f: (U, V, W, X, Y, Z) => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[U, V, W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W, V, U), f: (U, V, W, X, Y, Z) => R) = (context: Context[Any]) => {
     val (z, y, x, w, v, u) = extract(context)
     f match {
       case a: WithContextAction6[U, V, W, X, Y, Z, R] => a.action(u, v, w, x, y, z, context)
@@ -197,7 +197,7 @@ object Rule {
     }
   }
 
-  private[scala] def exec[T, U, V, W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W, V, U, T), f: (T, U, V, W, X, Y, Z) => R) = (context: Context[Any]) => {
+  private[parboiled] def exec[T, U, V, W, X, Y, Z, R](extract: Context[Any] => (Z, Y, X, W, V, U, T), f: (T, U, V, W, X, Y, Z) => R) = (context: Context[Any]) => {
     val (z, y, x, w, v, u, t) = extract(context)
     f match {
       case a: WithContextAction7[T, U, V, W, X, Y, Z, R] => a.action(t, u, v, w, x, y, z, context)

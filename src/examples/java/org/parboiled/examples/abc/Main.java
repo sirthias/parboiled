@@ -18,7 +18,7 @@ package org.parboiled.examples.abc;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
-import org.parboiled.RecoveringParseRunner;
+import org.parboiled.parserunners.RecoveringParseRunner;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import org.parboiled.support.ParsingResult;
 

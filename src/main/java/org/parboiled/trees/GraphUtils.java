@@ -100,7 +100,7 @@ public final class GraphUtils {
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter) {
-        return printTree(node, formatter, null);
+        return printTree(node, formatter, Filters.<T>all());
     }
 
     /**
@@ -114,15 +114,15 @@ public final class GraphUtils {
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter,
-                                                            Filter<T> filter) {
+                                                            @NotNull Filter<T> filter) {
         return node == null ? "" : printTree(node, formatter, "", new StringBuilder(), filter).toString();
     }
 
     // private recursion helper
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
                                                                     String indent, StringBuilder sb,
-                                                                    Filter<T> filter) {
-        Printability printability = filter != null ? filter.apply(node) : Printability.PrintAndDescend;
+                                                                    @NotNull Filter<T> filter) {
+        Printability printability = filter.apply(node);
         if (printability == Printability.PrintAndDescend || printability == Printability.Print) {
             String line = formatter.format(node);
             if (line != null) {

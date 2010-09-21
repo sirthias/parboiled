@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.MatchHandler;
+import org.parboiled.MatcherContext;
+import org.parboiled.Rule;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
-import org.parboiled.support.InputBuffer;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.ValueStack;
 
@@ -83,9 +85,9 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
     }
 
     /**
-     * A {@link MatchHandler} implementation keeping track of the furthest match in the current input buffer,
+     * A {@link org.parboiled.MatchHandler} implementation keeping track of the furthest match in the current input buffer,
      * and therefore the first location corresponding to an {@link InvalidInputError}.
-     * For the actual matching this handler relies on another, inner {@link MatchHandler} instance it delegates to.
+     * For the actual matching this handler relies on another, inner {@link org.parboiled.MatchHandler} instance it delegates to.
      */
     public static class Handler implements MatchHandler {
         private int errorIndex;

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
+import org.parboiled.Parboiled;
 import org.parboiled.common.FileUtils;
 import org.parboiled.examples.calculators.CalculatorParser;
 import org.parboiled.examples.calculators.CalculatorParser1;

@@ -27,6 +27,14 @@ import static org.parboiled.trees.GraphUtils.hasChildren;
 
 public class Filters {
 
+    public static <T extends GraphNode<T>> Filter<T> all() {
+        return new Filter<T>() {
+            public Printability apply(T from) {
+                return Printability.PrintAndDescend;
+            }
+        };
+    }
+
     public static <V> Filter<Node<V>> skipEmptyOptionalsAndZeroOrMores() {
         return new Filter<Node<V>>() {
             private final Filter<Node<V>> skipEmptyOptionals = skipEmptyOptionals();

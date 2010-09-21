@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
+import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
+import org.parboiled.Rule;
 import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.examples.java.JavaParser;
+import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;

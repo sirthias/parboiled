@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.parboiled.annotations.MemoMismatches;
+import org.parboiled.parserunners.ProfilingParseRunner;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;

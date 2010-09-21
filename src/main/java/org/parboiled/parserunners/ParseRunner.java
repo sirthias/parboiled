@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.support.InputBuffer;

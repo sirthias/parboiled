@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
 import org.parboiled.common.StringUtils;
 import org.parboiled.trees.Filter;
+import org.parboiled.trees.Filters;
 
 import java.util.Collection;
 import java.util.List;
@@ -325,8 +326,8 @@ public final class ParseTreeUtils {
      * @param parsingResult the parsing result containing the parse tree
      * @return a new String
      */
-    public static String printNodeTree(@NotNull ParsingResult<?> parsingResult) {
-        return printNodeTree(parsingResult, null);
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult) {
+        return printNodeTree(parsingResult, Filters.<Node<V>>all());
     }
 
     /**
@@ -338,7 +339,7 @@ public final class ParseTreeUtils {
      * @param filter        optional node filter selecting the nodes to print and/or descend into for tree printing
      * @return a new String
      */
-    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult, Filter<Node<V>> filter) {
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult, @NotNull Filter<Node<V>> filter) {
         return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
     }
 

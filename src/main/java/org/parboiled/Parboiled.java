@@ -31,7 +31,7 @@ public class Parboiled {
     protected Parboiled() {}
 
     /**
-     * <p>Creates a parser object whose rule creation methods can then be used with one of the {@link ParseRunner} implementations.</p>
+     * <p>Creates a parser object whose rule creation methods can then be used with one of the {@link org.parboiled.parserunners.ParseRunner} implementations.</p>
      * <p>Since parboiled needs to extend your parser with certain extra logic (e.g. to prevent infinite recursions
      * in recursive rule definitions) you cannot create your parser object yourself, but have to go through this method.
      * Also your parser class has to be derived from {@link BaseParser}. If you want to use a non-default constructor

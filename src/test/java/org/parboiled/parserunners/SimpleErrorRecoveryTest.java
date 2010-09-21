@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package org.parboiled;
+package org.parboiled.parserunners;
 
+import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
+import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
@@ -47,7 +50,6 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
         Rule Object() {
             return FirstOf("cats", "dogs", "animals", "cars", "building");
         }
-
     }
 
     @Test

@@ -16,8 +16,7 @@
 
 package org.parboiled.examples.java;
 
-import org.parboiled.Parboiled;
-import org.parboiled.ProfilingParseRunner;
+import org.parboiled.parserunners.ProfilingParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.support.ParsingResult;
 

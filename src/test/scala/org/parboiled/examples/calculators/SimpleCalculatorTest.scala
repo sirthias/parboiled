@@ -55,7 +55,7 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
   def testCalculations() {
     def test(input: String, expected: Int) {
       parse(parser.InputLine, input) {
-        assertEquals(resultValue, expected)
+        assertEquals(result, expected)
       }
     }
     test("1+2", 3)

@@ -16,6 +16,7 @@
 
 package org.parboiled;
 
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
@@ -56,7 +57,6 @@ public class IndentDedentTest extends AbstractTest {
             currentIndent = lineStartWhiteSpace.length();
             return true;
         }
-
     }
 
     @Test

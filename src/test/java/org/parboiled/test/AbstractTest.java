@@ -17,11 +17,12 @@
 package org.parboiled.test;
 
 import org.parboiled.Node;
-import org.parboiled.RecoveringParseRunner;
-import org.parboiled.ReportingParseRunner;
+import org.parboiled.parserunners.RecoveringParseRunner;
+import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.trees.Filter;
+import org.parboiled.trees.Filters;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -30,15 +31,15 @@ import static org.testng.Assert.fail;
 
 public abstract class AbstractTest {
 
-    public  ParsingResult test(Rule rule, String input, String expectedTree) {
+    public  ParsingResult<?> test(Rule rule, String input, String expectedTree) {
         return test(RecoveringParseRunner.run(rule, input), expectedTree);
     }
     
-    public  ParsingResult testWithoutRecovery(Rule rule, String input, String expectedTree) {
+    public  ParsingResult<?> testWithoutRecovery(Rule rule, String input, String expectedTree) {
         return test(ReportingParseRunner.run(rule, input), expectedTree);
     }
     
-    private  ParsingResult test(ParsingResult result, String expectedTree) {
+    private  ParsingResult<?> test(ParsingResult<?> result, String expectedTree) {
         if (result.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     printParseErrors(result) +
@@ -53,7 +54,7 @@ public abstract class AbstractTest {
 
     public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
                                          String expectedTree) {
-        return testFail(rule, input, expectedErrors, expectedTree, null);
+        return testFail(rule, input, expectedErrors, expectedTree, Filters.<Node<V>>all());
     }
 
     public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
