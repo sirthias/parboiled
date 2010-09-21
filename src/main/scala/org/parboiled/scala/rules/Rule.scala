@@ -21,6 +21,11 @@ abstract class Rule(val matcher: Matcher) {
   def ~(other: Rule0): this.type = withMatcher(append(other))
 
   /**
+   * Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.
+   */
+  def ~:?[R](f: Char => Boolean): this.type = withMatcher(append(exec(GetMatchedChar, f)))
+
+  /**
    * Creates a semantic predicate on the input text matched by the immediately preceding rule.
    */
   def ~?[R](f: String => Boolean): this.type = withMatcher(append(exec(GetMatch, f)))
@@ -66,9 +71,10 @@ abstract class Rule(val matcher: Matcher) {
 
 object Rule {
 
-  private[scala] val GetMatch = (context: Context[Any]) => context.getMatch
-  private[scala] val Pop = (vs: ValueStack[Any], down: Int) => vs.pop
-  private[scala] val Peek = (vs: ValueStack[Any], down: Int) => vs.peek(down)
+  private[scala] val GetMatchedChar: (Context[Any] => Char) = _.getFirstMatchChar
+  private[scala] val GetMatch: (Context[Any] => String) = _.getMatch
+  private[scala] val Pop = (vs:ValueStack[Any], _:Int) => vs.pop
+  private[scala] val Peek: ((ValueStack[Any], Int) => Any) = _.peek(_)
 
   private def addSub(subs: java.util.List[Matcher], element: Matcher): Array[org.parboiled.Rule] = {
     val count = subs.size

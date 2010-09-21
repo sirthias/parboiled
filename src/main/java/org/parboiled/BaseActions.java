@@ -48,11 +48,11 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
+     * <p>Returns the input text matched by the context immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
-     * @return the input text matched by the immediately preceeding subrule
+     * @return the input text matched by the immediately preceding subrule
      */
     public String match() {
         check();
@@ -60,13 +60,13 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
+     * <p>Returns the input text matched by the context immediately preceding the action expression that is currently
      * being evaluated. If the matched input text is empty the given default string is returned.
      * This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
      * @param defaultString the default string to return if the matched input text is empty
-     * @return the input text matched by the immediately preceeding subrule or the default string
+     * @return the input text matched by the immediately preceding subrule or the default string
      */
     public String matchOrDefault(String defaultString) {
         check();
@@ -75,24 +75,26 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the first character of the input text matched by the context immediately preceeding the action
+     * <p>Returns the first character of the input text matched by the context immediately preceding the action
      * expression that is currently being evaluated. This call can only be used in actions that are part of a Sequence
      * rule and are not at first position in this Sequence.</p>
+     * <p>If the immediately preceding rule did not match anything this method throws a GrammarException. If you need
+     * to able to handle that case use the getMatch() method.</p>
      *
-     * @return the first input char of the input text matched by the immediately preceeding subrule or null,
-     *         if the previous rule matched no characters
+     * @return the first input char of the input text matched by the immediately preceding subrule or null,
+     *         if the previous rule matched nothing
      */
-    public Character matchedChar() {
-        String match = match();
-        return org.parboiled.common.StringUtils.isEmpty(match) ? null : match.charAt(0);
+    public char matchedChar() {
+        check();
+        return context.getFirstMatchChar();
     }
 
     /**
-     * <p>Returns the start index of the matched rule immediately preceeding the action expression that is currently
+     * <p>Returns the start index of the matched rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
-     * @return the start index of the context immediately preceeding current action
+     * @return the start index of the context immediately preceding current action
      */
     public int matchStart() {
         check();
@@ -100,11 +102,11 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the end location of the matched rule immediately preceeding the action expression that is currently
+     * <p>Returns the end location of the matched rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
-     * @return the end index of the context immediately preceeding current action, i.e. the index of the character
+     * @return the end index of the context immediately preceding current action, i.e. the index of the character
      *         immediately following the last matched character
      */
     public int matchEnd() {

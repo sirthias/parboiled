@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.StringUtils;
 import org.parboiled.errors.BasicParseError;
+import org.parboiled.errors.GrammarException;
 import org.parboiled.errors.ParseError;
 import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
@@ -183,6 +184,14 @@ public class MatcherContext<V> implements Context<V> {
         MatcherContext prevContext = subContext;
         return hasError ? ParseTreeUtils.getNodeText(prevContext.node, inputBuffer) :
                 inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
+    }
+
+    public char getFirstMatchChar() {
+        checkActionContext();
+        int ix = subContext.startIndex;
+        if (subContext.currentIndex <= ix)
+            throw new GrammarException("getFirstMatchChar called but previous rule did not match anything");
+        return inputBuffer.charAt(ix);
     }
 
     public int getMatchStartIndex() {

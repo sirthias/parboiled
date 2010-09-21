@@ -142,29 +142,40 @@ public interface Context<V> {
     boolean hasError();
 
     /**
-     * <p>Returns the input text matched by the context immediately preceeding the action expression that is currently
+     * <p>Returns the input text matched by the context immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
-     * @return the input text matched by the immediately preceeding subcontext
+     * @return the input text matched by the immediately preceding subcontext
      */
     String getMatch();
 
     /**
-     * <p>Returns the start index of the context immediately preceeding the action expression that is currently
+     * <p>Returns the first character of the input text matched by the context immediately preceding the action
+     * expression that is currently being evaluated. This call can only be used in actions that are part of a Sequence
+     * rule and are not at first position in this Sequence.</p>
+     * <p>If the immediately preceding rule did not match anything this method throws a GrammarException. If you need
+     * to able to handle that case use the getMatch() method.</p>
+     *
+     * @return the input text matched by the immediately preceding subcontext
+     */
+    char getFirstMatchChar();
+
+    /**
+     * <p>Returns the start index of the context immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
-     * @return the start index of the context immediately preceeding current action
+     * @return the start index of the context immediately preceding current action
      */
     int getMatchStartIndex();
 
     /**
-     * <p>Returns the end index of the context immediately preceeding the action expression that is currently
+     * <p>Returns the end index of the context immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
-     * @return the end index of the context immediately preceeding current action, i.e. the index of the character
+     * @return the end index of the context immediately preceding current action, i.e. the index of the character
      *         immediately following the last matched character
      */
     int getMatchEndIndex();
