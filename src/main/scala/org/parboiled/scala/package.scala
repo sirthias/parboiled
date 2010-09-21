@@ -13,20 +13,20 @@ package object scala {
 
   // type aliases
   type Rule = rules.Rule
-  type PopRule1[Z] = rules.PopRule1[Z]
-  type PopRule2[Y, Z] = rules.PopRule2[Y, Z]
-  type PopRule3[X, Y, Z] = rules.PopRule3[X, Y, Z]
-  type ReductionRule1[Z, R] = rules.ReductionRule1[Z, R]
-  type ReductionRule2[Y, Z, R] = rules.ReductionRule2[Y, Z, R]
-  type ReductionRule3[X, Y, Z, R] = rules.ReductionRule3[X, Y, Z, R]
+  type PopRule1[-Z] = rules.PopRule1[Z]
+  type PopRule2[-Y, -Z] = rules.PopRule2[Y, Z]
+  type PopRule3[-X, -Y, -Z] = rules.PopRule3[X, Y, Z]
+  type ReductionRule1[-Z, +R] = rules.ReductionRule1[Z, R]
+  type ReductionRule2[-Y, -Z, +R] = rules.ReductionRule2[Y, Z, R]
+  type ReductionRule3[-X, -Y, -Z, +R] = rules.ReductionRule3[X, Y, Z, R]
   type Rule0 = rules.Rule0
-  type Rule1[A] = rules.Rule1[A]
-  type Rule2[A, B] = rules.Rule2[A, B]
-  type Rule3[A, B, C] = rules.Rule3[A, B, C]
-  type Rule4[A, B, C, D] = rules.Rule4[A, B, C, D]
-  type Rule5[A, B, C, D, E] = rules.Rule5[A, B, C, D, E]
-  type Rule6[A, B, C, D, E, F] = rules.Rule6[A, B, C, D, E, F]
-  type Rule7[A, B, C, D, E, F, G] = rules.Rule7[A, B, C, D, E, F, G]
+  type Rule1[+A] = rules.Rule1[A]
+  type Rule2[+A, +B] = rules.Rule2[A, B]
+  type Rule3[+A, +B, +C] = rules.Rule3[A, B, C]
+  type Rule4[+A, +B, +C, +D] = rules.Rule4[A, B, C, D]
+  type Rule5[+A, +B, +C, +D, +E] = rules.Rule5[A, B, C, D, E]
+  type Rule6[+A, +B, +C, +D, +E, +F] = rules.Rule6[A, B, C, D, E, F]
+  type Rule7[+A, +B, +C, +D, +E, +F, +G] = rules.Rule7[A, B, C, D, E, F, G]
 
   /**
    * Creates an "AND" syntactic predicate according to the PEG formalism.

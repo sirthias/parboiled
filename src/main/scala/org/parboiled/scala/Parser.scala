@@ -72,12 +72,12 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
    */
-  def optional(sub: Rule0) = new Rule0(new OptionalMatcher(sub.matcher).label("Optional"))
+  def optional(sub: Rule0): Rule0 = new Rule0(new OptionalMatcher(sub.matcher).label("Optional"))
 
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
    */
-  def optional[Z](sub: ReductionRule1[Z, Z]) =
+  def optional[Z](sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] =
     new ReductionRule1[Z, Z](new OptionalMatcher(sub.matcher).label("Optional"))
 
   /**
@@ -88,12 +88,12 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
    */
-  def zeroOrMore(sub: Rule0) = new Rule0(new ZeroOrMoreMatcher(sub.matcher).label("ZeroOrMore"))
+  def zeroOrMore(sub: Rule0): Rule0 = new Rule0(new ZeroOrMoreMatcher(sub.matcher).label("ZeroOrMore"))
 
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
    */
-  def zeroOrMore[Z](sub: ReductionRule1[Z, Z]) =
+  def zeroOrMore[Z](sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] =
     new ReductionRule1[Z, Z](new ZeroOrMoreMatcher(sub.matcher).label("ZeroOrMore"))
 
   /**
@@ -133,12 +133,12 @@ trait Parser {
   /**
    *  Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
    */
-  def oneOrMore(sub: Rule0) = new Rule0(new OneOrMoreMatcher(sub.matcher).label("OneOrMore"))
+  def oneOrMore(sub: Rule0): Rule0 = new Rule0(new OneOrMoreMatcher(sub.matcher).label("OneOrMore"))
 
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
    */
-  def oneOrMore[Z](sub: ReductionRule1[Z, Z]) =
+  def oneOrMore[Z](sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] =
     new ReductionRule1[Z, Z](new OneOrMoreMatcher(sub.matcher).label("OneOrMore"))
 
   /**
@@ -254,7 +254,7 @@ trait Parser {
   /**
    * Creates a rule that matches the given character.
    */
-  def ch(c: Char) = new CharRule(c)
+  def ch(c: Char): CharRule = new CharRule(c)
 
   /**
    * Creates a rule that matches the given string.
@@ -306,36 +306,38 @@ trait Parser {
   /**
    * Creates a simple semantic predicate.
    */
-  def test(f: => Boolean) = toTestAction((c: Context[Any]) => f)
+  def test(f: => Boolean): Rule0 = toTestAction((c: Context[Any]) => f)
 
   /**
    * Creates a simple parser action.
    */
-  def run(f: => Unit) = toRunAction((c: Context[Any]) => f)
+  def run(f: => Unit): Rule0 = toRunAction((c: Context[Any]) => f)
 
   /**
    * Create a parser action whose result value is pushed onto the value stack.
    */
-  def push[A](f: => A) = new Rule1[A](new ActionMatcher(action(ok(_.getValueStack.push(f)))).label("Push1Action"))
+  def push[A](f: => A): Rule1[A] = new Rule1[A](new ActionMatcher(action(ok(_.getValueStack.push(f)))).label("Push1Action"))
 
   /**
    * Create a parser action whose two result values are pushed onto the value stack.
    */
-  def push[A, B](a: => A, b: => B) = new Rule2[A, B](new ActionMatcher(action(ok({ (c: Context[Any]) =>
-    val vs: ValueStack[Any] = c.getValueStack
-    vs.push(a)
-    vs.push(b)
-  }))).label("Push2Action"))
+  def push[A, B](a: => A, b: => B): Rule2[A, B] = new Rule2[A, B](
+    new ActionMatcher(action(ok({ (c: Context[Any]) =>
+      val vs: ValueStack[Any] = c.getValueStack
+      vs.push(a)
+      vs.push(b)
+    }))).label("Push2Action"))
 
   /**
    * Create a parser action whose three result values are pushed onto the value stack.
    */
-  def push[A, B, C](a: => A, b: => B, c: => C) = new Rule3[A, B, C](new ActionMatcher(action(ok({ (c: Context[Any]) =>
-    val vs: ValueStack[Any] = c.getValueStack
-    vs.push(a)
-    vs.push(b)
-    vs.push(c)
-  }))).label("Push3Action"))
+  def push[A, B, C](a: => A, b: => B, c: => C): Rule3[A, B, C] = new Rule3[A, B, C](
+    new ActionMatcher(action(ok({ (c: Context[Any]) =>
+      val vs: ValueStack[Any] = c.getValueStack
+      vs.push(a)
+      vs.push(b)
+      vs.push(c)
+    }))).label("Push3Action"))
 
   def withContext[R](f: Context[_] => R) = new WithContextAction[R](f)
   def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction1[A, R](f)
