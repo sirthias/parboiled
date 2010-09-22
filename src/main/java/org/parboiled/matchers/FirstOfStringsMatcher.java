@@ -19,9 +19,13 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.errors.GrammarException;
 import org.parboiled.support.InputBuffer;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * A specialized FirstOfMatcher that handles FirstOf(string, string, ...) rules much faster that the regular
@@ -31,13 +35,16 @@ import java.util.*;
 public class FirstOfStringsMatcher extends FirstOfMatcher {
 
     // a node in the character tree
+
     static class Record {
         final char[] chars; // the sub characters of this node
         final Record[] subs; // the sub records corresponding to the respective character
+        final boolean complete; // flag indicating that the path up to this record also constitutes a valid match
 
-        private Record(char[] chars, Record[] subs) {
+        private Record(char[] chars, Record[] subs, boolean complete) {
             this.chars = chars;
             this.subs = subs;
+            this.complete = complete;
         }
     }
 
@@ -46,6 +53,7 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
 
     public FirstOfStringsMatcher(@NotNull Rule[] subRules, char[][] strings) {
         super(subRules);
+        verify(strings);
         this.strings = strings;
         root = createRecord(0, strings);
     }
@@ -57,28 +65,34 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
         }
 
         Record rec = root;
-        int endIx = context.getCurrentIndex();
+        int ix = context.getCurrentIndex();
         InputBuffer buffer = context.getInputBuffer();
         char c = context.getCurrentChar();
+        int endIx = -1;
 
         loop:
         while (true) {
             char[] chars = rec.chars;
             for (int i = 0; i < chars.length; i++) {
                 if (c == chars[i]) {
-                    endIx++;
-                    Record sub = rec.subs[i];
-                    if (sub == null) {
-                        break loop; // success, we complected a tree path to a leave
+                    ix++;
+                    rec = rec.subs[i];
+                    if (rec == null) { // success, we complected a tree path to a leave
+                        endIx = ix;
+                        break loop;
                     }
-                    rec = sub;
-                    c = buffer.charAt(endIx);
+                    if (rec.complete) { // we completed a valid match path, but continue looking for a longer match
+                        endIx = ix;
+                    }
+                    c = buffer.charAt(ix);
                     continue loop;
                 }
             }
-            // we checked all sub branches of the current node, none matched, therefore fail
-            return false;
+            // we checked all sub branches of the current node, none matched, so we are done
+            break;
         }
+
+        if (endIx == -1) return false; // we matched no complete path, so fail
 
         context.advanceIndex(endIx - context.getCurrentIndex());
         context.createNode();
@@ -87,8 +101,10 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
 
     static Record createRecord(int pos, char[][] strings) {
         Map<Character, Set<char[]>> map = new TreeMap<Character, Set<char[]>>();
+        boolean complete = false;
         for (char[] s : strings) {
-            if (s == null || s.length <= pos) continue;
+            if (s.length == pos) complete = true;
+            if (s.length <= pos) continue;
             char c = s[pos];
             Set<char[]> charStrings = map.get(c);
             if (charStrings == null) {
@@ -107,7 +123,32 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
             chars[i] = entry.getKey();
             subs[i++] = createRecord(pos + 1, entry.getValue().toArray(new char[entry.getValue().size()][]));
         }
-        return new Record(chars, subs);
+        return new Record(chars, subs, complete);
     }
 
+    // make sure that a string is no prefix of another string later in the array
+    // this would cause the second string to never match without fast-string-matching,
+    // but match in the fast implementation
+
+    private static void verify(char[][] strings) {
+        int length = strings.length;
+        for (int i = 0; i < length; i++) {
+            char[] a = strings[i];
+            inner:
+            for (int j = i + 1; j < length; j++) {
+                char[] b = strings[j];
+                if (b.length < a.length) continue;
+                for (int k = 0; k < a.length; k++) {
+                    if (a[k] != b[k]) continue inner;
+                }
+                String sa = '"' + String.valueOf(a) + '"';
+                String sb = '"' + String.valueOf(b) + '"';
+                String msg = a.length == b.length ? sa + " is specified twice in a FirstOf(String...)" : sa +
+                        " is a prefix of " + sb + " in a FirstOf(String...) and comes before " +
+                        sb + ", which prevents " + sb +
+                        " from ever matching! You should reverse the order of the two alternatives.";
+                throw new GrammarException(msg);
+            }
+        }
+    }
 }

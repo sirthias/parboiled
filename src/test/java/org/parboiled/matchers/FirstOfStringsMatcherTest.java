@@ -16,11 +16,33 @@
 
 package org.parboiled.matchers;
 
+import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
+import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.errors.GrammarException;
+import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
-public class FirstOfStringsMatcherTest {
+public class FirstOfStringsMatcherTest extends AbstractTest {
+
+    @BuildParseTree
+    static class Parser extends BaseParser<Object> {
+
+        public Rule Test1() {
+            return FirstOf("Abc", "Ab", "Bcd");
+        }
+
+        public Rule Test2() {
+            return FirstOf("Abc", "Abd", "Bcd");
+        }
+
+        public Rule Test3() {
+            return FirstOf("Ab", "Abc", "Bcd");
+        }
+    }
 
     @Test
     public void testCreateRecords() {
@@ -30,6 +52,7 @@ public class FirstOfStringsMatcherTest {
                 "Beta",
                 "Bertram",
                 "Claudia",
+                "ClaudiaVon",
                 "Charlie",
                 "Delta",
                 "Delto",
@@ -41,11 +64,29 @@ public class FirstOfStringsMatcherTest {
                 "  ta\n" +
                 "C\n" +
                 " harlie\n" +
-                " laudia\n" +
+                " laudia|Von\n" +
                 "Delt\n" +
                 "    a\n" +
                 "    o\n" +
                 "x\n");
+    }
+
+    @Test
+    public void testFirstOfStringsMatcher() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithoutRecovery(parser.Test1(), "Abc", "[Test1] 'Abc'\n");
+        testWithoutRecovery(parser.Test1(), "Ab", "[Test1] 'Ab'\n");
+        testWithoutRecovery(parser.Test1(), "Bcd", "[Test1] 'Bcd'\n");
+
+        testWithoutRecovery(parser.Test2(), "Abc", "[Test2] 'Abc'\n");
+        testWithoutRecovery(parser.Test2(), "Abd", "[Test2] 'Abd'\n");
+        testWithoutRecovery(parser.Test2(), "Bcd", "[Test2] 'Bcd'\n");
+    }
+
+    @Test(expectedExceptions = GrammarException.class)
+    public void testFirstOfStringsFail() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithoutRecovery(parser.Test3(), "Abc", "");
     }
 
     private char[][] toArrayOfCharArray(String... strings) {
@@ -61,6 +102,7 @@ public class FirstOfStringsMatcherTest {
             sb.append('\n');
             return;
         }
+        if (rec.complete) sb.append('|');
         if (rec.chars.length == 1) {
             sb.append(rec.chars[0]);
             printRecord(rec.subs[0], indent + " ", sb);

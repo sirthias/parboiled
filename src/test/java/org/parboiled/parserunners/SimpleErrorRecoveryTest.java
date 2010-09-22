@@ -44,7 +44,7 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
         }
 
         Rule Verb() {
-            return FirstOf(" has ", " have ", " digs ", " dig ", " loves ", " love ", " hates ", " hates ");
+            return FirstOf(" has ", " have ", " digs ", " dig ", " loves ", " love ", " hates ");
         }
 
         Rule Object() {
