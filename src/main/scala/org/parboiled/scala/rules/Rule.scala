@@ -16,7 +16,7 @@ abstract class Rule(val matcher: Matcher) {
   /**
    * Creates a "NOT" syntactic predicate according to the PEG formalism.
    */
-  def unary_!(): Rule0 = new TestNotMatcher(matcher)
+  def unary_!(): Rule0 = new TestNotMatcher(matcher).label("TestNot")
 
   def ~(other: Rule0): this.type = withMatcher(append(other))
 

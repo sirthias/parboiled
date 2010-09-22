@@ -48,7 +48,7 @@ package object scala {
    * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole
    * group rather than only the immediately preceding sub rule.
    */
-  def group[T <: scala.Rule](rule: T) = rule.label("group")
+  def group[T <: scala.Rule](rule: T) = rule.label("<group>")
 
   /**
    * The Empty rule, a rule that always matches and consumes no input.
