@@ -19,20 +19,24 @@ package org.parboiled.parserunners;
 import org.parboiled.Parboiled;
 import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.testng.Assert.assertEquals;
 
-public class TracingParseRunnerTest extends AbstractTest {
+public class TracingParseRunnerTest {
 
     @Test
     public void testTracingParseRunner() {
         CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
         TracingParseRunner runner = new TracingParseRunner(parser.InputLine());
-        ParsingResult result = runner.run("2*(4+5)");
+        ParsingResult result = runner.run("2*(4+5");
 
-        assertEquals(result.resultValue, 18);
+        assertEquals(printParseErrors(result), "" +
+                "Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 7):\n" +
+                "2*(4+5\n" +
+                "      ^\n");
+
         assertEquals(runner.getLog(), "" +
                 "Starting match on rule 'InputLine'\n" +
                 "InputLine/Expression/Term/Factor/Number/Digits/Digit: matched, cursor is at line 1, col 2: \"2\"\n" +
@@ -83,28 +87,24 @@ public class TracingParseRunnerTest extends AbstractTest {
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/')': matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Term_Action1: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/'*': failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/'/': failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/Term: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence/'+': failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence/'-': failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression/ZeroOrMore: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/Expression: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine/EOI: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n" +
-                "InputLine: matched, cursor is at line 1, col 8: \"2*(4+5)\"\n");
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/')': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor: failed, cursor is at line 1, col 3: \"2*\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 3: \"2*\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/'/': failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/Term/ZeroOrMore: matched, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/Term: matched, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence/'+': failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence/'-': failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression/ZeroOrMore: matched, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/Expression: matched, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine/EOI: failed, cursor is at line 1, col 2: \"2\"\n" +
+                "InputLine: failed, cursor is at line 1, col 2: \"2\"\n");
     }
 
 }
