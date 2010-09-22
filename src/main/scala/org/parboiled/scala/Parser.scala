@@ -266,7 +266,8 @@ trait Parser {
   def str(chars: Array[Char]): Rule0 = chars.length match {
     case 0 => EMPTY
     case 1 => ch(chars(0))
-    case _ => new Rule0(new StringMatcher(chars.map(ch).map(_.matcher), chars).label("\"" + chars + '"'))
+    case _ => new Rule0(
+      new StringMatcher(wrapArray(chars).map(ch).map(_.matcher).toArray, chars).label("\"" + String.valueOf(chars) + '"'))
   }
 
   /**

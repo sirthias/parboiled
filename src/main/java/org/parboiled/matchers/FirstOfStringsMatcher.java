@@ -42,9 +42,11 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
     }
 
     private final Record root; // the root of the character tree
+    public final char[][] strings;
 
     public FirstOfStringsMatcher(@NotNull Rule[] subRules, char[][] strings) {
         super(subRules);
+        this.strings = strings;
         root = createRecord(0, strings);
     }
 

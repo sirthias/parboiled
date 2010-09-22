@@ -63,6 +63,14 @@ abstract class Rule(val matcher: Matcher) {
   protected def appendChoice(other: Rule): Matcher = appendChoice(other.matcher)
 
   protected def appendChoice(other: Matcher): Matcher = (matcher match {
+    case m: StringMatcher => other match {
+      case o: StringMatcher => new FirstOfStringsMatcher(Array(m, o), Array(m.characters, o.characters))
+      case _ => new FirstOfMatcher(Array(matcher, other))
+    }
+    case m: FirstOfStringsMatcher if (m.getLabel == "FirstOf") => other match {
+      case o: StringMatcher => new FirstOfStringsMatcher(addSub(m.getChildren, o), addSub(m.strings, o.characters))
+      case _ => new FirstOfMatcher(addSub(m.getChildren, other))
+    }
     case m: FirstOfMatcher if (m.getLabel == "FirstOf") => new FirstOfMatcher(addSub(m.getChildren, other))
     case _ => new FirstOfMatcher(Array(matcher, other))
   }).label("FirstOf")
@@ -81,6 +89,14 @@ object Rule {
     val array = new Array[org.parboiled.Rule](count + 1)
     subs.toArray(array)
     array(count) = element
+    array
+  }
+
+  private def addSub(subs: Array[Array[Char]], characters: Array[Char]): Array[Array[Char]] = {
+    val count = subs.length
+    val array = new Array[Array[Char]](count + 1)
+    Array.copy(subs, 0, array, 0, count)
+    array(count) = characters
     array
   }
 
