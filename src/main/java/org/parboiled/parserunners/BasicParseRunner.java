@@ -39,7 +39,7 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
     protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
     protected final ValueStack<V> valueStack;
     protected final Object initialValueStackSnapshot;
-    protected final Matcher rootMatcher;
+    public final Matcher rootMatcher;
     protected InputBuffer inputBuffer;
     protected MatcherContext<V> rootContext;
     protected boolean matched;

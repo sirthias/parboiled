@@ -16,8 +16,8 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Predicate;
 import org.objectweb.asm.tree.MethodNode;
+import org.parboiled.common.Predicate;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

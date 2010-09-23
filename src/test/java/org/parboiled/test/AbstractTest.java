@@ -17,12 +17,12 @@
 package org.parboiled.test;
 
 import org.parboiled.Node;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.Predicates;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.trees.Filter;
-import org.parboiled.trees.Filters;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -54,13 +54,15 @@ public abstract class AbstractTest {
 
     public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
                                          String expectedTree) {
-        return testFail(rule, input, expectedErrors, expectedTree, Filters.<Node<V>>all());
+        return testFail(rule, input, expectedErrors, expectedTree, Predicates.<Node<V>>alwaysTrue(),
+                Predicates.<Node<V>>alwaysTrue());
     }
 
     public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors,
-                                         String expectedTree, Filter<Node<V>> filter) {
+                                         String expectedTree, Predicate<Node<V>> nodeFilter,
+                                         Predicate<Node<V>> subTreeFilter) {
         ParsingResult<V> result = testFail(rule, input, expectedErrors);
-        assertEqualsMultiline(printNodeTree(result, filter), expectedTree);
+        assertEqualsMultiline(printNodeTree(result, nodeFilter, subTreeFilter), expectedTree);
         return result;
     }
 

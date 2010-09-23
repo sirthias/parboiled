@@ -4,9 +4,11 @@ import org.testng.annotations.Test
 import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
-import org.parboiled.trees.{Filters, GraphUtils}
-import org.parboiled.support.ToStringFormatter
+import org.parboiled.trees.GraphUtils
 import org.parboiled.scala.testing.ParboiledTest
+import org.parboiled.support.{Filters, ToStringFormatter}
+import org.parboiled.common.Predicates
+import org.parboiled.scala.parserunners.ReportingParseRunner
 
 class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
   val parser = new SimpleCalculator1().withParseTreeBuilding()
@@ -14,7 +16,8 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testSimpleCalculatorMatcherBuilding() {
-    assertEquals(GraphUtils.printTree(parser.InputLine.matcher, new ToStringFormatter[Matcher](), Filters.preventLoops),
+    assertEquals(GraphUtils.printTree(parser.InputLine.matcher, new ToStringFormatter[Matcher](),
+      Predicates.alwaysTrue(), Filters.preventLoops),
        """|InputLine
           |  Expression
           |    Term
@@ -54,7 +57,7 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
   @Test
   def testCalculations() {
     def test(input: String, expected: Int) {
-      parse(parser.InputLine, input) {
+      parse(ReportingParseRunner(parser.InputLine), input) {
         assertEquals(result, expected)
       }
     }

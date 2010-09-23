@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.parboiled.trees;
+package org.parboiled.common;
 
-import com.google.common.base.Function;
+public interface Predicate<T> {
 
-/**
- * Utility interface defining a filters for graph printing.
- *
- * @param <T> the type of {@link GraphNode} this Filter is operating on
- */
-public interface Filter<T extends GraphNode<T>> extends Function<T, Printability> {}
+  boolean apply(T input);
+    
+}

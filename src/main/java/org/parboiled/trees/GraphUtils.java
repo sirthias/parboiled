@@ -18,6 +18,8 @@ package org.parboiled.trees;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Formatter;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.Predicates;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -100,40 +102,43 @@ public final class GraphUtils {
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter) {
-        return printTree(node, formatter, Filters.<T>all());
+        return printTree(node, formatter, Predicates.<T>alwaysTrue(), Predicates.<T>alwaysTrue());
     }
 
     /**
      * Creates a string representation of the graph reachable from the given node using the given formatter.
-     * If a non-null filter function is given its result is used to determine whether a particular node is
-     * print and/or its subtree printed.
+     * The given filter predicated determines whether a particular node (and its subtree respectively) is to be
+     * printed or not.
      *
-     * @param node      the root node
-     * @param formatter the node formatter
-     * @param filter    optional node filter selecting the nodes to descend into for tree printing
+     * @param node          the root node
+     * @param formatter     the node formatter
+     * @param nodeFilter    the predicate selecting the nodes to print
+     * @param subTreeFilter the predicate determining whether to descend into a given nodes subtree or not
      * @return a new string
      */
     public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter,
-                                                            @NotNull Filter<T> filter) {
-        return node == null ? "" : printTree(node, formatter, "", new StringBuilder(), filter).toString();
+                                                            @NotNull Predicate<T> nodeFilter,
+                                                            @NotNull Predicate<T> subTreeFilter) {
+        return node == null ? "" :
+                printTree(node, formatter, "", new StringBuilder(), nodeFilter, subTreeFilter).toString();
     }
 
     // private recursion helper
+
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
                                                                     String indent, StringBuilder sb,
-                                                                    @NotNull Filter<T> filter) {
-        Printability printability = filter.apply(node);
-        if (printability == Printability.PrintAndDescend || printability == Printability.Print) {
+                                                                    @NotNull Predicate<T> nodeFilter,
+                                                                    @NotNull Predicate<T> subTreeFilter) {
+        if (nodeFilter.apply(node)) {
             String line = formatter.format(node);
             if (line != null) {
                 sb.append(indent).append(line).append("\n");
                 indent += "  ";
             }
         }
-        if ((printability == Printability.PrintAndDescend || printability == Printability.Descend) &&
-                hasChildren(node)) {
+        if (subTreeFilter.apply(node)) {
             for (T sub : node.getChildren()) {
-                printTree(sub, formatter, indent, sb, filter);
+                printTree(sub, formatter, indent, sb, nodeFilter, subTreeFilter);
             }
         }
         return sb;

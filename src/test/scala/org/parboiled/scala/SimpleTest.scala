@@ -42,7 +42,7 @@ class SimpleTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testSimpleParse() {
-    parse(parser.Clause, "1+2a") {
+    parse(ReportingParseRunner(parser.Clause), "1+2a") {
       assertEquals(parseTree,
          """|[Clause] '1+2a'
             |  [Digit] '1'

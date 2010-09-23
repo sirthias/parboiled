@@ -16,8 +16,8 @@
 
 package org.parboiled.support;
 
-import com.google.common.base.Predicate;
 import org.parboiled.Node;
+import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 
 /**

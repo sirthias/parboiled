@@ -16,11 +16,13 @@
 
 package org.parboiled.parserunners;
 
+import org.parboiled.Node;
 import org.parboiled.Parboiled;
+import org.parboiled.common.Predicates;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.test.AbstractTest;
 import org.parboiled.common.FileUtils;
-import org.parboiled.trees.Filters;
+import org.parboiled.support.Filters;
 import org.testng.annotations.Test;
 
 public class JavaRecoveryTest extends AbstractTest {
@@ -53,7 +55,8 @@ public class JavaRecoveryTest extends AbstractTest {
     private void runTest(JavaParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser.CompilationUnit(), s[0], s[1], s[2], Filters.skipEmptyOptionalsAndZeroOrMores());
+            testFail(parser.CompilationUnit(), s[0], s[1], s[2], Filters.SKIP_EMPTY_OPTS_AND_ZOMS,
+                    Predicates.<Node<Object>>alwaysTrue());
         }
     }
 

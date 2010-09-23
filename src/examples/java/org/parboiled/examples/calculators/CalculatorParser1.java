@@ -32,7 +32,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         return Sequence(Expression(), EOI);
     }
 
-    Rule Expression() {
+    public Rule Expression() {
         return Sequence(
                 Term(), // a successful match of a Term pushes one Integer value onto the value stack
                 ZeroOrMore(
@@ -49,7 +49,7 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         );
     }
 
-    Rule Term() {
+    public Rule Term() {
         return Sequence(
                 Factor(), // a successful match of a Factor pushes one Integer value onto the value stack
                 ZeroOrMore(
@@ -66,15 +66,15 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
         );
     }
 
-    Rule Factor() {
+    public Rule Factor() {
         return FirstOf(Number(), Parens()); // a factor "produces" exactly one Integer value on the value stack
     }
 
-    Rule Parens() {
+    public Rule Parens() {
         return Sequence('(', Expression(), ')');
     }
 
-    Rule Number() {
+    public Rule Number() {
         return Sequence(
                 Digits(),
 
@@ -86,11 +86,11 @@ public class CalculatorParser1 extends CalculatorParser<Integer> {
     }
 
     @SuppressSubnodes
-    Rule Digits() {
+    public Rule Digits() {
         return OneOrMore(Digit());
     }
 
-    Rule Digit() {
+    public Rule Digit() {
         return CharRange('0', '9');
     }
 

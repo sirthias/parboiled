@@ -16,15 +16,16 @@
 
 package org.parboiled.parserunners;
 
+
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.Context;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.Predicates;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.InputBuffer;
-import org.parboiled.trees.Filter;
-import org.parboiled.trees.Filters;
-import org.parboiled.trees.Printability;
 
 /**
  * A {@link org.parboiled.parserunners.ParseRunner} implementation used for debugging purposes.
@@ -34,7 +35,7 @@ import org.parboiled.trees.Printability;
 public class TracingParseRunner<V> extends BasicParseRunner<V> {
 
     private final StringBuilder log = new StringBuilder();
-    private final Filter<Matcher> filter;
+    private final Predicate<Context<?>> filter;
 
     /**
      * Creates a new TracingParseRunner instance for the given rule.
@@ -42,7 +43,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule the parser rule
      */
     public TracingParseRunner(@NotNull Rule rule) {
-        this(rule, Filters.<Matcher>all());
+        this(rule, Predicates.<Context<?>>alwaysTrue());
     }
 
     /**
@@ -53,7 +54,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule   the parser rule
      * @param filter the matcher filter selecting the matchers to print tracing statements for.
      */
-    public TracingParseRunner(@NotNull Rule rule, @NotNull Filter<Matcher> filter) {
+    public TracingParseRunner(@NotNull Rule rule, @NotNull Predicate<Context<?>> filter) {
         super(rule);
         this.filter = filter;
     }
@@ -93,10 +94,9 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
     public static class Handler implements MatchHandler {
         private final Matcher rootMatcher;
         private final StringBuilder log;
-        private final Filter<Matcher> filter;
-        private boolean dontPrint;
+        private final Predicate<Context<?>> filter;
 
-        public Handler(Matcher rootMatcher, StringBuilder log, Filter<Matcher> filter) {
+        public Handler(Matcher rootMatcher, StringBuilder log, Predicate<Context<?>> filter) {
             this.rootMatcher = rootMatcher;
             this.log = log;
             this.filter = filter;
@@ -108,35 +108,12 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
             return rootContext.runMatcher();
         }
 
+        @SuppressWarnings({"unchecked"})
         public boolean match(MatcherContext<?> context) {
             Matcher matcher = context.getMatcher();
-            if (dontPrint) {
-                return matcher.match(context); 
-            }
-            boolean matched;
-            switch (filter.apply(matcher)) {
-                case PrintAndDescend:
-                    matched = matcher.match(context);
-                    print(context, matched);
-                    break;
-                case Print:
-                    boolean oldDontPrint = dontPrint;
-                    dontPrint = true;
-                    matched = matcher.match(context);
-                    print(context, matched);
-                    dontPrint = oldDontPrint;
-                    break;
-                case Descend:
-                    matched = matcher.match(context);
-                    break;
-                case Skip:
-                    oldDontPrint = dontPrint;
-                    dontPrint = true;
-                    matched = matcher.match(context);
-                    dontPrint = oldDontPrint;
-                    break;
-                default:
-                    throw new IllegalStateException();
+            boolean matched = matcher.match(context);
+            if (filter.apply(context)) {
+                print(context, matched);
             }
             return matched;
         }

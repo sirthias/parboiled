@@ -16,15 +16,17 @@
 
 package org.parboiled.examples;
 
+import org.parboiled.Node;
 import org.parboiled.Parboiled;
 import org.parboiled.ParserStatistics;
+import org.parboiled.common.Predicates;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.common.FileUtils;
 import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.trees.Filters;
+import org.parboiled.support.Filters;
 import org.testng.annotations.Test;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -72,11 +74,11 @@ public class JavaTest {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +
                     "\n--- ParseTree ---\n" +
-                    printNodeTree(parsingResult, Filters.skipEmptyOptionalsAndZeroOrMores())
+                    printNodeTree(parsingResult, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue())
             );
         }
         assertEqualsMultiline(
-                printNodeTree(parsingResult, Filters.skipEmptyOptionalsAndZeroOrMores()),
+                printNodeTree(parsingResult, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
                 FileUtils.readAllTextFromResource("SimpleJavaTestParseTree.test")
         );
     }

@@ -19,7 +19,7 @@ class WithContextTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testWithContext() {
-    parse(parser.Clause, "5") {
+    parse(ReportingParseRunner(parser.Clause), "5") {
       assertEquals(parseTree,
          """|[Clause, {6}] '5'
             |  [Digit] '5'

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.charset.Charset;
 
-public class FileUtils {
+public final class FileUtils {
 
     private FileUtils() {}
 

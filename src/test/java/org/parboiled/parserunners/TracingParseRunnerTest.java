@@ -16,8 +16,12 @@
 
 package org.parboiled.parserunners;
 
+import org.parboiled.Context;
 import org.parboiled.Parboiled;
+import org.parboiled.common.Predicates;
 import org.parboiled.examples.calculators.CalculatorParser1;
+import static org.parboiled.common.Predicates.not;
+import static org.parboiled.support.Filters.*;
 import org.parboiled.support.ParsingResult;
 import org.testng.annotations.Test;
 
@@ -29,8 +33,10 @@ public class TracingParseRunnerTest {
     @Test
     public void testTracingParseRunner() {
         CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
-        TracingParseRunner runner = new TracingParseRunner(parser.InputLine());
-        ParsingResult result = runner.run("2*(4+5");
+        TracingParseRunner<Integer> runner = new TracingParseRunner<Integer>(parser.InputLine(),
+                Predicates.<Context<?>>and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits())))
+        );
+        ParsingResult<Integer> result = runner.run("2*(4+5");
 
         assertEquals(printParseErrors(result), "" +
                 "Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 7):\n" +
@@ -39,19 +45,12 @@ public class TracingParseRunnerTest {
 
         assertEquals(runner.getLog(), "" +
                 "Starting match on rule 'InputLine'\n" +
-                "InputLine/Expression/Term/Factor/Number/Digits/Digit: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/Factor/Number/Digits/Digit: failed, cursor is at line 1, col 2: \"2\"\n" +
                 "InputLine/Expression/Term/Factor/Number/Digits: matched, cursor is at line 1, col 2: \"2\"\n" +
                 "InputLine/Expression/Term/Factor/Number/Number_Action1: matched, cursor is at line 1, col 2: \"2\"\n" +
                 "InputLine/Expression/Term/Factor/Number: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/Factor: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/'*': matched, cursor is at line 1, col 3: \"2*\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Number/Digits/Digit: failed, cursor is at line 1, col 3: \"2*\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Number/Digits: failed, cursor is at line 1, col 3: \"2*\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Number: failed, cursor is at line 1, col 3: \"2*\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/'(': matched, cursor is at line 1, col 4: \"2*(\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number/Digits/Digit: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number/Digits/Digit: failed, cursor is at line 1, col 5: \"2*(4\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number/Digits: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number/Number_Action1: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
@@ -64,8 +63,6 @@ public class TracingParseRunnerTest {
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/'+': matched, cursor is at line 1, col 6: \"2*(4+\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Digits/Digit: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Digits/Digit: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Digits: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Number_Action1: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
@@ -88,23 +85,7 @@ public class TracingParseRunnerTest {
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
                 "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/')': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor: failed, cursor is at line 1, col 3: \"2*\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 3: \"2*\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/'/': failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence/'+': failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence/'-': failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/ZeroOrMore: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/EOI: failed, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine: failed, cursor is at line 1, col 2: \"2\"\n");
+                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens: failed, cursor is at line 1, col 7: \"2*(4+5\"\n");
     }
 
 }

@@ -19,7 +19,7 @@ class SemanticPredicateTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testWithContext() {
-    parse(parser.Clause, "2 3 5") {
+    parse(ReportingParseRunner(parser.Clause), "2 3 5") {
       assertEquals(parseTree,
          """|[Clause, {0}] '2 3 5'
             |  [Number, {2}] '2'

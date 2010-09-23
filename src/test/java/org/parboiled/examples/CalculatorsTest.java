@@ -17,13 +17,14 @@
 package org.parboiled.examples;
 
 import org.parboiled.Parboiled;
+import org.parboiled.common.Predicates;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.examples.calculators.*;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.Filters;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.ToStringFormatter;
 import org.parboiled.test.AbstractTest;
-import org.parboiled.trees.Filters;
 import org.testng.annotations.Test;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
@@ -71,6 +72,7 @@ public class CalculatorsTest extends AbstractTest {
                 printTree(
                         (Matcher) parser.InputLine(),
                         new ToStringFormatter<Matcher>(),
+                        Predicates.<Matcher>alwaysTrue(),
                         Filters.preventLoops()
                 ), "" +
                         "InputLine\n" +

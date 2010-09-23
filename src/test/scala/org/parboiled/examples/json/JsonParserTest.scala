@@ -4,6 +4,7 @@ import org.testng.annotations.Test
 import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.parboiled.scala.testing.ParboiledTest
+import org.parboiled.scala.parserunners.ReportingParseRunner
 
 class JsonParserTest extends ParboiledTest with TestNGSuite {
   val parser = new JsonParser1()
@@ -52,7 +53,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testJsonParserError() {
-    failParse(parser.Json, "XYZ") {
+    failParse(ReportingParseRunner(parser.Json), "XYZ") {
       assertEquals(errors,
         """|Invalid input 'X', expected WhiteSpace or Json (line 1, pos 1):
            |XYZ

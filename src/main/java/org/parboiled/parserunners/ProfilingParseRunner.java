@@ -16,11 +16,11 @@
 
 package org.parboiled.parserunners;
 
-import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.DoWithMatcherVisitor;

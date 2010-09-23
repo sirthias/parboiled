@@ -4,9 +4,10 @@ import org.testng.annotations.Test
 import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
-import org.parboiled.support.ToStringFormatter
-import org.parboiled.trees.{Filters, GraphUtils}
+import org.parboiled.trees.GraphUtils
 import testing.ParboiledTest
+import org.parboiled.support.{Filters, ToStringFormatter}
+import org.parboiled.common.Predicates
 
 class RecursionTest extends ParboiledTest with TestNGSuite {
 
@@ -19,7 +20,8 @@ class RecursionTest extends ParboiledTest with TestNGSuite {
   @Test
   def testRuleTreeConstruction() {
     val rule = parser.LotsOfAs
-    assertEquals(GraphUtils.printTree(rule.matcher, new ToStringFormatter[Matcher], Filters.preventLoops()),
+    assertEquals(GraphUtils.printTree(rule.matcher, new ToStringFormatter[Matcher], Predicates.alwaysTrue(),
+      Filters.preventLoops()),
       """|LotsOfAs
          |  'a/A'
          |  Optional
@@ -29,7 +31,7 @@ class RecursionTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testRecursion() {
-    parse(parser.LotsOfAs, "aAAAa") {
+    parse(ReportingParseRunner(parser.LotsOfAs), "aAAAa") {
       assertEquals(parseTree,
          """|[LotsOfAs] 'aAAAa'
             |  ['a/A'] 'a'

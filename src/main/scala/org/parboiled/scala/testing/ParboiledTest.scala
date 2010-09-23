@@ -11,70 +11,25 @@ trait ParboiledTest {
   type Result
 
   protected val pResult = new DynamicVariable[ParsingResult[_ <: Result]](null)
-  protected val runner = new DynamicVariable[ParseRunner[_ <: Result]](null)
+  protected val pRunner = new DynamicVariable[ParseRunner[_ <: Result]](null)
 
-  def parse(rule: Rule0, input: Input)(f: => Unit) {
-    runner.withValue(ReportingParseRunner(rule))(parse(input, f))
-  }
-
-  def parse(rule: Rule1[Result], input: Input)(f: => Unit) {
-    runner.withValue(ReportingParseRunner(rule))(parse(input, f))
-  }
-
-  def traceParse(rule: Rule0, input: Input)(f: => Unit) {
-    runner.withValue(TracingParseRunner(rule))(parse(input, f))
-  }
-
-  def traceParse(rule: Rule1[Result], input: Input)(f: => Unit) {
-    runner.withValue(TracingParseRunner(rule))(parse(input, f))
-  }
-
-  protected def parse(input: Input, f: => Unit) {
-    val res = runner.value.run(input)
-    verify(res)
-    pResult.withValue(res)(f)
-  }
-
-  def failParse(rule: Rule0, input: Input)(f: => Unit) {
-    runner.withValue(ReportingParseRunner(rule))(failParse(input, f))
-  }
-
-  def failParse(rule: Rule1[Result], input: Input)(f: => Unit) {
-    runner.withValue(ReportingParseRunner(rule))(failParse(input, f))
-  }
-
-  def traceFailParse(rule: Rule0, input: Input)(f: => Unit) {
-    runner.withValue(TracingParseRunner(rule))(failParse(input, f))
-  }
-
-  def traceFailParse(rule: Rule1[Result], input: Input)(f: => Unit) {
-    runner.withValue(TracingParseRunner(rule))(failParse(input, f))
-  }
-
-  protected def failParse(input: Input, f: => Unit) {
-    val res = runner.value.run(input)
-    if (res.matched) {
-      fail("Test unexpectedly succeeded")
+  def parse(runner: ParseRunner[_ <: Result], input: Input)(f: => Unit) {
+    pRunner.withValue(runner) {
+      val res = runner.run(input)
+      if (!res.matched) {
+        fail(ErrorUtils.printParseErrors(res))
+      }
+      pResult.withValue(res)(f)
     }
-    pResult.withValue(res)(f)
   }
 
-  def parseWithRecovery(rule: Rule0, input: Input)(f: => Unit) {
-    runner.withValue(RecoveringParseRunner(rule))(parseWithRecovery(input, f))
-  }
-
-  def parseWithRecovery(rule: Rule1[Result], input: Input)(f: => Unit) {
-    runner.withValue(RecoveringParseRunner(rule))(parseWithRecovery(input, f))
-  }
-
-  protected def parseWithRecovery(input: Input, f: => Unit) {
-    val res = runner.value.run(input)
-    pResult.withValue(res)(f)
-  }
-
-  protected def verify[W](res: ParsingResult[W]) {
-    if (!res.matched) {
-      fail(ErrorUtils.printParseErrors(res))
+  def failParse(runner: ParseRunner[_ <: Result], input: Input)(f: => Unit) {
+    pRunner.withValue(runner) {
+      val res = runner.run(input)
+      if (res.matched) {
+        fail("Test unexpectedly succeeded")
+      }
+      pResult.withValue(res)(f)
     }
   }
 
@@ -90,7 +45,7 @@ trait ParboiledTest {
 
   def parseTreeRoot = parsingResult.parseTreeRoot
 
-  def traceLog = runner.value match {
+  def traceLog = pRunner.value match {
     case t: TracingParseRunner[_] => t.traceLog
     case _ => ""
   }

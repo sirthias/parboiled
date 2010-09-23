@@ -16,13 +16,12 @@
 
 package org.parboiled.support;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.common.Predicate;
+import org.parboiled.common.Predicates;
 import org.parboiled.common.StringUtils;
-import org.parboiled.trees.Filter;
-import org.parboiled.trees.Filters;
 
 import java.util.Collection;
 import java.util.List;
@@ -327,20 +326,23 @@ public final class ParseTreeUtils {
      * @return a new String
      */
     public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult) {
-        return printNodeTree(parsingResult, Filters.<Node<V>>all());
+        return printNodeTree(parsingResult, Predicates.<Node<V>>alwaysTrue(), Predicates.<Node<V>>alwaysTrue());
     }
 
     /**
      * Creates a readable string represenation of the parse tree in thee given {@link ParsingResult} object.
-     * If a non-null filter function is given its result is used to determine whether a particular node is
-     * printed and/or its subtree printed.
+     * The given filter predicate determines whether a particular node (incl. its subtree) is printed or not.
      *
      * @param parsingResult the parsing result containing the parse tree
-     * @param filter        optional node filter selecting the nodes to print and/or descend into for tree printing
+     * @param nodeFilter    the predicate selecting the nodes to print
+     * @param subTreeFilter the predicate determining whether to descend into a given nodes subtree or not
      * @return a new String
      */
-    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult, @NotNull Filter<Node<V>> filter) {
-        return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), filter);
+    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult,
+                                           @NotNull Predicate<Node<V>> nodeFilter,
+                                           @NotNull Predicate<Node<V>> subTreeFilter) {
+        return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), nodeFilter,
+                subTreeFilter);
     }
 
 }
