@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.*;
 import org.parboiled.errors.ActionError;
 import org.parboiled.errors.ActionException;
-import org.parboiled.errors.GrammarException;
 import org.parboiled.support.MatcherVisitor;
 
 import java.lang.reflect.Field;
@@ -110,7 +109,7 @@ public class ActionMatcher extends AbstractMatcher {
 
     @Override
     public Rule suppressNode() {
-        throw new GrammarException("Actions cannot be marked with @SuppressNode or @SuppressSubnodes");
+        return this; // actions are already "suppressNode"
     }
 
     public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
