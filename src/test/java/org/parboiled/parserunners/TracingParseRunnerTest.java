@@ -44,48 +44,47 @@ public class TracingParseRunnerTest {
                 "      ^\n");
 
         assertEquals(runner.getLog(), "" +
-                "Starting match on rule 'InputLine'\n" +
-                "InputLine/Expression/Term/Factor/Number/Digits: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/Factor/Number/Number_Action1: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/Factor/Number: matched, cursor is at line 1, col 2: \"2\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Number/Digits: failed, cursor is at line 1, col 3: \"2*\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Number: failed, cursor is at line 1, col 3: \"2*\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/'(': matched, cursor is at line 1, col 4: \"2*(\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number/Digits: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number/Number_Action1: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor/Number: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/Factor: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore/FirstOf/Sequence/'*': failed, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore/FirstOf/Sequence/'/': failed, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term/ZeroOrMore: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/Term: matched, cursor is at line 1, col 5: \"2*(4\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/'+': matched, cursor is at line 1, col 6: \"2*(4+\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Digits: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Number_Action1: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/ZeroOrMore/FirstOf/Sequence/'*': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/ZeroOrMore/FirstOf/Sequence/'/': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term/ZeroOrMore: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Term: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/Expression_Action1: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/'+': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence/'-': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf/Sequence: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore/FirstOf: failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression/ZeroOrMore: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/Expression: matched, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens/')': failed, cursor is at line 1, col 7: \"2*(4+5\"\n" +
-                "InputLine/Expression/Term/ZeroOrMore/FirstOf/Sequence/Factor/Parens: failed, cursor is at line 1, col 7: \"2*(4+5\"\n");
+                "InputLine/Expression/Term/Factor/Number/Digits, matched, cursor at 1:2 after \"2\"\n" +
+                "..(4)../Number/Number_Action1, matched, cursor at 1:2 after \"2\"\n" +
+                "..(4)../Number, matched, cursor at 1:2 after \"2\"\n" +
+                "..(2)../Term/ZeroOrMore/FirstOf/Sequence/Factor/Number/Digits, failed, cursor at 1:3 after \"2*\"\n" +
+                "..(7)../Number, failed, cursor at 1:3 after \"2*\"\n" +
+                "..(6)../Factor/Parens/'(', matched, cursor at 1:4 after \"2*(\"\n" +
+                "..(7)../Parens/Expression/Term/Factor/Number/Digits, matched, cursor at 1:5 after \"2*(4\"\n" +
+                "..(11)../Number/Number_Action1, matched, cursor at 1:5 after \"2*(4\"\n" +
+                "..(11)../Number, matched, cursor at 1:5 after \"2*(4\"\n" +
+                "..(10)../Factor, matched, cursor at 1:5 after \"2*(4\"\n" +
+                "..(9)../Term/ZeroOrMore/FirstOf/Sequence/'*', failed, cursor at 1:5 after \"2*(4\"\n" +
+                "..(12)../Sequence, failed, cursor at 1:5 after \"2*(4\"\n" +
+                "..(11)../FirstOf/Sequence/'/', failed, cursor at 1:5 after \"2*(4\"\n" +
+                "..(12)../Sequence, failed, cursor at 1:5 after \"2*(4\"\n" +
+                "..(11)../FirstOf, failed, cursor at 1:5 after \"2*(4\"\n" +
+                "..(10)../ZeroOrMore, matched, cursor at 1:5 after \"2*(4\"\n" +
+                "..(9)../Term, matched, cursor at 1:5 after \"2*(4\"\n" +
+                "..(8)../Expression/ZeroOrMore/FirstOf/Sequence/'+', matched, cursor at 1:6 after \"2*(4+\"\n" +
+                "..(11)../Sequence/Term/Factor/Number/Digits, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(14)../Number/Number_Action1, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(14)../Number, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(13)../Factor, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(12)../Term/ZeroOrMore/FirstOf/Sequence/'*', failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(15)../Sequence, failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(14)../FirstOf/Sequence/'/', failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(15)../Sequence, failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(14)../FirstOf, failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(13)../ZeroOrMore, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(12)../Term, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(11)../Sequence/Expression_Action1, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(11)../Sequence, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(10)../FirstOf, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(10)../FirstOf/Sequence/'+', failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(11)../Sequence, failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(10)../FirstOf/Sequence/'-', failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(11)../Sequence, failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(10)../FirstOf, failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(9)../ZeroOrMore, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(8)../Expression, matched, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(7)../Parens/')', failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(7)../Parens, failed, cursor at 1:7 after \"2*(4+5\"\n");
     }
 
 }

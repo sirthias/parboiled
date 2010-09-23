@@ -16,7 +16,6 @@
 
 package org.parboiled.parserunners;
 
-
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Context;
 import org.parboiled.MatchHandler;
@@ -26,6 +25,7 @@ import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.InputBuffer;
+import org.parboiled.support.MatcherPath;
 
 /**
  * A {@link org.parboiled.parserunners.ParseRunner} implementation used for debugging purposes.
@@ -95,6 +95,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
         private final Matcher rootMatcher;
         private final StringBuilder log;
         private final Predicate<Context<?>> filter;
+        private MatcherPath lastPath;
 
         public Handler(Matcher rootMatcher, StringBuilder log, Predicate<Context<?>> filter) {
             this.rootMatcher = rootMatcher;
@@ -104,7 +105,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
 
         public boolean matchRoot(MatcherContext<?> rootContext) {
             log.setLength(0);
-            log.append("Starting match on rule '").append(rootMatcher).append("'").append('\n');
+            lastPath = null;
             return rootContext.runMatcher();
         }
 
@@ -120,15 +121,23 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
 
         private void print(MatcherContext<?> context, boolean matched) {
             InputBuffer.Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
-            log.append(context.getPath()).append(": ")
+            MatcherPath path = context.getPath();
+            int skipPrefix = Math.max(path.getCommonPrefixLength(lastPath) - 1, 0);
+            if (skipPrefix > 0) log.append("..(").append(skipPrefix).append(")../");
+            log.append(path.get(skipPrefix));
+            for (int i = skipPrefix + 1; i < path.length(); i++) {
+                log.append('/').append(path.get(i));
+            }
+            log.append(", ")
                     .append(matched ? "matched" : "failed")
-                    .append(", cursor is at line ")
+                    .append(", cursor at ")
                     .append(pos.line)
-                    .append(", col ")
+                    .append(':')
                     .append(pos.column)
-                    .append(": \"")
+                    .append(" after \"")
                     .append(context.getInputBuffer().extractLine(pos.line).substring(0, pos.column - 1))
                     .append("\"\n");
+            lastPath = path;
         }
 
     }
