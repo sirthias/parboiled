@@ -26,7 +26,6 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -35,7 +34,6 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.BaseParser;
-import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Var;
 
@@ -43,9 +41,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.transform.AsmUtils.*;
+import static org.parboiled.transform.Types.*;
 
-class RuleMethod extends MethodNode implements Opcodes, Types {
+class RuleMethod extends MethodNode {
 
     private final List<InstructionGroup> groups = new ArrayList<InstructionGroup>();
     private final List<LabelNode> usedLabels = new ArrayList<LabelNode>();

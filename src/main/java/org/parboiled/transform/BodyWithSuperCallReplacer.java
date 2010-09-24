@@ -17,17 +17,17 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 
 /**
  * Replaces the method code with a simple call to the super method.
  */
-class BodyWithSuperCallReplacer implements RuleMethodProcessor, Opcodes {
+class BodyWithSuperCallReplacer implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return !method.isBodyRewritten() && method.getOwnerClass() == classNode.getParentClass();

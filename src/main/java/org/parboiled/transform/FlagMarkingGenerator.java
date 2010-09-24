@@ -18,13 +18,15 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.transform.Types.RULE;
 
 /**
  * Adds the required flag marking calls before the return instruction.
  */
-class FlagMarkingGenerator implements RuleMethodProcessor, Opcodes, Types {
+class FlagMarkingGenerator implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.hasSuppressNodeAnnotation() || method.hasSuppressSubnodesAnnotation() ||

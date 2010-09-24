@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.transform.Types.*;
 
 class VarInitClassGenerator extends GroupClassGenerator {
 

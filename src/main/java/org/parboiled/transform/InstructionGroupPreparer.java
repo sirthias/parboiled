@@ -19,7 +19,6 @@ package org.parboiled.transform;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -34,7 +33,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-class InstructionGroupPreparer implements RuleMethodProcessor, Opcodes {
+import static org.objectweb.asm.Opcodes.ALOAD;
+
+class InstructionGroupPreparer implements RuleMethodProcessor {
 
     private static final Object lock = new Object();
 

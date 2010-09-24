@@ -24,7 +24,6 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -32,12 +31,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.common.Utils.toObjectArray;
+import static org.parboiled.transform.Types.*;
 
 /**
  * Wraps the method code with caching and proxying constructs.
  */
-class CachingGenerator implements RuleMethodProcessor, Opcodes, Types {
+class CachingGenerator implements RuleMethodProcessor {
 
     private ParserClassNode classNode;
     private RuleMethod method;

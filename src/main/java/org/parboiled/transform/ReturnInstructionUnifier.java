@@ -18,16 +18,18 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+
+import static org.objectweb.asm.Opcodes.ARETURN;
+import static org.objectweb.asm.Opcodes.GOTO;
 
 /**
  * Replaces all "non-last" return instructions with goto instructions to the last return instruction.
  * If a method contains only one return instruction the transformer does nothing.
  */
-class ReturnInstructionUnifier implements RuleMethodProcessor, Opcodes {
+class ReturnInstructionUnifier implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return true;

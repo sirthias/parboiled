@@ -17,14 +17,16 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
+
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.transform.Types.*;
 
 /**
  * Inserts code for wrapping the created rule into a VarFramingMatcher if the method contains local variables
  * assignable to {@link org.parboiled.support.Var}.
  */
-class VarFramingGenerator implements RuleMethodProcessor, Opcodes, Types {
+class VarFramingGenerator implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.getLocalVarVariables() != null;

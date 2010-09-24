@@ -18,16 +18,17 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 
+import static org.objectweb.asm.Opcodes.*;
+
 /**
  * Replaces the method code with a simple call to the super method.
  */
-class SuperCallRewriter implements RuleMethodProcessor, Opcodes {
+class SuperCallRewriter implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return method.containsPotentialSuperCalls();

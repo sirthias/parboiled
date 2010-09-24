@@ -18,7 +18,8 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.transform.Types.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -34,7 +35,7 @@ import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
 /**
  * Makes all implicit action expressions in a rule method explicit.
  */
-class ImplicitActionsConverter implements RuleMethodProcessor, Types, Opcodes {
+class ImplicitActionsConverter implements RuleMethodProcessor {
 
     private final Set<InstructionGraphNode> covered = new HashSet<InstructionGraphNode>();
     private RuleMethod method;

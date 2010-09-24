@@ -23,7 +23,6 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
@@ -33,10 +32,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.objectweb.asm.Opcodes.*;
+
 /**
  * A node in the instruction dependency graph.
  */
-class InstructionGraphNode implements Value, Opcodes {
+class InstructionGraphNode implements Value {
 
     private AbstractInsnNode instruction;
     private final BasicValue resultValue;

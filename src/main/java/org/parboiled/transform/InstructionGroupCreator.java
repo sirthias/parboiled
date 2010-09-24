@@ -24,7 +24,6 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -33,9 +32,10 @@ import org.parboiled.support.Checks;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.transform.AsmUtils.*;
 
-class InstructionGroupCreator implements RuleMethodProcessor, Opcodes {
+class InstructionGroupCreator implements RuleMethodProcessor  {
 
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
     private RuleMethod method;

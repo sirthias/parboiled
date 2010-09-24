@@ -17,17 +17,18 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.parboiled.support.Checks;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
+import static org.parboiled.transform.Types.BASE_PARSER;
 
 /**
  * Adds one constructor for each of the ParserClassNode.constructors,
  * which simply delegates to the respective super constructor.
  */
-class ConstructorGenerator implements Opcodes, Types {
+class ConstructorGenerator {
 
     public void process(@NotNull ParserClassNode classNode) {
         Checks.ensure(!classNode.getConstructors().isEmpty(),

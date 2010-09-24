@@ -23,16 +23,16 @@
 package org.parboiled.transform;
 
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.transform.AsmUtils.getLoadingOpcode;
 
 /**
  * Inserts action group class instantiation code at the groups respective placeholders.
  */
-class RuleMethodRewriter implements RuleMethodProcessor, Opcodes, Types {
+class RuleMethodRewriter implements RuleMethodProcessor {
 
     private RuleMethod method;
     private InstructionGroup group;

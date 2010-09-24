@@ -18,14 +18,16 @@ package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.StringUtils;
+
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.transform.Types.*;
 
 /**
  * Adds automatic labelling code before the return instruction.
  */
-class LabellingGenerator implements RuleMethodProcessor, Opcodes, Types {
+class LabellingGenerator implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
         return !method.hasDontLabelAnnotation();

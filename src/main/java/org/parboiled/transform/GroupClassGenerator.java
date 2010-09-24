@@ -19,14 +19,16 @@ package org.parboiled.transform;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.transform.AsmUtils.findLoadedClass;
 import static org.parboiled.transform.AsmUtils.loadClass;
+import static org.parboiled.transform.Types.CONTEXT_AWARE;
+import static org.parboiled.transform.Types.CONTEXT_DESC;
 
-abstract class GroupClassGenerator implements RuleMethodProcessor, Opcodes, Types {
+abstract class GroupClassGenerator implements RuleMethodProcessor {
 
     private static final Object lock = new Object();
 

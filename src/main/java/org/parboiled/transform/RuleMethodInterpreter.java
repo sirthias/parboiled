@@ -36,7 +36,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class RuleMethodInterpreter extends BasicInterpreter implements Types {
+import static org.parboiled.transform.Types.RULE;
+
+class RuleMethodInterpreter extends BasicInterpreter {
 
     private final RuleMethod method;
     private final List<Edge> additionalEdges = new ArrayList<Edge>();
