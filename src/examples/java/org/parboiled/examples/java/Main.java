@@ -89,7 +89,7 @@ public class Main {
             } else {
                 System.out.print('.');
             }
-            lines += result.inputBuffer.getPosition(sourceText.length() - 1).line;
+            lines += result.inputBuffer.getLineCount();
             characters += sourceText.length();
         }
         long time = time(start);

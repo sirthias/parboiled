@@ -36,7 +36,7 @@ public class IsStarterCharVisitor implements MatcherVisitor<Boolean> {
     }
 
     public Boolean visit(AnyMatcher matcher) {
-        return starterChar != Characters.EOI;
+        return starterChar != Chars.EOI;
     }
 
     public Boolean visit(CharIgnoreCaseMatcher matcher) {

@@ -18,7 +18,7 @@ package org.parboiled.errors;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.buffers.InputBuffer;
 
 /**
  * A basic {@link ParseError} implementation for a one-char parse error with an optional error message.

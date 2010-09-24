@@ -1,9 +1,9 @@
 package org.parboiled.scala
 
-import org.parboiled.support.DefaultInputBuffer
 import org.parboiled.common.FileUtils
 import io.{Codec, Source}
 import java.io.InputStream
+import org.parboiled.buffers.DefaultInputBuffer
 
 object Input {
   implicit def fromCharArray(input: Array[Char]) = new Input(input)

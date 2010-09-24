@@ -18,6 +18,7 @@ package org.parboiled.support;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.errors.ParseError;
 
 import java.util.List;

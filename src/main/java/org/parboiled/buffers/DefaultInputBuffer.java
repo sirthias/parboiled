@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2010 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.buffers;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 
 import java.util.Arrays;
 
@@ -26,12 +28,12 @@ import java.util.Arrays;
  */
 public class DefaultInputBuffer implements InputBuffer {
 
-    private final int length;
-    private final char[] buffer;
-    private final int[] newlines;
+    protected final int length;
+    protected final char[] buffer;
+    protected int[] newlines;
 
     /**
-     * The input buffer to wrap.
+     * Constructs a new DefaultInputBuffer wrapping the given char array.
      * CAUTION: For performance reasons the given char array is not defensively copied.
      *
      * @param buffer the chars
@@ -39,32 +41,10 @@ public class DefaultInputBuffer implements InputBuffer {
     public DefaultInputBuffer(@NotNull char[] buffer) {
         this.buffer = buffer;
         this.length = buffer.length;
-        this.newlines = extractNewlines(buffer);
-    }
-
-    private static int[] extractNewlines(char[] buffer) {
-        int count = 0, length = buffer.length;
-        for (int i = 0; i < length; i++) {
-            if (buffer[i] == '\n') {
-                count++;
-            }
-        }
-        int[] newlines = new int[count];
-        count = 0;
-        for (int i = 0; i < length; i++) {
-            if (buffer[i] == '\n') {
-                newlines[count++] = i;
-            }
-        }
-        return newlines;
-    }
-
-    public int getLength() {
-        return length;
     }
 
     public char charAt(int index) {
-        return 0 <= index && index < length ? buffer[index] : Characters.EOI;
+        return 0 <= index && index < length ? buffer[index] : Chars.EOI;
     }
 
     public boolean test(int index, char[] characters) {
@@ -72,28 +52,10 @@ public class DefaultInputBuffer implements InputBuffer {
         if (index < 0 || index > length - len) {
             return false;
         }
-
         for (int i = 0; i < len; i++) {
             if (buffer[index + i] != characters[i]) return false;
         }
-
         return true;
-    }
-
-    public Position getPosition(int index) {
-        index = Math.min(Math.max(index, 0), length); // also allow index "length" for EOI
-        int j = Arrays.binarySearch(newlines, index);
-        int line = j >= 0 ? j : -(j + 1);
-        int column = index - (line > 0 ? newlines[line - 1] : -1);
-        return new Position(line + 1, column);
-    }
-
-    public String extractLine(int lineNumber) {
-        Preconditions.checkArgument(0 < lineNumber && lineNumber <= newlines.length + 1);
-        int start = lineNumber > 1 ? newlines[lineNumber - 2] + 1 : 0;
-        int end = lineNumber <= newlines.length ? newlines[lineNumber - 1] : length;
-        if (charAt(end - 1) == '\r') end--;
-        return extract(start, end);
     }
 
     @NotNull
@@ -102,6 +64,52 @@ public class DefaultInputBuffer implements InputBuffer {
         if (end >= length) end = length;
         if (end <= start) return "";
         return new String(buffer, start, end - start);
+    }
+
+    public Position getPosition(int index) {
+        buildNewlines();
+        index = Math.min(Math.max(index, 0), length); // also allow index "length" for EOI
+        int line = getLine0(newlines, index);
+        int column = index - (line > 0 ? newlines[line - 1] : -1);
+        return new Position(line + 1, column);
+    }
+
+    // returns the zero based input line number the character with the given index is found in
+    protected static int getLine0(int[] newlines, int index) {
+        int j = Arrays.binarySearch(newlines, index);
+        return j >= 0 ? j : -(j + 1);
+    }
+
+    public String extractLine(int lineNumber) {
+        buildNewlines();
+        Preconditions.checkArgument(0 < lineNumber && lineNumber <= newlines.length + 1);
+        int start = lineNumber > 1 ? newlines[lineNumber - 2] + 1 : 0;
+        int end = lineNumber <= newlines.length ? newlines[lineNumber - 1] : length;
+        if (charAt(end - 1) == '\r') end--;
+        return extract(start, end);
+    }
+
+    public int getLineCount() {
+        buildNewlines();
+        return newlines.length + 1;
+    }
+
+    protected void buildNewlines() {
+        if (newlines == null) {
+            int count = 0, length = buffer.length;
+            for (int i = 0; i < length; i++) {
+                if (buffer[i] == '\n') {
+                    count++;
+                }
+            }
+            newlines = new int[count];
+            count = 0;
+            for (int i = 0; i < length; i++) {
+                if (buffer[i] == '\n') {
+                    newlines[count++] = i;
+                }
+            }
+        }
     }
 
 }

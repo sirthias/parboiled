@@ -39,29 +39,6 @@ public class Characters {
      */
     public static final Characters ALL = new Characters(true, NO_CHARS);
 
-    /**
-     * The End-of-Input character.
-     */
-    public static final char EOI = '\uFFFF';
-
-    /**
-     * Special character used during error recovery. Signals that an illegal input character was skipped at this
-     * input location.
-     */
-    public static final char DEL_ERROR = '\uFDEF';
-
-    /**
-     * Special character used during error recovery. Signals that the character at the following input location
-     * was expected but not present in the input buffer.
-     */
-    public static final char INS_ERROR = '\uFDEE';
-
-    /**
-     * Special character used during error recovery. Signals that a rule resynchronization had to be performed
-     * at the current input location.
-     */
-    public static final char RESYNC = '\uFDED';
-
     // if the set is subtractive its semantics change from "includes all characters in the set" to
     // "includes all characters not in the set"
     private final boolean subtractive;

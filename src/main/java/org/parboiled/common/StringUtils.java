@@ -17,6 +17,7 @@
 package org.parboiled.common;
 
 import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,13 +66,13 @@ public final class StringUtils {
                 return "\\t";
             case '\f':
                 return "\\f";
-            case Characters.DEL_ERROR:
+            case Chars.DEL_ERROR:
                 return "DEL_ERROR";
-            case Characters.INS_ERROR:
+            case Chars.INS_ERROR:
                 return "INS_ERROR";
-            case Characters.RESYNC:
+            case Chars.RESYNC:
                 return "RESYNC";
-            case Characters.EOI:
+            case Chars.EOI:
                 return "EOI";
             default:
                 return String.valueOf(c);

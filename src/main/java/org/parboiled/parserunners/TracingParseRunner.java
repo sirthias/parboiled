@@ -24,7 +24,7 @@ import org.parboiled.Rule;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
 
 /**

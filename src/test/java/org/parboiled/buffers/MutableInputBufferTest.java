@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.buffers;
 
 import org.testng.annotations.Test;
 

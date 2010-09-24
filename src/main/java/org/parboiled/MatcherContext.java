@@ -19,6 +19,7 @@ package org.parboiled;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.StringUtils;
 import org.parboiled.errors.BasicParseError;
 import org.parboiled.errors.GrammarException;
@@ -234,7 +235,7 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void advanceIndex(int delta) {
-        if (currentChar != Characters.EOI) currentIndex += delta;
+        if (currentChar != Chars.EOI) currentIndex += delta;
         currentChar = inputBuffer.charAt(currentIndex);
     }
 

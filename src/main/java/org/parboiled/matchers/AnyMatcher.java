@@ -19,6 +19,7 @@ package org.parboiled.matchers;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 import org.parboiled.support.MatcherVisitor;
 
 /**
@@ -27,7 +28,7 @@ import org.parboiled.support.MatcherVisitor;
 public class AnyMatcher extends AbstractMatcher {
 
     public boolean match(@NotNull MatcherContext context) {
-        if (context.getCurrentChar() == Characters.EOI) return false;
+        if (context.getCurrentChar() == Chars.EOI) return false;
         context.advanceIndex(1);
         context.createNode();
         return true;

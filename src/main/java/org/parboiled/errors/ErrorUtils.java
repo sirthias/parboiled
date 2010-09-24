@@ -18,6 +18,8 @@ package org.parboiled.errors;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.parboiled.buffers.DefaultInputBuffer;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;

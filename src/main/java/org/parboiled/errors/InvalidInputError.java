@@ -17,7 +17,7 @@
 package org.parboiled.errors;
 
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
 
 import java.util.List;

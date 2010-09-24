@@ -19,6 +19,7 @@ package org.parboiled.support;
 import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Node;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.common.StringUtils;
@@ -295,12 +296,12 @@ public final class ParseTreeUtils {
         for (int i = start; i < end; i++) {
             char c = inputBuffer.charAt(i);
             switch (c) {
-                case Characters.DEL_ERROR:
+                case Chars.DEL_ERROR:
                     i++;
                     break;
-                case Characters.INS_ERROR:
+                case Chars.INS_ERROR:
                     break;
-                case Characters.RESYNC:
+                case Chars.RESYNC:
                     return;
                 default:
                     sb.append(c);

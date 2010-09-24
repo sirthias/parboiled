@@ -1,9 +1,9 @@
 package org.parboiled
 
 import matchers._
-import support.Characters
 import scala._
 import rules.Rule._
+import support.{Chars, Characters}
 
 /**
  * Main parboiled for Scala Module.
@@ -63,7 +63,7 @@ package object scala {
   /**
    * The Eoi rule, which matches the End-Of-Input "character".
    */
-  lazy val EOI: Rule0 = new CharMatcher(Characters.EOI).label("EOI")
+  lazy val EOI: Rule0 = new CharMatcher(Chars.EOI).label("EOI")
 
   /**
    * The Nothing rule, which matches the End-Of-Input "character".

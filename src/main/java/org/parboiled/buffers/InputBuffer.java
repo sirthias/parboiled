@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.buffers;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +25,7 @@ public interface InputBuffer {
 
     /**
      * Returns the character at the given index. If the index is invalid the method returns
-     * {@link org.parboiled.support.Characters#EOI}.
+     * {@link org.parboiled.support.Chars#EOI}.
      *
      * @param index the index
      * @return the character at the given index or Chars.EOI.
@@ -42,8 +42,19 @@ public interface InputBuffer {
     boolean test(int index, char[] characters);
 
     /**
+     * Constructs a new {@link String} from all character between the given indices.
+     * Invalid indices are automatically adjusted to their respective boundary.
+     *
+     * @param start the start index (inclusively)
+     * @param end   the end index (exclusively)
+     * @return a new String (non-interned)
+     */
+    @NotNull
+    String extract(int start, int end);
+
+    /**
      * Returns the line and column number of the character with the given index encapsulated in a
-     * {@link org.parboiled.support.InputBuffer.Position}
+     * {@link InputBuffer.Position}
      * object. The very first character has the line number 1 and the column number 1.
      *
      * @param index the index of the character to get the line number of
@@ -61,15 +72,11 @@ public interface InputBuffer {
     String extractLine(int lineNumber);
 
     /**
-     * Constructs a new {@link String} from all character between the given indices.
-     * Invalid indices are automatically adjusted to their respective boundary.
+     * Returns the number of lines in the input buffer.
      *
-     * @param start the start index (inclusively)
-     * @param end   the end index (exclusively)
-     * @return a new String (non-interned)
+     * @return number of lines in the input buffer.
      */
-    @NotNull
-    String extract(int start, int end);
+    int getLineCount();
 
     /**
      * Simple container class for a line/column position in the input text.

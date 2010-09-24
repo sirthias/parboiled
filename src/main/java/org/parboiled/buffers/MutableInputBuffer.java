@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.buffers;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +58,10 @@ public class MutableInputBuffer implements InputBuffer {
     @NotNull
     public String extract(int start, int end) {
         return buffer.extract(fix(start), fix(end));
+    }
+
+    public int getLineCount() {
+        return buffer.getLineCount();
     }
 
     private int fix(int index) {

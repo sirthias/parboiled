@@ -22,6 +22,7 @@ import org.parboiled.annotations.*;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.Characters;
+import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 
 import static com.google.common.collect.ObjectArrays.concat;
@@ -38,10 +39,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Matches the EOI (end of input) character.
      */
-    public static final Rule EOI = new CharMatcher(Characters.EOI).label("EOI");
+    public static final Rule EOI = new CharMatcher(Chars.EOI).label("EOI");
 
     /**
-     * Matches any character except {@link Characters#EOI}.
+     * Matches any character except {@link Chars#EOI}.
      */
     public static final Rule ANY = new AnyMatcher().label("ANY");
 

@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.buffers.DefaultInputBuffer;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.*;

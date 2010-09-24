@@ -19,7 +19,7 @@ package org.parboiled;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ValueStack;
 

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
-import org.parboiled.support.InputBuffer;
+import org.parboiled.buffers.InputBuffer;
 
 import java.util.HashSet;
 import java.util.Map;

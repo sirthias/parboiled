@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.buffers;
 
-import static org.testng.Assert.assertEquals;
-
+import org.parboiled.support.Chars;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class DefaultInputBufferTest {
 
     @Test
     public void testOneliner() {
         InputBuffer buf = new DefaultInputBuffer("abcdefgh".toCharArray());
-        assertEquals(buf.charAt(-4), Characters.EOI);
+        Assert.assertEquals(buf.charAt(-4), Chars.EOI);
         assertEquals(buf.charAt(0), 'a');
         assertEquals(buf.charAt(7), 'h');
-        assertEquals(buf.charAt(8), Characters.EOI);
-        assertEquals(buf.charAt(26), Characters.EOI);
+        assertEquals(buf.charAt(8), Chars.EOI);
+        assertEquals(buf.charAt(26), Chars.EOI);
 
         assertEquals(buf.extractLine(1), "abcdefgh");
 
