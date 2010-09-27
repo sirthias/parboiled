@@ -25,7 +25,7 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
           |        Number
           |          Digits
           |            Digit
-          |          Action
+          |          NumberAction1
           |        Parens
           |          '('
           |          Expression
@@ -35,21 +35,21 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
           |          Sequence
           |            '*'
           |            Factor
-          |            Action
+          |            TermAction1
           |          Sequence
           |            '/'
           |            Factor
-          |            Action
+          |            TermAction2
           |    ZeroOrMore
           |      FirstOf
           |        Sequence
           |          '+'
           |          Term
-          |          Action
+          |          ExpressionAction1
           |        Sequence
           |          '-'
           |          Term
-          |          Action
+          |          ExpressionAction2
           |  EOI
           |""".stripMargin)
   }

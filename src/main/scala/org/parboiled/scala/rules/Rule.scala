@@ -49,7 +49,7 @@ abstract class Rule(val matcher: Matcher) {
 
   protected def withMatcher(matcher: Matcher): this.type
 
-  protected def append(action: Action[_]): Matcher = append(new ActionMatcher(action).label("Action"))
+  protected def append(action: Action[_]): Matcher = append(new ActionMatcher(action).label(nameAction("")))
 
   protected def append(f: Context[Any] => Boolean): Matcher = append(action(f))
 

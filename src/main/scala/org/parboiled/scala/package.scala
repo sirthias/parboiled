@@ -7,6 +7,7 @@ import rules.Rule._
 import support.Chars
 import io.{Codec, Source}
 import java.io.InputStream
+import util.DynamicVariable
 
 /**
  * Main parboiled for Scala Module.
@@ -86,17 +87,18 @@ package object scala {
   /**
    * A parser action removing the top element from the value stack.
    */
-  lazy val POP1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label("Pop1Action")
+  lazy val POP1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label(nameAction("Pop1"))
 
   /**
    * A parser action removing the top two elements from the value stack.
    */
-  lazy val POP2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label("Pop2Action")
+  lazy val POP2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label(nameAction("Pop2"))
 
   /**
    * A parser action removing the top three elements from the value stack.
    */
-  lazy val POP3: PopRule3[Any, Any, Any] = new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label("Pop3Action")
+  lazy val POP3: PopRule3[Any, Any, Any] =
+    new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label(nameAction("Pop3"))
 
   type RuleMethod = StackTraceElement
 
@@ -136,4 +138,21 @@ package object scala {
   implicit def fromSource(input: Source): Input = new Input(input.toArray[Char])
   implicit def fromInputStream(input: InputStream)(implicit codec: Codec): Input =
     new Input(FileUtils.readAllChars(input, codec.charSet))
+
+  // helper methods
+  private val currentRuleLabel = new DynamicVariable[String](null)
+  private val currentActionIndex = new DynamicVariable[Int](0)
+
+  private[scala] def withCurrentRuleLabel[A](s: String)(f: => A): A =
+    currentRuleLabel.withValue(s) {
+      currentActionIndex.withValue(0) {
+        f
+      }
+    }
+
+  private[scala] def nameAction(coreLabel: String) = {
+    currentActionIndex.value += 1
+    currentRuleLabel.value + coreLabel + "Action" + currentActionIndex.value
+  }
+
 }

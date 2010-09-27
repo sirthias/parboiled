@@ -27,10 +27,10 @@ class TracingTest extends ParboiledTest with TestNGSuite {
     parse(TracingParseRunner(parser.InputLine).filter(Rules.below(parser.Factor) && !Rules.below(parser.Digits)), "1+2") {
       assertEquals(traceLog,
          """InputLine/Expression/Term/Factor/Number/Digits, matched, cursor at 1:2 after "1"
-..(4)../Number/Action, matched, cursor at 1:2 after "1"
+..(4)../Number/NumberAction1, matched, cursor at 1:2 after "1"
 ..(4)../Number, matched, cursor at 1:2 after "1"
 ..(1)../Expression/ZeroOrMore/FirstOf/Sequence/Term/Factor/Number/Digits, matched, cursor at 1:4 after "1+2"
-..(7)../Number/Action, matched, cursor at 1:4 after "1+2"
+..(7)../Number/NumberAction1, matched, cursor at 1:4 after "1+2"
 ..(7)../Number, matched, cursor at 1:4 after "1+2"
 """)
     }

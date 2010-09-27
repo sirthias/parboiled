@@ -52,7 +52,7 @@ trait Parser {
           val proxy = new ProxyMatcher
           // protect block from infinite recursion by immediately caching a new Rule of type T wrapping the proxy creator
           cache += key -> creator(proxy)
-          var rule = block.label(label) // evaluate rule definition block
+          var rule = withCurrentRuleLabel(label) { block.label(label) } // evaluate rule definition block
           if (!buildParseTree || options.contains(SuppressNode)) rule = rule.suppressNode
           if (options.contains(SuppressSubnodes)) rule = rule.suppressSubnodes
           if (options.contains(SkipNode)) rule = rule.skipNode
@@ -316,7 +316,8 @@ trait Parser {
   /**
    * Create a parser action whose result value is pushed onto the value stack.
    */
-  def push[A](f: => A): Rule1[A] = new Rule1[A](new ActionMatcher(action(ok(_.getValueStack.push(f)))).label("Push1Action"))
+  def push[A](f: => A): Rule1[A] =
+    new Rule1[A](new ActionMatcher(action(ok(_.getValueStack.push(f)))).label(nameAction("Push1")))
 
   /**
    * Create a parser action whose two result values are pushed onto the value stack.
@@ -326,7 +327,7 @@ trait Parser {
       val vs: ValueStack[Any] = c.getValueStack
       vs.push(a)
       vs.push(b)
-    }))).label("Push2Action"))
+    }))).label(nameAction("Push2")))
 
   /**
    * Create a parser action whose three result values are pushed onto the value stack.
@@ -337,7 +338,7 @@ trait Parser {
       vs.push(a)
       vs.push(b)
       vs.push(c)
-    }))).label("Push3Action"))
+    }))).label(nameAction("Push3")))
 
   def withContext[R](f: Context[_] => R) = new WithContextAction[R](f)
   def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction1[A, R](f)
