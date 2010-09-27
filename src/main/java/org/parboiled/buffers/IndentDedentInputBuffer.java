@@ -73,6 +73,11 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
         return super.getPosition(translate(index));
     }
 
+    @Override
+    public String extractLine(int lineNumber) {
+        return super.extractLine(lineNumber);
+    }
+
     // translate an index into buffer2 to the equivalent index into buffer
     protected int translate(int ix2) {
         ix2 = Math.min(Math.max(ix2, 0), length2); // also allow index "length" for EOI

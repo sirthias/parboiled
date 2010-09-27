@@ -18,7 +18,6 @@ package org.parboiled.buffers;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
 import java.util.Arrays;
@@ -60,10 +59,7 @@ public class DefaultInputBuffer implements InputBuffer {
 
     @NotNull
     public String extract(int start, int end) {
-        if (start < 0) start = 0;
-        if (end >= length) end = length;
-        if (end <= start) return "";
-        return new String(buffer, start, end - start);
+        return extractInternal(start, end);
     }
 
     public Position getPosition(int index) {
@@ -86,7 +82,14 @@ public class DefaultInputBuffer implements InputBuffer {
         int start = lineNumber > 1 ? newlines[lineNumber - 2] + 1 : 0;
         int end = lineNumber <= newlines.length ? newlines[lineNumber - 1] : length;
         if (charAt(end - 1) == '\r') end--;
-        return extract(start, end);
+        return extractInternal(start, end);
+    }
+
+    private String extractInternal(int start, int end) {
+        if (start < 0) start = 0;
+        if (end >= length) end = length;
+        if (end <= start) return "";
+        return new String(buffer, start, end - start);
     }
 
     public int getLineCount() {

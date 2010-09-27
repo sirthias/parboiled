@@ -49,6 +49,8 @@ public class IndentDedentInputBufferTest {
 
         assertEquals(buf.extract(9, 16), "level 2");
         assertEquals(buf.extract(69, 105), "and back to 1\n  another level 2 again");
+        assertEquals(buf.getPosition(12), new InputBuffer.Position(2, 7));
+        assertEquals(buf.extractLine(2), "  \tlevel 2");
     }
 
     @Test
