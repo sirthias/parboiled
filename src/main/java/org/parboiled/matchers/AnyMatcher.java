@@ -18,9 +18,8 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.Characters;
+import org.parboiled.matchervisitors.MatcherVisitor;
 import org.parboiled.support.Chars;
-import org.parboiled.support.MatcherVisitor;
 
 /**
  * A {@link org.parboiled.matchers.Matcher} matching any single character except EOI.

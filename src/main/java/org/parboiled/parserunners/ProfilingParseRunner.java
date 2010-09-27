@@ -23,8 +23,8 @@ import org.parboiled.Rule;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.support.DoWithMatcherVisitor;
-import org.parboiled.support.HasCustomLabelVisitor;
+import org.parboiled.matchervisitors.HasCustomLabelVisitor;
+import org.parboiled.matchervisitors.DoWithMatcherVisitor;
 import org.parboiled.support.ValueStack;
 
 import java.text.DecimalFormat;

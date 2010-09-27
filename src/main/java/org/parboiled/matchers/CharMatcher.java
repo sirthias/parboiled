@@ -18,7 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.MatcherVisitor;
+import org.parboiled.matchervisitors.MatcherVisitor;
 
 /**
  * A {@link Matcher} matching a single given character.

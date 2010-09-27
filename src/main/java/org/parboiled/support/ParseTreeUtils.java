@@ -23,6 +23,7 @@ import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.common.StringUtils;
+import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
 
 import java.util.Collection;
 import java.util.List;

@@ -19,7 +19,7 @@ package org.parboiled.matchers;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
-import org.parboiled.support.MatcherVisitor;
+import org.parboiled.matchervisitors.MatcherVisitor;
 
 /**
  * A {@link Matcher} matching a single character out of a given range of characters.

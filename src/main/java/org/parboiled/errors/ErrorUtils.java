@@ -24,6 +24,8 @@ import org.parboiled.common.Formatter;
 import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
+import org.parboiled.matchervisitors.DefaultMatcherVisitor;
+import org.parboiled.matchervisitors.HasCustomLabelVisitor;
 import org.parboiled.support.*;
 
 import java.util.List;

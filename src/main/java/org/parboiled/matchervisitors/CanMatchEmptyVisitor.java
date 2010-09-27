@@ -14,53 +14,47 @@
  * limitations under the License.
  */
 
-package org.parboiled.support;
+package org.parboiled.matchervisitors;
 
 import org.parboiled.matchers.ActionMatcher;
 import org.parboiled.matchers.*;
+import org.parboiled.support.Checks;
 
 /**
- * A {@link MatcherVisitor} determining whether a matcher can start a match with a given char.
+ * A {@link MatcherVisitor} determining whether a matcher can legally succeed with an empty match.
  */
-public class IsStarterCharVisitor implements MatcherVisitor<Boolean> {
-
-    private final CanMatchEmptyVisitor canMatchEmptyVisitor = new CanMatchEmptyVisitor();
-    private final char starterChar;
-
-    public IsStarterCharVisitor(char starterChar) {
-        this.starterChar = starterChar;
-    }
+public class CanMatchEmptyVisitor implements MatcherVisitor<Boolean> {
 
     public Boolean visit(ActionMatcher matcher) {
-        return false;
+        return true;
     }
 
     public Boolean visit(AnyMatcher matcher) {
-        return starterChar != Chars.EOI;
+        return false;
     }
 
     public Boolean visit(CharIgnoreCaseMatcher matcher) {
-        return matcher.charLow == starterChar || matcher.charUp == starterChar;
+        return false;
     }
 
     public Boolean visit(CharMatcher matcher) {
-        return matcher.character == starterChar;
+        return false;
     }
 
     public Boolean visit(CharRangeMatcher matcher) {
-        return matcher.cLow <= starterChar && starterChar <= matcher.cHigh;
+        return false;
     }
 
     public Boolean visit(AnyOfMatcher matcher) {
-        return matcher.characters.contains(starterChar);
+        return false;
     }
 
     public Boolean visit(CustomMatcher matcher) {
-        return matcher.isStarterChar(starterChar);
+        return matcher.canMatchEmpty();
     }
 
     public Boolean visit(EmptyMatcher matcher) {
-        return false;
+        return true;
     }
 
     public Boolean visit(FirstOfMatcher matcher) {
@@ -75,31 +69,34 @@ public class IsStarterCharVisitor implements MatcherVisitor<Boolean> {
     }
 
     public Boolean visit(OneOrMoreMatcher matcher) {
-        return matcher.subMatcher.accept(this);
+        Checks.ensure(!matcher.subMatcher.accept(this),
+                "Rule '%s' must not allow empty matches as sub-rule of an OneOrMore-rule", matcher.subMatcher);
+        return false;
     }
 
     public Boolean visit(OptionalMatcher matcher) {
-        return matcher.subMatcher.accept(this);
+        return true;
     }
 
     public Boolean visit(SequenceMatcher matcher) {
         for (Matcher child : matcher.getChildren()) {
-            if (child.accept(this)) return true;
-            if (!child.accept(canMatchEmptyVisitor)) break;
+            if (!child.accept(this)) return false;
         }
-        return false;
+        return true;
     }
 
     public Boolean visit(TestMatcher matcher) {
-        return matcher.subMatcher.accept(this);
+        return true;
     }
 
     public Boolean visit(TestNotMatcher matcher) {
-        return false;
+        return true;
     }
 
     public Boolean visit(ZeroOrMoreMatcher matcher) {
-        return matcher.subMatcher.accept(this);
+        Checks.ensure(!matcher.subMatcher.accept(this),
+                "Rule '%s' must not allow empty matches as sub-rule of an ZeroOrMore-rule", matcher.subMatcher);
+        return true;
     }
 
 }

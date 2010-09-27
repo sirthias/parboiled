@@ -26,6 +26,7 @@ import org.parboiled.Rule;
 import org.parboiled.buffers.MutableInputBuffer;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
+import org.parboiled.matchervisitors.*;
 import org.parboiled.support.*;
 import static org.parboiled.support.Chars.*;
 

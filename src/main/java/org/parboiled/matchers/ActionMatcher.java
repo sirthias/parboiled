@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parboiled.*;
 import org.parboiled.errors.ActionError;
 import org.parboiled.errors.ActionException;
-import org.parboiled.support.MatcherVisitor;
+import org.parboiled.matchervisitors.MatcherVisitor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -21,6 +21,7 @@ import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.errors.InvalidInputError;
+import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
 import org.parboiled.support.*;
 
 import java.util.ArrayList;

@@ -18,7 +18,7 @@ package org.parboiled.matchers;
 
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
-import org.parboiled.support.MatcherVisitor;
+import org.parboiled.matchervisitors.MatcherVisitor;
 
 /**
  * Base class of custom matcher implementations. If you want to implement custom matchers they have to be derived
