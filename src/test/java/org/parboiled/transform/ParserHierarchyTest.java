@@ -21,9 +21,9 @@ import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.testng.annotations.Test;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
 import static org.parboiled.transform.AsmTestUtils.verifyIntegrity;
+import static org.testng.Assert.assertEquals;
 
 public class ParserHierarchyTest {
 
@@ -81,11 +81,11 @@ public class ParserHierarchyTest {
         ParserClassNode classNode = ParserTransformer.extendParserClass(Parser3.class);
         verifyIntegrity(classNode.name, classNode.getClassCode());
 
-        assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("$A()Lorg/parboiled/Rule;")), "" +
+        assertEquals(getMethodInstructionList(classNode.getRuleMethods().get("$A()Lorg/parboiled/Rule;")), "" +
                 "Method '$A':\n" +
                 " 0     GETSTATIC org/parboiled/transform/ParserHierarchyTest$Parser1.EMPTY : Lorg/parboiled/Rule;\n" +
                 " 1     ARETURN\n");
-        assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("A()Lorg/parboiled/Rule;")), "" +
+        assertEquals(getMethodInstructionList(classNode.getRuleMethods().get("A()Lorg/parboiled/Rule;")), "" +
                 "Method 'A':\n" +
                 " 0     ALOAD 0\n" +
                 " 1     GETFIELD org/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled.cache$A : Lorg/parboiled/Rule;\n" +
@@ -122,7 +122,7 @@ public class ParserHierarchyTest {
                 "32     SWAP\n" +
                 "33     PUTFIELD org/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled.cache$A : Lorg/parboiled/Rule;\n" +
                 "34     ARETURN\n");
-        assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("$B()Lorg/parboiled/Rule;")), "" +
+        assertEquals(getMethodInstructionList(classNode.getRuleMethods().get("$B()Lorg/parboiled/Rule;")), "" +
                 "Method '$B':\n" +
                 " 0     ALOAD 0\n" +
                 " 1     BIPUSH 66\n" +
@@ -138,7 +138,7 @@ public class ParserHierarchyTest {
                 "11     ANEWARRAY java/lang/Object\n" +
                 "12     INVOKEVIRTUAL org/parboiled/transform/ParserHierarchyTest$Parser1.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "13     ARETURN\n");
-        assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("B()Lorg/parboiled/Rule;")), "" +
+        assertEquals(getMethodInstructionList(classNode.getRuleMethods().get("B()Lorg/parboiled/Rule;")), "" +
                 "Method 'B':\n" +
                 " 0     ALOAD 0\n" +
                 " 1     GETFIELD org/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled.cache$B : Lorg/parboiled/Rule;\n" +
@@ -185,7 +185,7 @@ public class ParserHierarchyTest {
                 "42     SWAP\n" +
                 "43     PUTFIELD org/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled.cache$B : Lorg/parboiled/Rule;\n" +
                 "44     ARETURN\n");
-        assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("$C()Lorg/parboiled/Rule;")), "" +
+        assertEquals(getMethodInstructionList(classNode.getRuleMethods().get("$C()Lorg/parboiled/Rule;")), "" +
                 "Method '$C':\n" +
                 " 0     ALOAD 0\n" +
                 " 1     ALOAD 0\n" +
@@ -201,7 +201,7 @@ public class ParserHierarchyTest {
                 "11     ANEWARRAY java/lang/Object\n" +
                 "12     INVOKEVIRTUAL org/parboiled/transform/ParserHierarchyTest$Parser2.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "13     ARETURN\n");
-        assertEqualsMultiline(getMethodInstructionList(classNode.getRuleMethods().get("C()Lorg/parboiled/Rule;")), "" +
+        assertEquals(getMethodInstructionList(classNode.getRuleMethods().get("C()Lorg/parboiled/Rule;")), "" +
                 "Method 'C':\n" +
                 " 0     ALOAD 0\n" +
                 " 1     GETFIELD org/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled.cache$C : Lorg/parboiled/Rule;\n" +

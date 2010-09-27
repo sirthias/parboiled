@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.trees.GraphUtils.printTree;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
@@ -68,7 +67,7 @@ public class CalculatorsTest extends AbstractTest {
     public void testCalculator2() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser2.class);
 
-        assertEqualsMultiline(
+        assertEquals(
                 printTree(
                         (Matcher) parser.InputLine(),
                         new ToStringFormatter<Matcher>(),

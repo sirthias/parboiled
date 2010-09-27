@@ -1,9 +1,12 @@
 package org.parboiled
 
+import common.FileUtils
 import matchers._
 import scala._
 import rules.Rule._
-import support.{Chars, Characters}
+import support.Chars
+import io.{Codec, Source}
+import java.io.InputStream
 
 /**
  * Main parboiled for Scala Module.
@@ -51,19 +54,29 @@ package object scala {
   def group[T <: scala.Rule](rule: T) = rule.label("<group>")
 
   /**
-   * The Empty rule, a rule that always matches and consumes no input.
+   * A rule that always matches and consumes no input.
    */
   lazy val EMPTY: Rule0 = new EmptyMatcher().label("EMPTY")
 
   /**
-   * The Any rule, which matches any single character except EOI.
+   * A rule that matches any single character except EOI.
    */
   lazy val ANY: Rule0 = new AnyMatcher().label("ANY")
 
   /**
-   * The Eoi rule, which matches the End-Of-Input "character".
+   * A rule that matches the End-Of-Input non-character.
    */
   lazy val EOI: Rule0 = new CharMatcher(Chars.EOI).label("EOI")
+
+  /**
+   * A rule that matches the "INDENT" non-character as produced by the IndentDedentInputBuffer.
+   */
+  lazy val INDENT: Rule0 = new CharMatcher(Chars.INDENT).label("INDENT")
+
+  /**
+   * A rule that matches the "DEDENT" non-character as produced by the IndentDedentInputBuffer.
+   */
+  lazy val DEDENT: Rule0 = new CharMatcher(Chars.DEDENT).label("DEDENT")
 
   /**
    * The Nothing rule, which matches the End-Of-Input "character".
@@ -117,4 +130,10 @@ package object scala {
   implicit def creator4Rule5[A, B, C, D, E](m: Matcher): Rule5[A, B, C, D, E] = new Rule5[A, B, C, D, E](m)
   implicit def creator4Rule6[A, B, C, D, E, F](m: Matcher): Rule6[A, B, C, D, E, F] = new Rule6[A, B, C, D, E, F](m)
   implicit def creator4Rule7[A, B, C, D, E, F, G](m: Matcher): Rule7[A, B, C, D, E, F, G] = new Rule7[A, B, C, D, E, F, G](m)
+
+  implicit def fromCharArray(input: Array[Char]): Input = new Input(input)
+  implicit def fromString(input: String): Input = new Input(input.toCharArray)
+  implicit def fromSource(input: Source): Input = new Input(input.toArray[Char])
+  implicit def fromInputStream(input: InputStream)(implicit codec: Codec): Input =
+    new Input(FileUtils.readAllChars(input, codec.charSet))
 }

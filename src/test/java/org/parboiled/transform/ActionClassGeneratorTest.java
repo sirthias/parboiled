@@ -23,7 +23,6 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.transform.AsmTestUtils.getClassDump;
 import static org.testng.Assert.assertEquals;
 
@@ -53,7 +52,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(method.getGroups().size(), 3);
 
         InstructionGroup group = method.getGroups().get(0);
-        assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
+        assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 4113\n" +
                 "public final class org/parboiled/transform/VarInit$ojjPlntz5r61YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
@@ -77,7 +76,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "}\n");
 
         group = method.getGroups().get(1);
-        assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
+        assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 4113\n" +
                 "public final class org/parboiled/transform/Action$HCsAlhftW7cYn1dT extends org/parboiled/transform/BaseAction  {\n" +
@@ -122,7 +121,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "}\n");
 
         group = method.getGroups().get(2);
-        assertEqualsMultiline(getClassDump(group.getGroupClassCode()), "" +
+        assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 4113\n" +
                 "public final class org/parboiled/transform/Action$ARäVEaFtWytNAZGB extends org/parboiled/transform/BaseAction  {\n" +

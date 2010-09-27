@@ -26,7 +26,7 @@ import org.parboiled.support.ParsingResult;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public abstract class AbstractTest {
@@ -48,7 +48,7 @@ public abstract class AbstractTest {
             );
         }
 
-        assertEqualsMultiline(printNodeTree(result), expectedTree);
+        assertEquals(printNodeTree(result), expectedTree);
         return result;
     }
 
@@ -62,13 +62,13 @@ public abstract class AbstractTest {
                                          String expectedTree, Predicate<Node<V>> nodeFilter,
                                          Predicate<Node<V>> subTreeFilter) {
         ParsingResult<V> result = testFail(rule, input, expectedErrors);
-        assertEqualsMultiline(printNodeTree(result, nodeFilter, subTreeFilter), expectedTree);
+        assertEquals(printNodeTree(result, nodeFilter, subTreeFilter), expectedTree);
         return result;
     }
 
     public <V> ParsingResult<V> testFail(Rule rule, String input, String expectedErrors) {
         ParsingResult<V> result = RecoveringParseRunner.run(rule, input);
-        assertEqualsMultiline(printParseErrors(result), expectedErrors);
+        assertEquals(printParseErrors(result), expectedErrors);
         return result;
     }
 

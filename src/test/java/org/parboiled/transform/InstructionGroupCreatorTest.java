@@ -24,10 +24,10 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.zip.CRC32;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
-import static org.parboiled.test.TestUtils.computeCRC;
 import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
+import static org.testng.Assert.assertEquals;
 
 public class InstructionGroupCreatorTest extends TransformationTest {
 
@@ -57,7 +57,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         long crc = computeCRC(dotSource);
         if (crc != dotSourceCRC) {
             System.err.println("Invalid dotSource CRC for method '" + methodName + "': " + crc + 'L');
-            assertEqualsMultiline(dotSource, "");
+            assertEquals(dotSource, "");
         }
     }
 
@@ -121,6 +121,13 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         }).start();
         FileUtils.copyAll(process.getInputStream(), new FileOutputStream(output));
         process.waitFor();
+    }
+
+    private static long computeCRC(String text) throws Exception {
+        CRC32 crc32 = new CRC32();
+        byte[] buf = text.getBytes("UTF8");
+        crc32.update(buf);
+        return crc32.getValue();
     }
 
 }

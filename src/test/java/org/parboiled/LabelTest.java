@@ -23,7 +23,6 @@ import org.parboiled.support.ToStringFormatter;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.parboiled.trees.GraphUtils.printTree;
 import static org.testng.Assert.assertEquals;
@@ -68,7 +67,7 @@ public class LabelTest extends AbstractTest {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);
         Rule rule = parser.AOpB();
 
-        assertEqualsMultiline(printTree((Matcher) rule, new ToStringFormatter<Matcher>()), "" +
+        assertEquals(printTree((Matcher) rule, new ToStringFormatter<Matcher>()), "" +
                 "AOpB\n" +
                 "  A\n" +
                 "    Digit\n" +

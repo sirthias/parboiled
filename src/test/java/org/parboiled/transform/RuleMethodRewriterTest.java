@@ -23,8 +23,8 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
+import static org.testng.Assert.assertEquals;
 
 public class RuleMethodRewriterTest extends TransformationTest {
 
@@ -48,7 +48,7 @@ public class RuleMethodRewriterTest extends TransformationTest {
 
     @Test(dependsOnGroups = "primary")
     public void testRuleMethodRewriting() throws Exception {
-        assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithIndirectImplicitAction", processors)), "" +
+        assertEquals(getMethodInstructionList(processMethod("RuleWithIndirectImplicitAction", processors)), "" +
                 "Method 'RuleWithIndirectImplicitAction':\n" +
                 " 0     ALOAD 0\n" +
                 " 1     BIPUSH 97\n" +
@@ -70,7 +70,7 @@ public class RuleMethodRewriterTest extends TransformationTest {
                 "17     INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
                 "18     ARETURN\n");
 
-        assertEqualsMultiline(getMethodInstructionList(processMethod("RuleWithComplexActionSetup", processors)), "" +
+        assertEquals(getMethodInstructionList(processMethod("RuleWithComplexActionSetup", processors)), "" +
                 "Method 'RuleWithComplexActionSetup':\n" +
                 " 0     BIPUSH 26\n" +
                 " 1     ISTORE 2\n" +

@@ -30,7 +30,6 @@ import org.parboiled.support.Filters;
 import org.testng.annotations.Test;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -77,7 +76,7 @@ public class JavaTest {
                     printNodeTree(parsingResult, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue())
             );
         }
-        assertEqualsMultiline(
+        assertEquals(
                 printNodeTree(parsingResult, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
                 FileUtils.readAllTextFromResource("SimpleJavaTestParseTree.test")
         );

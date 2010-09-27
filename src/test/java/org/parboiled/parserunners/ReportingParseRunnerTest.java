@@ -21,13 +21,11 @@ import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.examples.calculators.CalculatorParser1;
 import org.parboiled.examples.java.JavaParser;
-import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
 import static org.testng.Assert.assertEquals;
 
 public class ReportingParseRunnerTest extends AbstractTest {
@@ -56,7 +54,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         Rule rule = parser.InputLine();
         ParsingResult result = ReportingParseRunner.run(rule, input);
         assertEquals(result.parseErrors.size(), 1);
-        assertEqualsMultiline(printParseErrors(result), expectedErrorMessage);
+        assertEquals(printParseErrors(result), expectedErrorMessage);
     }
 
     @Test
@@ -74,7 +72,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         Rule rule = parser.CompilationUnit();
         ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
-        assertEqualsMultiline(printParseErrors(result), "" +
+        assertEquals(printParseErrors(result), "" +
                 "Invalid input ';', expected Spacing, Expression or ')' (line 5, pos 32):\n" +
                 "        String name = toString(;\n" +
                 "                               ^\n");
@@ -95,7 +93,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         Rule rule = parser.CompilationUnit();
         ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
-        assertEqualsMultiline(printParseErrors(result), "" +
+        assertEquals(printParseErrors(result), "" +
                 "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
                 "        String name  toString();\n" +
                 "                     ^\n");
@@ -113,7 +111,7 @@ public class ReportingParseRunnerTest extends AbstractTest {
         Rule rule = parser.Line();
         ParsingResult result = ReportingParseRunner.run(rule, "Text;;Something");
         assertEquals(result.parseErrors.size(), 1);
-        assertEqualsMultiline(printParseErrors(result), "" +
+        assertEquals(printParseErrors(result), "" +
                 "Invalid input ';' (line 1, pos 6):\n" +
                 "Text;;Something\n" +
                 "     ^\n");

@@ -34,7 +34,7 @@ import org.parboiled.common.StringUtils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static org.parboiled.test.TestUtils.assertEqualsMultiline;
+import static org.testng.Assert.assertEquals;
 
 public class AsmTestUtils {
 
@@ -82,7 +82,7 @@ public class AsmTestUtils {
         traceMethodVisitor.print(printWriter);
         printWriter.flush();
 
-        assertEqualsMultiline(stringWriter.toString(), traceDump);
+        assertEquals(stringWriter.toString(), traceDump);
     }
 
     public static void verifyIntegrity(String classInternalName, byte[] classCode) {
