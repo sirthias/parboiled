@@ -185,11 +185,11 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
     @SuppressWarnings({"ConstantConditions"})
     protected Character findBestSingleCharInsertion(int fixIndex) {
-        GetAStarterCharVisitor getAStarterCharVisitor = new GetAStarterCharVisitor();
+        GetStarterCharVisitor getStarterCharVisitor = new GetStarterCharVisitor();
         int bestNextErrorIndex = -1;
         Character bestChar = null;
         for (MatcherPath failedMatcherPath : currentError.getFailedMatchers()) {
-            Character starterChar = failedMatcherPath.getHead().accept(getAStarterCharVisitor);
+            Character starterChar = failedMatcherPath.getHead().accept(getStarterCharVisitor);
             Preconditions.checkState(starterChar != null); // we should only have single character matchers
             if (starterChar == EOI) {
                 continue; // we should never conjure up an EOI character (that would be cheating :)

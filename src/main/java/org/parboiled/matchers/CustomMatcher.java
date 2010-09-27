@@ -24,8 +24,9 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * Base class of custom matcher implementations. If you want to implement custom matchers they have to be derived
  * from this class. Instances of derived classes can be directly used in rule defining expressions.
  * Caution: For performance reasons the parsing engine delegates the task of taking and restoring value stack
- * snapshots to the matchers. Your custom matcher implementations therefore have to take care of value stack managment
- * themselves! (See the implementation of the SequenceMatcher for hints on how to do this!) 
+ * snapshots to the matchers. If your custom matcher can run parser actions underneath it your custom matcher
+ * implementation therefore has to take care of value stack managment itselves!
+ * (See the implementation of the SequenceMatcher for hints on how to do this!)
  */
 public abstract class CustomMatcher extends AbstractMatcher {
 
@@ -62,8 +63,14 @@ public abstract class CustomMatcher extends AbstractMatcher {
      */
     public abstract boolean isStarterChar(char c);
 
+    /**
+     * Returns one of possibly several chars that a match can start with.
+     *
+     * @return a starter char
+     */
+    public abstract char getStarterChar();
+
     public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
         return visitor.visit(this);
     }
-
 }

@@ -16,10 +16,7 @@
 
 package org.parboiled.matchervisitors;
 
-import org.parboiled.matchers.AnyOfMatcher;
-import org.parboiled.matchers.CharIgnoreCaseMatcher;
-import org.parboiled.matchers.CharMatcher;
-import org.parboiled.matchers.CharRangeMatcher;
+import org.parboiled.matchers.*;
 import org.parboiled.support.Characters;
 
 import java.util.Random;
@@ -28,7 +25,7 @@ import java.util.Random;
  * Returns the first character a given matcher can start a match with.
  * For all complex matchers, i.e. the ones not always matching just one character, the visitor returns null.
  */
-public class GetAStarterCharVisitor extends DefaultMatcherVisitor<Character> {
+public class GetStarterCharVisitor extends DefaultMatcherVisitor<Character> {
 
     @Override
     public Character visit(AnyOfMatcher matcher) {
@@ -59,5 +56,10 @@ public class GetAStarterCharVisitor extends DefaultMatcherVisitor<Character> {
     @Override
     public Character visit(CharRangeMatcher matcher) {
         return matcher.cLow;
+    }
+
+    @Override
+    public Character visit(CustomMatcher matcher) {
+        return matcher.getStarterChar();
     }
 }
