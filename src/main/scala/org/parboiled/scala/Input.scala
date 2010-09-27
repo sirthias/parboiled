@@ -3,7 +3,7 @@ package org.parboiled.scala
 import org.parboiled.common.FileUtils
 import io.{Codec, Source}
 import java.io.InputStream
-import org.parboiled.buffers.DefaultInputBuffer
+import org.parboiled.buffers.{InputBuffer, IndentDedentInputBuffer, DefaultInputBuffer}
 
 object Input {
   implicit def fromCharArray(input: Array[Char]) = new Input(input)
@@ -20,6 +20,8 @@ object Input {
  * Simple wrapper around the default InputBuffer implementation to provide a place for the implicit conversions
  * defined in the companion object.
  */
-class Input(input: Array[Char]) {
-  val inputBuffer = new DefaultInputBuffer(input)
+class Input(val input: Array[Char], bufferCreator: (Array[Char] => InputBuffer) = new DefaultInputBuffer(_)) {
+  def inputBuffer: InputBuffer = bufferCreator(input)
+
+  def transformIndents(tabStop: Int = 2): Input = new Input(input, new IndentDedentInputBuffer(_, tabStop))
 }

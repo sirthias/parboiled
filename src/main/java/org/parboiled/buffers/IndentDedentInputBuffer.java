@@ -35,12 +35,12 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
     protected final int length2;
     protected final char[] buffer2;
     protected int[] newlines2;
-    protected final int tabIndent;
+    protected final int tabStop;
 
-    public IndentDedentInputBuffer(@NotNull char[] input, int tabIndent) {
+    public IndentDedentInputBuffer(@NotNull char[] input, int tabStop) {
         super(input);
-        Preconditions.checkArgument(tabIndent > 0, "tabIndent must be > 0");
-        this.tabIndent = tabIndent;
+        Preconditions.checkArgument(tabStop > 0, "tabStop must be > 0");
+        this.tabStop = tabStop;
         buffer2 = buildBuffer2();
         length2 = buffer2.length;
     }
@@ -102,7 +102,7 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
                     break;
                 case '\t':
                     cursor++;
-                    currentLevel = ((currentLevel / tabIndent) + 1) * tabIndent;
+                    currentLevel = ((currentLevel / tabStop) + 1) * tabStop;
                     break;
                 default:
                     break loop1;
@@ -132,7 +132,7 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
                     case '\t':
                         cursor++;
                         indexDelta++;
-                        indent = ((indent / tabIndent) + 1) * tabIndent;
+                        indent = ((indent / tabStop) + 1) * tabStop;
                         break;
                     default:
                         break loop2;
