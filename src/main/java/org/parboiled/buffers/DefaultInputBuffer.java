@@ -64,7 +64,6 @@ public class DefaultInputBuffer implements InputBuffer {
 
     public Position getPosition(int index) {
         buildNewlines();
-        index = Math.min(Math.max(index, 0), length); // also allow index "length" for EOI
         int line = getLine0(newlines, index);
         int column = index - (line > 0 ? newlines[line - 1] : -1);
         return new Position(line + 1, column);

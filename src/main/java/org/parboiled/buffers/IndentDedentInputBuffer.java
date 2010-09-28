@@ -73,18 +73,13 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
         return super.getPosition(translate(index));
     }
 
-    @Override
-    public String extractLine(int lineNumber) {
-        return super.extractLine(lineNumber);
-    }
-
     // translate an index into buffer2 to the equivalent index into buffer
     protected int translate(int ix2) {
         ix2 = Math.min(Math.max(ix2, 0), length2); // also allow index "length" for EOI
         int line = getLine0(newlines2, ix2);
         int original = line >= newlines.length ? buffer.length : newlines[line];
         int adapted = newlines2[Math.min(line, newlines2.length - 1)];
-        return Math.min(ix2 + original - adapted, buffer.length);
+        return ix2 + original - adapted;
     }
 
     protected char[] buildBuffer2() {
@@ -162,6 +157,7 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
         // make sure to close all remaining indentation scopes
         if (previousLevels.size() > 1) {
             sb.append('\n');
+            newlines.push(cursor);
             newlines2.push(cursor - indexDelta);
             while (previousLevels.size() > 1) {
                 previousLevels.pop();

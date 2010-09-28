@@ -35,7 +35,8 @@ public class IndentDedentInputBufferTest {
                 "        another 3\n" +
                 "and back to 1\n" +
                 "  another level 2 again").toCharArray(), 2);
-        assertEquals(getContent(buf), "" +
+        String bufContent = getContent(buf);
+        assertEquals(bufContent, "" +
                 "level 1\n" +
                 "→level 2\n" +
                 "still level 2\n" +
@@ -47,10 +48,12 @@ public class IndentDedentInputBufferTest {
                 "→another level 2 again\n" +
                 "←");
 
+        assertEquals(buf.charAt(13), 'l');
         assertEquals(buf.extract(9, 16), "level 2");
         assertEquals(buf.extract(69, 105), "and back to 1\n  another level 2 again");
         assertEquals(buf.getPosition(12), new InputBuffer.Position(2, 7));
         assertEquals(buf.extractLine(2), "  \tlevel 2");
+        assertEquals(buf.getPosition(bufContent.length() - 1), new InputBuffer.Position(10, 1));
     }
 
     @Test
