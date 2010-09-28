@@ -21,6 +21,7 @@ import org.parboiled.Node;
 import org.parboiled.Rule;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
+import org.parboiled.common.Tuple2;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
 
@@ -82,16 +83,16 @@ public class Filters {
 
     /**
      * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
-     * Enables printing of rule tracing log message for all input in the given range of input lines.
+     * Enables printing of rule tracing log messages for all input in the given range of input lines.
      *
      * @param firstLine the number of the first input line to generate tracing message for
      * @param lastLine  the number of the last input line to generate tracing message for
      * @return a predicate
      */
-    public static Predicate<Context<?>> lines(final int firstLine, final int lastLine) {
-        return new Predicate<Context<?>>() {
-            public boolean apply(Context<?> context) {
-                int line = context.getInputBuffer().getPosition(context.getCurrentIndex()).line;
+    public static Predicate<Tuple2<Context<?>, Boolean>> lines(final int firstLine, final int lastLine) {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                int line = tuple.a.getInputBuffer().getPosition(tuple.a.getCurrentIndex()).line;
                 return firstLine <= line && line <= lastLine;
             }
         };
@@ -99,45 +100,45 @@ public class Filters {
 
     /**
      * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
-     * Enables printing of rule tracing log message for all input in the given range of input lines.
+     * Enables printing of rule tracing log messages for all input in the given range of input lines.
      *
      * @param firstLine the number of the first input line to generate tracing message for
      * @return a predicate
      */
-    public static Predicate<Context<?>> fromLine(final int firstLine) {
-        return new Predicate<Context<?>>() {
-            public boolean apply(Context<?> context) {
-                return context.getInputBuffer().getPosition(context.getCurrentIndex()).line >= firstLine;
+    public static Predicate<Tuple2<Context<?>, Boolean>> fromLine(final int firstLine) {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                return tuple.a.getInputBuffer().getPosition(tuple.a.getCurrentIndex()).line >= firstLine;
             }
         };
     }
 
     /**
      * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
-     * Enables printing of rule tracing log message for all input in the given range of input lines.
+     * Enables printing of rule tracing log messages for all input in the given range of input lines.
      *
      * @param lastLine  the number of the last input line to generate tracing message for
      * @return a predicate
      */
-    public static Predicate<Context<?>> untilLine(final int lastLine) {
-        return new Predicate<Context<?>>() {
-            public boolean apply(Context<?> context) {
-                return context.getInputBuffer().getPosition(context.getCurrentIndex()).line <= lastLine;
+    public static Predicate<Tuple2<Context<?>, Boolean>> untilLine(final int lastLine) {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                return tuple.a.getInputBuffer().getPosition(tuple.a.getCurrentIndex()).line <= lastLine;
             }
         };
     }
 
     /**
      * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
-     * Enables printing of rule tracing log message for all given rules and their sub rules.
+     * Enables printing of rule tracing log messages for all given rules and their sub rules.
      *
      * @param rules the rules to generate tracing message for
      * @return a predicate
      */
-    public static Predicate<Context<?>> rules(final Rule... rules) {
-        return new Predicate<Context<?>>() {
-            public boolean apply(Context<?> context) {
-                MatcherPath path = context.getPath();
+    public static Predicate<Tuple2<Context<?>, Boolean>> rules(final Rule... rules) {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                MatcherPath path = tuple.a.getPath();
                 for (Rule rule : rules) if (path.contains((Matcher) rule)) return true;
                 return false;
             }
@@ -146,15 +147,15 @@ public class Filters {
 
     /**
      * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
-     * Enables printing of rule tracing log message for all given rules (without their sub rules).
+     * Enables printing of rule tracing log messages for all given rules (without their sub rules).
      *
      * @param rules the rules to generate tracing message for
      * @return a predicate
      */
-    public static Predicate<Context<?>> onlyRules(final Rule... rules) {
-        return new Predicate<Context<?>>() {
-            public boolean apply(Context<?> context) {
-                for (Rule rule : rules) if (context.getMatcher() == rule) return true;
+    public static Predicate<Tuple2<Context<?>, Boolean>> onlyRules(final Rule... rules) {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                for (Rule rule : rules) if (tuple.a.getMatcher() == rule) return true;
                 return false;
             }
         };
@@ -162,20 +163,48 @@ public class Filters {
 
     /**
      * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
-     * Enables printing of rule tracing log message for all sub rules of the given rules.
+     * Enables printing of rule tracing log messages for all sub rules of the given rules.
      *
      * @param rules the rules whose sub rules to generate tracing message for
      * @return a predicate
      */
-    public static Predicate<Context<?>> rulesBelow(final Rule... rules) {
-        return new Predicate<Context<?>>() {
-            public boolean apply(Context<?> context) {
-                MatcherPath path = context.getPath();
+    public static Predicate<Tuple2<Context<?>, Boolean>> rulesBelow(final Rule... rules) {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                MatcherPath path = tuple.a.getPath();
                 for (Rule rule : rules) {
                     Matcher matcher = (Matcher) rule;
                     if (path.getHead() != matcher && path.contains(matcher)) return true;
                 }
                 return false;
+            }
+        };
+    }
+
+    /**
+     * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
+     * Enables printing of rule tracing log messages for all matched rules.
+     *
+     * @return a predicate
+     */
+    public static Predicate<Tuple2<Context<?>, Boolean>> onlyMatches() {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                return tuple.b;
+            }
+        };
+    }
+
+    /**
+     * A predicate usable as a filter (element) of a {@link org.parboiled.parserunners.TracingParseRunner}.
+     * Enables printing of rule tracing log messages for all mismatched rules.
+     *
+     * @return a predicate
+     */
+    public static Predicate<Tuple2<Context<?>, Boolean>> onlyMismatches() {
+        return new Predicate<Tuple2<Context<?>, Boolean>>() {
+            public boolean apply(Tuple2<Context<?>, Boolean> tuple) {
+                return !tuple.b;
             }
         };
     }

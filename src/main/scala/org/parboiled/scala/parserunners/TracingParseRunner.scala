@@ -4,6 +4,9 @@ import org.parboiled.parserunners.{TracingParseRunner => PTracingParseRunner}
 import org.parboiled.scala._
 import org.parboiled.Context
 import utils.Predicate
+import org.parboiled.common.{Predicate => PPredicate, Tuple2 => T2}
+import org.parboiled.support.MatcherPath
+
 /**
  * A wrapper for org.parboiled.parserunners.TracingParseRunner which returns a scala ParsingResult.
  * It provides for the ability to attach filter expressions for limiting the tracing printout to certain input and/or
@@ -22,55 +25,70 @@ class TracingParseRunner[V](val inner: PTracingParseRunner[V]) extends ParseRunn
 
   /**
    * Returns a new TracingParseRunner with the attached filter predicate limiting the tracing printout.
-   * Apart from providing a custom (Context[...] => Boolean) function you can also build a predicate using a small
-   * DSL involving the builder methods provided in the Lines and Rules objects.
+   * You can supply an expression consisting of either the predefined Predicates (see the Lines, Rules, Matched and
+   * Mismatched objects) or custom functions with one of the following signatures as TracingPredicates:
+   * Context[_] => Boolean
+   * (Context[_], Boolean) => Boolean
+   *
    * For example: "Lines(10 until 20) && Rules.below(parser.Factor)".
    */
-  def filter(filter: Predicate[Context[_]]) =
-    new TracingParseRunner[V](new PTracingParseRunner[V](inner.rootMatcher, filter))
+  def filter(filter: TracingPredicate) =
+    new TracingParseRunner[V](new PTracingParseRunner[V](inner.rootMatcher, new PPredicate[T2[Context[_], Boolean]] {
+      def apply(t: T2[Context[_], Boolean]) = filter(t.a, t.b)
+    }))
 
   def traceLog: String = inner.getLog
 }
 
-object Lines {
-  def from(firstLine: Int): Predicate[Context[_]] = new Predicate[Context[_]](
-    c => c.getInputBuffer.getPosition(c.getCurrentIndex).line >= firstLine
-  )
+abstract class TracingPredicate extends Predicate[(Context[_], Boolean)]
 
-  def until(lastLine: Int): Predicate[Context[_]] = new Predicate[Context[_]](
-    c => c.getInputBuffer.getPosition(c.getCurrentIndex).line <= lastLine
-  )
+object TracingPredicate {
+  implicit def fromRawPredicate(p: Predicate[(Context[_], Boolean)]): TracingPredicate = new TracingPredicate {
+    def apply(t: (Context[_], Boolean)) = p(t)
+  }
 
-  def apply(lineRange: Range): Predicate[Context[_]] = {
-    require(lineRange.step == 1, "Ranges with step != 1 are not supported here")
-    new Predicate[Context[_]](
-      c => {
-        val line = c.getInputBuffer.getPosition(c.getCurrentIndex).line
-        lineRange.start <= line && line < lineRange.end
-      }
-    )
+  implicit def fromContextPredicate(f: Context[_] => Boolean): TracingPredicate = new TracingPredicate {
+    def apply(t: (Context[_], Boolean)) = f(t._1)
   }
 }
 
+object Lines {
+  def from(firstLine: Int): TracingPredicate = toPredicate(_ >= firstLine)
+
+  def until(lastLine: Int): TracingPredicate = toPredicate(_ <= lastLine)
+
+  def apply(lineRange: Range): TracingPredicate = {
+    require(lineRange.step == 1, "Ranges with step != 1 are not supported here")
+    toPredicate(line => { lineRange.start <= line && line < lineRange.end })
+  }
+
+  private def toPredicate(f: Int => Boolean): TracingPredicate =
+    (c: Context[_]) => f(c.getInputBuffer.getPosition(c.getCurrentIndex).line)
+}
+
 object Rules {
-  def only(rules: Rule*): Predicate[Context[_]] = {
+  def only(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
-    new Predicate[Context[_]](c => matchers.contains(c.getMatcher))
+    (c:Context[_]) => matchers.contains(c.getMatcher)
   }
 
-  def below(rules: Rule*): Predicate[Context[_]] = {
+  def below(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
-    new Predicate[Context[_]]( c => {
-      val path = c.getPath
-      matchers.exists(m => (path.getHead ne m) && path.contains(m))
-    })
+    toPredicate(path => { matchers.exists(m => (path.getHead ne m) && path.contains(m)) })
   }
 
-  def apply(rules: Rule*): Predicate[Context[_]] = {
+  def apply(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
-    new Predicate[Context[_]]( c => {
-      val path = c.getPath
-      matchers.exists(path.contains)
-    })
+    toPredicate(path => { matchers.exists(path.contains) })
   }
+
+  private def toPredicate(f: MatcherPath => Boolean): TracingPredicate = (c: Context[_]) => f(c.getPath)
+}
+
+object Matched extends TracingPredicate {
+  def apply(t: (Context[_], Boolean)) = t._2
+}
+
+object Mismatched extends TracingPredicate {
+  def apply(t: (Context[_], Boolean)) = !t._2
 }

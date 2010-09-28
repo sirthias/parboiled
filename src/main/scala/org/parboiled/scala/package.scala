@@ -8,6 +8,7 @@ import support.Chars
 import io.{Codec, Source}
 import java.io.InputStream
 import util.DynamicVariable
+import utils.Predicate
 
 /**
  * Main parboiled for Scala Module.
@@ -133,13 +134,14 @@ package object scala {
   implicit def creator4Rule6[A, B, C, D, E, F](m: Matcher): Rule6[A, B, C, D, E, F] = new Rule6[A, B, C, D, E, F](m)
   implicit def creator4Rule7[A, B, C, D, E, F, G](m: Matcher): Rule7[A, B, C, D, E, F, G] = new Rule7[A, B, C, D, E, F, G](m)
 
-  implicit def fromCharArray(input: Array[Char]): Input = new Input(input)
-  implicit def fromString(input: String): Input = new Input(input.toCharArray)
-  implicit def fromSource(input: Source): Input = new Input(input.toArray[Char])
-  implicit def fromInputStream(input: InputStream)(implicit codec: Codec): Input =
+  implicit def charArray2Input(input: Array[Char]): Input = new Input(input)
+  implicit def string2Input(input: String): Input = new Input(input.toCharArray)
+  implicit def source2Input(input: Source): Input = new Input(input.toArray[Char])
+  implicit def inputStream2Input(input: InputStream)(implicit codec: Codec): Input =
     new Input(FileUtils.readAllChars(input, codec.charSet))
 
   // helper methods
+
   private val currentRuleLabel = new DynamicVariable[String](null)
   private val currentActionIndex = new DynamicVariable[Int](0)
 

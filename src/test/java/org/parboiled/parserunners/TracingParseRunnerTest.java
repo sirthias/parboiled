@@ -16,16 +16,15 @@
 
 package org.parboiled.parserunners;
 
-import org.parboiled.Context;
 import org.parboiled.Parboiled;
-import org.parboiled.common.Predicates;
 import org.parboiled.examples.calculators.CalculatorParser1;
-import static org.parboiled.common.Predicates.not;
-import static org.parboiled.support.Filters.*;
 import org.parboiled.support.ParsingResult;
 import org.testng.annotations.Test;
 
+import static org.parboiled.common.Predicates.*;
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
+import static org.parboiled.support.Filters.rules;
+import static org.parboiled.support.Filters.rulesBelow;
 import static org.testng.Assert.assertEquals;
 
 public class TracingParseRunnerTest {
@@ -34,7 +33,7 @@ public class TracingParseRunnerTest {
     public void testTracingParseRunner() {
         CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
         TracingParseRunner<Integer> runner = new TracingParseRunner<Integer>(parser.InputLine(),
-                Predicates.<Context<?>>and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits())))
+                and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits())))
         );
         ParsingResult<Integer> result = runner.run("2*(4+5");
 

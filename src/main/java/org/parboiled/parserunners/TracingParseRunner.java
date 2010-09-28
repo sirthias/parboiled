@@ -23,6 +23,7 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
+import org.parboiled.common.Tuple2;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
@@ -35,7 +36,7 @@ import org.parboiled.support.MatcherPath;
 public class TracingParseRunner<V> extends BasicParseRunner<V> {
 
     private final StringBuilder log = new StringBuilder();
-    private final Predicate<Context<?>> filter;
+    private final Predicate<Tuple2<Context<?>, Boolean>> filter;
 
     /**
      * Creates a new TracingParseRunner instance for the given rule.
@@ -43,20 +44,25 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule the parser rule
      */
     public TracingParseRunner(@NotNull Rule rule) {
-        this(rule, Predicates.<Context<?>>alwaysTrue());
+        this(rule, Predicates.alwaysTrue());
     }
 
     /**
      * Creates a new TracingParseRunner instance for the given rule.
-     * If the given filter is not null it will be used to select the matchers to print tracing statements for.
-     * The Printab
+     * If the given filter is used to select the matchers to print tracing statements for.
+     * NOTE: The given filter must be of type Predicate<Tuple2<Context<?>, Boolean>>. The reason this type is not
+     * directly specified in the constructors signature is that this would make predicate expressions using the
+     * {@link Predicates} operations and the predefined predicate constructors in {@link org.parboiled.support.Filters}
+     * much more cumbersome to write (due to Java limited type parameters inference logic you would have to explicitly
+     * state the type parameters in many places). 
      *
      * @param rule   the parser rule
      * @param filter the matcher filter selecting the matchers to print tracing statements for.
      */
-    public TracingParseRunner(@NotNull Rule rule, @NotNull Predicate<Context<?>> filter) {
+    @SuppressWarnings({"unchecked"})
+    public TracingParseRunner(@NotNull Rule rule, @NotNull Predicate<?> filter) {
         super(rule);
-        this.filter = filter;
+        this.filter = (Predicate<Tuple2<Context<?>, Boolean>>)filter;
     }
 
     public String getLog() {
@@ -67,7 +73,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
     @Override
     protected boolean runRootContext() {
         // run a basic match
-        if (runRootContext(new Handler(rootMatcher, log, filter), true)) {
+        if (runRootContext(new Handler(log, filter), true)) {
             return true;
         }
 
@@ -92,13 +98,11 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      * For the actual matching this handler relies on another, inner {@link org.parboiled.MatchHandler} instance it delegates to.
      */
     public static class Handler implements MatchHandler {
-        private final Matcher rootMatcher;
         private final StringBuilder log;
-        private final Predicate<Context<?>> filter;
+        private final Predicate<Tuple2<Context<?>, Boolean>> filter;
         private MatcherPath lastPath;
 
-        public Handler(Matcher rootMatcher, StringBuilder log, Predicate<Context<?>> filter) {
-            this.rootMatcher = rootMatcher;
+        public Handler(StringBuilder log, Predicate<Tuple2<Context<?>, Boolean>> filter) {
             this.log = log;
             this.filter = filter;
         }
@@ -113,7 +117,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
         public boolean match(MatcherContext<?> context) {
             Matcher matcher = context.getMatcher();
             boolean matched = matcher.match(context);
-            if (filter.apply(context)) {
+            if (filter.apply(new Tuple2<Context<?>, Boolean>(context, matched))) {
                 print(context, matched);
             }
             return matched;
