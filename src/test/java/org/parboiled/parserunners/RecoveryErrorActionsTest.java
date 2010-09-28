@@ -78,7 +78,7 @@ public class RecoveryErrorActionsTest extends AbstractTest {
         "Invalid input 'x...', expected B (line 1, pos 2):\n" +
                 "axx\n" +
                 " ^^\n");
-        assertEquals(toList(result.valueStack), Arrays.asList(2.0, 1, "", ""));
+        assertEquals(toList(result.valueStack), Arrays.asList(2.0, 1, "", "a"));
     }
 
     private <T> List<T> toList(Iterable<T> iterable) {

@@ -345,12 +345,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             // by resyncing we flip an unmatched sequence to a matched one, so in order to keep the value stack
             // consistent we go into a special "error action mode" and execute the minimal set of actions underneath
             // the resync sequence
-            List<ActionMatcher> actions = context.getMatcher().accept(new CollectResyncActionsVisitor());
-            Matcher[] rules = ObjectArrays
-                    .concat((Matcher) BaseParser.EMPTY, actions.toArray(new Matcher[actions.size()]));
-            for (Matcher matcher : rules) {
-                matcher.getSubContext(context).runMatcher();
-            }
+            executeErrorActions(context);
 
             // skip over all characters that are not legal followers of the failed Sequence
             context.advanceIndex(1); // gobble RESYNC marker
@@ -363,6 +358,35 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
 
             return true;
+        }
+
+        private void executeErrorActions(MatcherContext context) {
+            // the context is for the resync action, which at this point has FAILED, i.e. ALL its sub actions haven't
+            // had a chance to change the value stack, even the ones having run before the actual parse error matcher
+            // so we need to rerun all sub matchers of the resync sequence up to the point of the parse error
+            // and then run the minimal set of action in "error action mode"
+
+            context.setCurrentIndex(context.getStartIndex()); // restart matching the resync sequence
+
+            Matcher lastGoodSub = lastMatchPath.get(context.getLevel() + 1);
+            boolean errorMode = false;
+
+            for (Matcher sub : context.getMatcher().getChildren()) {
+                if (errorMode) {
+                    for (ActionMatcher action : sub.accept(new CollectResyncActionsVisitor())) {
+                        action.getSubContext(context).runMatcher();
+                    }
+                    continue;
+                }
+                // as long as we are before the error matcher we simply execute normally
+                sub.getSubContext(context).runMatcher();
+                
+                if (sub == lastGoodSub) {
+                    // run an empty matcher which all error actions will see as the immediately preceding rule
+                    context.getSubContext((Matcher) BaseParser.EMPTY).runMatcher();
+                    errorMode = true;
+                }
+            }
         }
 
         protected int gobbleIllegalCharacters(MatcherContext context, List<Matcher> followMatchers) {

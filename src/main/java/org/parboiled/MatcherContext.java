@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.InputBuffer;
+import org.parboiled.common.ImmutableLinkedList;
 import org.parboiled.common.StringUtils;
 import org.parboiled.errors.BasicParseError;
 import org.parboiled.errors.GrammarException;
@@ -68,7 +69,7 @@ public class MatcherContext<V> implements Context<V> {
     private char currentChar;
     private Matcher matcher;
     private Node<V> node;
-    private List<Node<V>> subNodes = ImmutableList.of();
+    private ImmutableLinkedList<Node<V>> subNodes = ImmutableLinkedList.nil();
     private int intTag;
     private boolean hasError;
     private boolean nodeSuppressed;
@@ -164,7 +165,7 @@ public class MatcherContext<V> implements Context<V> {
 
     @NotNull
     public List<Node<V>> getSubNodes() {
-        return subNodes;
+        return subNodes.reverse();
     }
 
     public boolean inPredicate() {
@@ -268,7 +269,7 @@ public class MatcherContext<V> implements Context<V> {
     @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
         if (!nodeSuppressed && !matcher.isNodeSkipped()) {
-            node = new NodeImpl<V>(matcher, subNodes, startIndex, currentIndex,
+            node = new NodeImpl<V>(matcher, getSubNodes(), startIndex, currentIndex,
                     valueStack.isEmpty() ? null : valueStack.peek(), hasError);
 
             MatcherContext<V> nodeParentContext = parent;
@@ -277,7 +278,7 @@ public class MatcherContext<V> implements Context<V> {
                     nodeParentContext = nodeParentContext.getParent();
                     Checks.ensure(nodeParentContext != null, "Root rule must not be marked @SkipNode");
                 }
-                nodeParentContext.addChildNode(node);
+                nodeParentContext.subNodes = nodeParentContext.subNodes.prepend(node);
             }
         }
     }
@@ -299,7 +300,7 @@ public class MatcherContext<V> implements Context<V> {
         sc.startIndex = sc.currentIndex = currentIndex;
         sc.currentChar = currentChar;
         sc.node = null;
-        sc.subNodes = ImmutableList.of();
+        sc.subNodes = ImmutableLinkedList.nil();
         sc.nodeSuppressed = nodeSuppressed || this.matcher.areSubnodesSuppressed() || matcher.isNodeSuppressed();
         sc.hasError = false;
         return sc;
@@ -326,22 +327,5 @@ public class MatcherContext<V> implements Context<V> {
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer) +
             '\n' + e);
         }
-    }
-
-    //////////////////////////////// PRIVATE ////////////////////////////////////
-
-    @SuppressWarnings({"fallthrough"})
-    private void addChildNode(@NotNull Node<V> node) {
-        int size = subNodes.size();
-        if (size == 0) {
-            subNodes = ImmutableList.of(node);
-            return;
-        }
-        if (size == 1) {
-            Node<V> node0 = subNodes.get(0);
-            subNodes = new ArrayList<Node<V>>(4);
-            subNodes.add(node0);
-        }
-        subNodes.add(node);
     }
 }
