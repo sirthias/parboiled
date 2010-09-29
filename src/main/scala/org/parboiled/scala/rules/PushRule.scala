@@ -1,19 +1,18 @@
 package org.parboiled.scala.rules
 
 import org.parboiled.matchers._
-import annotation.unchecked.uncheckedVariance
 import java.lang.String
 import Rule._
 
 /**
  * The base class of all rules pushing a certain number of elements onto the parser value stack.
  */
-sealed abstract class PushRule(matcher: Matcher) extends Rule(matcher)
+sealed abstract class PushRule extends Rule
 
 /**
  * A rule pushing one new value of a given type onto the parsers value stack.
  */
-class Rule1[+A](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule1[+A](val matcher: Matcher) extends PushRule {
   def ~[Y, Z, AA >: A](other: PopRule3[Y, Z, AA]) = new PopRule2[Y, Z](append(other))
   def ~[Z, AA >: A](other: PopRule2[Z, AA]) = new PopRule1[Z](append(other))
   def ~[AA >: A](other: PopRule1[AA]) = new Rule0(append(other))
@@ -54,7 +53,7 @@ object Rule1 {
 /**
  * A rule pushing two new values of given types onto the parsers value stack.
  */
-class Rule2[+A, +B](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule2[+A, +B](val matcher: Matcher) extends PushRule {
   def ~[Z, AA >: A, BB >: B](other: PopRule3[Z, AA, BB]) = new PopRule1[Z](append(other))
   def ~[AA >: A, BB >: B](other: PopRule2[AA, BB]) = new Rule0(append(other))
   def ~[BB >: B](other: PopRule1[BB]) = new Rule1[A](append(other))
@@ -96,7 +95,7 @@ class Rule2[+A, +B](matcher: Matcher) extends PushRule(matcher: Matcher) {
 /**
  * A rule pushing 3 new values of given types onto the parsers value stack.
  */
-class Rule3[+A, +B, +C](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule3[+A, +B, +C](val matcher: Matcher) extends PushRule {
   def ~[AA >: A, BB >: B, CC >: C](other: PopRule3[AA, BB, CC]) = new Rule0(append(other))
   def ~[BB >: B, CC >: C](other: PopRule2[BB, CC]) = new Rule1[A](append(other))
   def ~[CC >: C](other: PopRule1[CC]) = new Rule2[A, B](append(other))
@@ -143,7 +142,7 @@ class Rule3[+A, +B, +C](matcher: Matcher) extends PushRule(matcher: Matcher) {
 /**
  * A rule pushing 4 new values of given types onto the parsers value stack.
  */
-class Rule4[+A, +B, +C, +D](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule4[+A, +B, +C, +D](val matcher: Matcher) extends PushRule {
   def ~[BB >: B, CC >: C, DD >: D](other: PopRule3[BB, CC, DD]) = new Rule1[A](append(other))
   def ~[CC >: C, DD >: D](other: PopRule2[CC, DD]) = new Rule2[A, B](append(other))
   def ~[DD >: D](other: PopRule1[DD]) = new Rule3[A, B, C](append(other))
@@ -195,7 +194,7 @@ class Rule4[+A, +B, +C, +D](matcher: Matcher) extends PushRule(matcher: Matcher)
 /**
  * A rule pushing 5 new values of given types onto the parsers value stack.
  */
-class Rule5[+A, +B, +C, +D, +E](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule5[+A, +B, +C, +D, +E](val matcher: Matcher) extends PushRule {
   def ~[CC >: C, DD >: D, EE >: E](other: PopRule3[CC, DD, EE]) = new Rule2[A, B](append(other))
   def ~[DD >: D, EE >: E](other: PopRule2[DD, EE]) = new Rule3[A, B, C](append(other))
   def ~[EE >: E](other: PopRule1[EE]) = new Rule4[A, B, C, D](append(other))
@@ -249,7 +248,7 @@ class Rule5[+A, +B, +C, +D, +E](matcher: Matcher) extends PushRule(matcher: Matc
 /**
  * A rule pushing 6 new values of given types onto the parsers value stack.
  */
-class Rule6[+A, +B, +C, +D, +E, +F](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule6[+A, +B, +C, +D, +E, +F](val matcher: Matcher) extends PushRule {
   def ~[DD >: D, EE >: E, FF >: F](other: PopRule3[DD, EE, FF]) = new Rule3[A, B, C](append(other))
   def ~[EE >: E, FF >: F](other: PopRule2[EE, FF]) = new Rule4[A, B, C, D](append(other))
   def ~[FF >: F](other: PopRule1[FF]) = new Rule5[A, B, C, D, E](append(other))
@@ -305,7 +304,7 @@ class Rule6[+A, +B, +C, +D, +E, +F](matcher: Matcher) extends PushRule(matcher: 
 /**
  * A rule pushing 7 new values of given types onto the parsers value stack.
  */
-class Rule7[+A, +B, +C, +D, +E, +F, +G](matcher: Matcher) extends PushRule(matcher: Matcher) {
+class Rule7[+A, +B, +C, +D, +E, +F, +G](val matcher: Matcher) extends PushRule {
   def ~[EE >: E, FF >: F, GG >: G](other: PopRule3[EE, FF, GG]) = new Rule4[A, B, C, F](append(other))
   def ~[FF >: F, GG >: G](other: PopRule2[FF, GG]) = new Rule5[A, B, C, D, F](append(other))
   def ~[GG >: G](other: PopRule1[GG]) = new Rule6[A, B, C, D, E, F](append(other))

@@ -4,12 +4,12 @@ import org.parboiled.matchers._
 /**
  * The base class of all reduction rules, which take a certain number of input values and produce one output value.
  */
-abstract class ReductionRule(matcher: Matcher) extends Rule(matcher)
+abstract class ReductionRule extends Rule
 
 /**
  * A rule taking one value off the value stack and replacing it with another value.
  */
-class ReductionRule1[-Z, +R](matcher: Matcher) extends ReductionRule(matcher) {
+class ReductionRule1[-Z, +R](val matcher: Matcher) extends ReductionRule {
   def ~[X, Y](other: PopRule3[X, Y, R]) = new PopRule3[X, Y, Z](append(other))
   def ~[Y](other: PopRule2[Y, R]) = new PopRule2[Y, Z](append(other))
   def ~(other: PopRule1[R]) = new PopRule1[Z](append(other))
@@ -23,7 +23,7 @@ class ReductionRule1[-Z, +R](matcher: Matcher) extends ReductionRule(matcher) {
 /**
  * A rule taking two values off the value stack and replacing them with one other value.
  */
-class ReductionRule2[-Y, -Z, +R](matcher: Matcher) extends ReductionRule(matcher) {
+class ReductionRule2[-Y, -Z, +R](val matcher: Matcher) extends ReductionRule {
   def ~[X](other: PopRule2[X, R]) = new PopRule3[X, Y, Z](append(other))
   def ~(other: PopRule1[R]) = new PopRule2[Y, Z](append(other))
   def ~[X, T](other: ReductionRule2[X, R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
@@ -35,7 +35,7 @@ class ReductionRule2[-Y, -Z, +R](matcher: Matcher) extends ReductionRule(matcher
 /**
  * A rule taking three values off the value stack and replacing them with one other value.
  */
-class ReductionRule3[-X, -Y, -Z, +R](matcher: Matcher) extends ReductionRule(matcher) {
+class ReductionRule3[-X, -Y, -Z, +R](val matcher: Matcher) extends ReductionRule {
   def ~(other: PopRule1[R]) = new PopRule3[X, Y, Z](append(other))
   def ~[T](other: ReductionRule1[R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
   def |[XX <: X, YY <: Y, ZZ <: Z, RR >: R](other: ReductionRule3[XX, YY, ZZ, RR]) = new ReductionRule3[XX, YY, ZZ, RR](appendChoice(other))

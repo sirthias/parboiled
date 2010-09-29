@@ -132,6 +132,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
             for (int i = skipPrefix + 1; i < path.length(); i++) {
                 log.append('/').append(path.get(i));
             }
+            String line = context.getInputBuffer().extractLine(pos.line);
             log.append(", ")
                     .append(matched ? "matched" : "failed")
                     .append(", cursor at ")
@@ -139,7 +140,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
                     .append(':')
                     .append(pos.column)
                     .append(" after \"")
-                    .append(context.getInputBuffer().extractLine(pos.line).substring(0, pos.column - 1))
+                    .append(line.substring(0, Math.min(line.length(), pos.column - 1)))
                     .append("\"\n");
             lastPath = path;
         }

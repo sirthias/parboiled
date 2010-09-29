@@ -11,7 +11,8 @@ import Rule._
 /**
  * The base class of all scala parser rules.
  */
-abstract class Rule(val matcher: Matcher) {
+abstract class Rule {
+  val matcher: Matcher
 
   /**
    * Creates a "NOT" syntactic predicate according to the PEG formalism.

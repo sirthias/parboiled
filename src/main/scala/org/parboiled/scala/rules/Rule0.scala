@@ -7,7 +7,7 @@ import Rule._
 /**
  * A rule which does not affect the parsers value stack.
  */
-class Rule0(matcher: Matcher) extends Rule(matcher) {
+class Rule0(val matcher: Matcher) extends Rule {
   def ~[X, Y, Z](other: PopRule3[X, Y, Z]) = new PopRule3[X, Y, Z](append(other))
   def ~[Y, Z](other: PopRule2[Y, Z]) = new PopRule2[Y, Z](append(other))
   def ~[Z](other: PopRule1[Z]) = new PopRule1[Z](append(other))

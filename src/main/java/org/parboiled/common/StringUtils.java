@@ -72,6 +72,10 @@ public final class StringUtils {
                 return "INS_ERROR";
             case Chars.RESYNC:
                 return "RESYNC";
+            case Chars.INDENT:
+                return "INDENT";
+            case Chars.DEDENT:
+                return "DEDENT";
             case Chars.EOI:
                 return "EOI";
             default:
