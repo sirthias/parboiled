@@ -53,7 +53,7 @@ public class VarFramingTest extends AbstractTest {
         }
         
         public Rule SomeRule(Var<Integer> var) {
-            return ToRule(var.get() == count++);
+            return toRule(var.get() == count++);
         }
 
     }

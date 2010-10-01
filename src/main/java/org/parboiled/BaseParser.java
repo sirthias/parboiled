@@ -72,7 +72,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given character. Normally you can just specify the character literal
-     * directly in you rule description. However, if you don't want to go through {@link #FromCharLiteral(char)},
+     * directly in you rule description. However, if you don't want to go through {@link #fromCharLiteral(char)},
      * e.g. because you redefined it, you can also use this wrapper.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
@@ -166,7 +166,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
-     * directly in you rule description. However, if you want to not go through {@link #FromStringLiteral(String)},
+     * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
      * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
@@ -181,7 +181,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
-     * directly in you rule description. However, if you want to not go through {@link #FromStringLiteral(String)},
+     * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.
      * <p>Note: This methods carries a {@link Cached} annotation, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
@@ -263,9 +263,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Label("FirstOf")
     public Rule FirstOf(@NotNull Object[] rules) {
         if (rules.length == 1) {
-            return ToRule(rules[0]);
+            return toRule(rules[0]);
         }
-        Rule[] convertedRules = ToRules(rules);
+        Rule[] convertedRules = toRules(rules);
         char[][] chars = new char[rules.length][];
         for (int i = 0, convertedRulesLength = convertedRules.length; i < convertedRulesLength; i++) {
             Object rule = convertedRules[i];
@@ -290,7 +290,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Label("OneOrMore")
     public Rule OneOrMore(Object rule) {
-        return new OneOrMoreMatcher(ToRule(rule));
+        return new OneOrMoreMatcher(toRule(rule));
     }
 
     /**
@@ -321,7 +321,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Label("Optional")
     public Rule Optional(Object rule) {
-        return new OptionalMatcher(ToRule(rule));
+        return new OptionalMatcher(toRule(rule));
     }
 
     /**
@@ -366,7 +366,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Label("Sequence")
     public Rule Sequence(@NotNull Object[] rules) {
-        return rules.length == 1 ? ToRule(rules[0]) : new SequenceMatcher(ToRules(rules));
+        return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
     }
 
     /**
@@ -386,7 +386,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @SuppressNode
     public Rule Test(Object rule) {
-        Rule subMatcher = ToRule(rule);
+        Rule subMatcher = toRule(rule);
         return new TestMatcher(subMatcher).label("&(" + subMatcher + ")");
     }
 
@@ -429,7 +429,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @SuppressNode
     public Rule TestNot(Object rule) {
-        Rule subMatcher = ToRule(rule);
+        Rule subMatcher = toRule(rule);
         return new TestNotMatcher(subMatcher).label("!(" + subMatcher + ")");
     }
 
@@ -467,7 +467,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @Label("ZeroOrMore")
     public Rule ZeroOrMore(Object rule) {
-        return new ZeroOrMoreMatcher(ToRule(rule));
+        return new ZeroOrMoreMatcher(toRule(rule));
     }
 
     /**
@@ -510,7 +510,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule
      */
     @DontExtend
-    protected Rule FromCharLiteral(char c) {
+    protected Rule fromCharLiteral(char c) {
         return Ch(c);
     }
 
@@ -523,8 +523,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule
      */
     @DontExtend
-    protected Rule FromStringLiteral(@NotNull String string) {
-        return FromCharArray(string.toCharArray());
+    protected Rule fromStringLiteral(@NotNull String string) {
+        return fromCharArray(string.toCharArray());
     }
 
     /**
@@ -536,7 +536,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule
      */
     @DontExtend
-    protected Rule FromCharArray(@NotNull char[] array) {
+    protected Rule fromCharArray(@NotNull char[] array) {
         return String(array);
     }
 
@@ -546,10 +546,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @param objects the objects to convert
      * @return the rules corresponding to the given objects
      */
-    public Rule[] ToRules(@NotNull Object... objects) {
+    @DontExtend
+    public Rule[] toRules(@NotNull Object... objects) {
         Rule[] rules = new Rule[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            rules[i] = ToRule(objects[i]);
+            rules[i] = toRule(objects[i]);
         }
         return rules;
     }
@@ -562,11 +563,11 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule corresponding to the given object
      */
     @DontExtend
-    public Rule ToRule(Object obj) {
+    public Rule toRule(Object obj) {
         if (obj instanceof Rule) return (Rule) obj;
-        if (obj instanceof Character) return FromCharLiteral((Character) obj);
-        if (obj instanceof String) return FromStringLiteral((String) obj);
-        if (obj instanceof char[]) return FromCharArray((char[]) obj);
+        if (obj instanceof Character) return fromCharLiteral((Character) obj);
+        if (obj instanceof String) return fromStringLiteral((String) obj);
+        if (obj instanceof char[]) return fromCharArray((char[]) obj);
         if (obj instanceof Action) {
             Action action = (Action) obj;
             return new ActionMatcher(action).label(action.toString());

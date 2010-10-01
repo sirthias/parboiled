@@ -43,8 +43,8 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     public Rule Factor() {
-        // by using ToRule("^ ") instead of Ch('^') we make use of the FromCharLiteral(...) transformation below
-        return OperatorRule(Atom(), ToRule("^ "));
+        // by using toRule("^ ") instead of Ch('^') we make use of the fromCharLiteral(...) transformation below
+        return OperatorRule(Atom(), toRule("^ "));
     }
 
     public Rule OperatorRule(Rule subRule, Rule operatorRule) {
@@ -96,7 +96,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     // literal ends with a space character, this way we don't have to insert extra whitespace() rules after each
     // character or string literal
     @Override
-    protected Rule FromStringLiteral(@NotNull String string) {
+    protected Rule fromStringLiteral(@NotNull String string) {
         return string.endsWith(" ") ?
                 Sequence(String(string.substring(0, string.length() - 1)), WhiteSpace()) :
                 String(string);

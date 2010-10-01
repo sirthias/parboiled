@@ -1114,9 +1114,9 @@ public class JavaParser extends BaseParser<Object> {
     //-------------------------------------------------------------------------
 
     @Override
-    protected Rule FromCharLiteral(char c) {
+    protected Rule fromCharLiteral(char c) {
         // turn of creation of parse tree nodes for single characters
-        return super.FromCharLiteral(c).suppressNode();
+        return super.fromCharLiteral(c).suppressNode();
     }
 
     @SuppressNode

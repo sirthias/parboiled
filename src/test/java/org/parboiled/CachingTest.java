@@ -53,7 +53,7 @@ public class CachingTest extends AbstractTest {
 
         @Label("FirstOf")
         public Rule FirstOf_uncached(Object... rules) {
-            return new FirstOfMatcher(ToRules(rules));
+            return new FirstOfMatcher(toRules(rules));
         }
 
     }
