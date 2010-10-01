@@ -45,7 +45,8 @@ public class HasCustomLabelVisitor extends DefaultMatcherVisitor<Boolean> {
 
     @Override
     public Boolean visit(SequenceMatcher matcher) {
-        return !"Sequence".equals(matcher.getLabel()) && !"<group>".equals(matcher.getLabel());
+        String label = matcher.getLabel();
+        return !("Sequence".equals(label) || "<group>".equals(label) || "nTimes".equals(label));
     }
 
     @Override

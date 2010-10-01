@@ -82,7 +82,7 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
    */
-  def optional[A](sub: Rule1[A]): Rule1[Option[A]] = sub ~~> (Some(_)) | push(None)
+  def optional[A](sub: Rule1[A]): Rule1[Option[A]] = (sub ~~> (Some(_)) | push(None)).label("Optional")
 
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
@@ -100,7 +100,8 @@ trait Parser {
    * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
    */
   def zeroOrMore[A](sub: Rule1[A]): Rule1[List[A]] =
-    push(Nil) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> ((list: List[A]) => list.reverse)
+    (push(Nil) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~>
+            ((list: List[A]) => list.reverse)).label("ZeroOrMore")
 
   /**
    * <p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
@@ -113,7 +114,7 @@ trait Parser {
    * <li>...</li>
    * </ul>
    */
-  def zeroOrMore(sub: Rule0, separator: Rule0): Rule0 = optional(oneOrMore(sub, separator))
+  def zeroOrMore(sub: Rule0, separator: Rule0): Rule0 = optional(oneOrMore(sub, separator)).label("ZeroOrMore")
 
   /**
    * <p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
@@ -127,7 +128,8 @@ trait Parser {
    * </ul>
    * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
    */
-  def zeroOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = oneOrMore(sub, separator) | push(Nil)
+  def zeroOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] =
+    (oneOrMore(sub, separator) | push(Nil)).label("ZeroOrMore")
 
   /**
    *  Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
@@ -146,7 +148,8 @@ trait Parser {
    * If the sub rule did not match at all the pushed list will be empty.
    */
   def oneOrMore[A](sub: Rule1[A]): Rule1[List[A]] =
-    sub ~~> (List(_)) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
+    (sub ~~> (List(_)) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~>
+            (_.reverse)).label("OneOrMore")
 
   /**
    * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
@@ -158,7 +161,7 @@ trait Parser {
    * <li>...</li>
    * </ul>
    */
-  def oneOrMore(sub: Rule0, separator: Rule0): Rule0 = sub ~ zeroOrMore(separator ~ sub)
+  def oneOrMore(sub: Rule0, separator: Rule0): Rule0 = (sub ~ zeroOrMore(separator ~ sub)).label("OneOrMore")
 
   /**
    * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
@@ -172,7 +175,8 @@ trait Parser {
    * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
    */
   def oneOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] =
-    sub ~~> (List(_)) ~ zeroOrMore(separator ~ sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
+    (sub ~~> (List(_)) ~ zeroOrMore(separator ~ sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~>
+            (_.reverse)).label("OneOrMore")
 
   /**
    * Matches the given sub rule a specified number of times.
@@ -184,13 +188,13 @@ trait Parser {
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes(times: Int, sub: Rule0, separator: Rule0): Rule0 = times match {
+  def nTimes(times: Int, sub: Rule0, separator: Rule0): Rule0 = (times match {
     case 0 => EMPTY
     case 1 => sub
     case n if n > 1 =>
       (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
-  }
+  }).label("nTimes")
 
   /**
    * Matches the given sub rule a specified number of times.
@@ -202,13 +206,13 @@ trait Parser {
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z], separator: Rule0): ReductionRule1[Z, Z] = times match {
+  def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z], separator: Rule0): ReductionRule1[Z, Z] = (times match {
     case 0 => new ReductionRule1[Z, Z](EMPTY.matcher)
     case 1 => sub
     case n if n > 1 =>
       (if (separator != null) nTimes(times - 1, sub, separator) ~ separator else nTimes(times - 1, sub)) ~ sub
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
-  }
+  }).label("nTimes")
 
   /**
    * Matches the given sub rule a specified number of times.
@@ -220,12 +224,12 @@ trait Parser {
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes[A](times: Int, sub: Rule1[A], separator: Rule0): Rule1[List[A]] = times match {
+  def nTimes[A](times: Int, sub: Rule1[A], separator: Rule0): Rule1[List[A]] = (times match {
     case 0 => push(Nil)
     case 1 => sub ~~> (List(_))
     case n if n > 1 => nTimesInternal(times, sub, separator) ~~> (_.reverse)
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
-  }
+  }).label("nTimes")
 
   private def nTimesInternal[A](times: Int, sub: Rule1[A], separator: Rule0): Rule1[List[A]] = times match {
     case 1 => sub ~~> (List(_))
