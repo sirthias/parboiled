@@ -958,36 +958,36 @@ Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 (2*ab4-7
         ^
 ===
-[InputLine, {-5}]E '(2*-7)'
-  [Expression, {-5}]E '(2*-7)'
-    [Term, {-5}]E '(2*-7)'
-      [Factor, {-5}]E '(2*-7)'
-        [Parens, {-5}]E '(2*-7)'
+[InputLine, {-7}]E '(2*-7)'
+  [Expression, {-7}]E '(2*-7)'
+    [Term, {-7}]E '(2*-7)'
+      [Factor, {-7}]E '(2*-7)'
+        [Parens, {-7}]E '(2*-7)'
           ['('] '('
-          [Expression, {-5}]E '2*-7'
-            [Term, {2}]E '2*'
+          [Expression, {-7}]E '2*-7'
+            [Term, {0}]E '2*'
               [Factor, {2}] '2'
                 [Number, {2}] '2'
                   [Digits] '2'
-              [ZeroOrMore, {2}]E '*'
-                [FirstOf, {2}]E '*'
+              [ZeroOrMore, {0}]E '*'
+                [FirstOf, {0}]E '*'
                   [Sequence, {2}]E '*'
                     ['*', {2}] '*'
-            [ZeroOrMore, {-5}] '-7'
-              [FirstOf, {-5}] '-7'
-                [Sequence, {-5}] '-7'
-                  ['-', {2}] '-'
+            [ZeroOrMore, {-7}] '-7'
+              [FirstOf, {-7}] '-7'
+                [Sequence, {-7}] '-7'
+                  ['-', {0}] '-'
                   [Term, {7}] '7'
                     [Factor, {7}] '7'
                       [Number, {7}] '7'
-                        [Digits, {2}] '7'
+                        [Digits, {0}] '7'
                     [ZeroOrMore, {7}]
-          [')', {-5}]E ')'
-      [ZeroOrMore, {-5}]
-    [ZeroOrMore, {-5}]
-  [EOI, {-5}]
+          [')', {-7}]E ')'
+      [ZeroOrMore, {-7}]
+    [ZeroOrMore, {-7}]
+  [EOI, {-7}]
 ###
->>>(2++*(5-1xy)y+1
+(2++*(5-1xy)y+1
 ===
 Invalid input '+', expected Term (line 1, pos 4):
 (2++*(5-1xy)y+1

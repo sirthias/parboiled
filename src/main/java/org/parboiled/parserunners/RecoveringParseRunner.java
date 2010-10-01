@@ -17,7 +17,6 @@
 package org.parboiled.parserunners;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ObjectArrays;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.BaseParser;
 import org.parboiled.MatchHandler;
@@ -27,13 +26,17 @@ import org.parboiled.buffers.MutableInputBuffer;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
 import org.parboiled.matchervisitors.*;
-import org.parboiled.support.*;
-import static org.parboiled.support.Chars.*;
+import org.parboiled.support.Chars;
+import org.parboiled.support.MatcherPath;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ValueStack;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.parboiled.support.Chars.*;
 
 /**
  * A {@link ParseRunner} implementation that is able to recover from {@link InvalidInputError}s in the input and therefore
@@ -368,7 +371,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
             context.setCurrentIndex(context.getStartIndex()); // restart matching the resync sequence
 
-            Matcher lastGoodSub = lastMatchPath.get(context.getLevel() + 1);
+            Matcher lastGoodSub = lastMatchPath != null ? lastMatchPath.get(context.getLevel() + 1) : null;
             boolean errorMode = false;
 
             for (Matcher sub : context.getMatcher().getChildren()) {
