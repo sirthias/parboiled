@@ -98,7 +98,6 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
         private final int errorIndex;
         private final MatchHandler inner;
         private final List<MatcherPath> failedMatchers = new ArrayList<MatcherPath>();
-        private MatcherPath lastMatch;
         private InvalidInputError parseError;
         private boolean seeking;
 
@@ -138,8 +137,7 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
             seeking = errorIndex > 0;
             inner.matchRoot(rootContext);
 
-            parseError =
-                    new InvalidInputError(rootContext.getInputBuffer(), errorIndex, lastMatch, failedMatchers, null);
+            parseError = new InvalidInputError(rootContext.getInputBuffer(), errorIndex, failedMatchers, null);
             rootContext.getParseErrors().add(parseError);
             return false;
         }
@@ -148,7 +146,6 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
             boolean matched = inner.match(context);
             if (context.getCurrentIndex() == errorIndex) {
                 if (matched && seeking) {
-                    lastMatch = context.getPath();
                     seeking = false;
                 }
                 if (!matched && !seeking && context.getMatcher().accept(isSingleCharMatcherVisitor)) {

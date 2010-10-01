@@ -21,11 +21,11 @@ import org.parboiled.Context;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.common.Tuple2;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
 
 /**
@@ -126,12 +126,9 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
         private void print(MatcherContext<?> context, boolean matched) {
             InputBuffer.Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
             MatcherPath path = context.getPath();
-            int skipPrefix = Math.max(path.getCommonPrefixLength(lastPath) - 1, 0);
-            if (skipPrefix > 0) log.append("..(").append(skipPrefix).append(")../");
-            log.append(path.get(skipPrefix));
-            for (int i = skipPrefix + 1; i < path.length(); i++) {
-                log.append('/').append(path.get(i));
-            }
+            MatcherPath prefix = lastPath != null ? path.commonPrefix(lastPath) : null;
+            if (prefix != null && prefix.length() > 1) log.append("..(").append(prefix.length() - 1).append(")../");
+            log.append(path.toString(prefix != null ? prefix.parent : null));
             String line = context.getInputBuffer().extractLine(pos.line);
             log.append(", ")
                     .append(matched ? "matched" : "failed")

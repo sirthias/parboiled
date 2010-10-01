@@ -17,7 +17,6 @@
 package org.parboiled;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.ImmutableLinkedList;
@@ -29,7 +28,6 @@ import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
@@ -70,6 +68,7 @@ public class MatcherContext<V> implements Context<V> {
     private Matcher matcher;
     private Node<V> node;
     private ImmutableLinkedList<Node<V>> subNodes = ImmutableLinkedList.nil();
+    private MatcherPath path;
     private int intTag;
     private boolean hasError;
     private boolean nodeSuppressed;
@@ -152,7 +151,11 @@ public class MatcherContext<V> implements Context<V> {
 
     @NotNull
     public MatcherPath getPath() {
-        return new MatcherPath(this);
+        if (path == null) {
+            path = new MatcherPath(new MatcherPath.Element(matcher, startIndex, level),
+                    parent != null ? parent.getPath() : null);
+        }
+        return path;
     }
 
     public int getLevel() {
@@ -191,8 +194,9 @@ public class MatcherContext<V> implements Context<V> {
     public char getFirstMatchChar() {
         checkActionContext();
         int ix = subContext.startIndex;
-        if (subContext.currentIndex <= ix)
+        if (subContext.currentIndex <= ix) {
             throw new GrammarException("getFirstMatchChar called but previous rule did not match anything");
+        }
         return inputBuffer.charAt(ix);
     }
 
@@ -209,7 +213,7 @@ public class MatcherContext<V> implements Context<V> {
     private void checkActionContext() {
         // make sure all the constraints are met
         Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
-                        intTag > 0 && subContext.matcher instanceof ActionMatcher,
+                intTag > 0 && subContext.matcher instanceof ActionMatcher,
                 "Illegal call to getMatch(), getMatchStartIndex() or getMatchEndIndex(), " +
                         "only valid in Sequence rule actions that are not in first position");
     }
@@ -284,14 +288,14 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public final MatcherContext<V> getBasicSubContext() {
-        return subContext == null ?
-
-                // init new level
-                subContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, matchHandler, this, level + 1,
-                        fastStringMatching) :
-
-                // reuse existing instance
-                subContext;
+        if (subContext == null) {
+            // init new level
+            subContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, matchHandler, this, level + 1,
+                        fastStringMatching);
+        } else {
+            subContext.path = null; // we always need to reset the MatcherPath, even for actions
+        }
+        return subContext;
     }
 
     public final MatcherContext<V> getSubContext(Matcher matcher) {
@@ -325,7 +329,7 @@ public class MatcherContext<V> implements Context<V> {
                     printParseError(new BasicParseError(inputBuffer, currentIndex,
                             StringUtils.escape(String.format("Error while parsing %s '%s' at input position",
                                     matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer) +
-            '\n' + e);
+                            '\n' + e);
         }
     }
 }

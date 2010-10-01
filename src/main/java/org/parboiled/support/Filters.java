@@ -174,7 +174,7 @@ public class Filters {
                 MatcherPath path = tuple.a.getPath();
                 for (Rule rule : rules) {
                     Matcher matcher = (Matcher) rule;
-                    if (path.getHead() != matcher && path.contains(matcher)) return true;
+                    if (tuple.a.getMatcher() != matcher && path.contains(matcher)) return true;
                 }
                 return false;
             }

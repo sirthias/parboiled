@@ -34,8 +34,8 @@ public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInput
     public String format(InvalidInputError error) {
         if (error == null) return "";
 
-        String errorMessage = String.format("Invalid input '%s%s'",
-                StringUtils.escape(String.valueOf(error.getInputBuffer().charAt(error.getStartIndex()))),
+        String errorMessage = String.format("Invalid input '%s%s'", StringUtils.escape(String.valueOf(
+                error.getInputBuffer().charAt(error.getStartIndex()))),
                 error.getEndIndex() - error.getStartIndex() > 1 ? "..." : ""
         );
         String expectedString = getExpectedString(error);
@@ -43,9 +43,17 @@ public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInput
     }
 
     public String getExpectedString(InvalidInputError error) {
+        // In non recovery-mode there is no complexity in the error and start indices since they are all stable.
+        // However, in recovery-mode the RecoveringParseRunner inserts characters into the InputBuffer, which requires
+        // for all indices taken before to be shifted. The RecoveringParseRunner does this by changing the indexDelta
+        // of the parse runner. All users of the ParseError will then automatically see shifted start and end indices
+        // matching the state of the underlying InputBuffer. However, since the failed MatcherPaths still carry the
+        // "original" indices we need to unapply the IndexDelta in order to be able to compare with them.
+        int pathStartIndex = error.getStartIndex() - error.getIndexDelta();
+
         List<String> labelList = new ArrayList<String>();
         for (MatcherPath path : error.getFailedMatchers()) {
-            Matcher labelMatcher = ErrorUtils.findProperLabelMatcher(path, error.getLastMatch());
+            Matcher labelMatcher = ErrorUtils.findProperLabelMatcher(path, pathStartIndex);
             if (labelMatcher == null) continue;
             String[] labels = getLabels(labelMatcher);
             for (String label : labels) {

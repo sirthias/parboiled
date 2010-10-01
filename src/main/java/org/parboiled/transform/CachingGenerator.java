@@ -126,7 +126,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack: <hashMap>
 
         // if we have more than one parameter or the parameter is an array we have to wrap with our Arguments class
-        // since we need to unroll all inner arrays and apply custom hashcode(...) and equals(...) implementations
+        // since we need to unroll all inner arrays and apply custom hashCode(...) and equals(...) implementations
         if (paramTypes.length > 1 || paramTypes[0].getSort() == Type.ARRAY) {
             // generate: push new Arguments(new Object[] {<params>})
 

@@ -16,7 +16,6 @@
 
 package org.parboiled.errors;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.InputBuffer;
 
@@ -26,9 +25,10 @@ import org.parboiled.buffers.InputBuffer;
 public class BasicParseError implements ParseError {
 
     private final InputBuffer inputBuffer;
-    private int startIndex;
+    private final int startIndex;
     private int endIndex;
-    private String errorMessage;
+    private final String errorMessage;
+    private int indexDelta;
 
     public BasicParseError(@NotNull InputBuffer inputBuffer, int errorIndex, String errorMessage) {
         this.inputBuffer = inputBuffer;
@@ -43,39 +43,26 @@ public class BasicParseError implements ParseError {
     }
 
     public int getStartIndex() {
-        return startIndex;
-    }
-
-    /**
-     * Sets the end index of this error. Must be greater than the start index.
-     *
-     * @param startIndex the start index
-     */
-    public void setStartIndex(int startIndex) {
-        Preconditions.checkArgument(startIndex >= 0);
-        this.startIndex = startIndex;
+        return startIndex + indexDelta;
     }
 
     public int getEndIndex() {
-        return endIndex;
+        return endIndex + indexDelta;
     }
 
-    /**
-     * Sets the end index of this error. Must be greater than the start index.
-     *
-     * @param endIndex the end index
-     */
     public void setEndIndex(int endIndex) {
-        Preconditions.checkArgument(endIndex > getStartIndex());
-        this.endIndex = endIndex;
+        this.endIndex = endIndex - indexDelta;
     }
 
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public int getIndexDelta() {
+        return indexDelta;
     }
 
+    public void shiftIndexDeltaBy(int delta) {
+        this.indexDelta += delta;
+    }
 }

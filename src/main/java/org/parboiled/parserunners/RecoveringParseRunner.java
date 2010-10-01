@@ -148,27 +148,27 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             if (nextErrorAfterBestSingleCharFix == nextErrorAfterDeletion) {
                 buffer.insertChar(fixIndex, DEL_ERROR);
                 errorIndex = nextErrorAfterDeletion + 1;
-                shiftCurrentErrorIndicesBy(1);
+                currentError.shiftIndexDeltaBy(1);
             } else if (nextErrorAfterBestSingleCharFix == nextErrorAfterBestInsertion) {
-                // we need to insert the characters in reverse order, since we insert twice on the same location
+                // we need to insert the characters in reverse order, since we insert twice at the same location
                 buffer.insertChar(fixIndex, bestInsertionCharacter);
                 buffer.insertChar(fixIndex, INS_ERROR);
                 errorIndex = nextErrorAfterBestInsertion + 2;
-                shiftCurrentErrorIndicesBy(2);
+                currentError.shiftIndexDeltaBy(2);
             } else {
-                // we need to insert the characters in reverse order, since we insert twice on the same location
+                // we need to insert the characters in reverse order, since we insert three times at the same location
                 buffer.insertChar(fixIndex + 1, bestReplacementCharacter);
                 buffer.insertChar(fixIndex + 1, INS_ERROR);
                 buffer.insertChar(fixIndex, DEL_ERROR);
                 errorIndex = nextErrorAfterBestReplacement + 5;
-                shiftCurrentErrorIndicesBy(1);
+                currentError.shiftIndexDeltaBy(1);
             }
         } else {
             // we can't fix the error with a single char fix, so fall back to resynchronization
             // however, if we are already at EOI there is not much more we can do
             if (buffer.charAt(fixIndex) == EOI) return true;
             buffer.insertChar(fixIndex, RESYNC);
-            shiftCurrentErrorIndicesBy(1);
+            currentError.shiftIndexDeltaBy(1);
             attemptRecordingMatch(); // find the next parse error
         }
         return errorIndex == -1;
@@ -178,7 +178,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         buffer.insertChar(fixIndex, DEL_ERROR);
         boolean nowErrorFree = attemptRecordingMatch();
         if (nowErrorFree) {
-            shiftCurrentErrorIndicesBy(1); // compensate for the inserted DEL_ERROR char
+            currentError.shiftIndexDeltaBy(1); // compensate for the inserted DEL_ERROR char
         } else {
             buffer.undoCharInsertion(fixIndex);
             errorIndex = Math.max(errorIndex - 1, 0);
@@ -192,7 +192,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         int bestNextErrorIndex = -1;
         Character bestChar = null;
         for (MatcherPath failedMatcherPath : currentError.getFailedMatchers()) {
-            Character starterChar = failedMatcherPath.getHead().accept(getStarterCharVisitor);
+            Character starterChar = failedMatcherPath.element.matcher.accept(getStarterCharVisitor);
             Preconditions.checkState(starterChar != null); // we should only have single character matchers
             if (starterChar == EOI) {
                 continue; // we should never conjure up an EOI character (that would be cheating :)
@@ -200,7 +200,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             buffer.insertChar(fixIndex, starterChar);
             buffer.insertChar(fixIndex, INS_ERROR);
             if (attemptRecordingMatch()) {
-                shiftCurrentErrorIndicesBy(2); // compensate for the inserted chars
+                currentError.shiftIndexDeltaBy(2); // compensate for the inserted chars
                 return null; // success, exit immediately
             }
             buffer.undoCharInsertion(fixIndex);
@@ -223,17 +223,12 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         buffer.insertChar(fixIndex, DEL_ERROR);
         Character bestChar = findBestSingleCharInsertion(fixIndex + 2);
         if (bestChar == null) { // success, we found a fix that renders the complete input error free
-            shiftCurrentErrorIndicesBy(-1); // delta from DEL_ERROR char insertion and index shift by insertion method
+            currentError.shiftIndexDeltaBy(-1); // delta from DEL_ERROR char insertion and index shift by insertion method
         } else {
             buffer.undoCharInsertion(fixIndex);
             errorIndex = Math.max(errorIndex - 3, 0);
         }
         return bestChar;
-    }
-
-    private void shiftCurrentErrorIndicesBy(int delta) {
-        currentError.setStartIndex(currentError.getStartIndex() + delta);
-        currentError.setEndIndex(currentError.getEndIndex() + delta);
     }
 
     /**
@@ -371,7 +366,8 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
 
             context.setCurrentIndex(context.getStartIndex()); // restart matching the resync sequence
 
-            Matcher lastGoodSub = lastMatchPath != null ? lastMatchPath.get(context.getLevel() + 1) : null;
+            Matcher lastGoodSub = lastMatchPath == null ? null :
+                    lastMatchPath.getElementAtLevel(context.getLevel() + 1).matcher;
             boolean errorMode = false;
 
             for (Matcher sub : context.getMatcher().getChildren()) {

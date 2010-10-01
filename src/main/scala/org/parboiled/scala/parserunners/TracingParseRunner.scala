@@ -74,7 +74,7 @@ object Rules {
 
   def below(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
-    toPredicate(path => { matchers.exists(m => (path.getHead ne m) && path.contains(m)) })
+    toPredicate(path => { matchers.exists(m => (path.element.matcher ne m) && path.contains(m)) })
   }
 
   def apply(rules: Rule*): TracingPredicate = {

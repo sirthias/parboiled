@@ -16,17 +16,15 @@
 
 package org.parboiled.errors;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.DefaultInputBuffer;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
-import org.parboiled.common.Reference;
 import org.parboiled.common.StringUtils;
-import org.parboiled.matchers.*;
-import org.parboiled.matchervisitors.DefaultMatcherVisitor;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.matchervisitors.HasCustomLabelVisitor;
-import org.parboiled.support.*;
+import org.parboiled.support.MatcherPath;
+import org.parboiled.support.ParsingResult;
 
 import java.util.List;
 
@@ -41,48 +39,15 @@ public final class ErrorUtils {
      * Finds the Matcher in the given failedMatcherPath whose label is best for presentation in "expected" strings
      * of parse error messages, given the provided lastMatchPath.
      *
-     * @param failedMatcherPath the path to the failed matcher
-     * @param lastMatchPath     the path of the last match
+     * @param path the path to the failed matcher
+     * @param errorIndex        the start index of the respective parse error
      * @return the matcher whose label is best for presentation in "expected" strings
      */
-    public static Matcher findProperLabelMatcher(@NotNull final MatcherPath failedMatcherPath,
-                                                 MatcherPath lastMatchPath) {
-        int commonPrefixLength = failedMatcherPath.getCommonPrefixLength(lastMatchPath);
-        if (lastMatchPath != null && commonPrefixLength == lastMatchPath.length()) {
-            return failedMatcherPath.getHead();
-        }
-
-        final Reference<Integer> ix = new Reference<Integer>();
-
-        DefaultMatcherVisitor<Boolean> hasProperLabelVisitor = new HasCustomLabelVisitor() {
-            @Override
-            public Boolean visit(SequenceMatcher matcher) {
-                // if the sequence only has the default label we never use it
-                if (!super.visit(matcher)) return false;
-
-                // a sequence should never be the deepest matcher of a failed matcher path
-                Preconditions.checkState(ix.get() + 1 < failedMatcherPath.length());
-
-                // we only accept the sequence name as a good label if the failed matcher is its first "real" child
-                Matcher failedSub = failedMatcherPath.get(ix.get() + 1);
-                Matcher firstSub = null;
-                for (int i = 0; i < matcher.getChildren().size(); i++) {
-                    Matcher sub = matcher.getChildren().get(i);
-                    // OptionalMatchers and zeroOrMoreMatchers do not count
-                    if (sub instanceof OptionalMatcher || sub instanceof ZeroOrMoreMatcher) continue;
-                    firstSub = ProxyMatcher.unwrap(sub);
-                    break;
-                }
-                return firstSub == failedSub;
-            }
-        };
-
-        for (int i = commonPrefixLength; i < failedMatcherPath.length(); i++) {
-            ix.set(i);
-            Matcher matcher = failedMatcherPath.get(i);
-            if (matcher.accept(hasProperLabelVisitor)) {
-                return matcher;
-            }
+    public static Matcher findProperLabelMatcher(@NotNull MatcherPath path, int errorIndex) {
+        Matcher found = path.parent != null ? findProperLabelMatcher(path.parent, errorIndex) : null;
+        if (found != null) return found;
+        if (path.element.startIndex == errorIndex && path.element.matcher.accept(new HasCustomLabelVisitor())) {
+            return path.element.matcher;
         }
         return null;
     }

@@ -37,6 +37,11 @@ public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
         }
 
         @Override
+        public Object last() {
+            throw new UnsupportedOperationException("last of empty list");
+        }
+
+        @Override
         public ListIterator<Object> listIterator(int index) {
             return iterator;
         }
@@ -69,6 +74,14 @@ public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
         return tail;
     }
 
+    public T last() {
+        ImmutableLinkedList<T> cursor = this;
+        while (!cursor.tail.isEmpty()) {
+            cursor = cursor.tail();
+        }
+        return cursor.head();
+    }
+
     public ImmutableLinkedList<T> prepend(T object) {
         return new ImmutableLinkedList<T>(object, this);
     }
@@ -85,6 +98,14 @@ public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
         return reversed;
     }
 
+    public static <T> boolean equal(@NotNull ImmutableLinkedList<T> a, @NotNull ImmutableLinkedList<T> b) {
+        return Utils.equal(a.head, b.head) && equal(a.tail, b.tail);
+    }
+
+    public static int hashCode(@NotNull ImmutableLinkedList<?> list) {
+        return list.isEmpty() ? 0 : 31 * list.head.hashCode() + hashCode(list.tail);
+    }
+
     @Override
     public ListIterator<T> listIterator(int index) {
         ListIterator<T> iterator = new IllIterator<T>(this);
@@ -96,8 +117,19 @@ public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return this == NIL;
+    }
+
+    @Override
     public int size() {
-        return this == NIL ? 0 : tail.size() + 1;
+        ImmutableLinkedList<T> cursor = this;
+        int size = 0;
+        while (!cursor.isEmpty()) {
+            size++;
+            cursor = cursor.tail();
+        }
+        return size;
     }
 
     private static class IllIterator<T> implements ListIterator<T> {

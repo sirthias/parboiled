@@ -28,23 +28,12 @@ import java.util.List;
  */
 public class InvalidInputError extends BasicParseError {
 
-    private final MatcherPath lastMatch;
     private final List<MatcherPath> failedMatchers;
 
-    public InvalidInputError(@NotNull InputBuffer inputBuffer, int startIndex, MatcherPath lastMatch,
+    public InvalidInputError(@NotNull InputBuffer inputBuffer, int startIndex,
                              @NotNull List<MatcherPath> failedMatchers, String errorMessage) {
         super(inputBuffer, startIndex, errorMessage);
-        this.lastMatch = lastMatch;
         this.failedMatchers = failedMatchers;
-    }
-
-    /**
-     * Gets the path to the matcher that matched the character immediately before the parse error location.
-     *
-     * @return the MatcherPatch
-     */
-    public MatcherPath getLastMatch() {
-        return lastMatch;
     }
 
     /**
@@ -56,6 +45,5 @@ public class InvalidInputError extends BasicParseError {
     public List<MatcherPath> getFailedMatchers() {
         return failedMatchers;
     }
-
 }
 

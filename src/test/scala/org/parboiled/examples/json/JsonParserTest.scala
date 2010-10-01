@@ -55,7 +55,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuite {
   def testJsonParserError() {
     failParse(ReportingParseRunner(parser.Json), "XYZ") {
       assertEquals(errors,
-        """|Invalid input 'X', expected WhiteSpace or Json (line 1, pos 1):
+        """|Invalid input 'X', expected Json (line 1, pos 1):
            |XYZ
            |^
            |""".stripMargin

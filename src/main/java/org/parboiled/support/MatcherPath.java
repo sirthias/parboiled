@@ -18,69 +18,85 @@ package org.parboiled.support;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.parboiled.MatcherContext;
-import org.parboiled.common.Utils;
 import org.parboiled.matchers.Matcher;
-
-import java.util.Arrays;
 
 /**
  * Holds a snapshot of the current {@link Matcher} stack at a certain point during the parsing process.
+ * Implemented as a specialized, immutable single-linked list of Element objects with the deepest stack Element
+ * in the first position and the root at the end.
  */
 public class MatcherPath {
 
-    private final Matcher[] matchers;
+    public static class Element {
+        public final Matcher matcher;
+        public final int startIndex;
+        public final int level;
 
-    @SuppressWarnings({"ConstantConditions"})
-    public MatcherPath(@NotNull MatcherContext context) {
-        this(context.getLevel() + 1);
-        while (context != null) {
-            matchers[context.getLevel()] = context.getMatcher();
-            context = context.getParent();
+        public Element(Matcher matcher, int startIndex, int level) {
+            this.matcher = matcher;
+            this.startIndex = startIndex;
+            this.level = level;
         }
     }
 
-    private MatcherPath(int length) {
-        matchers = new Matcher[length];
+    @NotNull
+    public final Element element;
+    public final MatcherPath parent;
+
+    /**
+     * Constructs a new MatcherPath wrapping the given elements.
+     * Normally you don't construct a MatcherPath directly but rather call {@link org.parboiled.Context#getPath()} to
+     * get one.
+     *
+     * @param element the last element of this path
+     * @param parent  the parent path
+     */
+    public MatcherPath(@NotNull Element element, MatcherPath parent) {
+        this.element = element;
+        this.parent = parent;
     }
 
     /**
      * @return the length of this path, i.e. the number of matchers contained in it
      */
     public int length() {
-        return matchers.length;
+        return element.level + 1;
     }
 
     /**
-     * Returns the matcher with the given index.
+     * Determines whether this path is a prefix of the given other path.
      *
-     * @param i the index to get
-     * @return the matcher at the given index
+     * @param that the other path
+     * @return true if this path is a prefix of the given other path
      */
-    public Matcher get(int i) {
-        Preconditions.checkElementIndex(i, matchers.length);
-        return matchers[i];
+    public boolean isPrefixOf(@NotNull MatcherPath that) {
+        return element.level <= that.element.level &&
+                (this == that || (that.parent != null && isPrefixOf(that.parent)));
     }
 
     /**
-     * @return the deepest matcher of the path
+     * Returns the Element at the given level.
+     * @param level the level to get the element from
+     * @return the element
      */
-    public Matcher getHead() {
-        return matchers[matchers.length - 1];
+    public Element getElementAtLevel(int level) {
+        Preconditions.checkArgument(level >= 0);
+        if (level > element.level) return null;
+        if (level < element.level) return parent.getElementAtLevel(level);
+        return element;
     }
 
     /**
-     * Determines the length of the longest common path prefix of this path and the given other path.
+     * Returns the common prefix of this MatcherPath and the given other one.
      *
-     * @param other the other path
-     * @return the length of the longest common path prefix of this path and the given other path
+     * @param that the other path
+     * @return the common prefix or null
      */
-    public int getCommonPrefixLength(MatcherPath other) {
-        if (other == null) return 0;
-        for (int i = 0; i < matchers.length; i++) {
-            if (other.length() == i || matchers[i] != other.get(i)) return i;
-        }
-        return matchers.length;
+    public MatcherPath commonPrefix(@NotNull MatcherPath that) {
+        if (element.level > that.element.level) return parent.commonPrefix(that);
+        if (element.level < that.element.level) return commonPrefix(that.parent);
+        if (this == that) return this;
+        return (parent != null && that.parent != null) ? parent.commonPrefix(that.parent) : null;
     }
 
     /**
@@ -90,54 +106,20 @@ public class MatcherPath {
      * @return true if contained
      */
     public boolean contains(Matcher matcher) {
-        return indexOf(matcher) != -1;
-    }
-
-    /**
-     * Finds the index of this matcher in this path, with 0 being the root and getMatchers().length -1 being the head.
-     *
-     * @param matcher the matcher to find
-     * @return the index if found, -1 if not found
-     */
-    public int indexOf(Matcher matcher) {
-        for (int i = 0; i < matchers.length; i++) {
-            if (matchers[i] == matcher) return i;
-        }
-        return -1;
-    }
-
-    /**
-     * Determines whether this path is a prefix of the given other path.
-     *
-     * @param other the other path
-     * @return true if this path is a prefix of the given other path
-     */
-    public boolean isPrefixOf(MatcherPath other) {
-        return getCommonPrefixLength(other) == length();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MatcherPath)) return false;
-        MatcherPath that = (MatcherPath) o;
-        return Arrays.equals(matchers, that.matchers);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(matchers);
+        return element.matcher == matcher || (parent != null && parent.contains(matcher));
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(Utils.toString(matchers[0]));
-        for (int i = 1; i < matchers.length; i++) {
-            sb.append('/');
-            sb.append(matchers[i]);
-        }
-        return sb.toString();
+        return toString(null);
+    }
+
+    public String toString(MatcherPath skipPrefix) {
+        return print(new StringBuilder(), skipPrefix).toString();
+    }
+
+    private StringBuilder print(StringBuilder sb, MatcherPath skipPrefix) {
+        return (parent == skipPrefix ? sb : parent.print(sb, skipPrefix).append('/')).append(element.matcher);
     }
 
 }

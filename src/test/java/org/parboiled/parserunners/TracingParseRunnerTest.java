@@ -75,7 +75,7 @@ public class TracingParseRunnerTest {
                 "..(11)../Sequence/Expression_Action1, matched, cursor at 1:7 after \"2*(4+5\"\n" +
                 "..(11)../Sequence, matched, cursor at 1:7 after \"2*(4+5\"\n" +
                 "..(10)../FirstOf, matched, cursor at 1:7 after \"2*(4+5\"\n" +
-                "..(10)../FirstOf/Sequence/'+', failed, cursor at 1:7 after \"2*(4+5\"\n" +
+                "..(9)../ZeroOrMore/FirstOf/Sequence/'+', failed, cursor at 1:7 after \"2*(4+5\"\n" +
                 "..(11)../Sequence, failed, cursor at 1:7 after \"2*(4+5\"\n" +
                 "..(10)../FirstOf/Sequence/'-', failed, cursor at 1:7 after \"2*(4+5\"\n" +
                 "..(11)../Sequence, failed, cursor at 1:7 after \"2*(4+5\"\n" +
