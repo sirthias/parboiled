@@ -16,7 +16,9 @@
 
 package org.parboiled.support;
 
-public interface Chars {
+public class Chars {
+
+    private Chars() {}
 
     /**
      * The End-of-Input non-character.

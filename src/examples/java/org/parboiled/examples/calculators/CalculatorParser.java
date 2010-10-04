@@ -35,7 +35,7 @@ import static org.parboiled.trees.GraphUtils.printTree;
  * Base class of all calculator parsers in the org.parboiled.examples.calculators package.
  * Simply adds the public static main entry point.
  *
- * @param <V>
+ * @param <V> the type of the main value object created by the parser
  */
 public abstract class CalculatorParser<V> extends BaseParser<V> {
 

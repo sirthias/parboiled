@@ -1,3 +1,32 @@
+Version 0.9.9.0 (2010-10-04)
+----------------------------
+- BREAKING CHANGES:
+  - Moved all named MatcherVisitor implementations from org.parboiled.support to new package org.parboiled.matchervisitors
+  - Moved InputBuffer implementations from org.parboiled.support to to new package org.parboiled.buffers
+  - Moved special character definitions from org.parboiled.Characters class into dedicated class org.parboiled.Characters
+  - Decapitalized not-extended rule construction helper methods in BaseParser (e.g. ToRule -> toRule) for better compliance with the style guide
+  - New MatcherPath implementation, not more "lastMatch" property in InvalidInputError
+- Significantly extended Scala facade:
+  - Cleaner structure, faster rule building, faster rules (e.g. enabled fast-string-matching for FirstOf operator)
+  - More flexible action functions (more action operators, 'withContext' actions)
+  - Added missing variance annotations to rule types and aliases
+  - Added org.parboiled.scala.testing.ParboiledTest trait for simplified parser testing
+  - More and better scala wrappers (ParseRunners, ParsingResult, parsing Input)
+- Added TracingParseRunner as another important debugging tool
+- Added IndentDedentInputBuffer supporting line indentation based grammars
+- Added Context.getFirstMatchChar and helpers in Java and Scala
+- Added NothingMatcher as counterpart to the EmptyMatcher, along with respective rule constants
+- Added missing 'getStarterChar' functionality to CustomMatcher base class
+- Improved filtering of Node and Matcher tree printing with simple predicate logic
+- Fixed incorrect parse error reporting in some cases
+- Fixed in Scala facade: Some standard rule builders don't group their sub rules correctly
+- Fixed bug in RecoveringParseRunner causing NPE if very first char was not matched
+- Fixed bug in RecoveryParseRunner incorrectly executing pre-error sub rules of resync sequences
+- Fixed bug preventing the creation of 'action-only' rules
+- Fixed bug in FirstOfStringsMatcher preventing the matching of alternatives that are prefixes of other alternatives
+- Fixed matcher labelling problem in Scala facade
+- Many smaller cleanups and improvements
+
 Version 0.9.8.2 (2010-08-13)
 ----------------------------
 - BREAKING CHANGES:
