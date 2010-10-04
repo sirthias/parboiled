@@ -26,8 +26,8 @@
         <span class="name">Input</span><span class="result"> extends AnyRef</span>
       </span>
       </h4>
-      <div class="fullcomment" id="comment"><div class="comment cmt"><p>Simple wrapper around the default InputBuffer implementation to provide a place for the implicit conversions
-defined in the companion object.
+      <div class="fullcomment" id="comment"><div class="comment cmt"><p>Simple Input abstraction serving as the target of a number of implicit conversions defined in the
+org.parboiled.scala package object.
 </p></div><div class="block">
             go to: <a href="Input$.html">companion</a>
           </div>
@@ -57,7 +57,7 @@ defined in the companion object.
       <h4 class="signature">
       <span class="kind">new</span>
       <span class="symbol">
-        <span class="name">Input</span><span class="params">(<span name="input">input: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span>
+        <span class="name">Input</span><span class="params">(<span name="input">input: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="bufferCreator">bufferCreator: (<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]) ⇒ <span class="extype" name="org.parboiled.buffers.InputBuffer">InputBuffer</span> = <span class="default">((x$1: Array[Char]) =&gt; new org.parboiled.buffers.DefaultInputBuffer(x$1))</span></span>)</span>
       </span>
       </h4>
       
@@ -234,6 +234,14 @@ part of compilation it is not possible to check whether the contents of the list
             
           </div>
           
+    </li><li visbl="pub" name="org.parboiled.scala.Input#collectContents">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">collectContents</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="scala.AnyRef#eq">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -363,11 +371,19 @@ to verify that the behavior is consistent with the <code>equals</code> method.
             
           </div>
           
-    </li><li visbl="pub" name="org.parboiled.scala.Input#inputBuffer">
+    </li><li visbl="pub" name="org.parboiled.scala.Input#input">
       <h4 class="signature">
       <span class="kind">val</span>
       <span class="symbol">
-        <span class="name">inputBuffer</span><span class="result">: <span class="extype" name="org.parboiled.support.DefaultInputBuffer">DefaultInputBuffer</span></span>
+        <span class="name">input</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.Input#inputBuffer">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">inputBuffer</span><span class="result">: <span class="extype" name="org.parboiled.buffers.InputBuffer">InputBuffer</span></span>
       </span>
       </h4>
       
@@ -483,6 +499,23 @@ possible to check whether the contents of the list are of the requested typed.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>a string representation of the object.</p></dd></dl><div class="block">
           definition classes: AnyRef → Any
         </div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.Input#transformIndents">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">transformIndents</span><span class="params">(<span name="tabStop">tabStop: <span class="extype" name="scala.Int">Int</span> = <span class="default">2</span></span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.Input">Input</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Causes the input to be wrapped with a IndentDedentInputBuffer.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Causes the input to be wrapped with a IndentDedentInputBuffer.
+</p></div>
             
             
             

@@ -26,7 +26,14 @@
         <span class="name">ParboiledTest</span><span class="result"> extends AnyRef</span>
       </span>
       </h4>
-      <div class="fullcomment" id="comment"></div>
+      <div class="fullcomment" id="comment"><div class="comment cmt"><p>A trait simplifying the creation of tests for &quot;parboiled for scala&quot; parsers.
+It can be mixed into any test class that defines a fail(string) method (e.g. all the scalatest Suites).
+</p></div>
+            
+            
+            
+            
+          </div>
       
       <div id="template">
 
@@ -54,10 +61,16 @@
       </span>
       </h4>
       
-            
-            <div class="fullcomment"><div class="block">
+            <p class="shortcomment cmt">The type of the root value object created by the parser.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>The type of the root value object created by the parser.
+</p></div><div class="block">
           attributes: abstract 
-        </div></div>
+        </div>
+            
+            
+            
+            
+          </div>
           
     </li></ol>
             </div>
@@ -305,18 +318,21 @@ scala.Int
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">failParse</span><span class="params">(<span name="rule">rule: <a href="../rules/Rule1.html" class="extype" name="org.parboiled.scala.rules.Rule1">Rule1</a>[Result]</span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">failParse</span><span class="params">(<span name="runner">runner: org.parboiled.scala.parserunners.ParseRunner[_ &lt;: ParboiledTest.this.Result]</span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#failParse">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">failParse</span><span class="params">(<span name="rule">rule: <a href="../rules/Rule0.html" class="extype" name="org.parboiled.scala.rules.Rule0">Rule0</a></span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      
+            <p class="shortcomment cmt">Runs the given parse runner against the given input and executes the given block upon an UNSUCCESSFUL parsing run.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Runs the given parse runner against the given input and executes the given block upon an UNSUCCESSFUL parsing run.
+If the parsing run is successful, i.e. the input did match the grammar, the test fails will a respective
+error message.
+</p></div>
+            
+            
+            
+            
+          </div>
+          
     </li><li visbl="prt" name="scala.AnyRef#finalize">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -479,7 +495,20 @@ possible to check whether the contents of the list are of the requested typed.
       <h4 class="signature">
       <span class="kind">val</span>
       <span class="symbol">
-        <span class="name">pResult</span><span class="result">: <span class="extype" name="scala.util.DynamicVariable">DynamicVariable</span>[<a href="../ParsingResult.html" class="extype" name="org.parboiled.scala.ParsingResult">ParsingResult</a>[Result]]</span>
+        <span class="name">pResult</span><span class="result">: <span class="extype" name="scala.util.DynamicVariable">DynamicVariable</span>[org.parboiled.scala.ParsingResult[_ &lt;: ParboiledTest.this.Result]]</span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          attributes: protected 
+        </div></div>
+          
+    </li><li visbl="prt" name="org.parboiled.scala.testing.ParboiledTest#pRunner">
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol">
+        <span class="name">pRunner</span><span class="result">: <span class="extype" name="scala.util.DynamicVariable">DynamicVariable</span>[org.parboiled.scala.parserunners.ParseRunner[_ &lt;: ParboiledTest.this.Result]]</span>
       </span>
       </h4>
       
@@ -492,18 +521,21 @@ possible to check whether the contents of the list are of the requested typed.
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">parse</span><span class="params">(<span name="rule">rule: <a href="../rules/Rule1.html" class="extype" name="org.parboiled.scala.rules.Rule1">Rule1</a>[Result]</span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">parse</span><span class="params">(<span name="runner">runner: org.parboiled.scala.parserunners.ParseRunner[_ &lt;: ParboiledTest.this.Result]</span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#parse">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">parse</span><span class="params">(<span name="rule">rule: <a href="../rules/Rule0.html" class="extype" name="org.parboiled.scala.rules.Rule0">Rule0</a></span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      
+            <p class="shortcomment cmt">Runs the given parse runner against the given input and executes the given block upon a successful parsing run.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Runs the given parse runner against the given input and executes the given block upon a successful parsing run.
+If the parsing run is not successful, i.e. the input did not match the grammar, the test fails will a respective
+error message.
+</p></div>
+            
+            
+            
+            
+          </div>
+          
     </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#parseErrors">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -528,22 +560,6 @@ possible to check whether the contents of the list are of the requested typed.
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#parseWithRecovery">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">parseWithRecovery</span><span class="params">(<span name="rule">rule: <a href="../rules/Rule1.html" class="extype" name="org.parboiled.scala.rules.Rule1">Rule1</a>[Result]</span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      
-    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#parseWithRecovery">
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">parseWithRecovery</span><span class="params">(<span name="rule">rule: <a href="../rules/Rule0.html" class="extype" name="org.parboiled.scala.rules.Rule0">Rule0</a></span>, <span name="input">input: <a href="../Input.html" class="extype" name="org.parboiled.scala.Input">Input</a></span>)</span><span class="params">(<span name="f">f: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4>
-      
     </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#parsingResult">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -556,15 +572,15 @@ possible to check whether the contents of the list are of the requested typed.
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">result</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[Result]</span>
+        <span class="name">result</span><span class="result">: Result</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#resultValue">
+    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#resultOption">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">resultValue</span><span class="result">: Result</span>
+        <span class="name">resultOption</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[Result]</span>
       </span>
       </h4>
       
@@ -602,19 +618,14 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
-    </li><li visbl="prt" name="org.parboiled.scala.testing.ParboiledTest#verify">
+    </li><li visbl="pub" name="org.parboiled.scala.testing.ParboiledTest#traceLog">
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">verify</span><span class="tparams">[<span name="W">W</span>]</span><span class="params">(<span name="res">res: <a href="../ParsingResult.html" class="extype" name="org.parboiled.scala.ParsingResult">ParsingResult</a>[W]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">traceLog</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4>
       
-            
-            <div class="fullcomment"><div class="block">
-          attributes: protected 
-        </div></div>
-          
     </li><li visbl="pub" name="scala.AnyRef#wait">
       <h4 class="signature">
       <span class="kind">def</span>

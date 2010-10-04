@@ -23,7 +23,7 @@
       <h4 class="signature" id="signature">
       <span class="kind">class</span>
       <span class="symbol">
-        <span class="name">PopRule1</span><span class="tparams">[<span name="Z">Z</span>]</span><span class="result"> extends <a href="PopRule.html" class="extype" name="org.parboiled.scala.rules.PopRule">PopRule</a></span>
+        <span class="name">PopRule1</span><span class="tparams">[<span name="Z">-Z</span>]</span><span class="result"> extends <a href="PopRule.html" class="extype" name="org.parboiled.scala.rules.PopRule">PopRule</a></span>
       </span>
       </h4>
       <div class="fullcomment" id="comment"><div class="comment cmt"><p>A rule removing the top value stack element with a given type.
@@ -486,6 +486,19 @@ possible to check whether the contents of the list are of the requested typed.
           definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div></div>
           
+    </li><li visbl="pub" name="org.parboiled.scala.rules.PopRule1#matcher">
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol">
+        <span class="name">matcher</span><span class="result">: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>
+      </span>
+      </h4>
+      
+            
+            <div class="fullcomment"><div class="block">
+          definition classes: <a href="" class="extype" name="org.parboiled.scala.rules.PopRule1">PopRule1</a> → <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
+        </div></div>
+          
     </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#memoMismatches">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -716,7 +729,7 @@ possible to check whether the contents of the list are of the requested typed.
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">|</span><span class="params">(<span name="other">other: <a href="" class="extype" name="org.parboiled.scala.rules.PopRule1">PopRule1</a>[Z]</span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.rules.PopRule1">PopRule1</a>[Z]</span>
+        <span class="name">|</span><span class="tparams">[<span name="ZZ">ZZ &lt;: Z</span>]</span><span class="params">(<span name="other">other: <a href="" class="extype" name="org.parboiled.scala.rules.PopRule1">PopRule1</a>[ZZ]</span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.rules.PopRule1">PopRule1</a>[ZZ]</span>
       </span>
       </h4>
       
@@ -767,6 +780,25 @@ possible to check whether the contents of the list are of the requested typed.
       
             <p class="shortcomment cmt">Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.
+</p></div><div class="block">
+          definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
+        </div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~:?">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">~:?</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Char">Char</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.
 </p></div><div class="block">
           definition classes: <a href="Rule.html" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a>
         </div>

@@ -60,7 +60,7 @@
       <h4 class="signature">
       <span class="kind">new</span>
       <span class="symbol">
-        <span class="name">Rule</span><span class="params">(<span name="matcher">matcher: <span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span></span>)</span>
+        <span class="name">Rule</span><span class="params">()</span>
       </span>
       </h4>
       
@@ -483,6 +483,11 @@ possible to check whether the contents of the list are of the requested typed.
       </span>
       </h4>
       
+            
+            <div class="fullcomment"><div class="block">
+          attributes: abstract 
+        </div></div>
+          
     </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#memoMismatches">
       <h4 class="signature">
       <span class="kind">def</span>
@@ -703,6 +708,23 @@ possible to check whether the contents of the list are of the requested typed.
       
             <p class="shortcomment cmt">Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.
+</p></div>
+            
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~:?">
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">~:?</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Char">Char</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <a href="" class="extype" name="org.parboiled.scala.rules.Rule">Rule</a></span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.
 </p></div>
             
             
