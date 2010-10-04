@@ -2,8 +2,6 @@ package org.parboiled.scala.parserunners
 
 import org.parboiled.parserunners.{ReportingParseRunner => PReportingParseRunner}
 import org.parboiled.scala._
-import annotation.unchecked.uncheckedVariance
-
 /**
  * A simple wrapper for org.parboiled.parserunners.ReportingParseRunner which returns a scala ParsingResult.
  * Note that the ParseRunner only accepts rules with zero or one value type parameter, as parsers leaving more

@@ -130,7 +130,7 @@
                 <exclude name="org/parboiled/transform/**"/>
             </packageset>
             <classpath refid="compile.classpath.java"/>
-            <link href="http://java.sun.com/javase/6/docs/api"/>
+            <link href="http://download.oracle.com/javase/6/docs/api/"/>
         </javadoc>
     </target>
 

@@ -23,6 +23,14 @@ import org.parboiled.support.Chars;
 
 /**
  * Special, immutable InputBuffer implementation for indentation based grammars.
+ * This InputBuffer collapses all space and tab characters at the beginning of a text line into either nothing (if
+ * the line has the same indentation level as the line before), a special {@link Chars#INDENT} character (if the line
+ * has a deeper indentation level as the line before) or one or more {@link Chars#DEDENT} characters (if the line
+ * has a lower indentation level as the line before).
+ * This means that the highest index of this InputBuffer is probably smaller than that of the original input text
+ * buffer, since all line indentation have been collapsed. However, the implementation will make sure that
+ * {@link #getPosition(int)}, {@link #extract(int, int)}, etc. will work as expected and always return the "correct"
+ * result from the underlying, original input buffer.
  */
 public class IndentDedentInputBuffer extends DefaultInputBuffer {
 
@@ -37,6 +45,13 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
     protected int[] newlines2;
     protected final int tabStop;
 
+    /**
+     * Creates a new IndentDedentInputBuffer around the given char array. Note that for performance reasons the given
+     * char array is not defensively copied.
+     *
+     * @param input   the input text.
+     * @param tabStop the number of characters in a tab stop.
+     */
     public IndentDedentInputBuffer(@NotNull char[] input, int tabStop) {
         super(input);
         Preconditions.checkArgument(tabStop > 0, "tabStop must be > 0");
@@ -74,6 +89,7 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
     }
 
     // translate an index into buffer2 to the equivalent index into buffer
+
     protected int translate(int ix2) {
         ix2 = Math.min(Math.max(ix2, 0), length2); // also allow index "length" for EOI
         int line = getLine0(newlines2, ix2);

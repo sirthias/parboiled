@@ -1,6 +1,7 @@
 package org.parboiled.scala.rules
 
 import org.parboiled.matchers._
+
 /**
  * The base class of all reduction rules, which take a certain number of input values and produce one output value.
  */

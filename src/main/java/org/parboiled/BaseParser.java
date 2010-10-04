@@ -37,9 +37,19 @@ import static org.parboiled.common.StringUtils.escape;
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
-     * Matches the EOI (end of input) character.
+     * Matches the {@link Chars#EOI} (end of input) character.
      */
     public static final Rule EOI = new CharMatcher(Chars.EOI).label("EOI");
+
+    /**
+     * Matches the special {@link Chars#INDENT} character produces by the {@link org.parboiled.buffers.IndentDedentInputBuffer}
+     */
+    public static final Rule INDENT = new CharMatcher(Chars.INDENT).label("INDENT");
+
+    /**
+     * Matches the special {@link Chars#DEDENT} character produces by the {@link org.parboiled.buffers.IndentDedentInputBuffer}
+     */
+    public static final Rule DEDENT = new CharMatcher(Chars.DEDENT).label("DEDENT");
 
     /**
      * Matches any character except {@link Chars#EOI}.

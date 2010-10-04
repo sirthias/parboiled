@@ -53,10 +53,19 @@ object TracingPredicate {
 }
 
 object Lines {
+  /**
+   * Creates a TracingPredicate which selects all lines with a number greater or equal to the given one.
+   */
   def from(firstLine: Int): TracingPredicate = toPredicate(_ >= firstLine)
 
+  /**
+   * Creates a TracingPredicate which selects all lines with a number smaller or equal to the given one.
+   */
   def until(lastLine: Int): TracingPredicate = toPredicate(_ <= lastLine)
 
+  /**
+   * Creates a TracingPredicate which selects all lines in the given range of line numbers.
+   */
   def apply(lineRange: Range): TracingPredicate = {
     require(lineRange.step == 1, "Ranges with step != 1 are not supported here")
     toPredicate(line => { lineRange.start <= line && line < lineRange.end })
@@ -67,16 +76,25 @@ object Lines {
 }
 
 object Rules {
+  /**
+   * Creates a TracingPredicate which selects only the given rules.
+   */
   def only(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
     (c:Context[_]) => matchers.contains(c.getMatcher)
   }
 
+  /**
+   * Creates a TracingPredicate which selects only rules on levels below the given rules.
+   */
   def below(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
     toPredicate(path => { matchers.exists(m => (path.element.matcher ne m) && path.contains(m)) })
   }
 
+  /**
+   * Creates a TracingPredicate which selects all the given rules and their sub rules.
+   */
   def apply(rules: Rule*): TracingPredicate = {
     val matchers = rules.map(_.matcher)
     toPredicate(path => { matchers.exists(path.contains) })
@@ -85,10 +103,16 @@ object Rules {
   private def toPredicate(f: MatcherPath => Boolean): TracingPredicate = (c: Context[_]) => f(c.getPath)
 }
 
+/**
+ * A TracingPredicate selecting only rules that have matched.
+ */
 object Matched extends TracingPredicate {
   def apply(t: (Context[_], Boolean)) = t._2
 }
 
+/**
+ * A TracingPredicate selecting only rules that have not matched.
+ */
 object Mismatched extends TracingPredicate {
   def apply(t: (Context[_], Boolean)) = !t._2
 }

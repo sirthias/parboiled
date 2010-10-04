@@ -49,22 +49,28 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
 
     /**
      * Creates a new TracingParseRunner instance for the given rule.
-     * If the given filter is used to select the matchers to print tracing statements for.
+     * The given filter is used to select the matchers to print tracing statements for.
      * NOTE: The given filter must be of type Predicate<Tuple2<Context<?>, Boolean>>. The reason this type is not
      * directly specified in the constructors signature is that this would make predicate expressions using the
      * {@link Predicates} operations and the predefined predicate constructors in {@link org.parboiled.support.Filters}
      * much more cumbersome to write (due to Java limited type parameters inference logic you would have to explicitly
-     * state the type parameters in many places). 
+     * state the type parameters in many places).
      *
      * @param rule   the parser rule
-     * @param filter the matcher filter selecting the matchers to print tracing statements for.
+     * @param filter the matcher filter selecting the matchers to print tracing statements for. Must be of type
+     *               Predicate<Tuple2<Context<?>, Boolean>>.
      */
     @SuppressWarnings({"unchecked"})
     public TracingParseRunner(@NotNull Rule rule, @NotNull Predicate<?> filter) {
         super(rule);
-        this.filter = (Predicate<Tuple2<Context<?>, Boolean>>)filter;
+        this.filter = (Predicate<Tuple2<Context<?>, Boolean>>) filter;
     }
 
+    /**
+     * Retrieves a string containing all generated log messages.
+     *
+     * @return the log messages
+     */
     public String getLog() {
         return log.toString();
     }

@@ -13,6 +13,9 @@ object ParsingResult {
   implicit def unwrap[V](result: ParsingResult[V]): PParsingResult[V] = result.inner
 }
 
+/**
+ * The scala wrapper for the org.parboiled.support.ParsingResult class.
+ */
 class ParsingResult[+V](val inner: PParsingResult[V] @uncheckedVariance) {
   val matched: Boolean = inner.matched
   val result: V = inner.resultValue
