@@ -24,9 +24,9 @@ import org.parboiled.support.Chars;
 /**
  * Special, immutable InputBuffer implementation for indentation based grammars.
  * This InputBuffer collapses all space and tab characters at the beginning of a text line into either nothing (if
- * the line has the same indentation level as the line before), a special {@link Chars#INDENT} character (if the line
- * has a deeper indentation level as the line before) or one or more {@link Chars#DEDENT} characters (if the line
- * has a lower indentation level as the line before).
+ * the line has the same indentation level as the previous line), a special {@link Chars#INDENT} character (if the line
+ * has a greater indentation level than the previous line) or one or more {@link Chars#DEDENT} characters (if the line
+ * has a lower indentation level than the previous line).
  * This means that the highest index of this InputBuffer is probably smaller than that of the original input text
  * buffer, since all line indentation have been collapsed. However, the implementation will make sure that
  * {@link #getPosition(int)}, {@link #extract(int, int)}, etc. will work as expected and always return the "correct"

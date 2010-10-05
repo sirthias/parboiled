@@ -16,6 +16,10 @@ class Input(val input: Array[Char], bufferCreator: (Array[Char] => InputBuffer) 
    */
   def transformIndents(tabStop: Int = 2): Input = new Input(input, new IndentDedentInputBuffer(_, tabStop))
 
+  /**
+   * Collects the actual input text the input buffer provides into a String.
+   * This is especially usefull for IndentDedentInputBuffers created by "transformIndents".
+   */
   def collectContents: String = contents(inputBuffer, new StringBuilder, 0).toString
 
   @tailrec
