@@ -34,7 +34,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public class JavaTest {
-
+    @SuppressWarnings("unused")
+    private char \u0041_identifierWithNonAsciiCharacters_åäöÅÄÖ_\u0030_$ = '\u0061';
+    @SuppressWarnings("unused")
+    private char[] octalEscapes = new char[] {'\1', '\12', '\123'};
+	
     @Test
     public void simpleJavaTest() {
         String testSource = FileUtils.readAllText("src/test/java/org/parboiled/examples/JavaTest.java");

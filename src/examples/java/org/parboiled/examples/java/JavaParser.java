@@ -866,18 +866,16 @@ public class JavaParser extends BaseParser<Object> {
         return Sequence(TestNot(Keyword()), Letter(), ZeroOrMore(LetterOrDigit()), Spacing());
     }
 
-    // The following are traditional definitions of letters and digits.
     // JLS defines letters and digits as Unicode characters recognized
-    // as such by special Java procedures, which is difficult
-    // to express in terms of Parsing Expressions.
+    // as such by special Java procedures.
 
     Rule Letter() {
-        return FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '_', '$');
+        return FirstOf(UnicodeEscape(), new JavaLetterMatcher());
     }
 
     @MemoMismatches
     Rule LetterOrDigit() {
-        return FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), '_', '$');
+        return FirstOf(UnicodeEscape(), new JavaLetterOrDigitMatcher());
     }
 
     //-------------------------------------------------------------------------
@@ -1039,19 +1037,20 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     Rule Escape() {
-        return Sequence('\\', FirstOf(AnyOf("btnfr\"\'\\"), OctalEscape(), UnicodeEscape()));
+        return FirstOf(Sequence('\\', AnyOf("btnfr\"\'\\")), OctalEscape(), UnicodeEscape());
     }
 
     Rule OctalEscape() {
-        return FirstOf(
-                Sequence(CharRange('0', '3'), CharRange('0', '7'), CharRange('0', '7')),
-                Sequence(CharRange('0', '7'), CharRange('0', '7')),
-                CharRange('0', '7')
-        );
+        return Sequence(
+                '\\',
+                FirstOf(Sequence(CharRange('0', '3'), CharRange('0', '7'),
+                        CharRange('0', '7')),
+                        Sequence(CharRange('0', '7'), CharRange('0', '7')),
+                        CharRange('0', '7')));
     }
 
     Rule UnicodeEscape() {
-        return Sequence(OneOrMore('u'), HexDigit(), HexDigit(), HexDigit(), HexDigit());
+        return Sequence('\\', OneOrMore('u'), HexDigit(), HexDigit(), HexDigit(), HexDigit());
     }
 
     //-------------------------------------------------------------------------
