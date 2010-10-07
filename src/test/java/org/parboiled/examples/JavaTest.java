@@ -19,41 +19,47 @@ package org.parboiled.examples;
 import org.parboiled.Node;
 import org.parboiled.Parboiled;
 import org.parboiled.ParserStatistics;
-import org.parboiled.common.Predicates;
-import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.Rule;
 import org.parboiled.common.FileUtils;
+import org.parboiled.common.Formatter;
+import org.parboiled.common.Predicates;
 import org.parboiled.common.StringUtils;
 import org.parboiled.examples.java.JavaParser;
-import org.parboiled.support.ParsingResult;
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Filters;
+import org.parboiled.support.ParsingResult;
 import org.testng.annotations.Test;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+import static org.parboiled.trees.GraphUtils.printTree;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public class JavaTest {
-    @SuppressWarnings("unused")
-    private char \u0041_identifierWithNonAsciiCharacters_åäöÅÄÖ_\u0030_$ = '\u0061';
+
+    // the following line is actually being uncommented programmatically before running the test,
+    // the reason being that the IntelliJ IDEA parser does not like "funny" identifies like these itself
+    //private char \u0041_identifierWithNonAsciiCharacters_åäöÅÄÖ_\u0030_$ = '\u0061';
+
     @SuppressWarnings("unused")
     private char[] octalEscapes = new char[] {'\1', '\12', '\123'};
 	
     @Test
     public void simpleJavaTest() {
         String testSource = FileUtils.readAllText("src/test/java/org/parboiled/examples/JavaTest.java");
+        testSource = testSource.replace("//private", "private");
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule compilationUnit = parser.CompilationUnit();
 
         assertEquals(ParserStatistics.generateFor(compilationUnit).toString(), "" +
                 "Parser statistics for rule 'CompilationUnit':\n" +
-                "    Total rules       : 681\n" +
+                "    Total rules       : 679\n" +
                 "        Actions       : 0\n" +
                 "        Any           : 1\n" +
                 "        CharIgnoreCase: 1\n" +
-                "        Char          : 86\n" +
-                "        Custom        : 0\n" +
-                "        CharRange     : 9\n" +
+                "        Char          : 83\n" +
+                "        Custom        : 2\n" +
+                "        CharRange     : 7\n" +
                 "        AnyOf         : 16\n" +
                 "        Empty         : 0\n" +
                 "        FirstOf       : 64\n" +
@@ -61,7 +67,7 @@ public class JavaTest {
                 "        Nothing       : 0\n" +
                 "        OneOrMore     : 7\n" +
                 "        Optional      : 40\n" +
-                "        Sequence      : 309\n" +
+                "        Sequence      : 310\n" +
                 "        String        : 80\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 13\n" +
@@ -81,7 +87,11 @@ public class JavaTest {
             );
         }
         assertEquals(
-                printNodeTree(parsingResult, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
+                printTree(parsingResult.parseTreeRoot, new Formatter<Node<Object>>() {
+                    public String format(Node<Object> node) {
+                        return node.toString();
+                    }
+                }, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
                 FileUtils.readAllTextFromResource("SimpleJavaTestParseTree.test")
         );
     }

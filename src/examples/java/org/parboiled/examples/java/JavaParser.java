@@ -34,6 +34,8 @@
 //               (Thanks to Reinier Zwitserloot for the finds)
 //    2010-07-26 Fixed problem in LocalVariableDeclarationStatement (accept annotations),
 //               HexFloat (HexSignificant) and AnnotationTypeDeclaration (bug in the JLS!)
+//    2010-10-07 Added full support of Unicode Identifiers as set forth in the JLS
+//               (Thanks for Ville Peurala for the patch)
 //
 //===========================================================================
 
@@ -870,12 +872,16 @@ public class JavaParser extends BaseParser<Object> {
     // as such by special Java procedures.
 
     Rule Letter() {
-        return FirstOf(UnicodeEscape(), new JavaLetterMatcher());
+        // switch to this "reduced" character space version for a ~10% parser performance speedup
+        //return FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '_', '$');
+        return FirstOf(Sequence('\\', UnicodeEscape()), new JavaLetterMatcher());
     }
 
     @MemoMismatches
     Rule LetterOrDigit() {
-        return FirstOf(UnicodeEscape(), new JavaLetterOrDigitMatcher());
+        // switch to this "reduced" character space version for a ~10% parser performance speedup
+        //return FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), '_', '$');
+        return FirstOf(Sequence('\\', UnicodeEscape()), new JavaLetterOrDigitMatcher());
     }
 
     //-------------------------------------------------------------------------
@@ -1037,20 +1043,19 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     Rule Escape() {
-        return FirstOf(Sequence('\\', AnyOf("btnfr\"\'\\")), OctalEscape(), UnicodeEscape());
+        return Sequence('\\', FirstOf(AnyOf("btnfr\"\'\\"), OctalEscape(), UnicodeEscape()));
     }
 
     Rule OctalEscape() {
-        return Sequence(
-                '\\',
-                FirstOf(Sequence(CharRange('0', '3'), CharRange('0', '7'),
-                        CharRange('0', '7')),
-                        Sequence(CharRange('0', '7'), CharRange('0', '7')),
-                        CharRange('0', '7')));
+        return FirstOf(
+                Sequence(CharRange('0', '3'), CharRange('0', '7'), CharRange('0', '7')),
+                Sequence(CharRange('0', '7'), CharRange('0', '7')),
+                CharRange('0', '7')
+        );
     }
 
     Rule UnicodeEscape() {
-        return Sequence('\\', OneOrMore('u'), HexDigit(), HexDigit(), HexDigit(), HexDigit());
+        return Sequence(OneOrMore('u'), HexDigit(), HexDigit(), HexDigit(), HexDigit());
     }
 
     //-------------------------------------------------------------------------

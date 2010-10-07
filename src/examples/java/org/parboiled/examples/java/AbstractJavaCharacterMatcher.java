@@ -41,7 +41,6 @@ public abstract class AbstractJavaCharacterMatcher extends CustomMatcher {
         return 'a';
     }
 
-    @Override
     public final <V> boolean match(@NotNull MatcherContext<V> context) {
         if (!acceptChar(context.getCurrentChar())) {
             return false;
