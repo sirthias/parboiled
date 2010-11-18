@@ -19,7 +19,7 @@
         <path id="compile.classpath.scala">
             <pathelement location="lib/google-collect/google-collect-1.0.jar"/>
             <pathelement location="lib/testng/testng-5.10-jdk15.jar"/>
-            <pathelement location="lib/scala/scala-library-2.8.0.jar"/>
+            <pathelement location="lib/scala/scala-library.jar"/>
             <pathelement location="lib/scalatest/scalatest-1.2.jar"/>
         </path>
 
@@ -27,7 +27,7 @@
         <taskdef resource="testngtasks" classpath="lib/testng/testng-5.10-jdk15.jar;"/>
         <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-issue-21.jar;"/>
         <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar;"/>
-        <taskdef resource="scala/tools/ant/antlib.xml" classpath="lib/scala/scala-compiler-2.8.0.jar;lib/scala/scala-library-2.8.0.jar;"/>
+        <taskdef resource="scala/tools/ant/antlib.xml" classpath="lib/scala/scala-compiler.jar;lib/scala/scala-library.jar;"/>
     </target>
 
     <target name="compile.main.java" depends="init" description="Compile main java sources">
