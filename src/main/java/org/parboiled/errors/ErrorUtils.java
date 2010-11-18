@@ -33,17 +33,18 @@ import java.util.List;
  */
 public final class ErrorUtils {
 
-    private ErrorUtils() {}
+    private ErrorUtils() {
+    }
 
     /**
      * Finds the Matcher in the given failedMatcherPath whose label is best for presentation in "expected" strings
      * of parse error messages, given the provided lastMatchPath.
      *
-     * @param path the path to the failed matcher
-     * @param errorIndex        the start index of the respective parse error
+     * @param path       the path to the failed matcher
+     * @param errorIndex the start index of the respective parse error
      * @return the matcher whose label is best for presentation in "expected" strings
      */
-    public static Matcher findProperLabelMatcher(@NotNull MatcherPath path, int errorIndex) {
+    static Matcher findProperLabelMatcher(@NotNull MatcherPath path, int errorIndex) {
         Matcher found = path.parent != null ? findProperLabelMatcher(path.parent, errorIndex) : null;
         if (found != null) return found;
         if (path.element.startIndex == errorIndex && path.element.matcher.accept(new HasCustomLabelVisitor())) {
@@ -53,53 +54,7 @@ public final class ErrorUtils {
     }
 
     /**
-     * Pretty prints the given parse error showing its location in the given input buffer.
-     *
-     * @param error       the parse error
-     * @param inputBuffer the input buffer
-     * @return the pretty print text
-     */
-    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
-        return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter());
-    }
-
-    /**
-     * Pretty prints the given parse error showing its location in the given input buffer.
-     *
-     * @param error       the parse error
-     * @param inputBuffer the input buffer
-     * @param formatter   the formatter for InvalidInputErrors
-     * @return the pretty print text
-     */
-    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer,
-                                         @NotNull Formatter<InvalidInputError> formatter) {
-        int start = error.getStartIndex();
-        String message = error.getErrorMessage() != null ? error.getErrorMessage() :
-                error instanceof InvalidInputError ?
-                        formatter.format((InvalidInputError) error) : error.getClass().getSimpleName();
-
-        DefaultInputBuffer.Position pos = inputBuffer.getPosition(start);
-        StringBuilder sb = new StringBuilder(message);
-        sb.append(String.format(" (line %s, pos %s):", pos.line, pos.column));
-        sb.append('\n');
-
-        String line = inputBuffer.extractLine(pos.line);
-        sb.append(line);
-        sb.append('\n');
-
-        int charCount = Math.min(
-                error.getEndIndex() - error.getStartIndex(),
-                StringUtils.length(line) - pos.column + 2
-        );
-        for (int i = 0; i < pos.column - 1; i++) sb.append(' ');
-        for (int i = 0; i < charCount; i++) sb.append('^');
-        sb.append("\n");
-
-        return sb.toString();
-    }
-
-    /**
-     * Pretty prints the given parse errors showing their location in the given input buffer.
+     * Pretty prints the parse errors of the given ParsingResult showing their location in the given input buffer.
      *
      * @param parsingResult the parsing result
      * @return the pretty print text
@@ -124,4 +79,75 @@ public final class ErrorUtils {
         return sb.toString();
     }
 
+    /**
+     * Pretty prints the given parse error showing its location in the given input buffer.
+     *
+     * @param error       the parse error
+     * @param inputBuffer the input buffer
+     * @return the pretty print text
+     */
+    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
+        return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter());
+    }
+
+    /**
+     * Pretty prints the given parse error showing its location in the given input buffer.
+     *
+     * @param error       the parse error
+     * @param inputBuffer the input buffer
+     * @param formatter   the formatter for InvalidInputErrors
+     * @return the pretty print text
+     */
+    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer,
+                                         @NotNull Formatter<InvalidInputError> formatter) {
+        String message = error.getErrorMessage() != null ? error.getErrorMessage() :
+                error instanceof InvalidInputError ?
+                        formatter.format((InvalidInputError) error) : error.getClass().getSimpleName();
+        return printErrorMessage("%s (line %s, pos %s):", message,
+                error.getStartIndex(), error.getEndIndex(), inputBuffer);
+    }
+
+    /**
+     * Prints an error message showing a location in the given InputBuffer.
+     *
+     * @param format       the format string, must include three placeholders for a string
+     *                     (the error message) and two integers (the error line / column respectively)
+     * @param errorMessage the error message
+     * @param errorIndex   the error location as an index into the inputBuffer
+     * @param inputBuffer  the underlying InputBuffer
+     * @return the error message including the relevant line from the underlying input plus location indicator
+     */
+    public static String printErrorMessage(String format, String errorMessage, int errorIndex,
+                                           @NotNull InputBuffer inputBuffer) {
+        return printErrorMessage(format, errorMessage, errorIndex, errorIndex, inputBuffer);
+    }
+
+    /**
+     * Prints an error message showing a location in the given InputBuffer.
+     *
+     * @param format       the format string, must include three placeholders for a string
+     *                     (the error message) and two integers (the error line / column respectively)
+     * @param errorMessage the error message
+     * @param startIndex   the start location of the error as an index into the inputBuffer
+     * @param endIndex     the end location of the error as an index into the inputBuffer
+     * @param inputBuffer  the underlying InputBuffer
+     * @return the error message including the relevant line from the underlying input plus location indicators
+     */
+    public static String printErrorMessage(String format, String errorMessage, int startIndex, int endIndex,
+                                           @NotNull InputBuffer inputBuffer) {
+        DefaultInputBuffer.Position pos = inputBuffer.getPosition(startIndex);
+        StringBuilder sb = new StringBuilder(String.format(format, errorMessage, pos.line, pos.column));
+        sb.append('\n');
+
+        String line = inputBuffer.extractLine(pos.line);
+        sb.append(line);
+        sb.append('\n');
+
+        int charCount = Math.min(endIndex - startIndex, StringUtils.length(line) - pos.column + 2);
+        for (int i = 0; i < pos.column - 1; i++) sb.append(' ');
+        for (int i = 0; i < charCount; i++) sb.append('^');
+        sb.append("\n");
+
+        return sb.toString();
+    }
 }
