@@ -235,7 +235,14 @@
         </jarjar>
     </target>
 
-	<target name="jar" depends="jar.java, jar.scala" description="Build all main library JARs"/>
+    <target name="jar.all" depends="jar.java" description="Create java+scala library JAR">
+        <jarjar destfile="target/parboiled-${version}.jar" manifest="target/manifest/META-INF/MANIFEST.MF">
+            <fileset dir="target/main/scala"/>
+            <zipfileset src="target/parboiled4j-${version}.jar"/>
+        </jarjar>
+    </target>
+
+	<target name="jar" depends="jar.java, jar.scala, jar.all" description="Build all main library JARs"/>
 
     <target name="testjar.java" depends="compile.tests.java, jar.java" description="Run all java tests against the java library jar">
         <testng verbose="2" parallel="true" suitename="All Tests" outputdir="target/test-out" haltonfailure="true">
