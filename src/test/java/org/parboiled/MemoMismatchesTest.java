@@ -91,10 +91,10 @@ public class MemoMismatchesTest {
 
         ProfilingParseRunner runner = new ProfilingParseRunner(parser.Clause());
         assertFalse(runner.run("2").hasErrors());
-        assertEquals(runner.getReport().printBasics(), "" +
+        assertEquals(runner.getReport().printBasics().replaceFirst("\\d\\.\\d\\d\\d s", "X.XXX s"), "" +
                 "Runs                     :               1\n" +
                 "Active rules             :              13\n" +
-                "Total net rule time      :           0.000 s\n" +
+                "Total net rule time      :           X.XXX s\n" +
                 "Total rule invocations   :              21\n" +
                 "Total rule matches       :               8\n" +
                 "Total rule mismatches    :              13\n" +
@@ -139,10 +139,10 @@ public class MemoMismatchesTest {
 
         ProfilingParseRunner runner = new ProfilingParseRunner(parser.Clause());
         assertFalse(runner.run("2").hasErrors());
-        assertEquals(runner.getReport().printBasics(), "" +
+        assertEquals(runner.getReport().printBasics().replaceFirst("\\d\\.\\d\\d\\d s", "X.XXX s"), "" +
                 "Runs                     :               1\n" +
                 "Active rules             :              13\n" +
-                "Total net rule time      :           0.000 s\n" +
+                "Total net rule time      :           X.XXX s\n" +
                 "Total rule invocations   :              17\n" +
                 "Total rule matches       :               8\n" +
                 "Total rule mismatches    :               9\n" +
