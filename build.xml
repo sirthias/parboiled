@@ -300,7 +300,7 @@
 
 	<target name="jar.doc" depends="jar.javadoc, jar.scaladoc" description="Create javadoc and scaladoc JARs"/>
 
-    <target name="dist" depends="clean, test, testjar, jar.source, jar.doc"
+    <target name="dist" depends="clean, jar, test, testjar, jar.source, jar.doc"
             description="Compiles, tests and jars everything">
     </target>
 
