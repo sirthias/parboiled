@@ -16,6 +16,7 @@
 
 package org.parboiled.errors;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.DefaultInputBuffer;
 import org.parboiled.buffers.InputBuffer;
@@ -119,7 +120,7 @@ public final class ErrorUtils {
      */
     public static String printErrorMessage(String format, String errorMessage, int errorIndex,
                                            @NotNull InputBuffer inputBuffer) {
-        return printErrorMessage(format, errorMessage, errorIndex, errorIndex, inputBuffer);
+        return printErrorMessage(format, errorMessage, errorIndex, errorIndex + 1, inputBuffer);
     }
 
     /**
@@ -135,6 +136,7 @@ public final class ErrorUtils {
      */
     public static String printErrorMessage(String format, String errorMessage, int startIndex, int endIndex,
                                            @NotNull InputBuffer inputBuffer) {
+        Preconditions.checkArgument(startIndex < endIndex);
         DefaultInputBuffer.Position pos = inputBuffer.getPosition(startIndex);
         StringBuilder sb = new StringBuilder(String.format(format, errorMessage, pos.line, pos.column));
         sb.append('\n');
