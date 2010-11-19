@@ -8,9 +8,11 @@ import testing.ParboiledTest
 class WithContextTest extends ParboiledTest with TestNGSuite {
 
   class TestParser extends Parser {
-    def Clause = rule {Digit ~> withContext(_.toInt + _.getCurrentIndex) ~ EOI}
+    def Clause = rule {
+      "A" ~ pushFromContext(_.getCurrentIndex) ~ Digit ~~> withContext((_:Int) + (_:Int) + _.getCurrentIndex) ~ EOI
+    }
 
-    def Digit = rule {"0" - "9"}
+    def Digit = rule { ("0" - "9") ~> (_.toInt) }
   }
 
   type Result = Int
@@ -19,11 +21,13 @@ class WithContextTest extends ParboiledTest with TestNGSuite {
 
   @Test
   def testWithContext() {
-    parse(ReportingParseRunner(parser.Clause), "5") {
+    parse(ReportingParseRunner(parser.Clause), "A5") {
       assertEquals(parseTree,
-         """|[Clause, {6}] '5'
-            |  [Digit] '5'
-            |  [EOI, {6}]
+         """|[Clause, {8}] 'A5'
+            |  ['A'] 'A'
+            |  [Digit, {5}] '5'
+            |    [0..9, {1}] '5'
+            |  [EOI, {8}]
             |""".stripMargin)
     }
   }

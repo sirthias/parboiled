@@ -2,10 +2,6 @@ package org.parboiled.scala
 
 import org.parboiled.Context
 
-class WithContextAction[R](val action: Context[_] => R) extends (() => R) {
-  def apply() = throw new UnsupportedOperationException
-}
-
 class WithContextAction1[A, R](val action: (A, Context[_]) => R) extends (A => R) {
   def apply(a: A) = throw new UnsupportedOperationException
 }

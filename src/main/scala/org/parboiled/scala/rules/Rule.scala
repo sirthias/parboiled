@@ -79,7 +79,6 @@ abstract class Rule {
 }
 
 object Rule {
-
   private[parboiled] val GetMatchedChar: (Context[Any] => Char) = _.getFirstMatchChar
   private[parboiled] val GetMatch: (Context[Any] => String) = _.getMatch
   private[parboiled] val Pop = (vs:ValueStack[Any], _:Int) => vs.pop
@@ -160,11 +159,6 @@ object Rule {
           get(c.getValueStack, 5).asInstanceOf[U],
           get(c.getValueStack, 6).asInstanceOf[T]
           )
-
-  private[parboiled] def exec(f: () => Any) = (context: Context[Any]) => f match {
-    case a: WithContextAction[Any] => a.action(context)
-    case _ => f
-  }
 
   private[parboiled] def exec[Z, R](extract: Context[Any] => Z, f: Z => R) = (context: Context[Any]) => {
     val z = extract(context)

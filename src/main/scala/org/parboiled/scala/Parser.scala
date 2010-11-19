@@ -344,7 +344,12 @@ trait Parser {
       vs.push(c)
     }))).label(nameAction("Push3")))
 
-  def withContext[R](f: Context[_] => R) = new WithContextAction[R](f)
+  /**
+   * Create a parser action from the given function whose result value is pushed onto the value stack.
+   */
+  def pushFromContext[A](f: Context[_] => A): Rule1[A] =
+    new Rule1[A](new ActionMatcher(action(rules.Rule.push(f)))).label(nameAction("Push1"))
+
   def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction1[A, R](f)
   def withContext[A, B, R](f: (A, B, Context[_]) => R) = new WithContextAction2[A, B, R](f)
   def withContext[A, B, C, R](f: (A, B, C, Context[_]) => R) = new WithContextAction3[A, B, C, R](f)
