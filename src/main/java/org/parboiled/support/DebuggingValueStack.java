@@ -45,6 +45,12 @@ public class DebuggingValueStack<V> extends DefaultValueStack<V> {
     }
 
     @Override
+    public void push(V value) {
+        super.push(value);
+        log("push");
+    }
+
+    @Override
     public void push(int down, V value) {
         super.push(down, value);
         log("push");
