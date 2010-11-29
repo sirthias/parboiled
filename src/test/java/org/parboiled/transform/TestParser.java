@@ -73,6 +73,11 @@ class TestParser extends BaseParser<Integer> {
         return Sequence('a' + i, i > param + j, string, ACTION(integer + param < string.get().length() - i - j));
     }
 
+    public Rule BugIn0990() {
+        Var<Integer> var = new Var<Integer>();
+        return FirstOf("10", "2");
+    }
+
     @DontLabel
     public Rule RuleWith2Returns(int param) {
         if (param == integer) {

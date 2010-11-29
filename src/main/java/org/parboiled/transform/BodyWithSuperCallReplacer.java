@@ -30,7 +30,9 @@ import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
 class BodyWithSuperCallReplacer implements RuleMethodProcessor {
 
     public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        return !method.isBodyRewritten() && method.getOwnerClass() == classNode.getParentClass();
+        return !method.isBodyRewritten() && method.getOwnerClass() == classNode.getParentClass() &&
+                method.getLocalVarVariables() == null;  // if we have local variables we need to create a VarFramingMatcher
+                                                        // which needs access to the local variables
     }
 
     public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {

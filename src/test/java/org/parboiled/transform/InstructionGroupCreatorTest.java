@@ -46,7 +46,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 1884045865L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 724347041L);
         //renderToGraphViz(dotSource);
     }
 
@@ -91,7 +91,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isActionRoot() ?
-                            "style=filled,fillcolor=\"/gnbu8/" + (method.getGroups()
+                            "style=filled,fillcolor=\"/pastel15/" + (method.getGroups()
                                     .indexOf(node.getGroup()) + 1) + "\"," : "")
                     .append(node.getGroup() != null && node.getGroup().getRoot().isVarInitRoot() ?
                             "style=filled,fillcolor=grey," : "")
@@ -109,7 +109,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
 
     @SuppressWarnings({"UnusedDeclaration"})
     private static void renderToGraphViz(String dotSource) throws Exception {
-        String command = "/opt/local/bin/dot -Tpng";
+        String command = "/usr/local/bin/dot -Tpng";
         String output = "/Users/mathias/Downloads/graph.png";
 
         final Process process = Runtime.getRuntime().exec(command);
