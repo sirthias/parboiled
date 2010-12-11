@@ -174,7 +174,7 @@ public final class ParseTreeUtils {
      * @param labelPrefix the label prefix to look for
      * @return the Node if found or null if not found
      */
-    public <V> Node<V> findNodeByLabel(Node<V> parent, String labelPrefix) {
+    public static <V> Node<V> findNodeByLabel(Node<V> parent, String labelPrefix) {
         return findNode(parent, new LabelPrefixPredicate<V>(labelPrefix));
     }
 
@@ -186,7 +186,7 @@ public final class ParseTreeUtils {
      * @param labelPrefix the label prefix to look for
      * @return the Node if found or null if not found
      */
-    public <V> Node<V> findNodeByLabel(List<Node<V>> parents, String labelPrefix) {
+    public static <V> Node<V> findNodeByLabel(List<Node<V>> parents, String labelPrefix) {
         return findNode(parents, new LabelPrefixPredicate<V>(labelPrefix));
     }
 
