@@ -1,4 +1,6 @@
-parboiled.iml
-.idea/
+/.idea/workspace.xml
+/project/boot/
 target/
-test-out/
+lib_managed/
+src_managed/
+test-output/
