@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Examples/Examples.iml" filepath="$PROJECT_DIR$/Examples/Examples.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Main/Main.iml" filepath="$PROJECT_DIR$/Main/Main.iml" />
-      <module fileurl="file://$PROJECT_DIR$//parboiled.iml" filepath="$PROJECT_DIR$//parboiled.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples-java/examples-java.iml" filepath="$PROJECT_DIR$/examples-java/examples-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples-scala/examples-scala.iml" filepath="$PROJECT_DIR$/examples-scala/examples-scala.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parboiled-core/parboiled-core.iml" filepath="$PROJECT_DIR$/parboiled-core/parboiled-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parboiled-java/parboiled-java.iml" filepath="$PROJECT_DIR$/parboiled-java/parboiled-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parboiled-scala/parboiled-scala.iml" filepath="$PROJECT_DIR$/parboiled-scala/parboiled-scala.iml" />
     </modules>
   </component>
 </project>
