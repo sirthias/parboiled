@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import com.google.common.collect.ImmutableList;
+import org.parboiled.common.ImmutableList;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

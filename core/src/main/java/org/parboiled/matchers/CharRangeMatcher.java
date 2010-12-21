@@ -16,7 +16,6 @@
 
 package org.parboiled.matchers;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -30,7 +29,7 @@ public class CharRangeMatcher extends AbstractMatcher {
     public final char cHigh;
 
     public CharRangeMatcher(char cLow, char cHigh) {
-        Preconditions.checkArgument(cLow < cHigh);
+        checkArgument(cLow < cHigh);
         this.cLow = cLow;
         this.cHigh = cHigh;
     }

@@ -16,7 +16,6 @@
 
 package org.parboiled.support;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.matchers.Matcher;
 
@@ -80,7 +79,7 @@ public class MatcherPath {
      * @return the element
      */
     public Element getElementAtLevel(int level) {
-        Preconditions.checkArgument(level >= 0);
+        checkArgument(level >= 0);
         if (level > element.level) return null;
         if (level < element.level) return parent.getElementAtLevel(level);
         return element;

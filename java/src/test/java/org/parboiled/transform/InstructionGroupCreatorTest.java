@@ -16,9 +16,9 @@
 
 package org.parboiled.transform;
 
-import com.google.common.collect.ImmutableList;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.FileUtils;
+import org.parboiled.common.ImmutableList;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;

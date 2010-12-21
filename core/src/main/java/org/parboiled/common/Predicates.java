@@ -16,7 +16,6 @@
 
 package org.parboiled.common;
 
-import com.google.common.collect.ImmutableList;
 import static org.parboiled.common.Preconditions.*;
 
 import java.util.Collection;
@@ -190,9 +189,6 @@ public final class Predicates {
      * tested is an instance of the given class. If the object being tested
      * is {@code null} this predicate evaluates to {@code false}.
      * <p/>
-     * <p>If you want to filter an {@code Iterable} to narrow its type, consider
-     * using {@link com.google.common.collect.Iterables#filter(Iterable, Class)}
-     * in preference.
      *
      * @param clazz the clazz
      * @return a predicate

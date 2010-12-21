@@ -16,7 +16,6 @@
 
 package org.parboiled.parserunners;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
@@ -194,7 +193,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         Character bestChar = null;
         for (MatcherPath failedMatcherPath : currentError.getFailedMatchers()) {
             Character starterChar = failedMatcherPath.element.matcher.accept(getStarterCharVisitor);
-            Preconditions.checkState(starterChar != null); // we should only have single character matchers
+            checkState(starterChar != null); // we should only have single character matchers
             if (starterChar == EOI) {
                 continue; // we should never conjure up an EOI character (that would be cheating :)
             }

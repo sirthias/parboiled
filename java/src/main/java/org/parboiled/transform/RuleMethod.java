@@ -22,7 +22,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
@@ -185,7 +184,7 @@ class RuleMethod extends MethodNode {
     }
 
     public boolean isSuperMethod() {
-        Preconditions.checkState(StringUtils.isNotEmpty(name));
+        checkState(StringUtils.isNotEmpty(name));
         return name.charAt(0) == '$';
     }
 

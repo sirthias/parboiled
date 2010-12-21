@@ -16,7 +16,6 @@
 
 package org.parboiled.common;
 
-import com.google.common.collect.ImmutableList;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.errors.GrammarException;
 
@@ -101,6 +100,59 @@ public final class Utils {
         Boolean[] result = new Boolean[array.length];
         for (int i = 0; i < array.length; i++) result[i] = array[i];
         return result;
+    }
+
+    /**
+     * Joins the given arguments into one array.
+     *
+     * @param firstElement the first element
+     * @param moreElements more elements (optional)
+     * @return a new array containing all arguments.
+     */
+    @SuppressWarnings({"unchecked"})
+    public static <T> T[] arrayOf(T firstElement, T... moreElements) {
+        checkArgNotNull(moreElements, "moreElements");
+        Class elementType = moreElements.getClass().getComponentType();
+        T[] array = (T[]) Array.newInstance(elementType, moreElements.length + 1);
+        array[0] = firstElement;
+        System.arraycopy(moreElements, 0, array, 1, moreElements.length);
+        return array;
+    }
+
+    /**
+     * Joins the given arguments into one array.
+     *
+     * @param firstElement the first element
+     * @param secondElement the second element
+     * @param moreElements more elements (optional)
+     * @return a new array containing all arguments.
+     */
+    @SuppressWarnings({"unchecked"})
+    public static <T> T[] arrayOf(T firstElement, T secondElement, T... moreElements) {
+        checkArgNotNull(moreElements, "moreElements");
+        Class elementType = moreElements.getClass().getComponentType();
+        T[] array = (T[]) Array.newInstance(elementType, moreElements.length + 2);
+        array[0] = firstElement;
+        array[1] = secondElement;
+        System.arraycopy(moreElements, 0, array, 2, moreElements.length);
+        return array;
+    }
+
+    /**
+     * Joins the given arguments into one array.
+     *
+     * @param firstElements the first elements
+     * @param lastElement   the element to append
+     * @return a new array containing all arguments.
+     */
+    @SuppressWarnings({"unchecked"})
+    public static <T> T[] arrayOf(T[] firstElements, T lastElement) {
+        checkArgNotNull(firstElements, "firstElements");
+        Class elementType = firstElements.getClass().getComponentType();
+        T[] array = (T[]) Array.newInstance(elementType, firstElements.length + 1);
+        System.arraycopy(firstElements, 0, array, 0, firstElements.length);
+        array[firstElements.length] = lastElement;
+        return array;
     }
 
     /**
@@ -290,50 +342,6 @@ public final class Utils {
         } else {
             return Long.toString(value) + ' ';
         }
-    }
-
-    /**
-     * "Zips" up two Iterables into one Iterable providing key/value pairs of the zipped up entries.
-     *
-     * @param keys   the first Iterable
-     * @param values the second Iterable
-     * @return an Iterable of key/value pairs corresponding to the respective entries of the two Iterables
-     */
-    public static <K, V> Iterable<Map.Entry<K, V>> zip(final Iterable<K> keys, final Iterable<V> values) {
-        return new Iterable<Map.Entry<K, V>>() {
-            public Iterator<Map.Entry<K, V>> iterator() {
-                return new Iterator<Map.Entry<K, V>>() {
-                    private final Iterator<K> keyIterator = keys.iterator();
-                    private final Iterator<V> valueIterator = values.iterator();
-
-                    public boolean hasNext() {
-                        return keyIterator.hasNext() && valueIterator.hasNext();
-                    }
-
-                    public Map.Entry<K, V> next() {
-                        final K key = keyIterator.next();
-                        final V value = valueIterator.next();
-                        return new Map.Entry<K, V>() {
-                            public K getKey() {
-                                return key;
-                            }
-
-                            public V getValue() {
-                                return value;
-                            }
-
-                            public V setValue(V value) {
-                                throw new UnsupportedOperationException();
-                            }
-                        };
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
     }
 }
 

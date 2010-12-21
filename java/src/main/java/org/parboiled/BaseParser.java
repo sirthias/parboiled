@@ -17,15 +17,14 @@
 package org.parboiled;
 
 import org.parboiled.annotations.*;
+import org.parboiled.common.Utils;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 
-import static com.google.common.collect.ObjectArrays.concat;
-import static org.parboiled.common.Preconditions.checkArgNotNull;
-import static org.parboiled.common.Preconditions.checkArgument;
+import static org.parboiled.common.Preconditions.*;
 import static org.parboiled.common.StringUtils.escape;
 
 /**
@@ -263,7 +262,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @DontLabel
     public Rule FirstOf(Object rule, Object rule2, Object... moreRules) {
         checkArgNotNull(moreRules, "moreRules");
-        return FirstOf(concat(rule, concat(rule2, moreRules)));
+        return FirstOf(Utils.arrayOf(rule, rule2, moreRules));
     }
 
     /**
@@ -372,7 +371,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @DontLabel
     public Rule Sequence(Object rule, Object rule2, Object... moreRules) {
         checkArgNotNull(moreRules, "moreRules");
-        return Sequence(concat(rule, concat(rule2, moreRules)));
+        return Sequence(Utils.arrayOf(rule, rule2, moreRules));
     }
 
     /**

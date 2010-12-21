@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -88,7 +87,7 @@ public class AsmTestUtils {
     }
 
     public static void verifyIntegrity(String classInternalName, byte[] classCode) {
-        Preconditions.checkArgument(classCode != null);                
+        checkArgNotNull(classCode, "classCode");
         ClassNode generatedClassNode = new ClassNode();
         ClassReader classReader = new ClassReader(classCode);
         classReader.accept(generatedClassNode, 0);

@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -73,7 +72,7 @@ class SuperCallRewriter implements RuleMethodProcessor {
         String superMethodName = method.name;
         do {
             clazz = clazz.getSuperclass();
-            Preconditions.checkState(clazz != null); // we should find the owner before hitting Object
+            checkState(clazz != null); // we should find the owner before hitting Object
             superMethodName = '$' + superMethodName;
         } while (!Type.getInternalName(clazz).equals(insn.owner));
         return superMethodName;

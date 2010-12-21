@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.StringUtils;
@@ -66,7 +65,7 @@ class LabellingGenerator implements RuleMethodProcessor {
             for (Object annotationObj : method.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) annotationObj;
                 if (annotation.desc.equals(Types.LABEL_DESC) && annotation.values != null) {
-                    Preconditions.checkState("value".equals(annotation.values.get(0)));
+                    checkState("value".equals(annotation.values.get(0)));
                     String labelValue = (String) annotation.values.get(1);
                     return StringUtils.isEmpty(labelValue) ? method.name : labelValue;
                 }

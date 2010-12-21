@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.*;
 
@@ -37,7 +36,7 @@ class FlagMarkingGenerator implements RuleMethodProcessor {
     public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
-        Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
+        checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
         
         InsnList instructions = method.instructions;
 

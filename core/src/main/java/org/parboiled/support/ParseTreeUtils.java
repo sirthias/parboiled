@@ -16,7 +16,6 @@
 
 package org.parboiled.support;
 
-import com.google.common.collect.Iterables;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Node;
 import org.parboiled.buffers.InputBuffer;
@@ -71,12 +70,14 @@ public final class ParseTreeUtils {
         if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
-            Iterable<Node<V>> iterable = parents;
+            int start = 0, step = 1;
             if (prefix.startsWith("last:")) {
                 prefix = prefix.substring(5);
-                iterable = Iterables.reverse(parents);
+                start = parents.size() - 1;
+                step = -1;
             }
-            for (Node<V> child : iterable) {
+            for (int i = start; 0 <= i && i < parents.size(); i += step) {
+                Node<V> child = parents.get(i);
                 if (StringUtils.startsWith(child.getLabel(), prefix)) {
                     return separatorIndex == -1 ? child : findNodeByPath(child, path.substring(separatorIndex + 1));
                 }
@@ -226,8 +227,9 @@ public final class ParseTreeUtils {
     public static <V> Node<V> findLastNode(List<Node<V>> parents, Predicate<Node<V>> predicate) {
         checkArgNotNull(predicate, "predicate");
         if (parents != null && !parents.isEmpty()) {
-            for (Node<V> child : Iterables.reverse(parents)) {
-                Node<V> found = findLastNode(child, predicate);
+            int parentsSize = parents.size();
+            for (int i = parentsSize-1; i >= 0; i--) {
+                Node<V> found = findLastNode(parents.get(i), predicate);
                 if (found != null) return found;
             }
         }

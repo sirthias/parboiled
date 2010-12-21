@@ -6,51 +6,51 @@
     </groups>
     <test name="Command line test">
       <class name="org.parboiled.buffers.DefaultInputBufferTest">
-        <test-method status="PASS" signature="testMultiliner()" name="testMultiliner" duration-ms="5" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testMultiliner()" name="testMultiliner" duration-ms="7" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
-        <test-method status="PASS" signature="testOneliner()" name="testOneliner" duration-ms="0" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testOneliner()" name="testOneliner" duration-ms="1" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.common.IntArrayStackTest">
-        <test-method status="PASS" signature="testIntArrayStack()" name="testIntArrayStack" duration-ms="0" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testIntArrayStack()" name="testIntArrayStack" duration-ms="0" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.buffers.IndentDedentInputBufferTest">
-        <test-method status="PASS" signature="testIndentDedentInputBuffer()" name="testIndentDedentInputBuffer" duration-ms="2" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testIndentDedentInputBuffer()" name="testIndentDedentInputBuffer" duration-ms="3" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
-        <test-method status="PASS" signature="testIndentDedentInputBuffer2()" name="testIndentDedentInputBuffer2" duration-ms="0" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testIndentDedentInputBuffer2()" name="testIndentDedentInputBuffer2" duration-ms="0" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.support.ValueStackTest">
-        <test-method status="PASS" signature="testValueStack()" name="testValueStack" duration-ms="7" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testValueStack()" name="testValueStack" duration-ms="4" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.support.CharactersTest">
-        <test-method status="PASS" signature="testMultiCharactersOps()" name="testMultiCharactersOps" duration-ms="1" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testMultiCharactersOps()" name="testMultiCharactersOps" duration-ms="2" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
-        <test-method status="PASS" signature="testSimpleCharactersOps()" name="testSimpleCharactersOps" duration-ms="0" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
-        </test-method>
-      </class>
-      <class name="org.parboiled.common.StringUtilsTest">
-        <test-method status="PASS" signature="testStringEscaping()" name="testStringEscaping" duration-ms="1" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testSimpleCharactersOps()" name="testSimpleCharactersOps" duration-ms="0" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.buffers.MutableInputBufferTest">
-        <test-method status="PASS" signature="testMutableInputBuffer()" name="testMutableInputBuffer" duration-ms="4" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testMutableInputBuffer()" name="testMutableInputBuffer" duration-ms="1" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
+        </test-method>
+      </class>
+      <class name="org.parboiled.common.StringUtilsTest">
+        <test-method status="PASS" signature="testStringEscaping()" name="testStringEscaping" duration-ms="0" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.common.ArrayBuilderTest">
-        <test-method status="PASS" signature="testAdd()" name="testAdd" duration-ms="2" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
-        </test-method>
-      </class>
-      <class name="org.parboiled.common.UtilsTest">
-        <test-method status="PASS" signature="testGetTypeArguments()" name="testGetTypeArguments" duration-ms="8" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
-        </test-method>
-        <test-method status="PASS" signature="testHumanize()" name="testHumanize" duration-ms="0" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testAdd()" name="testAdd" duration-ms="1" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
       <class name="org.parboiled.common.ImmutableLinkedListTest">
-        <test-method status="PASS" signature="testImmutableLinkedList()" name="testImmutableLinkedList" duration-ms="2" started-at="2010-12-21T18:27:55Z" finished-at="2010-12-21T18:27:55Z">
+        <test-method status="PASS" signature="testImmutableLinkedList()" name="testImmutableLinkedList" duration-ms="4" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
+        </test-method>
+      </class>
+      <class name="org.parboiled.common.UtilsTest">
+        <test-method status="PASS" signature="testGetTypeArguments()" name="testGetTypeArguments" duration-ms="9" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
+        </test-method>
+        <test-method status="PASS" signature="testHumanize()" name="testHumanize" duration-ms="1" started-at="2010-12-21T23:54:24Z" finished-at="2010-12-21T23:54:24Z">
         </test-method>
       </class>
     </test>

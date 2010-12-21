@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Command line test" failures="0" tests="14" time="0.048" errors="0">
+<testsuite name="Command line test" failures="0" tests="14" time="0.05" errors="0">
   <properties/>
-  <testcase name="testMultiliner" time="0.0050" classname="org.parboiled.buffers.DefaultInputBufferTest"/>
-  <testcase name="testOneliner" time="0.0" classname="org.parboiled.buffers.DefaultInputBufferTest"/>
-  <testcase name="testIndentDedentInputBuffer" time="0.0020" classname="org.parboiled.buffers.IndentDedentInputBufferTest"/>
+  <testcase name="testMultiliner" time="0.0070" classname="org.parboiled.buffers.DefaultInputBufferTest"/>
+  <testcase name="testOneliner" time="0.0010" classname="org.parboiled.buffers.DefaultInputBufferTest"/>
+  <testcase name="testIndentDedentInputBuffer" time="0.0030" classname="org.parboiled.buffers.IndentDedentInputBufferTest"/>
   <testcase name="testIndentDedentInputBuffer2" time="0.0" classname="org.parboiled.buffers.IndentDedentInputBufferTest"/>
-  <testcase name="testMutableInputBuffer" time="0.0040" classname="org.parboiled.buffers.MutableInputBufferTest"/>
-  <testcase name="testAdd" time="0.0020" classname="org.parboiled.common.ArrayBuilderTest"/>
-  <testcase name="testImmutableLinkedList" time="0.0020" classname="org.parboiled.common.ImmutableLinkedListTest"/>
+  <testcase name="testMutableInputBuffer" time="0.0010" classname="org.parboiled.buffers.MutableInputBufferTest"/>
+  <testcase name="testAdd" time="0.0010" classname="org.parboiled.common.ArrayBuilderTest"/>
+  <testcase name="testImmutableLinkedList" time="0.0040" classname="org.parboiled.common.ImmutableLinkedListTest"/>
   <testcase name="testIntArrayStack" time="0.0" classname="org.parboiled.common.IntArrayStackTest"/>
-  <testcase name="testStringEscaping" time="0.0010" classname="org.parboiled.common.StringUtilsTest"/>
-  <testcase name="testGetTypeArguments" time="0.0080" classname="org.parboiled.common.UtilsTest"/>
-  <testcase name="testHumanize" time="0.0" classname="org.parboiled.common.UtilsTest"/>
-  <testcase name="testMultiCharactersOps" time="0.0010" classname="org.parboiled.support.CharactersTest"/>
+  <testcase name="testStringEscaping" time="0.0" classname="org.parboiled.common.StringUtilsTest"/>
+  <testcase name="testGetTypeArguments" time="0.0090" classname="org.parboiled.common.UtilsTest"/>
+  <testcase name="testHumanize" time="0.0010" classname="org.parboiled.common.UtilsTest"/>
+  <testcase name="testMultiCharactersOps" time="0.0020" classname="org.parboiled.support.CharactersTest"/>
   <testcase name="testSimpleCharactersOps" time="0.0" classname="org.parboiled.support.CharactersTest"/>
-  <testcase name="testValueStack" time="0.0070" classname="org.parboiled.support.ValueStackTest"/>
+  <testcase name="testValueStack" time="0.0040" classname="org.parboiled.support.ValueStackTest"/>
 </testsuite>

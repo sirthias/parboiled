@@ -16,9 +16,8 @@
 
 package org.parboiled.buffers;
 
-import com.google.common.base.Preconditions;
-
 import java.util.Arrays;
+import static org.parboiled.common.Preconditions.*;
 
 /**
  * An InputBuffer wrapping another InputBuffer and providing for the ability to insert (and undo) characters at
@@ -89,7 +88,7 @@ public class MutableInputBuffer implements InputBuffer {
 
     public char undoCharInsertion(int index) {
         int j = Arrays.binarySearch(inserts, index);
-        Preconditions.checkArgument(j >= 0, "Cannot undo a non-existing insertion");
+        checkArgument(j >= 0, "Cannot undo a non-existing insertion");
         char removedChar = chars[j];
 
         char[] newChars = new char[chars.length - 1];

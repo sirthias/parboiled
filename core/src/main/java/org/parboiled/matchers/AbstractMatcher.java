@@ -16,10 +16,10 @@
 
 package org.parboiled.matchers;
 
-import com.google.common.collect.ImmutableList;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.common.ImmutableList;
 import org.parboiled.trees.ImmutableGraphNode;
 
 /**

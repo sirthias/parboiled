@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
@@ -209,7 +208,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
                 ensureRemaining(8);
                 buffer.putDouble((Double) cst);
             } else {
-                Preconditions.checkState(cst instanceof Type);
+                checkState(cst instanceof Type);
                 update(((Type) cst).getInternalName());
             }
         }

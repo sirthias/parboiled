@@ -16,7 +16,6 @@
 
 package org.parboiled.matchers;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;

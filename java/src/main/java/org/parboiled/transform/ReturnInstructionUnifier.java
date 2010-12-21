@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -39,7 +38,7 @@ class ReturnInstructionUnifier implements RuleMethodProcessor {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
         if (method.getNumberOfReturns() == 1) return;
-        Preconditions.checkState(method.getNumberOfReturns() > 1);
+        checkState(method.getNumberOfReturns() > 1);
 
         AbstractInsnNode current = method.instructions.getLast();
 

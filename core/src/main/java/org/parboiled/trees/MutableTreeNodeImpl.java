@@ -16,11 +16,10 @@
 
 package org.parboiled.trees;
 
-import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static org.parboiled.common.Preconditions.*;
 
 /**
  * A base implementation of the {@link MutableTreeNode}.
@@ -42,7 +41,7 @@ public class MutableTreeNodeImpl<T extends MutableTreeNode<T>> implements Mutabl
     }
 
     public void addChild(int index, T child) {
-        Preconditions.checkElementIndex(index, children.size() + 1);
+        checkElementIndex(index, children.size() + 1);
 
         // detach new child from old parent
         if (child != null) {
@@ -58,7 +57,7 @@ public class MutableTreeNodeImpl<T extends MutableTreeNode<T>> implements Mutabl
     }
 
     public void setChild(int index, T child) {
-        Preconditions.checkElementIndex(index, children.size());
+        checkElementIndex(index, children.size());
 
         // detach old child
         T old = children.get(index);
@@ -76,7 +75,7 @@ public class MutableTreeNodeImpl<T extends MutableTreeNode<T>> implements Mutabl
     }
 
     public T removeChild(int index) {
-        Preconditions.checkElementIndex(index, children.size());
+        checkElementIndex(index, children.size());
         T removed = children.remove(index);
         setParent(removed, null);
         return removed;

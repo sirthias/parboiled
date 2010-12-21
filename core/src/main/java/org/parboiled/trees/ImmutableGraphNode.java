@@ -16,7 +16,7 @@
 
 package org.parboiled.trees;
 
-import com.google.common.collect.ImmutableList;
+import org.parboiled.common.ImmutableList;
 
 import java.util.List;
 

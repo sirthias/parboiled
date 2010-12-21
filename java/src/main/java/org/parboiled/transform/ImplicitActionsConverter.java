@@ -16,7 +16,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import static org.objectweb.asm.Opcodes.*;
 
@@ -102,7 +101,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
         // Doesthe result of the Boolean.valueOf(boolean) call correspond to an Object parameter ?
         Type[] argTypes = Type.getArgumentTypes(mi.desc);
         int argIndex = getArgumentIndex(dependent, node);
-        Preconditions.checkState(argIndex < argTypes.length);
+        checkState(argIndex < argTypes.length);
         return "java/lang/Object".equals(argTypes[argIndex].getInternalName());
     }
 
@@ -113,9 +112,9 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
 
         // Does this instruction store into an array of Object ?
         List<InstructionGraphNode> dependents = getDependents(dependent);
-        Preconditions.checkState(dependents.size() == 1); // an AASTORE instruction should have exactly one dependent
+        checkState(dependents.size() == 1); // an AASTORE instruction should have exactly one dependent
         AbstractInsnNode newArrayInsn = dependents.get(0).getInstruction();
-        Preconditions.checkState(newArrayInsn.getOpcode() == ANEWARRAY); // which should be a n ANEWARRAY instruction
+        checkState(newArrayInsn.getOpcode() == ANEWARRAY); // which should be a n ANEWARRAY instruction
         return "java/lang/Object".equals(((TypeInsnNode) newArrayInsn).desc);
     }
 

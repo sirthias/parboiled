@@ -22,7 +22,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
@@ -88,7 +87,7 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
         node.setGroup(group);
         if (!node.isXLoad()) {
             if (node.isVarInitRoot()) {
-                Preconditions.checkState(node.getPredecessors().size() == 2);
+                checkState(node.getPredecessors().size() == 2);
                 markGroup(node.getPredecessors().get(1), group); // only color the second predecessor branch
             } else {
                 for (InstructionGraphNode pred : node.getPredecessors()) {
@@ -130,7 +129,7 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
         int sizeMinus1 = nodes.size() - 1;
 
         // verify all instruction except for the last one (which must be the root)
-        Preconditions.checkState(nodes.get(sizeMinus1) == group.getRoot());
+        checkState(nodes.get(sizeMinus1) == group.getRoot());
         for (int i = 0; i < sizeMinus1; i++) {
             InstructionGraphNode node = nodes.get(i);
             Checks.ensure(!node.isXStore(), "An ACTION or Var initializer in rule method '%s' " +

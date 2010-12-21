@@ -16,7 +16,6 @@
 
 package org.parboiled.parserunners;
 
-import com.google.common.base.Preconditions;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
@@ -25,7 +24,7 @@ import org.parboiled.matchers.TestNotMatcher;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.ValueStack;
 
-import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.*;
 
 /**
  * A {@link ParseRunner} implementation that records the location of the first {@link InvalidInputError} found,
@@ -83,7 +82,7 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
      * @return the index of the first parse error or -1, if the input is error free.
      */
     public int getErrorIndex() {
-        Preconditions.checkState(handler != null, "getErrorIndex() called before run()");
+        checkState(handler != null, "getErrorIndex() called before run()");
         return handler.getErrorIndex();
     }
 

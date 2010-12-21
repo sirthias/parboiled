@@ -16,7 +16,7 @@
 
 package org.parboiled.support;
 
-import com.google.common.base.Preconditions;
+import static org.parboiled.common.Preconditions.*;
 
 /**
  * Simple specialization of a {@link Var} for Strings. Provides a few convenience helper methods.
@@ -114,7 +114,7 @@ public class StringVar extends Var<String> {
 
     private String checkedGet() {
         String value = get();
-        Preconditions.checkNotNull(value, "Cannot append to a null String");
+        checkNotNull(value, "Cannot append to a null String");
         return value;
     }
 
