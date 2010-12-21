@@ -17,7 +17,6 @@
 package org.parboiled.trees;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -38,9 +37,7 @@ public class ImmutableGraphNode<T extends GraphNode<T>> implements GraphNode<T> 
         this.children = children != null ? ImmutableList.copyOf(children) : ImmutableList.<T>of();
     }
 
-    @NotNull
     public List<T> getChildren() {
         return children;
     }
-
 }

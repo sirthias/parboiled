@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -29,7 +29,8 @@ class VarInitClassGenerator extends GroupClassGenerator {
         super(forceCodeBuilding);
     }
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(method, "method");
         return method.containsVars();
     }
 

@@ -16,10 +16,9 @@
 
 package org.parboiled.common;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.AbstractSequentialList;
 import java.util.ListIterator;
+import static org.parboiled.common.Preconditions.*;
 
 public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
 
@@ -61,7 +60,8 @@ public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
         tail = null;
     }
 
-    public ImmutableLinkedList(T head, @NotNull ImmutableLinkedList<T> tail) {
+    public ImmutableLinkedList(T head, ImmutableLinkedList<T> tail) {
+        checkArgNotNull(tail, "tail");
         this.head = head;
         this.tail = tail;
     }
@@ -98,11 +98,14 @@ public class ImmutableLinkedList<T> extends AbstractSequentialList<T> {
         return reversed;
     }
 
-    public static <T> boolean equal(@NotNull ImmutableLinkedList<T> a, @NotNull ImmutableLinkedList<T> b) {
+    public static <T> boolean equal(ImmutableLinkedList<T> a, ImmutableLinkedList<T> b) {
+        checkArgNotNull(a, "a");
+        checkArgNotNull(b, "b");
         return Utils.equal(a.head, b.head) && equal(a.tail, b.tail);
     }
 
-    public static int hashCode(@NotNull ImmutableLinkedList<?> list) {
+    public static int hashCode(ImmutableLinkedList<?> list) {
+        checkArgNotNull(list, "list");
         return list.isEmpty() ? 0 : 31 * list.head.hashCode() + hashCode(list.tail);
     }
 

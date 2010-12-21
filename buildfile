@@ -10,21 +10,20 @@ define "parboiled" do
 
   ASM_ALL = "asm:asm-all:jar:3.3"
   GOOGLE_COLLECTIONS = "com.google.collections:google-collections:jar:1.0"
-  ANNOTATIONS = "lib/annotations.jar"
   SCALATEST = "org.scalatest:scalatest:jar:1.2"
 
   compile.using :deprecation => true, :target => "1.5", :other => %w{-encoding UTF-8}, :lint=> "all"
 
   desc "The core parts of parboiled, depended on by everything else"
   define "core" do
-    compile.with ANNOTATIONS, GOOGLE_COLLECTIONS
+    compile.with GOOGLE_COLLECTIONS
     test.using :testng
     package :jar
   end
 
   desc "The Java DSL and supporting code"
   define "java" do
-    compile.with ASM_ALL, ANNOTATIONS, GOOGLE_COLLECTIONS, project("core")
+    compile.with ASM_ALL, GOOGLE_COLLECTIONS, project("core")
     test.using :testng
     package :jar
   end
@@ -39,7 +38,7 @@ define "parboiled" do
 
   desc "Examples using the Java DSL"
   define "examples-java" do
-    compile.with ASM_ALL, ANNOTATIONS, GOOGLE_COLLECTIONS, project("core"), project("java")
+    compile.with ASM_ALL, GOOGLE_COLLECTIONS, project("core"), project("java")
     test.using :testng
     package :jar
   end

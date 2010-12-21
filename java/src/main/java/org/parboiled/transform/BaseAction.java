@@ -22,7 +22,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.SkippableAction;
 
 /**
@@ -33,8 +33,8 @@ public abstract class BaseAction extends BaseGroupClass implements SkippableActi
 
     private boolean skipInPredicates;
 
-    protected BaseAction(@NotNull String name) {
-        super(name);
+    protected BaseAction(String name) {
+        super(checkArgNotNull(name, "name"));
     }
 
     public boolean skipInPredicates() {

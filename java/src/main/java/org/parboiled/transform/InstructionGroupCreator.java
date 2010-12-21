@@ -23,7 +23,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -40,12 +40,14 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
     private RuleMethod method;
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.containsExplicitActions() || method.containsVars();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        this.method = method;
+    public void process(ParserClassNode classNode, RuleMethod method) {
+        this.method = checkArgNotNull(method, "method");
 
         // create groups
         createGroups();

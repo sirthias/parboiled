@@ -16,8 +16,7 @@
 
 package org.parboiled.buffers;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.support.Chars;
 
 import java.util.Arrays;
@@ -37,7 +36,8 @@ public class DefaultInputBuffer implements InputBuffer {
      *
      * @param buffer the chars
      */
-    public DefaultInputBuffer(@NotNull char[] buffer) {
+    public DefaultInputBuffer(char[] buffer) {
+        checkArgNotNull(buffer, "buffer");
         this.buffer = buffer;
         this.length = buffer.length;
     }
@@ -57,7 +57,6 @@ public class DefaultInputBuffer implements InputBuffer {
         return true;
     }
 
-    @NotNull
     public String extract(int start, int end) {
         return extractInternal(start, end);
     }
@@ -77,7 +76,7 @@ public class DefaultInputBuffer implements InputBuffer {
 
     public String extractLine(int lineNumber) {
         buildNewlines();
-        Preconditions.checkArgument(0 < lineNumber && lineNumber <= newlines.length + 1);
+        checkArgument(0 < lineNumber && lineNumber <= newlines.length + 1);
         int start = lineNumber > 1 ? newlines[lineNumber - 2] + 1 : 0;
         int end = lineNumber <= newlines.length ? newlines[lineNumber - 1] : length;
         if (charAt(end - 1) == '\r') end--;

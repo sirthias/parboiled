@@ -17,7 +17,7 @@
 package org.parboiled.matchers;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.trees.ImmutableGraphNode;
@@ -37,15 +37,15 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
         this(new Rule[0]);
     }
 
-    public AbstractMatcher(@NotNull Rule subRule) {
-        this(new Rule[] {subRule});
+    public AbstractMatcher(Rule subRule) {
+        this(new Rule[] {checkArgNotNull(subRule, "subRule")});
     }
 
-    public AbstractMatcher(@NotNull Rule[] subRules) {
-        super(ImmutableList.<Matcher>of(toMatchers(subRules)));
+    public AbstractMatcher(Rule[] subRules) {
+        super(ImmutableList.<Matcher>of(toMatchers(checkArgNotNull(subRules, "subRules"))));
     }
 
-    private static Matcher[] toMatchers(@NotNull Rule[] subRules) {
+    private static Matcher[] toMatchers(Rule[] subRules) {
         Matcher[] matchers = new Matcher[subRules.length];
         for (int i = 0; i < subRules.length; i++) {
             matchers[i] = (Matcher) subRules[i];
@@ -78,7 +78,8 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
         return getLabel();
     }
 
-    public AbstractMatcher label(@NotNull String label) {
+    public AbstractMatcher label(String label) {
+        checkArgNotNull(label, "label");
         if (label.equals(this.label)) return this;
         AbstractMatcher clone = createClone();
         clone.label = label;

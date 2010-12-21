@@ -16,7 +16,6 @@
 
 package org.parboiled.examples.calculators;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
@@ -124,7 +123,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     // character or string literal
 
     @Override
-    protected Rule fromStringLiteral(@NotNull String string) {
+    protected Rule fromStringLiteral(String string) {
         return string.endsWith(" ") ?
                 Sequence(String(string.substring(0, string.length() - 1)), WhiteSpace()) :
                 String(string);
@@ -145,7 +144,7 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
             this.value = value;
         }
 
-        public CalcNode(@NotNull Character operator, @NotNull CalcNode left, CalcNode right) {
+        public CalcNode(Character operator, CalcNode left, CalcNode right) {
             super(left, right);
             this.operator = operator;
         }

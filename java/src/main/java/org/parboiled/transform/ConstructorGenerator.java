@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.*;
 import org.parboiled.support.Checks;
 
@@ -29,7 +29,8 @@ import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
  */
 class ConstructorGenerator {
 
-    public void process(@NotNull ParserClassNode classNode) {
+    public void process(ParserClassNode classNode) {
+        checkArgNotNull(classNode, "classNode");
         Checks.ensure(!classNode.getConstructors().isEmpty(),
                 "Could not extend parser class '%s', no constructor visible to derived classes found",
                 classNode.getParentType().getClassName());

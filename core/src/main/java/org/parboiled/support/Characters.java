@@ -16,7 +16,7 @@
 
 package org.parboiled.support;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.StringUtils;
 
 import java.util.Arrays;
@@ -44,9 +44,9 @@ public class Characters {
     private final boolean subtractive;
     private final char[] chars;
 
-    private Characters(boolean subtractive, @NotNull char[] chars) {
+    private Characters(boolean subtractive, char[] chars) {
         this.subtractive = subtractive;
-        this.chars = chars;
+        this.chars = checkArgNotNull(chars, "chars");
     }
 
     /**
@@ -72,7 +72,6 @@ public class Characters {
      * @param c the character to add
      * @return a new Characters object
      */
-    @NotNull
     public Characters add(char c) {
         return subtractive ? removeFromChars(c) : addToChars(c);
     }
@@ -83,7 +82,6 @@ public class Characters {
      * @param c the character to remove
      * @return a new Characters object
      */
-    @NotNull
     public Characters remove(char c) {
         return subtractive ? addToChars(c) : removeFromChars(c);
     }
@@ -105,8 +103,8 @@ public class Characters {
      * @param other the other Characters to add
      * @return a new Characters object
      */
-    @NotNull
-    public Characters add(@NotNull Characters other) {
+    public Characters add(Characters other) {
+        checkArgNotNull(other, "other");
         if (!subtractive && !other.subtractive) {
             return addToChars(other.chars);
         }
@@ -123,8 +121,8 @@ public class Characters {
      * @param other the other Characters to remove
      * @return a new Characters object
      */
-    @NotNull
-    public Characters remove(@NotNull Characters other) {
+    public Characters remove(Characters other) {
+        checkArgNotNull(other, "other");
         if (!subtractive && !other.subtractive) {
             return removeFromChars(other.chars);
         }
@@ -160,7 +158,6 @@ public class Characters {
         return result;
     }
 
-    @NotNull
     private Characters addToChars(char[] chs) {
         Characters characters = this;
         for (char c : chs) {
@@ -169,7 +166,6 @@ public class Characters {
         return characters;
     }
 
-    @NotNull
     private Characters addToChars(char c) {
         if (indexOf(chars, c) != -1) return this;
         char[] newChars = new char[chars.length + 1];
@@ -178,7 +174,6 @@ public class Characters {
         return new Characters(subtractive, newChars);
     }
 
-    @NotNull
     private Characters removeFromChars(char[] chs) {
         Characters characters = this;
         for (char c : chs) {
@@ -187,7 +182,6 @@ public class Characters {
         return characters;
     }
 
-    @NotNull
     private Characters removeFromChars(char c) {
         int ix = indexOf(chars, c);
         if (ix == -1) return this;
@@ -198,7 +192,6 @@ public class Characters {
         return new Characters(subtractive, newChars);
     }
 
-    @NotNull
     private Characters retainAllChars(char[] chs) {
         Characters characters = this;
         for (char c : chars) {
@@ -217,7 +210,9 @@ public class Characters {
     }
 
     // order independent Array.equals()
-    private static boolean equivalent(@NotNull char[] a, @NotNull char[] b) {
+    private static boolean equivalent(char[] a, char[] b) {
+        checkArgNotNull(a, "a");
+        checkArgNotNull(b, "b");
         if (a == b) return true;
         int length = a.length;
         if (b.length != length) return false;
@@ -239,7 +234,6 @@ public class Characters {
      * @param c the char
      * @return a new Characters object
      */
-    @NotNull
     public static Characters of(char c) {
         return new Characters(false, new char[] {c});
     }
@@ -250,7 +244,6 @@ public class Characters {
      * @param chars the chars
      * @return a new Characters object
      */
-    @NotNull
     public static Characters of(char... chars) {
         return chars.length == 0 ? Characters.NONE : new Characters(false, chars.clone());
     }
@@ -261,7 +254,6 @@ public class Characters {
      * @param chars the chars
      * @return a new Characters object
      */
-    @NotNull
     public static Characters of(String chars) {
         return StringUtils.isEmpty(chars) ? Characters.NONE : new Characters(false, chars.toCharArray());
     }
@@ -272,7 +264,6 @@ public class Characters {
      * @param c the char to NOT include
      * @return a new Characters object
      */
-    @NotNull
     public static Characters allBut(char c) {
         return new Characters(true, new char[] {c});
     }
@@ -283,7 +274,6 @@ public class Characters {
      * @param chars the chars to NOT include
      * @return a new Characters object
      */
-    @NotNull
     public static Characters allBut(char... chars) {
         return chars.length == 0 ? Characters.ALL : new Characters(true, chars.clone());
     }
@@ -294,7 +284,6 @@ public class Characters {
      * @param chars the chars to NOT include
      * @return a new Characters object
      */
-    @NotNull
     public static Characters allBut(String chars) {
         return StringUtils.isEmpty(chars) ? Characters.ALL : new Characters(true, chars.toCharArray());
     }

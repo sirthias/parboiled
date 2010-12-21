@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -38,9 +38,9 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
         this.forceCodeBuilding = forceCodeBuilding;
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        this.classNode = classNode;
-        this.method = method;
+    public void process(ParserClassNode classNode, RuleMethod method) {
+        this.classNode = checkArgNotNull(classNode, "classNode");
+        this.method = checkArgNotNull(method, "method");
 
         for (InstructionGroup group : method.getGroups()) {
             if (appliesTo(group.getRoot())) {

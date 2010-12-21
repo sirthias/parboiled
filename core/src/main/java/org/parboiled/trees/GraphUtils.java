@@ -16,7 +16,7 @@
 
 package org.parboiled.trees;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
@@ -81,10 +81,10 @@ public final class GraphUtils {
      * @param collection the collection to collect into
      * @return the same collection passed as a parameter
      */
-    @NotNull
-    public static <T extends GraphNode<T>, C extends Collection<T>> C collectAllNodes(T node, @NotNull C collection) {
+    public static <T extends GraphNode<T>, C extends Collection<T>> C collectAllNodes(T node, C collection) {
         // we don't recurse if the collecion already contains the node
         // this costs a bit of performance but prevents infinite recursion in the case of graph cycles
+        checkArgNotNull(collection, "collection");
         if (node != null && !collection.contains(node)) {
             collection.add(node);
             for (T child : node.getChildren()) {
@@ -101,7 +101,8 @@ public final class GraphUtils {
      * @param formatter the node formatter
      * @return a new string
      */
-    public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter) {
+    public static <T extends GraphNode<T>> String printTree(T node, Formatter<T> formatter) {
+        checkArgNotNull(formatter, "formatter");
         return printTree(node, formatter, Predicates.<T>alwaysTrue(), Predicates.<T>alwaysTrue());
     }
 
@@ -116,9 +117,12 @@ public final class GraphUtils {
      * @param subTreeFilter the predicate determining whether to descend into a given nodes subtree or not
      * @return a new string
      */
-    public static <T extends GraphNode<T>> String printTree(T node, @NotNull Formatter<T> formatter,
-                                                            @NotNull Predicate<T> nodeFilter,
-                                                            @NotNull Predicate<T> subTreeFilter) {
+    public static <T extends GraphNode<T>> String printTree(T node, Formatter<T> formatter,
+                                                            Predicate<T> nodeFilter,
+                                                            Predicate<T> subTreeFilter) {
+        checkArgNotNull(formatter, "formatter");
+        checkArgNotNull(nodeFilter, "nodeFilter");
+        checkArgNotNull(subTreeFilter, "subTreeFilter");
         return node == null ? "" :
                 printTree(node, formatter, "", new StringBuilder(), nodeFilter, subTreeFilter).toString();
     }
@@ -127,8 +131,8 @@ public final class GraphUtils {
 
     private static <T extends GraphNode<T>> StringBuilder printTree(T node, Formatter<T> formatter,
                                                                     String indent, StringBuilder sb,
-                                                                    @NotNull Predicate<T> nodeFilter,
-                                                                    @NotNull Predicate<T> subTreeFilter) {
+                                                                    Predicate<T> nodeFilter,
+                                                                    Predicate<T> subTreeFilter) {
         if (nodeFilter.apply(node)) {
             String line = formatter.format(node);
             if (line != null) {

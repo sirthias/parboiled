@@ -16,16 +16,16 @@
 
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import org.parboiled.annotations.*;
 import org.parboiled.errors.GrammarException;
 import org.parboiled.matchers.*;
-import org.parboiled.annotations.*;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 
 import static com.google.common.collect.ObjectArrays.concat;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.checkArgument;
 import static org.parboiled.common.StringUtils.escape;
 
 /**
@@ -33,7 +33,7 @@ import static org.parboiled.common.StringUtils.escape;
  *
  * @param <V> the type of the parser values
  */
-@SuppressWarnings({"UnusedDeclaration"})
+@SuppressWarnings( {"UnusedDeclaration"})
 public abstract class BaseParser<V> extends BaseActions<V> {
 
     /**
@@ -139,7 +139,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule AnyOf(@NotNull String characters) {
+    public Rule AnyOf(String characters) {
+        checkArgNotNull(characters, "characters");
         return AnyOf(characters.toCharArray());
     }
 
@@ -152,8 +153,9 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule AnyOf(@NotNull char[] characters) {
-        Preconditions.checkArgument(characters.length > 0);
+    public Rule AnyOf(char[] characters) {
+        checkArgNotNull(characters, "characters");
+        checkArgument(characters.length > 0);
         return characters.length == 1 ? Ch(characters[0]) : AnyOf(Characters.of(characters));
     }
 
@@ -167,7 +169,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @DontLabel
-    public Rule AnyOf(@NotNull Characters characters) {
+    public Rule AnyOf(Characters characters) {
+        checkArgNotNull(characters, "characters");
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return Ch(characters.getChars()[0]);
         }
@@ -185,7 +188,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule String(@NotNull String string) {
+    public Rule String(String string) {
+        checkArgNotNull(string, "string");
         return String(string.toCharArray());
     }
 
@@ -220,7 +224,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule IgnoreCase(@NotNull String string) {
+    public Rule IgnoreCase(String string) {
+        checkArgNotNull(string, "string");
         return IgnoreCase(string.toCharArray());
     }
 
@@ -256,7 +261,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule FirstOf(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule FirstOf(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return FirstOf(concat(rule, concat(rule2, moreRules)));
     }
 
@@ -271,7 +277,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @Label("FirstOf")
-    public Rule FirstOf(@NotNull Object[] rules) {
+    public Rule FirstOf(Object[] rules) {
+        checkArgNotNull(rules, "rules");
         if (rules.length == 1) {
             return toRule(rules[0]);
         }
@@ -280,7 +287,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0, convertedRulesLength = convertedRules.length; i < convertedRulesLength; i++) {
             Object rule = convertedRules[i];
             if (rule instanceof StringMatcher) {
-                chars[i] = ((StringMatcher)rule).characters;
+                chars[i] = ((StringMatcher) rule).characters;
             } else {
                 return new FirstOfMatcher(convertedRules);
             }
@@ -315,7 +322,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule OneOrMore(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule OneOrMore(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return OneOrMore(Sequence(rule, rule2, moreRules));
     }
 
@@ -346,7 +354,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule Optional(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule Optional(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return Optional(Sequence(rule, rule2, moreRules));
     }
 
@@ -361,7 +370,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule Sequence(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule Sequence(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return Sequence(concat(rule, concat(rule2, moreRules)));
     }
 
@@ -375,7 +385,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @Label("Sequence")
-    public Rule Sequence(@NotNull Object[] rules) {
+    public Rule Sequence(Object[] rules) {
+        checkArgNotNull(rules, "rules");
         return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
     }
 
@@ -418,7 +429,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule Test(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule Test(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return Test(Sequence(rule, rule2, moreRules));
     }
 
@@ -461,7 +473,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule TestNot(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule TestNot(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return TestNot(Sequence(rule, rule2, moreRules));
     }
 
@@ -492,7 +505,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @DontLabel
-    public Rule ZeroOrMore(Object rule, Object rule2, @NotNull Object... moreRules) {
+    public Rule ZeroOrMore(Object rule, Object rule2, Object... moreRules) {
+        checkArgNotNull(moreRules, "moreRules");
         return ZeroOrMore(Sequence(rule, rule2, moreRules));
     }
 
@@ -533,7 +547,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule
      */
     @DontExtend
-    protected Rule fromStringLiteral(@NotNull String string) {
+    protected Rule fromStringLiteral(String string) {
+        checkArgNotNull(string, "string");
         return fromCharArray(string.toCharArray());
     }
 
@@ -546,7 +561,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rule
      */
     @DontExtend
-    protected Rule fromCharArray(@NotNull char[] array) {
+    protected Rule fromCharArray(char[] array) {
+        checkArgNotNull(array, "array");
         return String(array);
     }
 
@@ -557,7 +573,8 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return the rules corresponding to the given objects
      */
     @DontExtend
-    public Rule[] toRules(@NotNull Object... objects) {
+    public Rule[] toRules(Object... objects) {
+        checkArgNotNull(objects, "objects");
         Rule[] rules = new Rule[objects.length];
         for (int i = 0; i < objects.length; i++) {
             rules[i] = toRule(objects[i]);

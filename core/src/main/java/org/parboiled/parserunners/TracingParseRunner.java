@@ -16,7 +16,7 @@
 
 package org.parboiled.parserunners;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Context;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
@@ -43,8 +43,8 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      *
      * @param rule the parser rule
      */
-    public TracingParseRunner(@NotNull Rule rule) {
-        this(rule, Predicates.alwaysTrue());
+    public TracingParseRunner(Rule rule) {
+        this(checkArgNotNull(rule, "rule"), Predicates.alwaysTrue());
     }
 
     /**
@@ -61,9 +61,9 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      *               Predicate<Tuple2<Context<?>, Boolean>>.
      */
     @SuppressWarnings({"unchecked"})
-    public TracingParseRunner(@NotNull Rule rule, @NotNull Predicate<?> filter) {
-        super(rule);
-        this.filter = (Predicate<Tuple2<Context<?>, Boolean>>) filter;
+    public TracingParseRunner(Rule rule, Predicate<?> filter) {
+        super(checkArgNotNull(rule, "rule"));
+        this.filter = (Predicate<Tuple2<Context<?>, Boolean>>) checkArgNotNull(filter, "filter");
     }
 
     /**

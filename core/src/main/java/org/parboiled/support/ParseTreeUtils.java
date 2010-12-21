@@ -17,7 +17,7 @@
 package org.parboiled.support;
 
 import com.google.common.collect.Iterables;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Node;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
@@ -52,7 +52,8 @@ public final class ParseTreeUtils {
      * @param path   the path to the Node being searched for
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNodeByPath(Node<V> parent, @NotNull String path) {
+    public static <V> Node<V> findNodeByPath(Node<V> parent, String path) {
+        checkArgNotNull(path, "path");
         return parent != null && hasChildren(parent) ? findNodeByPath(parent.getChildren(), path) : null;
     }
 
@@ -65,7 +66,8 @@ public final class ParseTreeUtils {
      * @param path    the path to the Node being searched for
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNodeByPath(List<Node<V>> parents, @NotNull String path) {
+    public static <V> Node<V> findNodeByPath(List<Node<V>> parents, String path) {
+        checkArgNotNull(path, "path");
         if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
@@ -93,9 +95,9 @@ public final class ParseTreeUtils {
      * @param collection the collection to collect the found Nodes into
      * @return the same collection instance passed as a parameter
      */
-    public static <V, C extends Collection<Node<V>>> C collectNodesByPath(Node<V> parent,
-                                                                          @NotNull String path,
-                                                                          @NotNull C collection) {
+    public static <V, C extends Collection<Node<V>>> C collectNodesByPath(Node<V> parent, String path, C collection) {
+        checkArgNotNull(path, "path");
+        checkArgNotNull(collection, "collection");
         return parent != null && hasChildren(parent) ?
                 collectNodesByPath(parent.getChildren(), path, collection) : collection;
     }
@@ -110,9 +112,10 @@ public final class ParseTreeUtils {
      * @param collection the collection to collect the found Nodes into
      * @return the same collection instance passed as a parameter
      */
-    public static <V, C extends Collection<Node<V>>> C collectNodesByPath(List<Node<V>> parents,
-                                                                          @NotNull String path,
-                                                                          @NotNull C collection) {
+    public static <V, C extends Collection<Node<V>>> C collectNodesByPath(List<Node<V>> parents, String path,
+                                                                          C collection) {
+        checkArgNotNull(path, "path");
+        checkArgNotNull(collection, "collection");
         if (parents != null && !parents.isEmpty()) {
             int separatorIndex = path.indexOf('/');
             String prefix = separatorIndex != -1 ? path.substring(0, separatorIndex) : path;
@@ -137,7 +140,8 @@ public final class ParseTreeUtils {
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNode(Node<V> parent, @NotNull Predicate<Node<V>> predicate) {
+    public static <V> Node<V> findNode(Node<V> parent, Predicate<Node<V>> predicate) {
+        checkArgNotNull(predicate, "predicate");
         if (parent != null) {
             if (predicate.apply(parent)) return parent;
             if (hasChildren(parent)) {
@@ -156,7 +160,8 @@ public final class ParseTreeUtils {
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findNode(List<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
+    public static <V> Node<V> findNode(List<Node<V>> parents, Predicate<Node<V>> predicate) {
+        checkArgNotNull(predicate, "predicate");
         if (parents != null && !parents.isEmpty()) {
             for (Node<V> child : parents) {
                 Node<V> found = findNode(child, predicate);
@@ -198,7 +203,8 @@ public final class ParseTreeUtils {
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findLastNode(Node<V> parent, @NotNull Predicate<Node<V>> predicate) {
+    public static <V> Node<V> findLastNode(Node<V> parent, Predicate<Node<V>> predicate) {
+        checkArgNotNull(predicate, "predicate");
         if (parent != null) {
             if (predicate.apply(parent)) return parent;
             if (hasChildren(parent)) {
@@ -217,7 +223,8 @@ public final class ParseTreeUtils {
      * @param predicate the predicate
      * @return the Node if found or null if not found
      */
-    public static <V> Node<V> findLastNode(List<Node<V>> parents, @NotNull Predicate<Node<V>> predicate) {
+    public static <V> Node<V> findLastNode(List<Node<V>> parents, Predicate<Node<V>> predicate) {
+        checkArgNotNull(predicate, "predicate");
         if (parents != null && !parents.isEmpty()) {
             for (Node<V> child : Iterables.reverse(parents)) {
                 Node<V> found = findLastNode(child, predicate);
@@ -236,32 +243,12 @@ public final class ParseTreeUtils {
      * @return the same collection instance passed as a parameter
      */
     public static <V, C extends Collection<Node<V>>> C collectNodes(Node<V> parent,
-                                                                    @NotNull Predicate<Node<V>> predicate,
-                                                                    @NotNull C collection) {
+                                                                    Predicate<Node<V>> predicate,
+                                                                    C collection) {
+        checkArgNotNull(predicate, "predicate");
+        checkArgNotNull(collection, "collection");
         return parent != null && hasChildren(parent) ?
                 collectNodes(parent.getChildren(), predicate, collection) : collection;
-    }
-
-    /**
-     * Collects all nodes underneath the given parents for which the given predicate evaluates to true.
-     *
-     * @param parents    the parent Nodes to look through
-     * @param predicate  the predicate
-     * @param collection the collection to collect the found Nodes into
-     * @return the same collection instance passed as a parameter
-     */
-    public static <V, C extends Collection<Node<V>>> C collectNodes(List<Node<V>> parents,
-                                                                    @NotNull Predicate<Node<V>> predicate,
-                                                                    @NotNull C collection) {
-        if (parents != null && !parents.isEmpty()) {
-            for (Node<V> child : parents) {
-                if (predicate.apply(child)) {
-                    collection.add(child);
-                }
-                collectNodes(child, predicate, collection);
-            }
-        }
-        return collection;
     }
 
     /**
@@ -271,7 +258,8 @@ public final class ParseTreeUtils {
      * @param inputBuffer the underlying inputBuffer
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    public static String getNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
+    public static String getNodeText(Node<?> node, InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
         if (node == null) return null;
         if (!node.hasError()) {
             return getRawNodeText(node, inputBuffer);
@@ -291,6 +279,30 @@ public final class ParseTreeUtils {
             addInputLocations(inputBuffer, sb, index, node.getEndIndex());
             return sb.toString();
         }
+    }
+
+    /**
+     * Collects all nodes underneath the given parents for which the given predicate evaluates to true.
+     *
+     * @param parents    the parent Nodes to look through
+     * @param predicate  the predicate
+     * @param collection the collection to collect the found Nodes into
+     * @return the same collection instance passed as a parameter
+     */
+    public static <V, C extends Collection<Node<V>>> C collectNodes(List<Node<V>> parents,
+                                                                    Predicate<Node<V>> predicate,
+                                                                    C collection) {
+        checkArgNotNull(predicate, "predicate");
+        checkArgNotNull(collection, "collection");
+        if (parents != null && !parents.isEmpty()) {
+            for (Node<V> child : parents) {
+                if (predicate.apply(child)) {
+                    collection.add(child);
+                }
+                collectNodes(child, predicate, collection);
+            }
+        }
+        return collection;
     }
 
     private static void addInputLocations(InputBuffer inputBuffer, StringBuilder sb, int start, int end) {
@@ -317,7 +329,8 @@ public final class ParseTreeUtils {
      * @param inputBuffer the underlying inputBuffer
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
-    public static String getRawNodeText(Node<?> node, @NotNull InputBuffer inputBuffer) {
+    public static String getRawNodeText(Node<?> node, InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
         return node == null ? null : inputBuffer.extract(node.getStartIndex(), node.getEndIndex());
     }
 
@@ -327,7 +340,8 @@ public final class ParseTreeUtils {
      * @param parsingResult the parsing result containing the parse tree
      * @return a new String
      */
-    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult) {
+    public static <V> String printNodeTree(ParsingResult<V> parsingResult) {
+        checkArgNotNull(parsingResult, "parsingResult");
         return printNodeTree(parsingResult, Predicates.<Node<V>>alwaysTrue(), Predicates.<Node<V>>alwaysTrue());
     }
 
@@ -340,9 +354,11 @@ public final class ParseTreeUtils {
      * @param subTreeFilter the predicate determining whether to descend into a given nodes subtree or not
      * @return a new String
      */
-    public static <V> String printNodeTree(@NotNull ParsingResult<V> parsingResult,
-                                           @NotNull Predicate<Node<V>> nodeFilter,
-                                           @NotNull Predicate<Node<V>> subTreeFilter) {
+    public static <V> String printNodeTree(ParsingResult<V> parsingResult, Predicate<Node<V>> nodeFilter,
+                                           Predicate<Node<V>> subTreeFilter) {
+        checkArgNotNull(parsingResult, "parsingResult");
+        checkArgNotNull(nodeFilter, "nodeFilter");
+        checkArgNotNull(subTreeFilter, "subTreeFilter");
         return printTree(parsingResult.parseTreeRoot, new NodeFormatter<V>(parsingResult.inputBuffer), nodeFilter,
                 subTreeFilter);
     }

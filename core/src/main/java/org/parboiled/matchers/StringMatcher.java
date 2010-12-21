@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
@@ -28,13 +28,14 @@ public class StringMatcher extends SequenceMatcher {
 
     public final char[] characters;
 
-    public StringMatcher(@NotNull Rule[] charMatchers, char[] characters) {
-        super(charMatchers);
+    public StringMatcher(Rule[] charMatchers, char[] characters) {
+        super(checkArgNotNull(charMatchers, "charMatchers"));
         this.characters = characters;
     }
 
     @Override
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         if (!context.fastStringMatching()) {
             return super.match(context);
         }
@@ -44,5 +45,4 @@ public class StringMatcher extends SequenceMatcher {
         context.createNode();
         return true;
     }
-
 }

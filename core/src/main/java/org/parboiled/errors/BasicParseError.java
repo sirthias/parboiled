@@ -16,7 +16,7 @@
 
 package org.parboiled.errors;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.buffers.InputBuffer;
 
 /**
@@ -30,14 +30,13 @@ public class BasicParseError implements ParseError {
     private final String errorMessage;
     private int indexDelta;
 
-    public BasicParseError(@NotNull InputBuffer inputBuffer, int errorIndex, String errorMessage) {
-        this.inputBuffer = inputBuffer;
+    public BasicParseError(InputBuffer inputBuffer, int errorIndex, String errorMessage) {
+        this.inputBuffer = checkArgNotNull(inputBuffer, "inputBuffer");
         this.startIndex = errorIndex;
         this.endIndex = errorIndex + 1;
         this.errorMessage = errorMessage;
     }
 
-    @NotNull
     public InputBuffer getInputBuffer() {
         return inputBuffer;
     }

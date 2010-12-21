@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -35,12 +35,13 @@ public class MemoMismatchesMatcher implements Matcher {
     // memo == Integer.MIN_VALUE: this match was either never tried or succeeded the last time it was tried
     private int memo = Integer.MIN_VALUE;
 
-    public MemoMismatchesMatcher(@NotNull Rule inner) {
-        this.inner = (Matcher) inner;
+    public MemoMismatchesMatcher(Rule inner) {
+        this.inner = checkArgNotNull((Matcher) inner, "inner");
     }
 
     @SuppressWarnings({"unchecked"})
-    public <V> boolean match(@NotNull MatcherContext<V> context) {
+    public <V> boolean match(MatcherContext<V> context) {
+        checkArgNotNull(context, "context");
         int pos = context.getCurrentIndex();
         if (memo == pos) {
             return false;
@@ -55,7 +56,6 @@ public class MemoMismatchesMatcher implements Matcher {
 
     // GraphNode
 
-    @NotNull
     public List<Matcher> getChildren() {
         return inner.getChildren();
     }
@@ -104,7 +104,10 @@ public class MemoMismatchesMatcher implements Matcher {
         return subContext;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {return inner.accept(visitor);}
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
+        return inner.accept(visitor);
+    }
 
     @Override
     public String toString() { return inner.toString(); }
@@ -122,5 +125,4 @@ public class MemoMismatchesMatcher implements Matcher {
         }
         return matcher;
     }
-
 }

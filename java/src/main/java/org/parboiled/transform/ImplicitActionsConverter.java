@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import org.objectweb.asm.Type;
@@ -40,12 +40,14 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
     private final Set<InstructionGraphNode> covered = new HashSet<InstructionGraphNode>();
     private RuleMethod method;
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.containsImplicitActions();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        this.method = method;
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        this.method = checkArgNotNull(method, "method");
         covered.clear();
         walkNode(method.getReturnInstructionNode());
         method.setContainsImplicitActions(false);

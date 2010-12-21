@@ -16,7 +16,7 @@
 
 package org.parboiled.examples.java;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchers.CustomMatcher;
 
@@ -41,7 +41,7 @@ public abstract class AbstractJavaCharacterMatcher extends CustomMatcher {
         return 'a';
     }
 
-    public final <V> boolean match(@NotNull MatcherContext<V> context) {
+    public final <V> boolean match(MatcherContext<V> context) {
         if (!acceptChar(context.getCurrentChar())) {
             return false;
         }

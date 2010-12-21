@@ -16,7 +16,6 @@
 
 package org.parboiled.matchervisitors;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchers.*;
 
@@ -34,7 +33,6 @@ public class FollowMatchersVisitor extends DefaultMatcherVisitor<Boolean> {
     private final List<Matcher> followMatchers = new ArrayList<Matcher>();
     private MatcherContext context;
 
-    @NotNull
     public List<Matcher> getFollowMatchers(MatcherContext currentContext) {
         followMatchers.clear();
         context = currentContext.getParent();

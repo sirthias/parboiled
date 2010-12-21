@@ -16,7 +16,7 @@
 
 package org.parboiled.parserunners;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
@@ -54,7 +54,9 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+    public static <V> ParsingResult<V> run(Rule rule, String input) {
+        checkArgNotNull(rule, "rule");
+        checkArgNotNull(input, "input");
         return new BasicParseRunner<V>(rule).run(input);
     }
 
@@ -63,8 +65,8 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      *
      * @param rule the parser rule
      */
-    public BasicParseRunner(@NotNull Rule rule) {
-        this(rule, new DefaultValueStack<V>());
+    public BasicParseRunner(Rule rule) {
+        this(checkArgNotNull(rule, "rule"), new DefaultValueStack<V>());
     }
 
     /**
@@ -73,21 +75,24 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param rule       the parser rule
      * @param valueStack the value stack
      */
-    public BasicParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
-        this.rootMatcher = (Matcher) rule;
-        this.valueStack = valueStack;
+    public BasicParseRunner(Rule rule, ValueStack<V> valueStack) {
+        this.rootMatcher = checkArgNotNull((Matcher) rule, "rule");
+        this.valueStack = checkArgNotNull(valueStack, "valueStack");
         this.initialValueStackSnapshot = valueStack.takeSnapshot();
     }
 
-    public ParsingResult<V> run(@NotNull String input) {
+    public ParsingResult<V> run(String input) {
+        checkArgNotNull(input, "input");
         return run(input.toCharArray());
     }
 
-    public ParsingResult<V> run(@NotNull char[] input) {
+    public ParsingResult<V> run(char[] input) {
+        checkArgNotNull(input, "input");
         return run(new DefaultInputBuffer(input));
     }
 
-    public ParsingResult<V> run(@NotNull InputBuffer inputBuffer) {
+    public ParsingResult<V> run(InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
         this.inputBuffer = inputBuffer;
         matched = runRootContext();
         return new ParsingResult<V>(matched, rootContext.getNode(), rootContext.getValueStack(), parseErrors,

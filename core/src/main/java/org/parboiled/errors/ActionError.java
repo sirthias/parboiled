@@ -16,9 +16,10 @@
 
 package org.parboiled.errors;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * A {@link ParseError} wrapping an ActionException.
@@ -28,11 +29,11 @@ public class ActionError extends BasicParseError {
     private final MatcherPath errorPath;
     private final ActionException actionException;
 
-    public ActionError(@NotNull InputBuffer inputBuffer, int errorIndex, String errorMessage,
-                       @NotNull MatcherPath errorPath, @NotNull ActionException actionException) {
-        super(inputBuffer, errorIndex, errorMessage);
-        this.errorPath = errorPath;
-        this.actionException = actionException;
+    public ActionError(InputBuffer inputBuffer, int errorIndex, String errorMessage,
+                       MatcherPath errorPath, ActionException actionException) {
+        super(checkArgNotNull(inputBuffer, "inputBuffer"), errorIndex, errorMessage);
+        this.errorPath = checkArgNotNull(errorPath, "errorPath");
+        this.actionException = checkArgNotNull(actionException, "actionException");
     }
 
     /**
@@ -40,7 +41,6 @@ public class ActionError extends BasicParseError {
      *
      * @return the MatcherPath
      */
-    @NotNull
     public MatcherPath getErrorPath() {
         return errorPath;
     }
@@ -50,9 +50,7 @@ public class ActionError extends BasicParseError {
      *
      * @return the wrapped ActionException
      */
-    @NotNull
     public ActionException getActionException() {
         return actionException;
     }
-
 }

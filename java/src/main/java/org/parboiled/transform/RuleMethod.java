@@ -23,7 +23,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
@@ -305,7 +305,8 @@ class RuleMethod extends MethodNode {
         return name;
     }
 
-    public void moveFlagsTo(@NotNull RuleMethod overridingMethod) {
+    public void moveFlagsTo(RuleMethod overridingMethod) {
+        checkArgNotNull(overridingMethod, "overridingMethod");
         overridingMethod.hasCachedAnnotation |= hasCachedAnnotation;
         overridingMethod.hasDontLabelAnnotation |= hasDontLabelAnnotation;
         overridingMethod.hasSuppressNodeAnnotation |= hasSuppressNodeAnnotation;

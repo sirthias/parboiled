@@ -16,11 +16,12 @@
 
 package org.parboiled.support;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.Factory;
 import org.parboiled.common.Reference;
 
 import java.util.LinkedList;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * <p>This class provides a "local variable"-like construct for action expressions in parser rule methods.
@@ -69,8 +70,8 @@ public class Var<T> extends Reference<T> {
      *
      * @param initialValueFactory the factory used to create the initial value for a rule execution frame
      */
-    public Var(@NotNull Factory<T> initialValueFactory) {
-        this.initialValueFactory = initialValueFactory;
+    public Var(Factory<T> initialValueFactory) {
+        this.initialValueFactory = checkArgNotNull(initialValueFactory, "initialValueFactory");
     }
 
     /**

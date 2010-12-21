@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.FileUtils;
 import org.testng.annotations.Test;
 
@@ -61,7 +61,9 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         }
     }
 
-    private String generateDotSource(@NotNull RuleMethod method) {
+    private String generateDotSource(RuleMethod method) {
+        checkArgNotNull(method, "method");
+
         // generate graph attributes
         StringBuilder sb = new StringBuilder()
                 .append("digraph G {\n")

@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -32,12 +32,13 @@ public class VarFramingMatcher implements Matcher {
     private final Matcher inner;
     private final Var[] variables;
 
-    public VarFramingMatcher(@NotNull Rule inner, @NotNull Var[] variables) {
-        this.inner = (Matcher) inner;
-        this.variables = variables;
+    public VarFramingMatcher(Rule inner, Var[] variables) {
+        this.inner = checkArgNotNull((Matcher)inner, "inner");
+        this.variables = checkArgNotNull(variables, "variables");
     }
 
-    public <V> boolean match(@NotNull MatcherContext<V> context) {
+    public <V> boolean match(MatcherContext<V> context) {
+        checkArgNotNull(context, "context");
         for (Var var : variables) {
             var.enterFrame();
         }
@@ -52,12 +53,13 @@ public class VarFramingMatcher implements Matcher {
     }
 
     // GraphNode
-    @NotNull
+
     public List<Matcher> getChildren() {
         return inner.getChildren();
     }
 
     // Rule
+
     public Rule label(String label) {
         return new VarFramingMatcher(inner.label(label), variables);
     }
@@ -79,6 +81,7 @@ public class VarFramingMatcher implements Matcher {
     }
 
     // Matcher
+
     public String getLabel() {return inner.getLabel();}
 
     public boolean isNodeSuppressed() {return inner.isNodeSuppressed();}
@@ -99,7 +102,10 @@ public class VarFramingMatcher implements Matcher {
         return subContext;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {return inner.accept(visitor);}
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
+        return inner.accept(visitor);
+    }
 
     @Override
     public String toString() { return inner.toString(); }

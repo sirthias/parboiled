@@ -16,12 +16,10 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
-
 interface RuleMethodProcessor {
 
-    boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method);
+    boolean appliesTo(ParserClassNode classNode, RuleMethod method);
 
-    void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception;
+    void process(ParserClassNode classNode, RuleMethod method) throws Exception;
 
 }

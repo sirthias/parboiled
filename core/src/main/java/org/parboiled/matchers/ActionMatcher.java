@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.*;
 import org.parboiled.errors.ActionError;
 import org.parboiled.errors.ActionException;
@@ -35,8 +35,8 @@ public class ActionMatcher extends AbstractMatcher {
     public final List<ContextAware> contextAwares = new ArrayList<ContextAware>();
     public final boolean skipInPredicates;
 
-    public ActionMatcher(@NotNull Action action) {
-        this.action = action;
+    public ActionMatcher(Action action) {
+        this.action = checkArgNotNull(action, "action");
 
         skipInPredicates = action instanceof SkippableAction && ((SkippableAction) action).skipInPredicates();
 
@@ -75,7 +75,8 @@ public class ActionMatcher extends AbstractMatcher {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <V> boolean match(@NotNull MatcherContext<V> context) {
+    public <V> boolean match(MatcherContext<V> context) {
+        checkArgNotNull(context, "context");
         if (skipInPredicates && context.inPredicate()) return true;
 
         // actions need to run in the parent context
@@ -112,7 +113,8 @@ public class ActionMatcher extends AbstractMatcher {
         return this; // actions are already "suppressNode"
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

@@ -22,7 +22,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.MethodNode;
@@ -46,8 +46,8 @@ class ClassNodeInitializer extends EmptyVisitor {
     private boolean hasDontLabelAnnotation;
     private boolean hasSkipActionsInPredicates;
 
-    public void process(@NotNull ParserClassNode classNode) throws IOException {
-        this.classNode = classNode;
+    public void process(ParserClassNode classNode) throws IOException {
+        this.classNode = checkArgNotNull(classNode, "classNode");
 
         // walk up the parser parent class chain
         ownerClass = classNode.getParentClass();

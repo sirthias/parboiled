@@ -17,7 +17,6 @@
 package org.parboiled.trees;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +37,6 @@ public class MutableTreeNodeImpl<T extends MutableTreeNode<T>> implements Mutabl
         return parent;
     }
 
-    @NotNull
     public List<T> getChildren() {
         return childrenView;
     }

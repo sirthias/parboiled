@@ -16,8 +16,6 @@
 
 package org.parboiled.buffers;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Abstraction of a simple char[] buffer holding the input text to be parsed.
  */
@@ -49,7 +47,6 @@ public interface InputBuffer {
      * @param end   the end index (exclusively)
      * @return a new String (non-interned)
      */
-    @NotNull
     String extract(int start, int end);
 
     /**

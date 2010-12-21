@@ -16,15 +16,15 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 
 @SuppressWarnings({"UnusedDeclaration"})
 abstract class BaseGroupClass {
 
     public final String name;
 
-    protected BaseGroupClass(@NotNull String name) {
-        this.name = name;
+    protected BaseGroupClass(String name) {
+        this.name = checkArgNotNull(name, "name");
     }
 
     @Override

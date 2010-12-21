@@ -17,7 +17,7 @@
 package org.parboiled.matchers;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.support.Characters;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -29,19 +29,22 @@ public class AnyOfMatcher extends AbstractMatcher {
 
     public final Characters characters;
 
-    public AnyOfMatcher(@NotNull Characters characters) {
-        Preconditions.checkArgument(!characters.equals(Characters.NONE));
+    public AnyOfMatcher(Characters characters) {
+        checkArgNotNull(characters, "characters");
+        checkArgument(!characters.equals(Characters.NONE));
         this.characters = characters;
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         if (!characters.contains(context.getCurrentChar())) return false;
         context.advanceIndex(1);
         context.createNode();
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

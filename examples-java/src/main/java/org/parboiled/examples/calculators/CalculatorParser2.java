@@ -16,7 +16,6 @@
 
 package org.parboiled.examples.calculators;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
@@ -115,7 +114,7 @@ public class CalculatorParser2 extends CalculatorParser<CalcNode> {
             this.value = value;
         }
 
-        public CalcNode(@NotNull Character operator, @NotNull CalcNode left, @NotNull CalcNode right) {
+        public CalcNode(Character operator, CalcNode left, CalcNode right) {
             super(left, right);
             this.operator = operator;
         }

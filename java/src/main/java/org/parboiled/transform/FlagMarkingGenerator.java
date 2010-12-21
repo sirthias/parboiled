@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -27,12 +27,16 @@ import static org.objectweb.asm.Opcodes.*;
  */
 class FlagMarkingGenerator implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.hasSuppressNodeAnnotation() || method.hasSuppressSubnodesAnnotation() ||
                 method.hasSkipNodeAnnotation() || method.hasMemoMismatchesAnnotation();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
         
         InsnList instructions = method.instructions;

@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.EmptyVisitor;
@@ -44,12 +44,14 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
 
     private RuleMethod method;
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.containsExplicitActions() || method.containsVars();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
-        this.method = method;
+    public void process(ParserClassNode classNode, RuleMethod method) {
+        this.method = checkArgNotNull(method, "method");
 
         // prepare groups for later stages
         for (InstructionGroup group : method.getGroups()) {

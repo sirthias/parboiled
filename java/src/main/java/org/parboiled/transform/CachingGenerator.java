@@ -22,8 +22,6 @@
 
 package org.parboiled.transform;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -32,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.checkState;
 import static org.parboiled.common.Utils.toObjectArray;
 
 /**
@@ -45,12 +45,16 @@ class CachingGenerator implements RuleMethodProcessor {
     private AbstractInsnNode current;
     private String cacheFieldName;
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.hasCachedAnnotation();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
+        checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
 
         this.classNode = classNode;
         this.method = method;
@@ -82,7 +86,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack:
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( {"unchecked"})
     private void generateGetFromCache() {
         Type[] paramTypes = Type.getArgumentTypes(method.desc);
         cacheFieldName = findUnusedCacheFieldName();
@@ -158,7 +162,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack: <rule>
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( {"unchecked"})
     private String findUnusedCacheFieldName() {
         String name = "cache$" + method.name;
         int i = 2;
@@ -170,7 +174,7 @@ class CachingGenerator implements RuleMethodProcessor {
 
     public boolean hasField(String fieldName) {
         for (Object field : classNode.fields) {
-            if (fieldName.equals(((FieldNode)field).name)) return true;
+            if (fieldName.equals(((FieldNode) field).name)) return true;
         }
         return false;
     }

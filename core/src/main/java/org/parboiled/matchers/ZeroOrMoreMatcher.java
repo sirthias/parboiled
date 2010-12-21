@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
@@ -29,12 +29,13 @@ public class ZeroOrMoreMatcher extends AbstractMatcher {
 
     public final Matcher subMatcher;
 
-    public ZeroOrMoreMatcher(@NotNull Rule subRule) {
-        super(subRule);
+    public ZeroOrMoreMatcher(Rule subRule) {
+        super(checkArgNotNull(subRule, "subRule"));
         this.subMatcher = getChildren().get(0);
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         int lastIndex = context.getCurrentIndex();
         while (subMatcher.getSubContext(context).runMatcher()) {
             int currentLocation = context.getCurrentIndex();
@@ -49,7 +50,8 @@ public class ZeroOrMoreMatcher extends AbstractMatcher {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

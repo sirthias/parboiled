@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
 import org.parboiled.support.Chars;
@@ -26,14 +26,16 @@ import org.parboiled.support.Chars;
  */
 public class AnyMatcher extends AbstractMatcher {
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         if (context.getCurrentChar() == Chars.EOI) return false;
         context.advanceIndex(1);
         context.createNode();
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

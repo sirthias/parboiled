@@ -16,8 +16,6 @@
 
 package org.parboiled.trees;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 
 /**
@@ -33,7 +31,6 @@ public interface GraphNode<T extends GraphNode<T>> {
      *
      * @return the sub nodes
      */
-    @NotNull
     List<T> getChildren();
 
 }

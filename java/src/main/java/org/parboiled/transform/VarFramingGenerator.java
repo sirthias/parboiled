@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -28,11 +28,15 @@ import static org.parboiled.transform.Types.*;
  */
 class VarFramingGenerator implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.getLocalVarVariables() != null;
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         InsnList instructions = method.instructions;
         
         AbstractInsnNode ret = instructions.getLast();

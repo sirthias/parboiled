@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
@@ -30,11 +30,15 @@ import static org.objectweb.asm.Opcodes.*;
  */
 class SuperCallRewriter implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.containsPotentialSuperCalls();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         InsnList instructions = method.instructions;
         AbstractInsnNode insn = instructions.getFirst();
         while (insn.getOpcode() != ARETURN) {

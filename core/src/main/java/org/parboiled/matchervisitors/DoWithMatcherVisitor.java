@@ -16,12 +16,13 @@
 
 package org.parboiled.matchervisitors;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.matchers.*;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * A MatcherVisitor that executes a given {@link Action} against a whole matcher hierarchy in a depth-first manner.
@@ -36,8 +37,8 @@ public class DoWithMatcherVisitor extends DefaultMatcherVisitor<Void> {
     private final Action action;
     private final Set<Matcher> visited = new HashSet<Matcher>();
 
-    public DoWithMatcherVisitor(@NotNull Action action) {
-        this.action = action;
+    public DoWithMatcherVisitor(Action action) {
+        this.action = checkArgNotNull(action, "action");
     }
 
     @Override
@@ -77,6 +78,7 @@ public class DoWithMatcherVisitor extends DefaultMatcherVisitor<Void> {
         }
         return null;
     }
+
     @Override
     public Void visit(OptionalMatcher matcher) {
         if (!visited.contains(matcher)) {
@@ -86,6 +88,7 @@ public class DoWithMatcherVisitor extends DefaultMatcherVisitor<Void> {
         }
         return null;
     }
+
     @Override
     public Void visit(TestMatcher matcher) {
         if (!visited.contains(matcher)) {
@@ -95,6 +98,7 @@ public class DoWithMatcherVisitor extends DefaultMatcherVisitor<Void> {
         }
         return null;
     }
+
     @Override
     public Void visit(TestNotMatcher matcher) {
         if (!visited.contains(matcher)) {
@@ -104,6 +108,7 @@ public class DoWithMatcherVisitor extends DefaultMatcherVisitor<Void> {
         }
         return null;
     }
+
     @Override
     public Void visit(ZeroOrMoreMatcher matcher) {
         if (!visited.contains(matcher)) {

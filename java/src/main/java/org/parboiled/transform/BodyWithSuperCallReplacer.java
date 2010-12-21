@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -29,13 +29,17 @@ import static org.parboiled.transform.AsmUtils.createArgumentLoaders;
  */
 class BodyWithSuperCallReplacer implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return !method.isBodyRewritten() && method.getOwnerClass() == classNode.getParentClass() &&
                 method.getLocalVarVariables() == null;  // if we have local variables we need to create a VarFramingMatcher
                                                         // which needs access to the local variables
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         // replace all method code with a simple call to the super method
         method.instructions.clear();
         method.instructions.add(new VarInsnNode(ALOAD, 0));

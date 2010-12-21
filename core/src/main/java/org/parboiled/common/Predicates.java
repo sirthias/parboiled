@@ -17,7 +17,7 @@
 package org.parboiled.common;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 
 import java.util.Collection;
 
@@ -120,7 +120,9 @@ public final class Predicates {
      * @param second the second
      * @return a predicate
      */
-    public static <T> Predicate<T> and(@NotNull Predicate<? super T> first, @NotNull Predicate<? super T> second) {
+    public static <T> Predicate<T> and(Predicate<? super T> first, Predicate<? super T> second) {
+        checkArgNotNull(first, "first");
+        checkArgNotNull(second, "second");
         return new AndPredicate<T>(ImmutableList.<Predicate<? super T>>of(first, second));
     }
 
@@ -166,7 +168,9 @@ public final class Predicates {
      * @param second the second
      * @return a predicate
      */
-    public static <T> Predicate<T> or(@NotNull Predicate<? super T> first, @NotNull Predicate<? super T> second) {
+    public static <T> Predicate<T> or(Predicate<? super T> first, Predicate<? super T> second) {
+        checkArgNotNull(first, "first");
+        checkArgNotNull(second, "second");
         return new OrPredicate<T>(ImmutableList.<Predicate<? super T>>of(first, second));
     }
 
@@ -244,7 +248,8 @@ public final class Predicates {
     private static class NotPredicate<T> implements Predicate<T> {
         private final Predicate<T> predicate;
 
-        private NotPredicate(@NotNull Predicate<T> predicate) {
+        private NotPredicate(Predicate<T> predicate) {
+            checkArgNotNull(predicate, "predicate");
             this.predicate = predicate;
         }
 
@@ -321,7 +326,8 @@ public final class Predicates {
     private static class InstanceOfPredicate implements Predicate<Object> {
         private final Class<?> clazz;
 
-        private InstanceOfPredicate(@NotNull Class<?> clazz) {
+        private InstanceOfPredicate(Class<?> clazz) {
+            checkArgNotNull(clazz, "clazz");
             this.clazz = clazz;
         }
 
@@ -364,7 +370,8 @@ public final class Predicates {
     private static class InPredicate<T> implements Predicate<T> {
         private final Collection<?> target;
 
-        private InPredicate(@NotNull Collection<?> target) {
+        private InPredicate(Collection<?> target) {
+            checkArgNotNull(target, "target");
             this.target = target;
         }
 

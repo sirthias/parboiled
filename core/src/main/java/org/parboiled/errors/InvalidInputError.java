@@ -16,7 +16,7 @@
 
 package org.parboiled.errors;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
 
@@ -30,10 +30,10 @@ public class InvalidInputError extends BasicParseError {
 
     private final List<MatcherPath> failedMatchers;
 
-    public InvalidInputError(@NotNull InputBuffer inputBuffer, int startIndex,
-                             @NotNull List<MatcherPath> failedMatchers, String errorMessage) {
-        super(inputBuffer, startIndex, errorMessage);
-        this.failedMatchers = failedMatchers;
+    public InvalidInputError(InputBuffer inputBuffer, int startIndex,
+                             List<MatcherPath> failedMatchers, String errorMessage) {
+        super(checkArgNotNull(inputBuffer, "inputBuffer"), startIndex, errorMessage);
+        this.failedMatchers = checkArgNotNull(failedMatchers, "failedMatchers");
     }
 
     /**
@@ -41,7 +41,6 @@ public class InvalidInputError extends BasicParseError {
      *
      * @return the list of paths to the single character matchers that failed at the error location of this error
      */
-    @NotNull
     public List<MatcherPath> getFailedMatchers() {
         return failedMatchers;
     }

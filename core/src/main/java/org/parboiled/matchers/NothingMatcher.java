@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
 
@@ -25,11 +25,12 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  */
 public class NothingMatcher extends AbstractMatcher {
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
         return false;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 }

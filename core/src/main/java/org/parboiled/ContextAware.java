@@ -16,8 +16,6 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Interface that can be implemented by classes containing action methods.
  * If the class containing action methods implements this interface parboiled will use it to inform the
@@ -31,6 +29,6 @@ public interface ContextAware<V> {
      *
      * @param context the context
      */
-    void setContext(@NotNull Context<V> context);
+    void setContext(Context<V> context);
 
 }

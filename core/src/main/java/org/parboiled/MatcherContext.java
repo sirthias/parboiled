@@ -16,8 +16,6 @@
 
 package org.parboiled;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.ImmutableLinkedList;
 import org.parboiled.common.StringUtils;
@@ -31,6 +29,7 @@ import org.parboiled.support.*;
 import java.util.List;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
+import static org.parboiled.common.Preconditions.*;
 
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
@@ -90,19 +89,18 @@ public class MatcherContext<V> implements Context<V> {
      *                           implementations only enable fast string matching during their basic first parsing run
      *                           and disable it once the input has proven to contain errors.</p>
      */
-    public MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull ValueStack<V> valueStack,
-                          @NotNull List<ParseError> parseErrors, @NotNull MatchHandler matchHandler,
-                          @NotNull Matcher matcher,
-                          boolean fastStringMatching) {
-        this(inputBuffer, valueStack, parseErrors, matchHandler, null, 0, fastStringMatching);
+    public MatcherContext(InputBuffer inputBuffer, ValueStack<V> valueStack, List<ParseError> parseErrors,
+                          MatchHandler matchHandler, Matcher matcher, boolean fastStringMatching) {
+        this(checkArgNotNull(inputBuffer, "inputBuffer"), checkArgNotNull(valueStack, "valueStack"),
+                checkArgNotNull(parseErrors, "parseErrors"), checkArgNotNull(matchHandler, "matchHandler"),
+                null, 0, fastStringMatching);
         this.currentChar = inputBuffer.charAt(0);
-        this.matcher = ProxyMatcher.unwrap(matcher);
+        this.matcher = ProxyMatcher.unwrap(checkArgNotNull(matcher, "matcher"));
         this.nodeSuppressed = matcher.isNodeSuppressed();
     }
 
-    private MatcherContext(@NotNull InputBuffer inputBuffer, @NotNull ValueStack<V> valueStack,
-                           @NotNull List<ParseError> parseErrors, @NotNull MatchHandler matchHandler,
-                           MatcherContext<V> parent, int level, boolean fastStringMatching) {
+    private MatcherContext(InputBuffer inputBuffer, ValueStack<V> valueStack, List<ParseError> parseErrors,
+                           MatchHandler matchHandler, MatcherContext<V> parent, int level, boolean fastStringMatching) {
         this.inputBuffer = inputBuffer;
         this.valueStack = valueStack;
         this.parseErrors = parseErrors;
@@ -123,7 +121,6 @@ public class MatcherContext<V> implements Context<V> {
         return parent;
     }
 
-    @NotNull
     public InputBuffer getInputBuffer() {
         return inputBuffer;
     }
@@ -140,7 +137,6 @@ public class MatcherContext<V> implements Context<V> {
         return currentChar;
     }
 
-    @NotNull
     public List<ParseError> getParseErrors() {
         return parseErrors;
     }
@@ -149,7 +145,6 @@ public class MatcherContext<V> implements Context<V> {
         return currentIndex;
     }
 
-    @NotNull
     public MatcherPath getPath() {
         if (path == null) {
             path = new MatcherPath(new MatcherPath.Element(matcher, startIndex, level),
@@ -166,7 +161,6 @@ public class MatcherContext<V> implements Context<V> {
         return fastStringMatching;
     }
 
-    @NotNull
     public List<Node<V>> getSubNodes() {
         return subNodes.reverse();
     }
@@ -229,12 +223,12 @@ public class MatcherContext<V> implements Context<V> {
     }
 
     public void setStartIndex(int startIndex) {
-        Preconditions.checkArgument(startIndex >= 0);
+        checkArgument(startIndex >= 0);
         this.startIndex = startIndex;
     }
 
     public void setCurrentIndex(int currentIndex) {
-        Preconditions.checkArgument(currentIndex >= 0);
+        checkArgument(currentIndex >= 0);
         this.currentIndex = currentIndex;
         currentChar = inputBuffer.charAt(currentIndex);
     }

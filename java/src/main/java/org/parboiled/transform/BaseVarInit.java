@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.Factory;
 
 /**
@@ -24,8 +24,7 @@ import org.parboiled.common.Factory;
  */
 public abstract class BaseVarInit extends BaseGroupClass implements Factory {
 
-    protected BaseVarInit(@NotNull String name) {
-        super(name);
+    protected BaseVarInit(String name) {
+        super(checkArgNotNull(name, "name"));
     }
-
 }

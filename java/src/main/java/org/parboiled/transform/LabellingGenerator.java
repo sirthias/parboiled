@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.*;
 import org.parboiled.common.StringUtils;
 
@@ -28,12 +28,16 @@ import static org.objectweb.asm.Opcodes.*;
  */
 class LabellingGenerator implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return !method.hasDontLabelAnnotation();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        Preconditions.checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
+        checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
 
         InsnList instructions = method.instructions;
 

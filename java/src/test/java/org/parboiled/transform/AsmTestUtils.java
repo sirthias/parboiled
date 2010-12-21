@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.MethodAdapter;
@@ -51,7 +51,8 @@ public class AsmTestUtils {
         return stringWriter.toString();
     }
 
-    public static String getMethodInstructionList(@NotNull MethodNode methodNode) {
+    public static String getMethodInstructionList(MethodNode methodNode) {
+        checkArgNotNull(methodNode, "methodNode");
         TraceMethodVisitor traceMethodVisitor = new NonMaxTraceVisitor();
         methodNode.accept(traceMethodVisitor);
         StringWriter stringWriter = new StringWriter();
@@ -72,7 +73,8 @@ public class AsmTestUtils {
                 .toString();
     }
 
-    public static void assertTraceDumpEquality(@NotNull MethodNode method, String traceDump) throws Exception {
+    public static void assertTraceDumpEquality(MethodNode method, String traceDump) throws Exception {
+        checkArgNotNull(method, "method");
         TraceMethodVisitor traceMethodVisitor = new NonMaxTraceVisitor();
         // MethodAdapter checkMethodAdapter = new MethodAdapter(traceMethodVisitor);
         MethodAdapter checkMethodAdapter = new CheckMethodAdapter(traceMethodVisitor);

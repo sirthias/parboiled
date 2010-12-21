@@ -16,7 +16,6 @@
 
 package org.parboiled.parserunners;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
@@ -30,6 +29,7 @@ import org.parboiled.support.ValueStack;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 import static org.parboiled.common.Utils.humanize;
 
 /**
@@ -80,8 +80,8 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
      *
      * @param rule the parser rule
      */
-    public ProfilingParseRunner(@NotNull Rule rule) {
-        super(rule);
+    public ProfilingParseRunner(Rule rule) {
+        super(checkArgNotNull(rule, "rule"));
     }
 
     /**
@@ -90,8 +90,8 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule       the parser rule
      * @param valueStack the value stack
      */
-    public ProfilingParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
-        super(rule, valueStack);
+    public ProfilingParseRunner(Rule rule, ValueStack<V> valueStack) {
+        super(checkArgNotNull(rule, "rule"), checkArgNotNull(valueStack, "valueStack"));
     }
 
     @Override
@@ -298,7 +298,8 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
             return sb.toString();
         }
 
-        public String printTopRules(int count, @NotNull Predicate<RuleReport> filter) {
+        public String printTopRules(int count, Predicate<RuleReport> filter) {
+            checkArgNotNull(filter, "filter");
             StringBuilder sb = new StringBuilder();
             sb.append(
                     "Rule                           | Net-Time  |   Invocations   |     Matches     |   Mismatches    |   Time/Invoc.   | Match % |    Re-Invocs    |   Re-Matches    |   Re-Mismatch   |     Re-Invoc %    \n");

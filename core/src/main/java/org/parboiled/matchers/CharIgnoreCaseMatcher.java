@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
 
@@ -33,7 +33,8 @@ public class CharIgnoreCaseMatcher extends AbstractMatcher {
         this.charUp = Character.toUpperCase(character);
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         char c = context.getCurrentChar();
         if (c != charLow && c != charUp) return false;
         context.advanceIndex(1);
@@ -41,7 +42,8 @@ public class CharIgnoreCaseMatcher extends AbstractMatcher {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

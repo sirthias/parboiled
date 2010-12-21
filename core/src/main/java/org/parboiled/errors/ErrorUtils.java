@@ -17,7 +17,7 @@
 package org.parboiled.errors;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.buffers.DefaultInputBuffer;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
@@ -45,7 +45,8 @@ public final class ErrorUtils {
      * @param errorIndex the start index of the respective parse error
      * @return the matcher whose label is best for presentation in "expected" strings
      */
-    static Matcher findProperLabelMatcher(@NotNull MatcherPath path, int errorIndex) {
+    static Matcher findProperLabelMatcher(MatcherPath path, int errorIndex) {
+        checkArgNotNull(path, "path");
         Matcher found = path.parent != null ? findProperLabelMatcher(path.parent, errorIndex) : null;
         if (found != null) return found;
         if (path.element.startIndex == errorIndex && path.element.matcher.accept(new HasCustomLabelVisitor())) {
@@ -60,7 +61,8 @@ public final class ErrorUtils {
      * @param parsingResult the parsing result
      * @return the pretty print text
      */
-    public static String printParseErrors(@NotNull ParsingResult<?> parsingResult) {
+    public static String printParseErrors(ParsingResult<?> parsingResult) {
+        checkArgNotNull(parsingResult, "parsingResult");
         return printParseErrors(parsingResult.parseErrors, parsingResult.inputBuffer);
     }
 
@@ -71,7 +73,9 @@ public final class ErrorUtils {
      * @param inputBuffer the input buffer
      * @return the pretty print text
      */
-    public static String printParseErrors(@NotNull List<ParseError> errors, @NotNull InputBuffer inputBuffer) {
+    public static String printParseErrors(List<ParseError> errors, InputBuffer inputBuffer) {
+        checkArgNotNull(errors, "errors");
+        checkArgNotNull(inputBuffer, "inputBuffer");
         StringBuilder sb = new StringBuilder();
         for (ParseError error : errors) {
             if (sb.length() > 0) sb.append("---\n");
@@ -87,7 +91,9 @@ public final class ErrorUtils {
      * @param inputBuffer the input buffer
      * @return the pretty print text
      */
-    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer) {
+    public static String printParseError(ParseError error, InputBuffer inputBuffer) {
+        checkArgNotNull(error, "error");
+        checkArgNotNull(inputBuffer, "inputBuffer");
         return printParseError(error, inputBuffer, new DefaultInvalidInputErrorFormatter());
     }
 
@@ -99,8 +105,11 @@ public final class ErrorUtils {
      * @param formatter   the formatter for InvalidInputErrors
      * @return the pretty print text
      */
-    public static String printParseError(@NotNull ParseError error, @NotNull InputBuffer inputBuffer,
-                                         @NotNull Formatter<InvalidInputError> formatter) {
+    public static String printParseError(ParseError error, InputBuffer inputBuffer,
+                                         Formatter<InvalidInputError> formatter) {
+        checkArgNotNull(error, "error");
+        checkArgNotNull(inputBuffer, "inputBuffer");
+        checkArgNotNull(formatter, "formatter");
         String message = error.getErrorMessage() != null ? error.getErrorMessage() :
                 error instanceof InvalidInputError ?
                         formatter.format((InvalidInputError) error) : error.getClass().getSimpleName();
@@ -119,7 +128,8 @@ public final class ErrorUtils {
      * @return the error message including the relevant line from the underlying input plus location indicator
      */
     public static String printErrorMessage(String format, String errorMessage, int errorIndex,
-                                           @NotNull InputBuffer inputBuffer) {
+                                           InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
         return printErrorMessage(format, errorMessage, errorIndex, errorIndex + 1, inputBuffer);
     }
 
@@ -135,7 +145,8 @@ public final class ErrorUtils {
      * @return the error message including the relevant line from the underlying input plus location indicators
      */
     public static String printErrorMessage(String format, String errorMessage, int startIndex, int endIndex,
-                                           @NotNull InputBuffer inputBuffer) {
+                                           InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
         Preconditions.checkArgument(startIndex < endIndex);
         DefaultInputBuffer.Position pos = inputBuffer.getPosition(startIndex);
         StringBuilder sb = new StringBuilder(String.format(format, errorMessage, pos.line, pos.column));

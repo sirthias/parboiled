@@ -16,7 +16,7 @@
 
 package org.parboiled.support;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Node;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.errors.ParseError;
@@ -35,8 +35,7 @@ public class ParsingResult<V> {
 
     /**
      * The root node of the parse tree created by the parsing run. This field will only be non-null when
-     * parse-tree-building has been enabled with a {@link org.parboiled.annotations.BuildParseTree} annotation
-     * on the parser class.
+     * parse-tree-building has been enabled.
      */
     public final Node<V> parseTreeRoot;
 
@@ -53,13 +52,11 @@ public class ParsingResult<V> {
     /**
      * The list of parse errors created during the parsing run.
      */
-    @NotNull
     public final List<ParseError> parseErrors;
 
     /**
      * The underlying input buffer.
      */
-    @NotNull
     public final InputBuffer inputBuffer;
 
     /**
@@ -71,14 +68,14 @@ public class ParsingResult<V> {
      * @param parseErrors   the list of parse errors
      * @param inputBuffer   the input buffer
      */
-    public ParsingResult(boolean matched, Node<V> parseTreeRoot, @NotNull ValueStack<V> valueStack,
-                         @NotNull List<ParseError> parseErrors, @NotNull InputBuffer inputBuffer) {
+    public ParsingResult(boolean matched, Node<V> parseTreeRoot, ValueStack<V> valueStack, List<ParseError> parseErrors,
+                         InputBuffer inputBuffer) {
         this.matched = matched;
         this.parseTreeRoot = parseTreeRoot;
-        this.valueStack = valueStack;
+        this.valueStack = checkArgNotNull(valueStack, "valueStack");
         this.resultValue = valueStack.isEmpty() ? null : valueStack.peek();
-        this.parseErrors = parseErrors;
-        this.inputBuffer = inputBuffer;
+        this.parseErrors = checkArgNotNull(parseErrors, "parseErrors");
+        this.inputBuffer = checkArgNotNull(inputBuffer, "inputBuffer");
     }
 
     /**
@@ -87,5 +84,4 @@ public class ParsingResult<V> {
     public boolean hasErrors() {
         return !parseErrors.isEmpty();
     }
-
 }

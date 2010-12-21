@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -28,11 +28,13 @@ import java.util.List;
  */
 public class FirstOfMatcher extends AbstractMatcher {
 
-    public FirstOfMatcher(@NotNull Rule[] subRules) {
-        super(subRules);
+    public FirstOfMatcher(Rule[] subRules) {
+        super(checkArgNotNull(subRules, "subRules"));
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    @SuppressWarnings( {"ForLoopReplaceableByForEach"})
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         List<Matcher> children = getChildren();
         int size = children.size();
         for (int i = 0; i < size; i++) {
@@ -45,7 +47,8 @@ public class FirstOfMatcher extends AbstractMatcher {
         return false;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 }

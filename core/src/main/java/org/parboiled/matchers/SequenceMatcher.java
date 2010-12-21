@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -28,11 +28,12 @@ import java.util.List;
  */
 public class SequenceMatcher extends AbstractMatcher {
 
-    public SequenceMatcher(@NotNull Rule[] subRules) {
-        super(subRules);
+    public SequenceMatcher(Rule[] subRules) {
+        super(checkArgNotNull(subRules, "subRules"));
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         Object valueStackSnapshot = context.getValueStack().takeSnapshot();
 
         List<Matcher> children = getChildren();
@@ -53,7 +54,8 @@ public class SequenceMatcher extends AbstractMatcher {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

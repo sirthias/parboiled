@@ -17,7 +17,6 @@
 package org.parboiled.buffers;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -55,7 +54,6 @@ public class MutableInputBuffer implements InputBuffer {
         return buffer.extractLine(lineNumber);
     }
 
-    @NotNull
     public String extract(int start, int end) {
         return buffer.extract(fix(start), fix(end));
     }

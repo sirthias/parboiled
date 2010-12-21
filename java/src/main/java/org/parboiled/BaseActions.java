@@ -16,17 +16,16 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
-import org.parboiled.Context;
-import org.parboiled.ContextAware;
 import org.parboiled.support.Checks;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * Convenience context aware base class defining a number of useful helper methods.
  *
  * @param <V> the type of the parser values
  */
-@SuppressWarnings({"UnusedDeclaration"})
+@SuppressWarnings( {"UnusedDeclaration"})
 public abstract class BaseActions<V> implements ContextAware<V> {
 
     private Context<V> context;
@@ -45,8 +44,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @param context the context
      */
-    public void setContext(@NotNull Context<V> context) {
-        this.context = context;
+    public void setContext(Context<V> context) {
+        this.context = checkArgNotNull(context, "context");
     }
 
     /**
@@ -133,8 +132,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @param down  the number of elements to skip before inserting the value (0 being equivalent to push(value))
      * @param value the value
-     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
      * @return true
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
      */
     public boolean push(int down, V value) {
         check();
@@ -230,8 +229,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      * Replaces the current top value of the value stack with the given value. Equivalent to poke(0, value).
      *
      * @param value the value
-     * @throws IllegalArgumentException if the stack is empty
      * @return true
+     * @throws IllegalArgumentException if the stack is empty
      */
     public boolean poke(V value) {
         check();
@@ -244,8 +243,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
      *
      * @param down  the number of elements to skip before replacing the value (0 being equivalent to poke(value))
      * @param value the value to replace with
-     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
      * @return true
+     * @throws IllegalArgumentException if the stack does not contain enough elements to perform this operation
      */
     public boolean poke(int down, V value) {
         check();
@@ -256,8 +255,8 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Duplicates the top value of the value stack. Equivalent to push(peek()).
      *
-     * @throws IllegalArgumentException if the stack is empty
      * @return true
+     * @throws IllegalArgumentException if the stack is empty
      */
     public boolean dup() {
         check();
@@ -268,8 +267,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Swaps the top two elements of the value stack.
      *
-     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least two elements
      * @return true
+     * @throws org.parboiled.errors.GrammarException
+     *          if the stack does not contain at least two elements
      */
     public boolean swap() {
         check();
@@ -280,8 +280,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Reverses the order of the top 3 value stack elements.
      *
-     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 3 elements
      * @return true
+     * @throws org.parboiled.errors.GrammarException
+     *          if the stack does not contain at least 3 elements
      */
     public boolean swap3() {
         check();
@@ -292,8 +293,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Reverses the order of the top 4 value stack elements.
      *
-     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 4 elements
      * @return true
+     * @throws org.parboiled.errors.GrammarException
+     *          if the stack does not contain at least 4 elements
      */
     public boolean swap4() {
         check();
@@ -304,8 +306,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Reverses the order of the top 5 value stack elements.
      *
-     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 5 elements
      * @return true
+     * @throws org.parboiled.errors.GrammarException
+     *          if the stack does not contain at least 5 elements
      */
     public boolean swap5() {
         check();
@@ -316,8 +319,9 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     /**
      * Reverses the order of the top 6 value stack elements.
      *
-     * @throws org.parboiled.errors.GrammarException if the stack does not contain at least 6 elements
      * @return true
+     * @throws org.parboiled.errors.GrammarException
+     *          if the stack does not contain at least 6 elements
      */
     public boolean swap6() {
         check();

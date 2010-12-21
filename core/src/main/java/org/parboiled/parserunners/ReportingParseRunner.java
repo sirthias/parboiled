@@ -16,7 +16,7 @@
 
 package org.parboiled.parserunners;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
@@ -43,7 +43,9 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+    public static <V> ParsingResult<V> run(Rule rule, String input) {
+        checkArgNotNull(rule, "rule");
+        checkArgNotNull(input, "input");
         return new ReportingParseRunner<V>(rule).run(input);
     }
 
@@ -52,8 +54,8 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
      *
      * @param rule  the parser rule
      */
-    public ReportingParseRunner(@NotNull Rule rule) {
-        super(rule);
+    public ReportingParseRunner(Rule rule) {
+        super(checkArgNotNull(rule, "rule"));
     }
 
     /**
@@ -62,8 +64,8 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule  the parser rule
      * @param valueStack  the value stack
      */
-    public ReportingParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
-        super(rule, valueStack);
+    public ReportingParseRunner(Rule rule, ValueStack<V> valueStack) {
+        super(checkArgNotNull(rule, "rule"), checkArgNotNull(valueStack, "valueStack"));
     }
 
     @SuppressWarnings({"SimplifiableIfStatement"})
@@ -118,9 +120,9 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
          * @param errorIndex the InputLocation of the error to be reported
          * @param inner      the inner MatchHandler to use
          */
-        public Handler(int errorIndex, @NotNull MatchHandler inner) {
+        public Handler(int errorIndex, MatchHandler inner) {
             this.errorIndex = errorIndex;
-            this.inner = inner;
+            this.inner = checkArgNotNull(inner, "inner");
         }
 
         /**

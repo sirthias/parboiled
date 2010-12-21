@@ -16,7 +16,6 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.trees.TreeNode;
 
@@ -30,7 +29,6 @@ public interface Node<V> extends TreeNode<Node<V>> {
      *
      * @return the matcher that created this node.
      */
-    @NotNull
     Matcher getMatcher();
 
     /**
@@ -66,5 +64,4 @@ public interface Node<V> extends TreeNode<Node<V>> {
      * @return true if there were parse errors in the input range covered by this node
      */
     boolean hasError();
-
 }

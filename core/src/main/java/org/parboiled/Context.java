@@ -16,10 +16,9 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.buffers.InputBuffer;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ValueStack;
 
@@ -42,7 +41,6 @@ public interface Context<V> {
      *
      * @return the InputBuffer
      */
-    @NotNull
     InputBuffer getInputBuffer();
 
     /**
@@ -78,7 +76,6 @@ public interface Context<V> {
      *
      * @return the list of parse errors
      */
-    @NotNull
     List<ParseError> getParseErrors();
 
     /**
@@ -86,7 +83,6 @@ public interface Context<V> {
      *
      * @return the path
      */
-    @NotNull
     MatcherPath getPath();
 
     /**
@@ -116,7 +112,6 @@ public interface Context<V> {
      *
      * @return the parse tree subnodes already created in the current context scope
      */
-    @NotNull
     List<Node<V>> getSubNodes();
 
     /**

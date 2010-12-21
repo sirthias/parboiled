@@ -15,8 +15,7 @@
  */
 
 package org.parboiled.common;
-
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -25,27 +24,36 @@ public final class FileUtils {
 
     private FileUtils() {}
 
-    public static String readAllTextFromResource(@NotNull String resource) {
+    public static String readAllTextFromResource(String resource) {
+        checkArgNotNull(resource, "resource");
         return readAllText(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
     }
 
-    public static String readAllTextFromResource(@NotNull String resource, @NotNull Charset charset) {
+    public static String readAllTextFromResource(String resource, Charset charset) {
+        checkArgNotNull(resource, "resource");
+        checkArgNotNull(charset, "charset");
         return readAllText(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), charset);
     }
 
-    public static String readAllText(@NotNull String filename) {
+    public static String readAllText(String filename) {
+        checkArgNotNull(filename, "filename");
         return readAllText(new File(filename));
     }
 
-    public static String readAllText(@NotNull String filename, @NotNull Charset charset) {
+    public static String readAllText(String filename, Charset charset) {
+        checkArgNotNull(filename, "filename");
+        checkArgNotNull(charset, "charset");
         return readAllText(new File(filename), charset);
     }
 
-    public static String readAllText(@NotNull File file) {
+    public static String readAllText(File file) {
+        checkArgNotNull(file, "file");
         return readAllText(file, Charset.forName("UTF8"));
     }
 
-    public static String readAllText(@NotNull File file, @NotNull Charset charset) {
+    public static String readAllText(File file, Charset charset) {
+        checkArgNotNull(file, "file");
+        checkArgNotNull(charset, "charset");
         try {
             return readAllText(new FileInputStream(file), charset);
         }
@@ -58,7 +66,8 @@ public final class FileUtils {
         return readAllText(stream, Charset.forName("UTF8"));
     }
 
-    public static String readAllText(InputStream stream, @NotNull Charset charset) {
+    public static String readAllText(InputStream stream, Charset charset) {
+        checkArgNotNull(charset, "charset");
         if (stream == null) return null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
         StringWriter writer = new StringWriter();
@@ -66,27 +75,36 @@ public final class FileUtils {
         return writer.toString();
     }
     
-    public static char[] readAllCharsFromResource(@NotNull String resource) {
+    public static char[] readAllCharsFromResource(String resource) {
+        checkArgNotNull(resource, "resource");
         return readAllChars(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
     }
 
-    public static char[] readAllCharsFromResource(@NotNull String resource, @NotNull Charset charset) {
+    public static char[] readAllCharsFromResource(String resource, Charset charset) {
+        checkArgNotNull(resource, "resource");
+        checkArgNotNull(charset, "charset");
         return readAllChars(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), charset);
     }
 
-    public static char[] readAllChars(@NotNull String filename) {
+    public static char[] readAllChars(String filename) {
+        checkArgNotNull(filename, "filename");
         return readAllChars(new File(filename));
     }
 
-    public static char[] readAllChars(@NotNull String filename, @NotNull Charset charset) {
+    public static char[] readAllChars(String filename, Charset charset) {
+        checkArgNotNull(filename, "filename");
+        checkArgNotNull(charset, "charset");
         return readAllChars(new File(filename), charset);
     }
 
-    public static char[] readAllChars(@NotNull File file) {
+    public static char[] readAllChars(File file) {
+        checkArgNotNull(file, "file");
         return readAllChars(file, Charset.forName("UTF8"));
     }
 
-    public static char[] readAllChars(@NotNull File file, @NotNull Charset charset) {
+    public static char[] readAllChars(File file, Charset charset) {
+        checkArgNotNull(file, "file");
+        checkArgNotNull(charset, "charset");
         try {
             return readAllChars(new FileInputStream(file), charset);
         }
@@ -99,7 +117,8 @@ public final class FileUtils {
         return readAllChars(stream, Charset.forName("UTF8"));
     }
 
-    public static char[] readAllChars(InputStream stream, @NotNull Charset charset) {
+    public static char[] readAllChars(InputStream stream, Charset charset) {
+        checkArgNotNull(charset, "charset");
         if (stream == null) return null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
         CharArrayWriter writer = new CharArrayWriter();
@@ -107,15 +126,18 @@ public final class FileUtils {
         return writer.toCharArray();
     }
 
-    public static byte[] readAllBytesFromResource(@NotNull String resource) {
+    public static byte[] readAllBytesFromResource(String resource) {
+        checkArgNotNull(resource, "resource");
         return readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
     }
 
-    public static byte[] readAllBytes(@NotNull String filename) {
+    public static byte[] readAllBytes(String filename) {
+        checkArgNotNull(filename, "filename");
         return readAllBytes(new File(filename));
     }
 
-    public static byte[] readAllBytes(@NotNull File file) {
+    public static byte[] readAllBytes(File file) {
+        checkArgNotNull(file, "file");
         try {
             return readAllBytes(new FileInputStream(file));
         }
@@ -132,19 +154,25 @@ public final class FileUtils {
         return out.toByteArray();
     }
 
-    public static void writeAllText(String text, @NotNull String filename) {
+    public static void writeAllText(String text, String filename) {
+        checkArgNotNull(filename, "filename");
         writeAllText(text, new File(filename));
     }
 
-    public static void writeAllText(String text, @NotNull String filename, @NotNull Charset charset) {
+    public static void writeAllText(String text, String filename, Charset charset) {
+        checkArgNotNull(filename, "filename");
+        checkArgNotNull(charset, "charset");
         writeAllText(text, new File(filename), charset);
     }
 
-    public static void writeAllText(String text, @NotNull File file) {
+    public static void writeAllText(String text, File file) {
+        checkArgNotNull(file, "file");
         writeAllText(text, file, Charset.forName("UTF8"));
     }
 
-    public static void writeAllText(String text, @NotNull File file, @NotNull Charset charset) {
+    public static void writeAllText(String text, File file, Charset charset) {
+        checkArgNotNull(file, "file");
+        checkArgNotNull(charset, "charset");
         try {
             ensureParentDir(file);
             writeAllText(text, new FileOutputStream(file), charset);
@@ -154,29 +182,38 @@ public final class FileUtils {
         }
     }
 
-    public static void writeAllText(String text, @NotNull OutputStream stream) {
+    public static void writeAllText(String text, OutputStream stream) {
+        checkArgNotNull(stream, "stream");
         writeAllText(text, stream, Charset.forName("UTF8"));
     }
 
-    public static void writeAllText(String text, @NotNull OutputStream stream, @NotNull Charset charset) {
+    public static void writeAllText(String text, OutputStream stream, Charset charset) {
+        checkArgNotNull(stream, "stream");
+        checkArgNotNull(charset, "charset");
         StringReader reader = new StringReader(text != null ? text : "");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, charset));
         copyAll(reader, writer);
     }
     
-    public static void writeAllChars(char[] chars, @NotNull String filename) {
+    public static void writeAllChars(char[] chars, String filename) {
+        checkArgNotNull(filename, "filename");
         writeAllChars(chars, new File(filename));
     }
 
-    public static void writeAllChars(char[] chars, @NotNull String filename, @NotNull Charset charset) {
+    public static void writeAllChars(char[] chars, String filename, Charset charset) {
+        checkArgNotNull(filename, "filename");
+        checkArgNotNull(charset, "charset");
         writeAllChars(chars, new File(filename), charset);
     }
 
-    public static void writeAllChars(char[] chars, @NotNull File file) {
+    public static void writeAllChars(char[] chars, File file) {
+        checkArgNotNull(file, "file");
         writeAllChars(chars, file, Charset.forName("UTF8"));
     }
 
-    public static void writeAllChars(char[] chars, @NotNull File file, @NotNull Charset charset) {
+    public static void writeAllChars(char[] chars, File file, Charset charset) {
+        checkArgNotNull(file, "file");
+        checkArgNotNull(charset, "charset");
         try {
             ensureParentDir(file);
             writeAllChars(chars, new FileOutputStream(file), charset);
@@ -186,21 +223,28 @@ public final class FileUtils {
         }
     }
 
-    public static void writeAllChars(char[] chars, @NotNull OutputStream stream) {
+    public static void writeAllChars(char[] chars, OutputStream stream) {
+        checkArgNotNull(stream, "stream");
         writeAllChars(chars, stream, Charset.forName("UTF8"));
     }
 
-    public static void writeAllChars(char[] chars, @NotNull OutputStream stream, @NotNull Charset charset) {
+    public static void writeAllChars(char[] chars, OutputStream stream, Charset charset) {
+        checkArgNotNull(stream, "stream");
+        checkArgNotNull(charset, "charset");
         CharArrayReader reader = new CharArrayReader(chars != null ? chars : new char[0]);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, charset));
         copyAll(reader, writer);
     }
 
-    public static void writeAllBytes(@NotNull byte[] data, @NotNull String filename) {
+    public static void writeAllBytes(byte[] data, String filename) {
+        checkArgNotNull(data, "data");
+        checkArgNotNull(filename, "filename");
         writeAllBytes(data, new File(filename));
     }
 
-    public static void writeAllBytes(@NotNull byte[] data, @NotNull File file) {
+    public static void writeAllBytes(byte[] data, File file) {
+        checkArgNotNull(data, "data");
+        checkArgNotNull(file, "file");
         try {
             ensureParentDir(file);
             writeAllBytes(data, new FileOutputStream(file));
@@ -210,13 +254,17 @@ public final class FileUtils {
         }
     }
 
-    public static void writeAllBytes(@NotNull byte[] data, @NotNull OutputStream stream) {
+    public static void writeAllBytes(byte[] data, OutputStream stream) {
+        checkArgNotNull(data, "data");
+        checkArgNotNull(stream, "stream");
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         BufferedOutputStream out = new BufferedOutputStream(stream);
         copyAll(in, out);
     }
 
-    public static void copyAll(@NotNull Reader reader, @NotNull Writer writer) {
+    public static void copyAll(Reader reader, Writer writer) {
+        checkArgNotNull(reader, "reader");
+        checkArgNotNull(writer, "writer");
         try {
             char[] data = new char[4096]; // copy in chunks of 4K
             int count;
@@ -230,7 +278,9 @@ public final class FileUtils {
         }
     }
 
-    public static void copyAll(@NotNull InputStream in, @NotNull OutputStream out) {
+    public static void copyAll(InputStream in, OutputStream out) {
+        checkArgNotNull(in, "in");
+        checkArgNotNull(out, "out");
         try {
             byte[] data = new byte[4096]; // copy in chunks of 4K
             int count;

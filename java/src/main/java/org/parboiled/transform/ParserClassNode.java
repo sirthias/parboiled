@@ -22,7 +22,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -38,8 +38,8 @@ class ParserClassNode extends ClassNode {
     private byte[] classCode;
     private Class<?> extendedClass;
 
-    public ParserClassNode(@NotNull Class<?> parentClass) {
-        this.parentClass = parentClass;
+    public ParserClassNode(Class<?> parentClass) {
+        this.parentClass = checkArgNotNull(parentClass, "parentClass");
         parentType = Type.getType(parentClass);
     }
 

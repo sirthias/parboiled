@@ -16,10 +16,9 @@
 
 package org.parboiled.buffers;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.common.IntArrayStack;
 import org.parboiled.support.Chars;
+import static org.parboiled.common.Preconditions.*;
 
 /**
  * Special, immutable InputBuffer implementation for indentation based grammars.
@@ -52,9 +51,9 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
      * @param input   the input text.
      * @param tabStop the number of characters in a tab stop.
      */
-    public IndentDedentInputBuffer(@NotNull char[] input, int tabStop) {
+    public IndentDedentInputBuffer(char[] input, int tabStop) {
         super(input);
-        Preconditions.checkArgument(tabStop > 0, "tabStop must be > 0");
+        checkArgument(tabStop > 0, "tabStop must be > 0");
         this.tabStop = tabStop;
         buffer2 = buildBuffer2();
         length2 = buffer2.length;
@@ -77,7 +76,6 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
         return true;
     }
 
-    @NotNull
     @Override
     public String extract(int start, int end) {
         return super.extract(translate(start), translate(end));

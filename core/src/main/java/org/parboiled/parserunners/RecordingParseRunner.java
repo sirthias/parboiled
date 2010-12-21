@@ -17,7 +17,6 @@
 package org.parboiled.parserunners;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
@@ -25,6 +24,8 @@ import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.TestNotMatcher;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.ValueStack;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * A {@link ParseRunner} implementation that records the location of the first {@link InvalidInputError} found,
@@ -44,27 +45,29 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
      */
-    public static <V> ParsingResult<V> run(@NotNull Rule rule, @NotNull String input) {
+    public static <V> ParsingResult<V> run(Rule rule, String input) {
+        checkArgNotNull(rule, "rule");
+        checkArgNotNull(input, "input");
         return new RecordingParseRunner<V>(rule).run(input);
     }
 
     /**
      * Creates a new RecordingParseRunner instance for the given rule.
      *
-     * @param rule  the parser rule
+     * @param rule the parser rule
      */
-    public RecordingParseRunner(@NotNull Rule rule) {
-        super(rule);
+    public RecordingParseRunner(Rule rule) {
+        super(checkArgNotNull(rule, "rule"));
     }
 
     /**
      * Creates a new RecordingParseRunner instance for the given rule using the given ValueStack instance.
      *
-     * @param rule  the parser rule
-     * @param valueStack  the value stack
+     * @param rule       the parser rule
+     * @param valueStack the value stack
      */
-    public RecordingParseRunner(@NotNull Rule rule, @NotNull ValueStack<V> valueStack) {
-        super(rule, valueStack);
+    public RecordingParseRunner(Rule rule, ValueStack<V> valueStack) {
+        super(checkArgNotNull(rule, "rule"), checkArgNotNull(valueStack, "valueStack"));
     }
 
     @Override
@@ -105,8 +108,8 @@ public class RecordingParseRunner<V> extends BasicParseRunner<V> {
          *
          * @param inner the inner instance to delegate to
          */
-        public Handler(@NotNull MatchHandler inner) {
-            this.inner = inner;
+        public Handler(MatchHandler inner) {
+            this.inner = checkArgNotNull(inner, "inner");
         }
 
         /**

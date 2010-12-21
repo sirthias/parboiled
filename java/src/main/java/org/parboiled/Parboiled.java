@@ -16,7 +16,7 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.transform.ParserTransformer;
 
 import java.lang.reflect.Constructor;
@@ -48,8 +48,8 @@ public class Parboiled {
      * @return the ready to use parser instance
      */
     @SuppressWarnings({"unchecked"})
-    public static <P extends BaseParser<V>, V> P createParser(@NotNull Class<P> parserClass,
-                                                              Object... constructorArgs) {
+    public static <P extends BaseParser<V>, V> P createParser(Class<P> parserClass, Object... constructorArgs) {
+        checkArgNotNull(parserClass, "parserClass");
         try {
             Class<?> extendedClass = ParserTransformer.transformParser(parserClass);
             Constructor constructor = findConstructor(extendedClass, constructorArgs);

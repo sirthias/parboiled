@@ -17,7 +17,8 @@
 package org.parboiled.trees;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * General utility methods for operating on tree, i.e. graphs consisting of {@link TreeNode}s.
@@ -44,7 +45,8 @@ public class TreeUtils {
      * @param parent the parent node
      * @param child  the child node to add
      */
-    public static <T extends MutableTreeNode<T>> void addChild(@NotNull T parent, T child) {
+    public static <T extends MutableTreeNode<T>> void addChild(T parent, T child) {
+        checkArgNotNull(parent, "parent");
         parent.addChild(parent.getChildren().size(), child);
     }
 
@@ -54,7 +56,8 @@ public class TreeUtils {
      * @param parent the parent node
      * @param child  the child node
      */
-    public static <T extends MutableTreeNode<T>> void removeChild(@NotNull T parent, T child) {
+    public static <T extends MutableTreeNode<T>> void removeChild(T parent, T child) {
+        checkArgNotNull(parent, "parent");
         int index = parent.getChildren().indexOf(child);
         Preconditions.checkElementIndex(index, parent.getChildren().size());
         parent.removeChild(index);
@@ -74,7 +77,8 @@ public class TreeUtils {
      * @return the new root after the transformation, which is either the right sub node of the original root
      *         or the original root, if the right sub node is null
      */
-    public static <N extends MutableBinaryTreeNode<N>> N toLeftAssociativity(@NotNull N node) {
+    public static <N extends MutableBinaryTreeNode<N>> N toLeftAssociativity(N node) {
+        checkArgNotNull(node, "node");
         N right = node.right();
         if (right == null) return node;
 
@@ -82,5 +86,4 @@ public class TreeUtils {
         right.setLeft(node);
         return right;
     }
-
 }

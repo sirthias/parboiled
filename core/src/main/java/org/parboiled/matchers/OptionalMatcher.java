@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -28,18 +28,20 @@ public class OptionalMatcher extends AbstractMatcher {
 
     public final Matcher subMatcher;
 
-    public OptionalMatcher(@NotNull Rule subRule) {
-        super(subRule);
+    public OptionalMatcher(Rule subRule) {
+        super(checkArgNotNull(subRule, "subRule"));
         this.subMatcher = getChildren().get(0);
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         subMatcher.getSubContext(context).runMatcher();
         context.createNode();
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 }

@@ -22,7 +22,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.analysis.Analyzer;
 
 /**
@@ -30,11 +30,14 @@ import org.objectweb.asm.tree.analysis.Analyzer;
  */
 class InstructionGraphCreator implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.containsImplicitActions() || method.containsExplicitActions() || method.containsVars();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(method, "method");
         final RuleMethodInterpreter interpreter = new RuleMethodInterpreter(method);
 
         new Analyzer(interpreter) {

@@ -17,7 +17,7 @@
 package org.parboiled.common;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.errors.GrammarException;
 
 import java.lang.reflect.*;
@@ -132,8 +132,9 @@ public final class Utils {
      * @param implementation the type (potentially) implementing the given base class or interface
      * @return a list of the raw classes for the actual type arguments.
      */
-    @NotNull
-    public static List<Class<?>> getTypeArguments(@NotNull Class<?> base, @NotNull Class<?> implementation) {
+    public static List<Class<?>> getTypeArguments(Class<?> base, Class<?> implementation) {
+        checkArgNotNull(base, "base");
+        checkArgNotNull(implementation, "implementation");
         Map<Type, Type> resolvedTypes = new HashMap<Type, Type>();
 
         // first we need to resolve all supertypes up to the required base class or interface

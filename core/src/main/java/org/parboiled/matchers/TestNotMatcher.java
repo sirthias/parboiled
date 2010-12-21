@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -29,12 +29,13 @@ public class TestNotMatcher extends AbstractMatcher {
 
     public final Matcher subMatcher;
 
-    public TestNotMatcher(@NotNull Rule subRule) {
-        super(subRule);
+    public TestNotMatcher(Rule subRule) {
+        super(checkArgNotNull(subRule, "subRule"));
         this.subMatcher = getChildren().get(0);
     }
 
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         int lastIndex = context.getCurrentIndex();
         Object valueStackSnapshot = context.getValueStack().takeSnapshot();
 
@@ -48,7 +49,8 @@ public class TestNotMatcher extends AbstractMatcher {
         return true;
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 

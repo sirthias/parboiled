@@ -16,7 +16,6 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -68,7 +67,7 @@ public interface Matcher extends Rule, GraphNode<Matcher> {
      * @param context the MatcherContext
      * @return true if the match was successful
      */
-    <V> boolean match(@NotNull MatcherContext<V> context);
+    <V> boolean match(MatcherContext<V> context);
 
     /**
      * Associates an arbitrary object with this matcher. Used for example during profiling and packrat parsing.
@@ -93,6 +92,6 @@ public interface Matcher extends Rule, GraphNode<Matcher> {
      * @param visitor the visitor
      * @return the value returned by the given visitor
      */
-    <R> R accept(@NotNull MatcherVisitor<R> visitor);
+    <R> R accept(MatcherVisitor<R> visitor);
 
 }

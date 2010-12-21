@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -37,7 +37,6 @@ public class ProxyMatcher implements Matcher, Cloneable {
     private boolean memoMismatches;
     private boolean dirty;
 
-    @NotNull
     public List<Matcher> getChildren() {
         if (dirty) apply();
         return target.getChildren();
@@ -72,7 +71,8 @@ public class ProxyMatcher implements Matcher, Cloneable {
         dirty = label != null || nodeSuppressed || subnodesSuppressed || nodeSkipped || memoMismatches;
     }
 
-    public <V> boolean match(@NotNull MatcherContext<V> context) {
+    public <V> boolean match(MatcherContext<V> context) {
+        checkArgNotNull(context, "context");
         if (dirty) apply();
         return target.match(context);
     }
@@ -112,7 +112,8 @@ public class ProxyMatcher implements Matcher, Cloneable {
         return target.getTag();
     }
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         if (dirty) apply();
         return target.accept(visitor);
     }
@@ -215,8 +216,8 @@ public class ProxyMatcher implements Matcher, Cloneable {
      *
      * @param target the Matcher to delegate to
      */
-    public void arm(@NotNull Matcher target) {
-        this.target = target;
+    public void arm(Matcher target) {
+        this.target = checkArgNotNull(target, "target");
     }
 
     /**

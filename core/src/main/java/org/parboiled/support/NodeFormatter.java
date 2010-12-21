@@ -16,7 +16,7 @@
 
 package org.parboiled.support;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Node;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
@@ -34,8 +34,8 @@ public class NodeFormatter<V> implements Formatter<Node<V>> {
      *
      * @param inputBuffer the input buffer underlying the parse tree whose nodes are to be formatted.
      */
-    public NodeFormatter(@NotNull InputBuffer inputBuffer) {
-        this.inputBuffer = inputBuffer;
+    public NodeFormatter(InputBuffer inputBuffer) {
+        this.inputBuffer = checkArgNotNull(inputBuffer, "inputBuffer");
     }
 
     public String format(Node<V> node) {

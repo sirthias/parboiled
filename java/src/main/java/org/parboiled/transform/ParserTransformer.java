@@ -17,7 +17,7 @@
 package org.parboiled.transform;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassWriter;
 
 import java.util.List;
@@ -31,7 +31,8 @@ public class ParserTransformer {
     private ParserTransformer() {}
 
     @SuppressWarnings({"unchecked"})
-    public static <T> Class<? extends T> transformParser(@NotNull Class<T> parserClass) throws Exception {
+    public static <T> Class<? extends T> transformParser(Class<T> parserClass) throws Exception {
+        checkArgNotNull(parserClass, "parserClass");
         synchronized (lock) {
             // first check whether we did not already create and load the extension of the given parser class
             Class<?> extendedClass = findLoadedClass(

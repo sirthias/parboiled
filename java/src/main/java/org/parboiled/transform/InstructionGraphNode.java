@@ -22,7 +22,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
@@ -119,7 +119,8 @@ class InstructionGraphNode implements Value {
         return isXStore;
     }
 
-    public void addPredecessors(@NotNull Collection<Value> preds) {
+    public void addPredecessors(Collection<Value> preds) {
+        checkArgNotNull(preds, "preds");
         for (Value pred : preds) {
             if (pred instanceof InstructionGraphNode) {
                 addPredecessor(((InstructionGraphNode) pred));

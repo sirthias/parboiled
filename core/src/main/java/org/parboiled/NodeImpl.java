@@ -16,7 +16,7 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.trees.ImmutableTreeNode;
@@ -34,17 +34,16 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     private final V value;
     private final boolean hasError;
 
-    public NodeImpl(@NotNull Matcher matcher, List<Node<V>> children, int startIndex,
+    public NodeImpl(Matcher matcher, List<Node<V>> children, int startIndex,
                     int endIndex, V value, boolean hasError) {
         super(children);
-        this.matcher = matcher;
+        this.matcher = checkArgNotNull(matcher, "matcher");
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.value = value;
         this.hasError = hasError;
     }
 
-    @NotNull
     public Matcher getMatcher() {
         return matcher;
     }

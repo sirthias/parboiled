@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.errors.GrammarException;
@@ -50,15 +50,16 @@ public class FirstOfStringsMatcher extends FirstOfMatcher {
     private final Record root; // the root of the character tree
     public final char[][] strings;
 
-    public FirstOfStringsMatcher(@NotNull Rule[] subRules, char[][] strings) {
-        super(subRules);
+    public FirstOfStringsMatcher(Rule[] subRules, char[][] strings) {
+        super(checkArgNotNull(subRules, "subRules"));
         verify(strings);
         this.strings = strings;
         root = createRecord(0, strings);
     }
 
     @Override
-    public boolean match(@NotNull MatcherContext context) {
+    public boolean match(MatcherContext context) {
+        checkArgNotNull(context, "context");
         if (!context.fastStringMatching()) {
             return super.match(context);
         }

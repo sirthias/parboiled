@@ -16,7 +16,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 /**
@@ -24,12 +24,14 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 class UnusedLabelsRemover implements RuleMethodProcessor {
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         return true;
     }
 
     @SuppressWarnings({"SuspiciousMethodCalls"})
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         AbstractInsnNode current = method.instructions.getFirst();
         while (current != null) {
             AbstractInsnNode next = current.getNext();

@@ -17,7 +17,7 @@
 package org.parboiled.support;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.matchers.Matcher;
 
 /**
@@ -39,7 +39,6 @@ public class MatcherPath {
         }
     }
 
-    @NotNull
     public final Element element;
     public final MatcherPath parent;
 
@@ -51,8 +50,8 @@ public class MatcherPath {
      * @param element the last element of this path
      * @param parent  the parent path
      */
-    public MatcherPath(@NotNull Element element, MatcherPath parent) {
-        this.element = element;
+    public MatcherPath(Element element, MatcherPath parent) {
+        this.element = checkArgNotNull(element, "element");
         this.parent = parent;
     }
 
@@ -69,7 +68,8 @@ public class MatcherPath {
      * @param that the other path
      * @return true if this path is a prefix of the given other path
      */
-    public boolean isPrefixOf(@NotNull MatcherPath that) {
+    public boolean isPrefixOf(MatcherPath that) {
+        checkArgNotNull(that, "that");
         return element.level <= that.element.level &&
                 (this == that || (that.parent != null && isPrefixOf(that.parent)));
     }
@@ -92,7 +92,8 @@ public class MatcherPath {
      * @param that the other path
      * @return the common prefix or null
      */
-    public MatcherPath commonPrefix(@NotNull MatcherPath that) {
+    public MatcherPath commonPrefix(MatcherPath that) {
+        checkArgNotNull(that, "that");
         if (element.level > that.element.level) return parent.commonPrefix(that);
         if (element.level < that.element.level) return commonPrefix(that.parent);
         if (this == that) return this;

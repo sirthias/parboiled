@@ -16,7 +16,7 @@
 
 package org.parboiled;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.*;
 import org.parboiled.matchervisitors.MatcherVisitor;
@@ -52,7 +52,8 @@ public class ParserStatistics implements MatcherVisitor<ParserStatistics> {
     private final Set<MemoMismatchesMatcher> memoMismatchesMatchers = new HashSet<MemoMismatchesMatcher>();
 
     @SuppressWarnings({"unchecked"})
-    public static ParserStatistics generateFor(@NotNull Rule rule) {
+    public static ParserStatistics generateFor(Rule rule) {
+        checkArgNotNull(rule, "rule");
         Matcher matcher = (Matcher) rule;
         return matcher.accept(new ParserStatistics(matcher));
     }

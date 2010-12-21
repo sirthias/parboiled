@@ -16,7 +16,6 @@
 
 package org.parboiled.examples.calculators;
 
-import org.jetbrains.annotations.NotNull;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
@@ -52,9 +51,9 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
         return Sequence(
                 subRule,
                 ZeroOrMore(
-                    operatorRule, op.set(matchedChar()),
-                    subRule,
-                    push(new CalcNode(op.get(), pop(1), pop()))
+                        operatorRule, op.set(matchedChar()),
+                        subRule,
+                        push(new CalcNode(op.get(), pop(1), pop()))
                 )
         );
     }
@@ -96,7 +95,7 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     // literal ends with a space character, this way we don't have to insert extra whitespace() rules after each
     // character or string literal
     @Override
-    protected Rule fromStringLiteral(@NotNull String string) {
+    protected Rule fromStringLiteral(String string) {
         return string.endsWith(" ") ?
                 Sequence(String(string.substring(0, string.length() - 1)), WhiteSpace()) :
                 String(string);

@@ -22,7 +22,7 @@
 
 package org.parboiled.transform;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -39,12 +39,14 @@ class RuleMethodRewriter implements RuleMethodProcessor {
     private int actionNr;
     private int varInitNr;
 
-    public boolean appliesTo(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) {
+    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+        checkArgNotNull(classNode, "classNode");
+        checkArgNotNull(method, "method");
         return method.containsExplicitActions() || method.containsVars();
     }
 
-    public void process(@NotNull ParserClassNode classNode, @NotNull RuleMethod method) throws Exception {
-        this.method = method;
+    public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
+        this.method = checkArgNotNull(method, "method");
         actionNr = 0;
         varInitNr = 0;
 

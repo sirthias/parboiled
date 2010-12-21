@@ -16,7 +16,7 @@
 
 package org.parboiled.examples.java;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.Rule;
@@ -127,11 +127,14 @@ public class Main {
         return list;
     }
 
-    public static String readAllText(@NotNull File file) {
+    public static String readAllText(File file) {
+        checkArgNotNull(file, "file");
         return readAllText(file, Charset.forName("UTF8"));
     }
 
-    public static String readAllText(@NotNull File file, @NotNull Charset charset) {
+    public static String readAllText(File file, Charset charset) {
+        checkArgNotNull(file, "file");
+        checkArgNotNull(charset, "charset");
         try {
             return readAllText(new FileInputStream(file), charset);
         }
@@ -140,7 +143,8 @@ public class Main {
         }
     }
 
-    public static String readAllText(InputStream stream, @NotNull Charset charset) {
+    public static String readAllText(InputStream stream, Charset charset) {
+        checkArgNotNull(charset, "charset");
         if (stream == null) return null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
         StringWriter writer = new StringWriter();
@@ -148,7 +152,9 @@ public class Main {
         return writer.toString();
     }
 
-    public static void copyAll(@NotNull Reader reader, @NotNull Writer writer) {
+    public static void copyAll(Reader reader, Writer writer) {
+        checkArgNotNull(reader, "reader");
+        checkArgNotNull(writer, "writer");
         try {
             char[] data = new char[4096]; // copy in chunks of 4K
             int count;

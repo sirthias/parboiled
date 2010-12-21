@@ -16,7 +16,7 @@
 
 package org.parboiled.matchers;
 
-import org.jetbrains.annotations.NotNull;
+import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Rule;
 import org.parboiled.matchervisitors.MatcherVisitor;
 
@@ -33,12 +33,12 @@ public abstract class CustomMatcher extends AbstractMatcher {
     protected CustomMatcher() {
     }
 
-    protected CustomMatcher(@NotNull Rule subRule) {
-        super(subRule);
+    protected CustomMatcher(Rule subRule) {
+        super(checkArgNotNull(subRule, "subRule"));
     }
 
-    protected CustomMatcher(@NotNull Rule[] subRules) {
-        super(subRules);
+    protected CustomMatcher(Rule[] subRules) {
+        super(checkArgNotNull(subRules, "subRules"));
     }
 
     /**
@@ -70,7 +70,8 @@ public abstract class CustomMatcher extends AbstractMatcher {
      */
     public abstract char getStarterChar();
 
-    public <R> R accept(@NotNull MatcherVisitor<R> visitor) {
+    public <R> R accept(MatcherVisitor<R> visitor) {
+        checkArgNotNull(visitor, "visitor");
         return visitor.visit(this);
     }
 }
