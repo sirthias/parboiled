@@ -1,4 +1,3 @@
-parboiled.iml
-.idea/
+/.idea/workspace.xml
 target/
-test-out/
+reports/
