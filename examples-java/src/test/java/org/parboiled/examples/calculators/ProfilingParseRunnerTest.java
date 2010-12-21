@@ -19,7 +19,6 @@ package org.parboiled.examples.calculators;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ProfilingParseRunner;
 import org.parboiled.test.AbstractTest;
-import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
