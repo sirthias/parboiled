@@ -16,17 +16,15 @@
 
 package org.parboiled.matchers;
 
-import org.parboiled.Parboiled;
 import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.errors.GrammarException;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
-public class FirstOfStringsMatcherTest extends AbstractTest {
+public class FirstOfStringsMatcherTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     static class Parser extends BaseParser<Object> {
@@ -74,19 +72,19 @@ public class FirstOfStringsMatcherTest extends AbstractTest {
     @Test
     public void testFirstOfStringsMatcher() {
         Parser parser = Parboiled.createParser(Parser.class);
-        testWithoutRecovery(parser.Test1(), "Abc", "[Test1] 'Abc'\n");
-        testWithoutRecovery(parser.Test1(), "Ab", "[Test1] 'Ab'\n");
-        testWithoutRecovery(parser.Test1(), "Bcd", "[Test1] 'Bcd'\n");
+        test(parser.Test1(), "Abc").hasNoErrors().hasParseTree("[Test1] 'Abc'\n");
+        test(parser.Test1(), "Ab").hasNoErrors().hasParseTree("[Test1] 'Ab'\n");
+        test(parser.Test1(), "Bcd").hasNoErrors().hasParseTree("[Test1] 'Bcd'\n");
 
-        testWithoutRecovery(parser.Test2(), "Abc", "[Test2] 'Abc'\n");
-        testWithoutRecovery(parser.Test2(), "Abd", "[Test2] 'Abd'\n");
-        testWithoutRecovery(parser.Test2(), "Bcd", "[Test2] 'Bcd'\n");
+        test(parser.Test2(), "Abc").hasNoErrors().hasParseTree("[Test2] 'Abc'\n");
+        test(parser.Test2(), "Abd").hasNoErrors().hasParseTree("[Test2] 'Abd'\n");
+        test(parser.Test2(), "Bcd").hasNoErrors().hasParseTree("[Test2] 'Bcd'\n");
     }
 
     @Test(expectedExceptions = GrammarException.class)
     public void testFirstOfStringsFail() {
         Parser parser = Parboiled.createParser(Parser.class);
-        testWithoutRecovery(parser.Test3(), "Abc", "");
+        test(parser.Test3(), "Abc").hasNoErrors().hasParseTree("");
     }
 
     private char[][] toArrayOfCharArray(String... strings) {

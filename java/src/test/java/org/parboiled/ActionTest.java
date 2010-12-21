@@ -18,12 +18,10 @@ package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.Label;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
-public class ActionTest extends AbstractTest {
+public class ActionTest extends TestNgParboiledTest<Integer> {
 
     public static class Actions extends BaseActions<Integer> {
 
@@ -44,7 +42,7 @@ public class ActionTest extends AbstractTest {
                     'a',
                     push(42),
                     B(18),
-                    stringAction("lastText:"+ match())
+                    stringAction("lastText:" + match())
             );
         }
 
@@ -95,15 +93,17 @@ public class ActionTest extends AbstractTest {
     @Test
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
-        test(parser.A(), "abcd", "" +
-                "[A, {2}] 'abcd'\n" +
-                "  ['a'] 'a'\n" +
-                "  [B, {2}] 'bcd'\n" +
-                "    ['b', {42}] 'b'\n" +
-                "    [C, {2}] 'cd'\n" +
-                "      ['c', {74}] 'c'\n" +
-                "      [Last, {2}] 'd'\n" +
-                "        ['d', {74}] 'd'\n");
+        test(parser.A(), "abcd")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[A, {2}] 'abcd'\n" +
+                        "  ['a'] 'a'\n" +
+                        "  [B, {2}] 'bcd'\n" +
+                        "    ['b', {42}] 'b'\n" +
+                        "    [C, {2}] 'cd'\n" +
+                        "      ['c', {74}] 'c'\n" +
+                        "      [Last, {2}] 'd'\n" +
+                        "        ['d', {74}] 'd'\n");
 
         ParserStatistics stats = ParserStatistics.generateFor(parser.A());
         assertEquals(stats.toString(), "" +

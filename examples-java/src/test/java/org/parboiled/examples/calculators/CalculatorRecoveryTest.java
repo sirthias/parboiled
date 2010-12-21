@@ -18,16 +18,15 @@ package org.parboiled.examples.calculators;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.FileUtils;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.examples.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-public class CalculatorRecoveryTest extends AbstractTest {
+public class CalculatorRecoveryTest extends TestNgParboiledTest<Integer> {
 
     @Test
     public void testCalculatorErrorRecovery() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser1.class);
-        String[] tests = FileUtils.readAllTextFromResource("CalculatorErrorRecoveryTest.test")
-                .split("###\r?\n");
+        String[] tests = FileUtils.readAllTextFromResource("CalculatorErrorRecoveryTest.test").split("###\r?\n");
 
         if (!runSingleTest(parser, tests)) {
             // no single, important test found, so run all tests
@@ -51,7 +50,9 @@ public class CalculatorRecoveryTest extends AbstractTest {
     private void runTest(CalculatorParser parser, String test) {
         String[] s = test.split("===\r?\n");
         if (!s[0].startsWith("//")) {
-            testFail(parser.InputLine(), s[0].replaceAll("\r?\n", ""), s[1], s.length > 2 ? s[2] : "");
+            testWithRecovery(parser.InputLine(), s[0].replaceAll("\r?\n", ""))
+                    .hasErrors(s[1])
+                    .hasParseTree(s.length > 2 ? s[2] : "");
         }
     }
 

@@ -18,12 +18,10 @@ package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SkipActionsInPredicates;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
-public class InPredicateTest extends AbstractTest {
+public class InPredicateTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     public static class Parser extends BaseParser<Object> {
@@ -66,20 +64,22 @@ public class InPredicateTest extends AbstractTest {
     @Test
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
-        test(parser.Number(), "56577", "" +
-                "[Number] '56577'\n" +
-                "  [OneOrMore] '56577'\n" +
-                "    [Digit] '5'\n" +
-                "      [0..9] '5'\n" +
-                "    [Digit] '6'\n" +
-                "      [0..9] '6'\n" +
-                "    [Digit] '5'\n" +
-                "      [0..9] '5'\n" +
-                "    [Digit] '7'\n" +
-                "      [0..9] '7'\n" +
-                "    [Digit] '7'\n" +
-                "      [0..9] '7'\n" +
-                "  [EOI]\n");
+        test(parser.Number(), "56577")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[Number] '56577'\n" +
+                        "  [OneOrMore] '56577'\n" +
+                        "    [Digit] '5'\n" +
+                        "      [0..9] '5'\n" +
+                        "    [Digit] '6'\n" +
+                        "      [0..9] '6'\n" +
+                        "    [Digit] '5'\n" +
+                        "      [0..9] '5'\n" +
+                        "    [Digit] '7'\n" +
+                        "      [0..9] '7'\n" +
+                        "    [Digit] '7'\n" +
+                        "      [0..9] '7'\n" +
+                        "  [EOI]\n");
         assertEquals(parser.count, 1);
     }
 

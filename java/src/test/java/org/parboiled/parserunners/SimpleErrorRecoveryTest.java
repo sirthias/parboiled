@@ -20,10 +20,10 @@ import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-public class SimpleErrorRecoveryTest extends AbstractTest {
+public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     public static class Parser extends BaseParser<Object> {
@@ -55,144 +55,160 @@ public class SimpleErrorRecoveryTest extends AbstractTest {
     @Test
     public void testSingleCharRecovery() {
         Parser parser = Parboiled.createParser(Parser.class);
-        testFail(parser.Clause(), "AaA", "" +
-                "Invalid input 'a...', expected 'l' (line 1, pos 2):\n" +
-                "AaA\n" +
-                " ^^\n" +
-                "---\n" +
-                "Invalid input 'EOI', expected \" and \", \" or \" or Verb (line 1, pos 4):\n" +
-                "AaA\n" +
-                "   ^\n",
-                "");
+        testWithRecovery(parser.Clause(), "AaA")
+                .hasErrors("" +
+                        "Invalid input 'a...', expected 'l' (line 1, pos 2):\n" +
+                        "AaA\n" +
+                        " ^^\n" +
+                        "---\n" +
+                        "Invalid input 'EOI', expected \" and \", \" or \" or Verb (line 1, pos 4):\n" +
+                        "AaA\n" +
+                        "   ^\n");
 
-        testFail(parser.Clause(), "Alice has anximals", "" +
-                "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
-                "Alice has anximals\n" +
-                "            ^\n", "" +
-                "[Clause]E 'Alice has animals'\n" +
-                "  [Subject] 'Alice'\n" +
-                "    [Name] 'Alice'\n" +
-                "      [\"Alice\"] 'Alice'\n" +
-                "    [ZeroOrMore]\n" +
-                "  [Verb] ' has '\n" +
-                "    [\" has \"] ' has '\n" +
-                "  [Object]E 'animals'\n" +
-                "    [\"animals\"]E 'animals'\n" +
-                "      ['i'] 'i'\n" +
-                "  [EOI]\n");
+        testWithRecovery(parser.Clause(), "Alice has anximals")
+                .hasErrors("" +
+                        "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
+                        "Alice has anximals\n" +
+                        "            ^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice has animals'\n" +
+                        "  [Subject] 'Alice'\n" +
+                        "    [Name] 'Alice'\n" +
+                        "      [\"Alice\"] 'Alice'\n" +
+                        "    [ZeroOrMore]\n" +
+                        "  [Verb] ' has '\n" +
+                        "    [\" has \"] ' has '\n" +
+                        "  [Object]E 'animals'\n" +
+                        "    [\"animals\"]E 'animals'\n" +
+                        "      ['i'] 'i'\n" +
+                        "  [EOI]\n");
 
-        testFail(parser.Clause().suppressSubnodes(), "Alice has anximals", "" +
-                "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
-                "Alice has anximals\n" +
-                "            ^\n", "" +
-                "[Clause]E 'Alice has animals'\n" +
-                "  [Object]E 'animals'\n" +
-                "    [\"animals\"]E 'animals'\n" +
-                "      ['i'] 'i'\n");
+        testWithRecovery(parser.Clause().suppressSubnodes(), "Alice has anximals")
+                .hasErrors("" +
+                        "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
+                        "Alice has anximals\n" +
+                        "            ^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice has animals'\n" +
+                        "  [Object]E 'animals'\n" +
+                        "    [\"animals\"]E 'animals'\n" +
+                        "      ['i'] 'i'\n");
 
-        testFail(parser.Clause(), "Alice has anmals", "" +
-                "Invalid input 'm', expected 'i' (line 1, pos 13):\n" +
-                "Alice has anmals\n" +
-                "            ^\n", "" +
-                "[Clause]E 'Alice has animals'\n" +
-                "  [Subject] 'Alice'\n" +
-                "    [Name] 'Alice'\n" +
-                "      [\"Alice\"] 'Alice'\n" +
-                "    [ZeroOrMore]\n" +
-                "  [Verb] ' has '\n" +
-                "    [\" has \"] ' has '\n" +
-                "  [Object]E 'animals'\n" +
-                "    [\"animals\"]E 'animals'\n" +
-                "      ['i']E 'i'\n" +
-                "  [EOI]\n");
+        testWithRecovery(parser.Clause(), "Alice has anmals")
+                .hasErrors("" +
+                        "Invalid input 'm', expected 'i' (line 1, pos 13):\n" +
+                        "Alice has anmals\n" +
+                        "            ^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice has animals'\n" +
+                        "  [Subject] 'Alice'\n" +
+                        "    [Name] 'Alice'\n" +
+                        "      [\"Alice\"] 'Alice'\n" +
+                        "    [ZeroOrMore]\n" +
+                        "  [Verb] ' has '\n" +
+                        "    [\" has \"] ' has '\n" +
+                        "  [Object]E 'animals'\n" +
+                        "    [\"animals\"]E 'animals'\n" +
+                        "      ['i']E 'i'\n" +
+                        "  [EOI]\n");
 
-        testFail(parser.Clause(), "Alixyce has animals", "" +
-                "Invalid input 'x...', expected 'c' (line 1, pos 4):\n" +
-                "Alixyce has animals\n" +
-                "   ^^^^\n", "" +
-                "[Clause]E 'Ali has animals'\n" +
-                "  [Subject]E 'Ali'\n" +
-                "    [Name]E 'Ali'\n" +
-                "      [\"Alice\"]E 'Ali'\n" +
-                "    [ZeroOrMore]\n" +
-                "  [Verb] ' has '\n" +
-                "    [\" has \"] ' has '\n" +
-                "  [Object] 'animals'\n" +
-                "    [\"animals\"] 'animals'\n" +
-                "  [EOI]\n");
+        testWithRecovery(parser.Clause(), "Alixyce has animals")
+                .hasErrors("" +
+                        "Invalid input 'x...', expected 'c' (line 1, pos 4):\n" +
+                        "Alixyce has animals\n" +
+                        "   ^^^^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Ali has animals'\n" +
+                        "  [Subject]E 'Ali'\n" +
+                        "    [Name]E 'Ali'\n" +
+                        "      [\"Alice\"]E 'Ali'\n" +
+                        "    [ZeroOrMore]\n" +
+                        "  [Verb] ' has '\n" +
+                        "    [\" has \"] ' has '\n" +
+                        "  [Object] 'animals'\n" +
+                        "    [\"animals\"] 'animals'\n" +
+                        "  [EOI]\n");
 
-        testFail(parser.Clause(), "Alicexy has animals", "" +
-                "Invalid input 'x...', expected \" and \", \" or \" or Verb (line 1, pos 6):\n" +
-                "Alicexy has animals\n" +
-                "     ^^^^^^^^^^^^^^\n", "" +
-                "[Clause]E 'Alice'\n" +
-                "  [Subject] 'Alice'\n" +
-                "    [Name] 'Alice'\n" +
-                "      [\"Alice\"] 'Alice'\n" +
-                "    [ZeroOrMore]\n");
+        testWithRecovery(parser.Clause(), "Alicexy has animals")
+                .hasErrors("" +
+                        "Invalid input 'x...', expected \" and \", \" or \" or Verb (line 1, pos 6):\n" +
+                        "Alicexy has animals\n" +
+                        "     ^^^^^^^^^^^^^^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice'\n" +
+                        "  [Subject] 'Alice'\n" +
+                        "    [Name] 'Alice'\n" +
+                        "      [\"Alice\"] 'Alice'\n" +
+                        "    [ZeroOrMore]\n");
 
-        testFail(parser.Clause(), "Alize has animals", "" +
-                "Invalid input 'z', expected 'c' (line 1, pos 4):\n" +
-                "Alize has animals\n" +
-                "   ^\n", "" +
-                "[Clause]E 'Alice has animals'\n" +
-                "  [Subject]E 'Alice'\n" +
-                "    [Name]E 'Alice'\n" +
-                "      [\"Alice\"]E 'Alice'\n" +
-                "        ['c']E 'c'\n" +
-                "    [ZeroOrMore]\n" +
-                "  [Verb] ' has '\n" +
-                "    [\" has \"] ' has '\n" +
-                "  [Object] 'animals'\n" +
-                "    [\"animals\"] 'animals'\n" +
-                "  [EOI]\n");
+        testWithRecovery(parser.Clause(), "Alize has animals")
+                .hasErrors("" +
+                        "Invalid input 'z', expected 'c' (line 1, pos 4):\n" +
+                        "Alize has animals\n" +
+                        "   ^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice has animals'\n" +
+                        "  [Subject]E 'Alice'\n" +
+                        "    [Name]E 'Alice'\n" +
+                        "      [\"Alice\"]E 'Alice'\n" +
+                        "        ['c']E 'c'\n" +
+                        "    [ZeroOrMore]\n" +
+                        "  [Verb] ' has '\n" +
+                        "    [\" has \"] ' has '\n" +
+                        "  [Object] 'animals'\n" +
+                        "    [\"animals\"] 'animals'\n" +
+                        "  [EOI]\n");
 
-        testFail(parser.Clause(), "Alice lofes animals", "" +
-                "Invalid input 'f', expected 'v' (line 1, pos 9):\n" +
-                "Alice lofes animals\n" +
-                "        ^\n", "" +
-                "[Clause]E 'Alice loves animals'\n" +
-                "  [Subject] 'Alice'\n" +
-                "    [Name] 'Alice'\n" +
-                "      [\"Alice\"] 'Alice'\n" +
-                "    [ZeroOrMore]\n" +
-                "  [Verb]E ' loves '\n" +
-                "    [\" loves \"]E ' loves '\n" +
-                "      ['v']E 'v'\n" +
-                "  [Object] 'animals'\n" +
-                "    [\"animals\"] 'animals'\n" +
-                "  [EOI]\n");
+        testWithRecovery(parser.Clause(), "Alice lofes animals")
+                .hasErrors("" +
+                        "Invalid input 'f', expected 'v' (line 1, pos 9):\n" +
+                        "Alice lofes animals\n" +
+                        "        ^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice loves animals'\n" +
+                        "  [Subject] 'Alice'\n" +
+                        "    [Name] 'Alice'\n" +
+                        "      [\"Alice\"] 'Alice'\n" +
+                        "    [ZeroOrMore]\n" +
+                        "  [Verb]E ' loves '\n" +
+                        "    [\" loves \"]E ' loves '\n" +
+                        "      ['v']E 'v'\n" +
+                        "  [Object] 'animals'\n" +
+                        "    [\"animals\"] 'animals'\n" +
+                        "  [EOI]\n");
 
-        testFail(parser.Clause(), "Alixce and Emlio lofe animals", "" +
-                "Invalid input 'x', expected 'c' (line 1, pos 4):\n" +
-                "Alixce and Emlio lofe animals\n" +
-                "   ^\n" +
-                "---\n" +
-                "Invalid input 'l', expected 'i' (line 1, pos 14):\n" +
-                "Alixce and Emlio lofe animals\n" +
-                "             ^\n" +
-                "---\n" +
-                "Invalid input 'f', expected 'v' (line 1, pos 20):\n" +
-                "Alixce and Emlio lofe animals\n" +
-                "                   ^\n", "" +
-                "[Clause]E 'Alice and Emilio love animals'\n" +
-                "  [Subject]E 'Alice and Emilio'\n" +
-                "    [Name]E 'Alice'\n" +
-                "      [\"Alice\"]E 'Alice'\n" +
-                "        ['c'] 'c'\n" +
-                "    [ZeroOrMore]E ' and Emilio'\n" +
-                "      [Sequence]E ' and Emilio'\n" +
-                "        [FirstOf] ' and '\n" +
-                "          [\" and \"] ' and '\n" +
-                "        [Name]E 'Emilio'\n" +
-                "          [\"Emilio\"]E 'Emilio'\n" +
-                "            ['i']E 'i'\n" +
-                "  [Verb]E ' love '\n" +
-                "    [\" love \"]E ' love '\n" +
-                "      ['v']E 'v'\n" +
-                "  [Object] 'animals'\n" +
-                "    [\"animals\"] 'animals'\n" +
-                "  [EOI]\n");
+        testWithRecovery(parser.Clause(), "Alixce and Emlio lofe animals")
+                .hasErrors("" +
+                        "Invalid input 'x', expected 'c' (line 1, pos 4):\n" +
+                        "Alixce and Emlio lofe animals\n" +
+                        "   ^\n" +
+                        "---\n" +
+                        "Invalid input 'l', expected 'i' (line 1, pos 14):\n" +
+                        "Alixce and Emlio lofe animals\n" +
+                        "             ^\n" +
+                        "---\n" +
+                        "Invalid input 'f', expected 'v' (line 1, pos 20):\n" +
+                        "Alixce and Emlio lofe animals\n" +
+                        "                   ^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice and Emilio love animals'\n" +
+                        "  [Subject]E 'Alice and Emilio'\n" +
+                        "    [Name]E 'Alice'\n" +
+                        "      [\"Alice\"]E 'Alice'\n" +
+                        "        ['c'] 'c'\n" +
+                        "    [ZeroOrMore]E ' and Emilio'\n" +
+                        "      [Sequence]E ' and Emilio'\n" +
+                        "        [FirstOf] ' and '\n" +
+                        "          [\" and \"] ' and '\n" +
+                        "        [Name]E 'Emilio'\n" +
+                        "          [\"Emilio\"]E 'Emilio'\n" +
+                        "            ['i']E 'i'\n" +
+                        "  [Verb]E ' love '\n" +
+                        "    [\" love \"]E ' love '\n" +
+                        "      ['v']E 'v'\n" +
+                        "  [Object] 'animals'\n" +
+                        "    [\"animals\"] 'animals'\n" +
+                        "  [EOI]\n");
     }
 
 }

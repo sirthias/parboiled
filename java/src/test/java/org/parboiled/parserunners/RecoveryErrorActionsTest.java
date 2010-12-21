@@ -19,9 +19,7 @@ package org.parboiled.parserunners;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
-import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -32,7 +30,7 @@ import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
-public class RecoveryErrorActionsTest extends AbstractTest {
+public class RecoveryErrorActionsTest {
 
     public static class Parser extends BaseParser<Object> {
 
@@ -76,7 +74,7 @@ public class RecoveryErrorActionsTest extends AbstractTest {
 
         ParsingResult<?> result = RecoveringParseRunner.run(parser.Clause(), "axx");
         assertEquals(printParseErrors(result), "" +
-        "Invalid input 'x...', expected B (line 1, pos 2):\n" +
+                "Invalid input 'x...', expected B (line 1, pos 2):\n" +
                 "axx\n" +
                 " ^^\n");
         assertEquals(toList(result.valueStack), Arrays.asList(2.0, 1, "", "a"));

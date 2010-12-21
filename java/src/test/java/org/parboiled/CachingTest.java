@@ -19,13 +19,12 @@ package org.parboiled;
 import org.parboiled.annotations.Label;
 import org.parboiled.matchers.FirstOfMatcher;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.testng.Assert.assertEquals;
 
-public class CachingTest extends AbstractTest {
+public class CachingTest {
 
     public static class CachingParser extends BaseParser<Object> {
 

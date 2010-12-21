@@ -20,7 +20,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module" module-name="parboiled-scala" exported="" />
+    <orderEntry type="module" module-name="scala" />
   </component>
 </module>
 

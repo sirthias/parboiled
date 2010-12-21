@@ -19,10 +19,10 @@ package org.parboiled;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.common.Reference;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-public class PrevCallsTest extends AbstractTest {
+public class PrevCallsTest extends TestNgParboiledTest<Integer> {
 
     @BuildParseTree
     static class Parser extends BaseParser<Integer> {
@@ -69,7 +69,9 @@ public class PrevCallsTest extends AbstractTest {
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
-        test(rule, "100+23", "[Clause, {123}] '100+23'\n");
+        test(rule, "100+23")
+                .hasNoErrors()
+                .hasParseTree("[Clause, {123}] '100+23'\n");
     }
 
 }

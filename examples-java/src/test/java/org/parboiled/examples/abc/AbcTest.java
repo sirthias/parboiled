@@ -17,71 +17,77 @@
 package org.parboiled.examples.abc;
 
 import org.parboiled.Parboiled;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.examples.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-public class AbcTest extends AbstractTest {
+public class AbcTest extends TestNgParboiledTest<Object> {
 
     @Test
     public void test() {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
-        test(parser.S(), "aabbcc", "" +
-                "[S] 'aabbcc'\n" +
-                "  [OneOrMore] 'aa'\n" +
-                "    ['a'] 'a'\n" +
-                "    ['a'] 'a'\n" +
-                "  [B] 'bbcc'\n" +
-                "    ['b'] 'b'\n" +
-                "    [Optional] 'bc'\n" +
-                "      [B] 'bc'\n" +
-                "        ['b'] 'b'\n" +
-                "        [Optional]\n" +
-                "        ['c'] 'c'\n" +
-                "    ['c'] 'c'\n");
+        test(parser.S(), "aabbcc")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[S] 'aabbcc'\n" +
+                        "  [OneOrMore] 'aa'\n" +
+                        "    ['a'] 'a'\n" +
+                        "    ['a'] 'a'\n" +
+                        "  [B] 'bbcc'\n" +
+                        "    ['b'] 'b'\n" +
+                        "    [Optional] 'bc'\n" +
+                        "      [B] 'bc'\n" +
+                        "        ['b'] 'b'\n" +
+                        "        [Optional]\n" +
+                        "        ['c'] 'c'\n" +
+                        "    ['c'] 'c'\n");
     }
 
     @Test
     public void testFail1() {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
-        testFail(parser.S(), "aabbbcc", "" +
-                "Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
-                "aabbbcc\n" +
-                "    ^\n", "" +
-                "[S]E 'aabbcc'\n" +
-                "  [OneOrMore] 'aa'\n" +
-                "    ['a'] 'a'\n" +
-                "    ['a'] 'a'\n" +
-                "  [B]E 'bbcc'\n" +
-                "    ['b'] 'b'\n" +
-                "    [Optional]E 'bc'\n" +
-                "      [B]E 'bc'\n" +
-                "        ['b'] 'b'\n" +
-                "        [Optional]\n" +
-                "        ['c'] 'c'\n" +
-                "    ['c'] 'c'\n"
-        );
+        testWithRecovery(parser.S(), "aabbbcc")
+                .hasErrors("" +
+                        "Invalid input 'b', expected 'c' (line 1, pos 5):\n" +
+                        "aabbbcc\n" +
+                        "    ^\n")
+                .hasParseTree("" +
+                        "[S]E 'aabbcc'\n" +
+                        "  [OneOrMore] 'aa'\n" +
+                        "    ['a'] 'a'\n" +
+                        "    ['a'] 'a'\n" +
+                        "  [B]E 'bbcc'\n" +
+                        "    ['b'] 'b'\n" +
+                        "    [Optional]E 'bc'\n" +
+                        "      [B]E 'bc'\n" +
+                        "        ['b'] 'b'\n" +
+                        "        [Optional]\n" +
+                        "        ['c'] 'c'\n" +
+                        "    ['c'] 'c'\n"
+                );
     }
 
     @Test
     public void testFail2() {
         AbcParser parser = Parboiled.createParser(AbcParser.class);
-        testFail(parser.S(), "aabcc", "" +
-                "Invalid input 'c', expected 'b' (line 1, pos 4):\n" +
-                "aabcc\n" +
-                "   ^\n", "" +
-                "[S]E 'aabbcc'\n" +
-                "  [OneOrMore] 'aa'\n" +
-                "    ['a'] 'a'\n" +
-                "    ['a'] 'a'\n" +
-                "  [B]E 'bbcc'\n" +
-                "    ['b'] 'b'\n" +
-                "    [Optional]E 'bc'\n" +
-                "      [B]E 'bc'\n" +
-                "        ['b']E 'b'\n" +
-                "        [Optional]\n" +
-                "        ['c'] 'c'\n" +
-                "    ['c'] 'c'\n"
-        );
+        testWithRecovery(parser.S(), "aabcc")
+                .hasErrors("" +
+                        "Invalid input 'c', expected 'b' (line 1, pos 4):\n" +
+                        "aabcc\n" +
+                        "   ^\n")
+                .hasParseTree("" +
+                        "[S]E 'aabbcc'\n" +
+                        "  [OneOrMore] 'aa'\n" +
+                        "    ['a'] 'a'\n" +
+                        "    ['a'] 'a'\n" +
+                        "  [B]E 'bbcc'\n" +
+                        "    ['b'] 'b'\n" +
+                        "    [Optional]E 'bc'\n" +
+                        "      [B]E 'bc'\n" +
+                        "        ['b']E 'b'\n" +
+                        "        [Optional]\n" +
+                        "        ['c'] 'c'\n" +
+                        "    ['c'] 'c'\n"
+                );
     }
 
 }

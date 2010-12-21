@@ -17,15 +17,15 @@
 package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
-import org.parboiled.test.AbstractTest;
 
-public class RecursionTest extends AbstractTest {
+public class RecursionTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     public static class Parser extends BaseParser<Object> {
 
-        @SuppressWarnings({"InfiniteRecursion"})
+        @SuppressWarnings( {"InfiniteRecursion"})
         public Rule LotsOfAs() {
             return Sequence(IgnoreCase('a'), Optional(LotsOfAs()));
         }
@@ -35,16 +35,18 @@ public class RecursionTest extends AbstractTest {
     @Test
     public void testRecursion() {
         Parser parser = Parboiled.createParser(Parser.class);
-        test(parser.LotsOfAs(), "AaA", "" +
-                "[LotsOfAs] 'AaA'\n" +
-                "  ['a/A'] 'A'\n" +
-                "  [Optional] 'aA'\n" +
-                "    [LotsOfAs] 'aA'\n" +
-                "      ['a/A'] 'a'\n" +
-                "      [Optional] 'A'\n" +
-                "        [LotsOfAs] 'A'\n" +
-                "          ['a/A'] 'A'\n" +
-                "          [Optional]\n");
+        test(parser.LotsOfAs(), "AaA")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[LotsOfAs] 'AaA'\n" +
+                        "  ['a/A'] 'A'\n" +
+                        "  [Optional] 'aA'\n" +
+                        "    [LotsOfAs] 'aA'\n" +
+                        "      ['a/A'] 'a'\n" +
+                        "      [Optional] 'A'\n" +
+                        "        [LotsOfAs] 'A'\n" +
+                        "          ['a/A'] 'A'\n" +
+                        "          [Optional]\n");
     }
 
 }

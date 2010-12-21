@@ -27,7 +27,7 @@ import static org.parboiled.transform.AsmTestUtils.assertTraceDumpEquality;
 
 public class CachingGeneratorTest extends TransformationTest {
 
-    private final List<RuleMethodProcessor> processors = ImmutableList.<RuleMethodProcessor>of(
+    private final List<RuleMethodProcessor> processors = ImmutableList.of(
             new BodyWithSuperCallReplacer(),
             new LabellingGenerator(),
             new FlagMarkingGenerator(),
@@ -39,7 +39,7 @@ public class CachingGeneratorTest extends TransformationTest {
         setup(TestParser.class);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( {"unchecked"})
     @Test
     public void test() throws Exception {
         assertTraceDumpEquality(processMethod("RuleWithoutAction", processors), "" +

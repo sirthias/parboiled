@@ -18,18 +18,18 @@ package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.support.Var;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActionVarTest extends AbstractTest {
+public class ActionVarTest extends TestNgParboiledTest<Integer> {
 
     @BuildParseTree
     static class Parser extends BaseParser<Integer> {
 
-        @SuppressWarnings({"InfiniteRecursion"})
+        @SuppressWarnings( {"InfiniteRecursion"})
         public Rule A() {
             Var<List<String>> list = new Var<List<String>>(new ArrayList<String>());
             return Sequence('a', Optional(A(), list.get().add("Text"), push(list.get().size())));
@@ -42,22 +42,24 @@ public class ActionVarTest extends AbstractTest {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.A();
 
-        testWithoutRecovery(rule, "aaaa", "" +
-                "[A, {1}] 'aaaa'\n" +
-                "  ['a'] 'a'\n" +
-                "  [Optional, {1}] 'aaa'\n" +
-                "    [Sequence, {1}] 'aaa'\n" +
-                "      [A, {1}] 'aaa'\n" +
-                "        ['a'] 'a'\n" +
-                "        [Optional, {1}] 'aa'\n" +
-                "          [Sequence, {1}] 'aa'\n" +
-                "            [A, {1}] 'aa'\n" +
-                "              ['a'] 'a'\n" +
-                "              [Optional, {1}] 'a'\n" +
-                "                [Sequence, {1}] 'a'\n" +
-                "                  [A] 'a'\n" +
-                "                    ['a'] 'a'\n" +
-                "                    [Optional]\n");
+        test(rule, "aaaa")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[A, {1}] 'aaaa'\n" +
+                        "  ['a'] 'a'\n" +
+                        "  [Optional, {1}] 'aaa'\n" +
+                        "    [Sequence, {1}] 'aaa'\n" +
+                        "      [A, {1}] 'aaa'\n" +
+                        "        ['a'] 'a'\n" +
+                        "        [Optional, {1}] 'aa'\n" +
+                        "          [Sequence, {1}] 'aa'\n" +
+                        "            [A, {1}] 'aa'\n" +
+                        "              ['a'] 'a'\n" +
+                        "              [Optional, {1}] 'a'\n" +
+                        "                [Sequence, {1}] 'a'\n" +
+                        "                  [A] 'a'\n" +
+                        "                    ['a'] 'a'\n" +
+                        "                    [Optional]\n");
     }
 
 }

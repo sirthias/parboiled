@@ -18,12 +18,11 @@ package org.parboiled;
 
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
-public class IndentDedentTest extends AbstractTest {
+public class IndentDedentTest {
 
     public static class IndentDedentParser extends BaseParser<Object> {
         public int currentIndent;

@@ -17,10 +17,10 @@
 package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
-import org.parboiled.test.AbstractTest;
 
-public class SimpleTest extends AbstractTest {
+public class SimpleTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     static class Parser extends BaseParser<Object> {
@@ -43,14 +43,16 @@ public class SimpleTest extends AbstractTest {
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
-        testWithoutRecovery(rule, "1+5b", "" +
-                "[Clause] '1+5b'\n" +
-                "  [Digit] '1'\n" +
-                "  [Operator] '+'\n" +
-                "    ['+'] '+'\n" +
-                "  [Digit] '5'\n" +
-                "  [[abcd]] 'b'\n" +
-                "  [EOI]\n");
+        test(rule, "1+5b")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[Clause] '1+5b'\n" +
+                        "  [Digit] '1'\n" +
+                        "  [Operator] '+'\n" +
+                        "    ['+'] '+'\n" +
+                        "  [Digit] '5'\n" +
+                        "  [[abcd]] 'b'\n" +
+                        "  [EOI]\n");
     }
 
 }

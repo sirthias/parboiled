@@ -19,27 +19,25 @@ package org.parboiled;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.support.Var;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
-public class VarFramingTest extends AbstractTest {
+public class VarFramingTest extends TestNgParboiledTest<Integer> {
 
     @BuildParseTree
     static class Parser extends BaseParser<Integer> {
 
         int count = 1;
-        
-        @SuppressWarnings({"InfiniteRecursion"})
+
+        @SuppressWarnings( {"InfiniteRecursion"})
         public Rule Clause() {
             Var<Integer> a = new Var<Integer>(-1);
             return Sequence(
                     Digits(), a.set(peek()),
                     SomeRule(a),
                     Optional(
-                        '+',
-                        Clause(), push(a.get())
+                            '+',
+                            Clause(), push(a.get())
                     )
             );
         }
@@ -51,7 +49,7 @@ public class VarFramingTest extends AbstractTest {
                     push(Integer.parseInt(match()))
             );
         }
-        
+
         public Rule SomeRule(Var<Integer> var) {
             return toRule(var.get() == count++);
         }
@@ -91,17 +89,19 @@ public class VarFramingTest extends AbstractTest {
                 "    VarFramingMatchers: 1\n" +
                 "MemoMismatchesMatchers: 0\n");
 
-        testWithoutRecovery(rule, "1+2+3", "" +
-                "[Clause, {1}] '1+2+3'\n" +
-                "  [Optional, {1}] '+2+3'\n" +
-                "    [Sequence, {1}] '+2+3'\n" +
-                "      ['+', {1}] '+'\n" +
-                "      [Clause, {2}] '2+3'\n" +
-                "        [Optional, {2}] '+3'\n" +
-                "          [Sequence, {2}] '+3'\n" +
-                "            ['+', {2}] '+'\n" +
-                "            [Clause, {3}] '3'\n" +
-                "              [Optional, {3}]\n");
+        test(rule, "1+2+3")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[Clause, {1}] '1+2+3'\n" +
+                        "  [Optional, {1}] '+2+3'\n" +
+                        "    [Sequence, {1}] '+2+3'\n" +
+                        "      ['+', {1}] '+'\n" +
+                        "      [Clause, {2}] '2+3'\n" +
+                        "        [Optional, {2}] '+3'\n" +
+                        "          [Sequence, {2}] '+3'\n" +
+                        "            ['+', {2}] '+'\n" +
+                        "            [Clause, {3}] '3'\n" +
+                        "              [Optional, {3}]\n");
     }
 
 }

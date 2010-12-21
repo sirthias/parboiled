@@ -18,10 +18,10 @@ package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SkipNode;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-public class NodeSkippingTest extends AbstractTest {
+public class NodeSkippingTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     public static class Parser extends BaseParser<Object> {
@@ -92,18 +92,20 @@ public class NodeSkippingTest extends AbstractTest {
     @Test
     public void testNodeSuppression() {
         Parser parser = Parboiled.createParser(Parser.class);
-        test(parser.ABCDEFGH(), "abcdefgh", "" +
-                "[ABCDEFGH] 'abcdefgh'\n" +
-                "  [ABCD] 'abcd'\n" +
-                "    [AB] 'ab'\n" +
-                "      [A] 'a'\n" +
-                "    [C] 'c'\n" +
-                "    [D] 'd'\n" +
-                "  [EF] 'ef'\n" +
-                "    [E] 'e'\n" +
-                "    [F] 'f'\n" +
-                "  [G] 'g'\n" +
-                "  [H] 'h'\n");
+        test(parser.ABCDEFGH(), "abcdefgh")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[ABCDEFGH] 'abcdefgh'\n" +
+                        "  [ABCD] 'abcd'\n" +
+                        "    [AB] 'ab'\n" +
+                        "      [A] 'a'\n" +
+                        "    [C] 'c'\n" +
+                        "    [D] 'd'\n" +
+                        "  [EF] 'ef'\n" +
+                        "    [E] 'e'\n" +
+                        "    [F] 'f'\n" +
+                        "  [G] 'g'\n" +
+                        "  [H] 'h'\n");
     }
 
 }

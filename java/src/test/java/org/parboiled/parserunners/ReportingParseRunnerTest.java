@@ -19,15 +19,13 @@ package org.parboiled.parserunners;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
-import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.testng.Assert.assertEquals;
 
-public class ReportingParseRunnerTest extends AbstractTest {
+public class ReportingParseRunnerTest {
 
     public static class Parser extends BaseParser<Object> {
         Rule Line() {

@@ -18,6 +18,7 @@ package org.parboiled.transform;
 
 import org.objectweb.asm.Type;
 import org.parboiled.*;
+import org.parboiled.annotations.*;
 import org.parboiled.Action;
 import org.parboiled.BaseParser;
 import org.parboiled.matchers.Matcher;

@@ -17,17 +17,16 @@
 package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.matchers.Matcher;
 import org.parboiled.annotations.Label;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.support.ToStringFormatter;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
 import static org.parboiled.trees.GraphUtils.countAllDistinct;
 import static org.parboiled.trees.GraphUtils.printTree;
-import static org.testng.Assert.assertEquals;
 
-public class LabelTest extends AbstractTest {
+public class LabelTest extends TestNgParboiledTest<Object> {
 
     @BuildParseTree
     public static class LabellingParser extends BaseParser<Object> {
@@ -55,7 +54,7 @@ public class LabelTest extends AbstractTest {
             return CharRange('0', '9');
         }
 
-        @SuppressWarnings({"InfiniteRecursion"})
+        @SuppressWarnings( {"InfiniteRecursion"})
         public Rule RecursiveLabel() {
             return FirstOf('a', Sequence('b', RecursiveLabel().label("First"), RecursiveLabel().label("Second")));
         }
@@ -85,21 +84,23 @@ public class LabelTest extends AbstractTest {
         // verify that there is each only one Digit matcher, '+' matcher and '-' matcher
         assertEquals(countAllDistinct((Matcher) rule), 9);
 
-        test(rule, "123-54+9", "" +
-                "[AOpB] '123-54+9'\n" +
-                "  [A] '123'\n" +
-                "    [Digit] '1'\n" +
-                "    [Digit] '2'\n" +
-                "    [Digit] '3'\n" +
-                "  [FirstOp] '-'\n" +
-                "    ['-'] '-'\n" +
-                "  [B] '54'\n" +
-                "    [Digit] '5'\n" +
-                "    [Digit] '4'\n" +
-                "  [SecondOp] '+'\n" +
-                "    ['+'] '+'\n" +
-                "  [NUmBER] '9'\n" +
-                "    [Digit] '9'\n");
+        test(rule, "123-54+9")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[AOpB] '123-54+9'\n" +
+                        "  [A] '123'\n" +
+                        "    [Digit] '1'\n" +
+                        "    [Digit] '2'\n" +
+                        "    [Digit] '3'\n" +
+                        "  [FirstOp] '-'\n" +
+                        "    ['-'] '-'\n" +
+                        "  [B] '54'\n" +
+                        "    [Digit] '5'\n" +
+                        "    [Digit] '4'\n" +
+                        "  [SecondOp] '+'\n" +
+                        "    ['+'] '+'\n" +
+                        "  [NUmBER] '9'\n" +
+                        "    [Digit] '9'\n");
     }
 
     @Test
@@ -107,19 +108,21 @@ public class LabelTest extends AbstractTest {
         LabellingParser parser = Parboiled.createParser(LabellingParser.class);
         Rule rule = parser.RecursiveLabel();
 
-        test(rule, "bbaaaa", "" +
-                "[RecursiveLabel] 'bbaaa'\n" +
-                "  [Sequence] 'bbaaa'\n" +
-                "    ['b'] 'b'\n" +
-                "    [First] 'baa'\n" +
-                "      [Sequence] 'baa'\n" +
-                "        ['b'] 'b'\n" +
-                "        [First] 'a'\n" +
-                "          ['a'] 'a'\n" +
-                "        [Second] 'a'\n" +
-                "          ['a'] 'a'\n" +
-                "    [Second] 'a'\n" +
-                "      ['a'] 'a'\n");
+        test(rule, "bbaaaa")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[RecursiveLabel] 'bbaaa'\n" +
+                        "  [Sequence] 'bbaaa'\n" +
+                        "    ['b'] 'b'\n" +
+                        "    [First] 'baa'\n" +
+                        "      [Sequence] 'baa'\n" +
+                        "        ['b'] 'b'\n" +
+                        "        [First] 'a'\n" +
+                        "          ['a'] 'a'\n" +
+                        "        [Second] 'a'\n" +
+                        "          ['a'] 'a'\n" +
+                        "    [Second] 'a'\n" +
+                        "      ['a'] 'a'\n");
     }
 
 }

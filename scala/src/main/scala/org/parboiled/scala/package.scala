@@ -8,8 +8,6 @@ import support.Chars
 import io.{Codec, Source}
 import java.io.InputStream
 import util.DynamicVariable
-import utils.Predicate
-import org.parboiled.java.{Action, Action}
 
 /**
  * Main parboiled for Scala Module.

@@ -23,7 +23,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="core" exported="" />
   </component>
 </module>
 

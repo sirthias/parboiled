@@ -19,6 +19,7 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.support.Var;
+import org.parboiled.annotations.*;
 
 import static java.lang.Integer.parseInt;
 import static org.parboiled.common.StringUtils.isEmpty;

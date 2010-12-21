@@ -18,42 +18,38 @@ package org.parboiled.examples.calculators;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.Predicates;
-import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.examples.TestNgParboiledTest;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.Filters;
-import org.parboiled.support.ParsingResult;
 import org.parboiled.support.ToStringFormatter;
-import org.parboiled.test.AbstractTest;
 import org.testng.annotations.Test;
 
-import static org.parboiled.errors.ErrorUtils.printParseErrors;
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 import static org.parboiled.trees.GraphUtils.printTree;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
 
-public class CalculatorsTest extends AbstractTest {
+public class CalculatorsTest extends TestNgParboiledTest<Object> {
 
     @Test
     public void testCalculator0() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser0.class);
-        test(parser.InputLine(), "1+5", "" +
-                "[InputLine] '1+5'\n" +
-                "  [Expression] '1+5'\n" +
-                "    [Term] '1'\n" +
-                "      [Factor] '1'\n" +
-                "        [Number] '1'\n" +
-                "          [Digit] '1'\n" +
-                "      [ZeroOrMore]\n" +
-                "    [ZeroOrMore] '+5'\n" +
-                "      [Sequence] '+5'\n" +
-                "        [[+-]] '+'\n" +
-                "        [Term] '5'\n" +
-                "          [Factor] '5'\n" +
-                "            [Number] '5'\n" +
-                "              [Digit] '5'\n" +
-                "          [ZeroOrMore]\n" +
-                "  [EOI]\n");
+        test(parser.InputLine(), "1+5")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[InputLine] '1+5'\n" +
+                        "  [Expression] '1+5'\n" +
+                        "    [Term] '1'\n" +
+                        "      [Factor] '1'\n" +
+                        "        [Number] '1'\n" +
+                        "          [Digit] '1'\n" +
+                        "      [ZeroOrMore]\n" +
+                        "    [ZeroOrMore] '+5'\n" +
+                        "      [Sequence] '+5'\n" +
+                        "        [[+-]] '+'\n" +
+                        "        [Term] '5'\n" +
+                        "          [Factor] '5'\n" +
+                        "            [Number] '5'\n" +
+                        "              [Digit] '5'\n" +
+                        "          [ZeroOrMore]\n" +
+                        "  [EOI]\n");
     }
 
     @Test
@@ -65,7 +61,6 @@ public class CalculatorsTest extends AbstractTest {
     @Test
     public void testCalculator2() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser2.class);
-
         assertEquals(
                 printTree(
                         (Matcher) parser.InputLine(),
@@ -113,9 +108,9 @@ public class CalculatorsTest extends AbstractTest {
     public void testCalculator4() {
         CalculatorParser parser = Parboiled.createParser(CalculatorParser4.class);
         runBasicCalculationTests(parser, ".0");
-        runExtendedCalculationTests(parser);        
+        runExtendedCalculationTests(parser);
     }
-    
+
     private void runBasicCalculationTests(CalculatorParser parser, String suffix) {
         test(parser, "1+2", "3" + suffix);
         test(parser, "1+2-3+4", "4" + suffix);
@@ -141,15 +136,7 @@ public class CalculatorsTest extends AbstractTest {
     }
 
     private void test(CalculatorParser parser, String input, String value) {
-        ParsingResult<?> result = ReportingParseRunner.run(parser.InputLine(), input);
-        if (result.hasErrors()) {
-            fail("\n--- ParseErrors ---\n" +
-                    printParseErrors(result) +
-                    "\n--- ParseTree ---\n" +
-                    printNodeTree(result)
-            );
-        }
-        String str = result.parseTreeRoot.getValue().toString();
+        String str = test(parser.InputLine(), input).hasNoErrors().result.parseTreeRoot.getValue().toString();
         int ix = str.indexOf('|');
         if (ix >= 0) str = str.substring(ix + 2);
         assertEquals(str, value);

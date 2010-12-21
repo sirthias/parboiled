@@ -7,7 +7,6 @@ import java.lang.String
 import org.parboiled.support.ValueStack
 import org.parboiled.scala._
 import Rule._
-import org.parboiled.java.{Action, Action, Action}
 
 /**
  * The base class of all scala parser rules.

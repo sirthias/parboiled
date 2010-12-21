@@ -17,10 +17,10 @@
 package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-public class ParserInheritanceTest extends AbstractTest {
+public class ParserInheritanceTest extends TestNgParboiledTest<Object> {
 
     public static class Actions extends BaseActions<Object> {
         public boolean dummyAction() {
@@ -47,22 +47,26 @@ public class ParserInheritanceTest extends AbstractTest {
     @Test
     public void test() {
         ParentParser parentParser = Parboiled.createParser(ParentParser.class);
-        test(parentParser.Abcd(), "abcd", "" +
-                "[Abcd] 'abcd'\n" +
-                "  [\"ab\"] 'ab'\n" +
-                "  [\"cd\"] 'cd'\n");
-        
+        test(parentParser.Abcd(), "abcd")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[Abcd] 'abcd'\n" +
+                        "  [\"ab\"] 'ab'\n" +
+                        "  [\"cd\"] 'cd'\n");
+
         DerivedParser derivedParser = Parboiled.createParser(DerivedParser.class);
         Rule rule = derivedParser.Abcds();
-        test(rule, "abcdabcd", "" +
-                "[Abcds] 'abcdabcd'\n" +
-                "  [OneOrMore] 'abcdabcd'\n" +
-                "    [Abcd] 'abcd'\n" +
-                "      [\"ab\"] 'ab'\n" +
-                "      [\"cd\"] 'cd'\n" +
-                "    [Abcd] 'abcd'\n" +
-                "      [\"ab\"] 'ab'\n" +
-                "      [\"cd\"] 'cd'\n");
+        test(rule, "abcdabcd")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[Abcds] 'abcdabcd'\n" +
+                        "  [OneOrMore] 'abcdabcd'\n" +
+                        "    [Abcd] 'abcd'\n" +
+                        "      [\"ab\"] 'ab'\n" +
+                        "      [\"cd\"] 'cd'\n" +
+                        "    [Abcd] 'abcd'\n" +
+                        "      [\"ab\"] 'ab'\n" +
+                        "      [\"cd\"] 'cd'\n");
     }
 
 }

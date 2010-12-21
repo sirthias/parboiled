@@ -17,13 +17,14 @@
 package org.parboiled.examples.calculators;
 
 import org.parboiled.Parboiled;
+import org.parboiled.examples.TestNgParboiledTest;
 import org.parboiled.parserunners.ProfilingParseRunner;
-import org.parboiled.test.AbstractTest;
+import org.parboiled.test.ParboiledTest;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
-public class ProfilingParseRunnerTest extends AbstractTest {
+public class ProfilingParseRunnerTest extends TestNgParboiledTest<Integer> {
 
     //@Test
     public void testProfiling() {
