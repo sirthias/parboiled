@@ -24,7 +24,6 @@ package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.*;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.MethodNode;
 import org.parboiled.support.Checks;
 

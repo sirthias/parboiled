@@ -8,10 +8,10 @@ define "parboiled" do
   project.group = "sirthias"
   manifest["Implementation-Vendor"] = "COPYRIGHT"
 
-  ASM_ALL = "asm:asm-all:jar:3.3"
+  ASM = ["asm:asm:jar:3.3", "asm:asm-tree:jar:3.3", "asm:asm-analysis:jar:3.3", "asm:asm-util:jar:3.3"]
   SCALATEST = "org.scalatest:scalatest:jar:1.2"
 
-  compile.using :deprecation => true, :target => "1.5", :other => %w{-encoding UTF-8}, :lint=> "all"
+  compile.using :deprecation => true, :target => "1.5", :other => ["-encoding", "UTF-8"], :lint=> "all"
 
   desc "The core parts of parboiled, depended on by everything else"
   define "core" do
@@ -21,7 +21,7 @@ define "parboiled" do
 
   desc "The Java DSL and supporting code"
   define "java" do
-    compile.with ASM_ALL, project("core")
+    compile.with ASM, project("core")
     test.using :testng
     package :jar
   end
@@ -36,7 +36,7 @@ define "parboiled" do
 
   desc "Examples using the Java DSL"
   define "examples-java" do
-    compile.with ASM_ALL, project("core"), project("java")
+    compile.with ASM, project("core"), project("java")
     test.using :testng
     package :jar
   end

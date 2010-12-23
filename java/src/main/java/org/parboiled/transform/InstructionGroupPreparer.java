@@ -19,7 +19,6 @@ package org.parboiled.transform;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.VarInsnNode;
