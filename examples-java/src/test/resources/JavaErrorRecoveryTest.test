@@ -5,7 +5,7 @@ public class JavaTestSource {
     }
 }
 ===
-Invalid input '{', expected ' ', '\t', '\r', '\n', '\f', "/*", "//", Dim, ',' or ')' (line 3, pos 36):
+Invalid input '{', expected Whitespace, "/*", "//", Dim, ',' or ')' (line 3, pos 36):
     public String method(int param {
                                    ^
 ===
@@ -222,7 +222,7 @@ public class JavaTestSource {
     }
 }
 ===
-Invalid input '}', expected ' ', '\t', '\r', '\n', '\f', "/*", "//", '.', IdentifierSuffix, Selector, PostFixOp, '*', '/', '%', '+', '-', '<<', '>>', '>>>', '<=', '>=', '<', '>', 'instanceof', '==', '!=', '&', '^', '|', '&&', '||', '?', AssignmentOperator or ';' (line 6, pos 5):
+Invalid input '}', expected Whitespace, "/*", "//", '.', IdentifierSuffix, Selector, PostFixOp, '*', '/', '%', '+', '-', '<<', '>>', '>>>', '<=', '>=', '<', '>', 'instanceof', '==', '!=', '&', '^', '|', '&&', '||', '?', AssignmentOperator or ';' (line 6, pos 5):
     }
     ^
 ===

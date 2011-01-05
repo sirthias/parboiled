@@ -20,6 +20,7 @@ import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.AnyOfMatcher;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.matchervisitors.HasCustomLabelVisitor;
 import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInput
      * @return the labels
      */
     public String[] getLabels(Matcher matcher) {
-        if (matcher instanceof AnyOfMatcher) {
+        if ((matcher instanceof AnyOfMatcher) && ((AnyOfMatcher)matcher).characters.toString().equals(matcher.getLabel())) {
             AnyOfMatcher cMatcher = (AnyOfMatcher) matcher;
             if (!cMatcher.characters.isSubtractive()) {
                 String[] labels = new String[cMatcher.characters.getChars().length];

@@ -64,7 +64,7 @@ public class ReportingParseRunnerTest {
         ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
-                "Invalid input 't', expected ' ', '\\t', '\\r', '\\n', '\\f', \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
+                "Invalid input 't', expected Whitespace, \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
                 "        String name  toString();\n" +
                 "                     ^\n");
     }

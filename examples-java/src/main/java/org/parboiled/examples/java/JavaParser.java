@@ -844,7 +844,7 @@ public class JavaParser extends BaseParser<Object> {
         return ZeroOrMore(FirstOf(
 
                 // whitespace
-                OneOrMore(AnyOf(" \t\r\n\f")),
+                OneOrMore(AnyOf(" \t\r\n\f").label("Whitespace")),
 
                 // traditional comment
                 Sequence("/*", ZeroOrMore(TestNot("*/"), ANY), "*/"),
