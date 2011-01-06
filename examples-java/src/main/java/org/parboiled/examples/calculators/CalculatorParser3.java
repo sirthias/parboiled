@@ -96,15 +96,15 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     Rule Number() {
         return Sequence(
                 // we use another Sequence in the "Number" Sequence so we can easily access the input text matched
-                // by the three enclosed rules with "lastText()"
+                // by the three enclosed rules with "match()" or "matchOrDefault()"
                 Sequence(
                         Optional('-'),
                         OneOrMore(Digit()),
                         Optional('.', OneOrMore(Digit()))
                 ),
 
-                // the match() call returns the matched input text of the immediately preceding rule
-                // the action uses a default string in case it is run during error recovery (resynchronization)
+                // the matchOrDefault() call returns the matched input text of the immediately preceding rule
+                // or a default string (in this case if it is run during error recovery (resynchronization))
                 push(new CalcNode(Double.parseDouble(matchOrDefault("0")))),
                 WhiteSpace()
         );
