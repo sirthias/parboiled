@@ -28,6 +28,11 @@ import java.util.Random;
 public class GetStarterCharVisitor extends DefaultMatcherVisitor<Character> {
 
     @Override
+    public Character visit(AnyMatcher matcher) {
+        return 'X';
+    }
+
+    @Override
     public Character visit(AnyOfMatcher matcher) {
         Characters characters = matcher.characters;
         if (!characters.isSubtractive()) {
