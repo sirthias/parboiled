@@ -30,7 +30,6 @@ import java.util.List;
  * A {@link org.parboiled.matchers.Matcher} that not actually matches input but runs a given parser {@link Action}.
  */
 public class ActionMatcher extends AbstractMatcher {
-
     public final Action action;
     public final List<ContextAware> contextAwares = new ArrayList<ContextAware>();
     public final boolean skipInPredicates;
@@ -63,6 +62,11 @@ public class ActionMatcher extends AbstractMatcher {
                 }
             }
         }
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return action.toString();
     }
 
     @Override

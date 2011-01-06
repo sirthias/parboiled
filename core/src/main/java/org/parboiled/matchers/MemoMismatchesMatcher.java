@@ -27,7 +27,6 @@ import java.util.List;
  * Special wrapping matcher that performs memoization of the last mismatch of the wrapped sub rule.
  */
 public class MemoMismatchesMatcher implements Matcher {
-
     private final Matcher inner;
 
     // we use an int field as memoization flag, it has the following semantics
@@ -85,6 +84,8 @@ public class MemoMismatchesMatcher implements Matcher {
     // Matcher
 
     public String getLabel() {return inner.getLabel();}
+
+    public boolean hasCustomLabel() {return inner.hasCustomLabel();}
 
     public boolean isNodeSuppressed() {return inner.isNodeSuppressed();}
 

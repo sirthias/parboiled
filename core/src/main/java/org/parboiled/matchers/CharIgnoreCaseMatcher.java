@@ -17,6 +17,8 @@
 package org.parboiled.matchers;
 
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.common.StringUtils.escape;
+
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
 
@@ -24,13 +26,17 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * A {@link Matcher} matching a single character case-independently.
  */
 public class CharIgnoreCaseMatcher extends AbstractMatcher {
-
     public final char charLow;
     public final char charUp;
 
     public CharIgnoreCaseMatcher(char character) {
         this.charLow = Character.toLowerCase(character);
         this.charUp = Character.toUpperCase(character);
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return '\'' + escape(charLow) + '/' + escape(charUp) + '\'';
     }
 
     public boolean match(MatcherContext context) {

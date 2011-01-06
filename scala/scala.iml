@@ -22,6 +22,17 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" exported="" name="Scala Library" level="project" />
     <orderEntry type="module" module-name="core" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/scalatest/scalatest/1.2/scalatest-1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/scalatest/scalatest/1.2/scalatest-1.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 

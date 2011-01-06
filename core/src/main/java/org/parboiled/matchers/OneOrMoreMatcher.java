@@ -27,12 +27,22 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * Succeeds if its submatcher succeeds at least once.
  */
 public class OneOrMoreMatcher extends AbstractMatcher {
-
     public final Matcher subMatcher;
+    private String defaultLabel = "OneOrMore";
 
     public OneOrMoreMatcher(Rule subRule) {
         super(checkArgNotNull(subRule, "subRule"));
         this.subMatcher = getChildren().get(0);
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return defaultLabel;
+    }
+
+    public OneOrMoreMatcher defaultLabel(String defaultLabel) {
+        this.defaultLabel = defaultLabel;
+        return this;
     }
 
     public boolean match(MatcherContext context) {

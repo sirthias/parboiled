@@ -25,7 +25,6 @@ import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 
 import static org.parboiled.common.Preconditions.*;
-import static org.parboiled.common.StringUtils.escape;
 
 /**
  * Base class of all parboiled parsers. Defines the basic rule creation methods.
@@ -38,32 +37,32 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     /**
      * Matches the {@link Chars#EOI} (end of input) character.
      */
-    public static final Rule EOI = new CharMatcher(Chars.EOI).label("EOI");
+    public static final Rule EOI = new CharMatcher(Chars.EOI);
 
     /**
      * Matches the special {@link Chars#INDENT} character produces by the {@link org.parboiled.buffers.IndentDedentInputBuffer}
      */
-    public static final Rule INDENT = new CharMatcher(Chars.INDENT).label("INDENT");
+    public static final Rule INDENT = new CharMatcher(Chars.INDENT);
 
     /**
      * Matches the special {@link Chars#DEDENT} character produces by the {@link org.parboiled.buffers.IndentDedentInputBuffer}
      */
-    public static final Rule DEDENT = new CharMatcher(Chars.DEDENT).label("DEDENT");
+    public static final Rule DEDENT = new CharMatcher(Chars.DEDENT);
 
     /**
      * Matches any character except {@link Chars#EOI}.
      */
-    public static final Rule ANY = new AnyMatcher().label("ANY");
+    public static final Rule ANY = new AnyMatcher();
 
     /**
      * Matches nothing and always succeeds.
      */
-    public static final Rule EMPTY = new EmptyMatcher().label("EMPTY");
+    public static final Rule EMPTY = new EmptyMatcher();
 
     /**
      * Matches nothing and always fails.
      */
-    public static final Rule NOTHING = new NothingMatcher().label("NOTHING");
+    public static final Rule NOTHING = new NothingMatcher();
 
     /**
      * Creates a new instance of this parsers class using the no-arg constructor. If no no-arg constructor
@@ -92,7 +91,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @DontLabel
     public Rule Ch(char c) {
-        return new CharMatcher(c).label('\'' + escape(c) + '\'');
+        return new CharMatcher(c);
     }
 
     /**
@@ -109,8 +108,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (Character.isLowerCase(c) == Character.isUpperCase(c)) {
             return Ch(c);
         }
-        CharIgnoreCaseMatcher matcher = new CharIgnoreCaseMatcher(c);
-        return matcher.label("\'" + escape(matcher.charLow) + '/' + escape(matcher.charUp) + '\'');
+        return new CharIgnoreCaseMatcher(c);
     }
 
     /**
@@ -125,8 +123,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     @Cached
     @DontLabel
     public Rule CharRange(char cLow, char cHigh) {
-        return cLow == cHigh ? Ch(cLow) :
-                new CharRangeMatcher(cLow, cHigh).label(escape(cLow) + ".." + escape(cHigh));
+        return cLow == cHigh ? Ch(cLow) : new CharRangeMatcher(cLow, cHigh);
     }
 
     /**
@@ -173,7 +170,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (!characters.isSubtractive() && characters.getChars().length == 1) {
             return Ch(characters.getChars()[0]);
         }
-        return new AnyOfMatcher(characters).label(characters.toString());
+        return new AnyOfMatcher(characters);
     }
 
     /**
@@ -211,7 +208,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = Ch(characters[i]);
         }
-        return new StringMatcher(matchers, characters).label('"' + String.valueOf(characters) + '"');
+        return new StringMatcher(matchers, characters);
     }
 
     /**
@@ -245,7 +242,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         for (int i = 0; i < characters.length; i++) {
             matchers[i] = IgnoreCase(characters[i]);
         }
-        return ((SequenceMatcher) Sequence(matchers)).label('"' + String.valueOf(characters) + '"');
+        return ((SequenceMatcher) Sequence(matchers)).defaultLabel('"' + String.valueOf(characters) + '"');
     }
 
     /**
@@ -275,7 +272,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("FirstOf")
+    @DontLabel
     public Rule FirstOf(Object[] rules) {
         checkArgNotNull(rules, "rules");
         if (rules.length == 1) {
@@ -304,7 +301,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("OneOrMore")
+    @DontLabel
     public Rule OneOrMore(Object rule) {
         return new OneOrMoreMatcher(toRule(rule));
     }
@@ -336,7 +333,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("Optional")
+    @DontLabel
     public Rule Optional(Object rule) {
         return new OptionalMatcher(toRule(rule));
     }
@@ -383,7 +380,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("Sequence")
+    @DontLabel
     public Rule Sequence(Object[] rules) {
         checkArgNotNull(rules, "rules");
         return rules.length == 1 ? toRule(rules[0]) : new SequenceMatcher(toRules(rules));
@@ -405,9 +402,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @SuppressNode
+    @DontLabel
     public Rule Test(Object rule) {
         Rule subMatcher = toRule(rule);
-        return new TestMatcher(subMatcher).label("&(" + subMatcher + ")");
+        return new TestMatcher(subMatcher);
     }
 
     /**
@@ -449,9 +447,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      */
     @Cached
     @SuppressNode
+    @DontLabel
     public Rule TestNot(Object rule) {
         Rule subMatcher = toRule(rule);
-        return new TestNotMatcher(subMatcher).label("!(" + subMatcher + ")");
+        return new TestNotMatcher(subMatcher);
     }
 
     /**
@@ -487,7 +486,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
      * @return a new rule
      */
     @Cached
-    @Label("ZeroOrMore")
+    @DontLabel
     public Rule ZeroOrMore(Object rule) {
         return new ZeroOrMoreMatcher(toRule(rule));
     }
@@ -596,7 +595,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         if (obj instanceof char[]) return fromCharArray((char[]) obj);
         if (obj instanceof Action) {
             Action action = (Action) obj;
-            return new ActionMatcher(action).label(action.toString());
+            return new ActionMatcher(action);
         }
         Checks.ensure(!(obj instanceof Boolean), "Rule specification contains an unwrapped Boolean value, " +
                 "if you were trying to specify a parser action wrap the expression with ACTION(...)");

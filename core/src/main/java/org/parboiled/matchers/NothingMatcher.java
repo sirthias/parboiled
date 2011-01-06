@@ -25,6 +25,11 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  */
 public class NothingMatcher extends AbstractMatcher {
 
+    @Override
+    public String getDefaultLabel() {
+        return "NOTHING";
+    }
+
     public boolean match(MatcherContext context) {
         return false;
     }

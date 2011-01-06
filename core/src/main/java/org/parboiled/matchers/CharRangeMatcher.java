@@ -17,6 +17,8 @@
 package org.parboiled.matchers;
 
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.common.StringUtils.escape;
+
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
 
@@ -24,7 +26,6 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * A {@link Matcher} matching a single character out of a given range of characters.
  */
 public class CharRangeMatcher extends AbstractMatcher {
-
     public final char cLow;
     public final char cHigh;
 
@@ -32,6 +33,11 @@ public class CharRangeMatcher extends AbstractMatcher {
         checkArgument(cLow < cHigh);
         this.cLow = cLow;
         this.cHigh = cHigh;
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return escape(cLow) + ".." + escape(cHigh);
     }
 
     public boolean match(MatcherContext context) {

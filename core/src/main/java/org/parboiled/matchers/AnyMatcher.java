@@ -26,6 +26,11 @@ import org.parboiled.support.Chars;
  */
 public class AnyMatcher extends AbstractMatcher {
 
+    @Override
+    public String getDefaultLabel() {
+        return "ANY";
+    }
+
     public boolean match(MatcherContext context) {
         checkArgNotNull(context, "context");
         if (context.getCurrentChar() == Chars.EOI) return false;

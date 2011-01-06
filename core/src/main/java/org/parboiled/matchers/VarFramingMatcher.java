@@ -28,7 +28,6 @@ import java.util.List;
  * Special wrapping matcher that manages the creation and destruction of execution frames for a number of action vars.
  */
 public class VarFramingMatcher implements Matcher {
-
     private final Matcher inner;
     private final Var[] variables;
 
@@ -83,6 +82,8 @@ public class VarFramingMatcher implements Matcher {
     // Matcher
 
     public String getLabel() {return inner.getLabel();}
+
+    public boolean hasCustomLabel() {return inner.hasCustomLabel();}
 
     public boolean isNodeSuppressed() {return inner.isNodeSuppressed();}
 

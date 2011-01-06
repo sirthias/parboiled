@@ -27,9 +27,20 @@ import java.util.List;
  * A {@link Matcher} trying all of its submatchers in sequence and succeeding when the first submatcher succeeds.
  */
 public class FirstOfMatcher extends AbstractMatcher {
+    private String defaultLabel = "FirstOf";
 
     public FirstOfMatcher(Rule[] subRules) {
         super(checkArgNotNull(subRules, "subRules"));
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return defaultLabel;
+    }
+
+    public FirstOfMatcher defaultLabel(String defaultLabel) {
+        this.defaultLabel = defaultLabel;
+        return this;
     }
 
     @SuppressWarnings( {"ForLoopReplaceableByForEach"})

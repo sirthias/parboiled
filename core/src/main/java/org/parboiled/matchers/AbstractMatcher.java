@@ -20,14 +20,14 @@ import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.common.ImmutableList;
+import org.parboiled.common.Utils;
 import org.parboiled.trees.ImmutableGraphNode;
 
 /**
  * Abstract base class of most regular {@link Matcher}s.
  */
 public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implements Matcher, Cloneable {
-
-    private String label;
+    private String customLabel;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
     private boolean nodeSkipped;
@@ -70,7 +70,16 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     }
 
     public String getLabel() {
-        return label;
+        return hasCustomLabel() ? customLabel : getDefaultLabel();
+    }
+
+    /**
+     * @return the label that is to be used if no custom label has been attached to this matcher.
+     */
+    public abstract String getDefaultLabel();
+
+    public boolean hasCustomLabel() {
+        return customLabel != null;
     }
 
     @Override
@@ -79,10 +88,9 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     }
 
     public AbstractMatcher label(String label) {
-        checkArgNotNull(label, "label");
-        if (label.equals(this.label)) return this;
+        if (Utils.equal(label, this.customLabel)) return this;
         AbstractMatcher clone = createClone();
-        clone.label = label;
+        clone.customLabel = label;
         return clone;
     }
 

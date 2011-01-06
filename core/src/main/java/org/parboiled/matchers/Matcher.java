@@ -34,6 +34,11 @@ public interface Matcher extends Rule, GraphNode<Matcher> {
     String getLabel();
 
     /**
+     * @return true if this matcher has been assigned a custom label
+     */
+    boolean hasCustomLabel();
+
+    /**
      * @return true if this matcher has been marked with @SuppressNode
      */
     boolean isNodeSuppressed();

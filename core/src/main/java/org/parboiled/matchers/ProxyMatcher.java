@@ -28,7 +28,6 @@ import java.util.List;
  * It can also hold a label and a leaf marker and lazily apply these to the underlying {@link Matcher} once it is available.
  */
 public class ProxyMatcher implements Matcher, Cloneable {
-
     private Matcher target;
     private String label;
     private boolean nodeSuppressed;
@@ -80,6 +79,11 @@ public class ProxyMatcher implements Matcher, Cloneable {
     public String getLabel() {
         if (dirty) apply();
         return target.getLabel();
+    }
+
+    public boolean hasCustomLabel() {
+        if (dirty) apply();
+        return target.hasCustomLabel();
     }
 
     public boolean isNodeSuppressed() {

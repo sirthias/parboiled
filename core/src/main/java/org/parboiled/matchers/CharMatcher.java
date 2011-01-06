@@ -16,19 +16,36 @@
 
 package org.parboiled.matchers;
 
-import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchervisitors.MatcherVisitor;
+import org.parboiled.support.Chars;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.StringUtils.escape;
 
 /**
  * A {@link Matcher} matching a single given character.
  */
 public class CharMatcher extends AbstractMatcher {
-
     public final char character;
 
     public CharMatcher(char character) {
         this.character = character;
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        switch (character) {
+            case Chars.DEL_ERROR:
+            case Chars.INS_ERROR:
+            case Chars.RESYNC:
+            case Chars.INDENT:
+            case Chars.DEDENT:
+            case Chars.EOI:
+                return escape(character);
+            default:
+                return '\'' + escape(character) + '\'';
+        }
     }
 
     public boolean match(MatcherContext context) {

@@ -25,12 +25,16 @@ import org.parboiled.Rule;
  * current context has it enabled.
  */
 public class StringMatcher extends SequenceMatcher {
-
     public final char[] characters;
 
     public StringMatcher(Rule[] charMatchers, char[] characters) {
         super(checkArgNotNull(charMatchers, "charMatchers"));
         this.characters = characters;
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return '"' + String.valueOf(characters) + '"';
     }
 
     @Override

@@ -17,6 +17,12 @@
 package org.parboiled.examples.java;
 
 public class JavaLetterMatcher extends AbstractJavaCharacterMatcher {
+
+    @Override
+    public String getDefaultLabel() {
+        return "Letter";
+    }
+
     @Override
     protected boolean acceptChar(char c) {
         return Character.isJavaIdentifierStart(c);

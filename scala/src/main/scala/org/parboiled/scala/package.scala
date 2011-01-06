@@ -52,37 +52,41 @@ package object scala {
    * Groups the given sub rule into one entity so that a following ~> operator receives the text matched by the whole
    * group rather than only the immediately preceding sub rule.
    */
-  def group[T <: scala.Rule](rule: T) = rule.label("<group>")
+  def group[T <: scala.Rule](rule: T): T = rule.matcher match {
+    case x: SequenceMatcher => { x.defaultLabel("<group>"); rule }
+    case x: FirstOfMatcher => { x.defaultLabel("<group>"); rule }
+    case _ => throw new IllegalArgumentException("group(...) can only be applied to sequences (~) or choices (|)")
+  }
 
   /**
    * A rule that always matches and consumes no input.
    */
-  lazy val EMPTY: Rule0 = new EmptyMatcher().label("EMPTY")
+  lazy val EMPTY: Rule0 = new EmptyMatcher()
 
   /**
    * A rule that matches any single character except EOI.
    */
-  lazy val ANY: Rule0 = new AnyMatcher().label("ANY")
+  lazy val ANY: Rule0 = new AnyMatcher()
 
   /**
    * A rule that matches the End-Of-Input non-character.
    */
-  lazy val EOI: Rule0 = new CharMatcher(Chars.EOI).label("EOI")
+  lazy val EOI: Rule0 = new CharMatcher(Chars.EOI)
 
   /**
    * A rule that matches the "INDENT" non-character as produced by the IndentDedentInputBuffer.
    */
-  lazy val INDENT: Rule0 = new CharMatcher(Chars.INDENT).label("INDENT")
+  lazy val INDENT: Rule0 = new CharMatcher(Chars.INDENT)
 
   /**
    * A rule that matches the "DEDENT" non-character as produced by the IndentDedentInputBuffer.
    */
-  lazy val DEDENT: Rule0 = new CharMatcher(Chars.DEDENT).label("DEDENT")
+  lazy val DEDENT: Rule0 = new CharMatcher(Chars.DEDENT)
 
   /**
    * The Nothing rule, which matches the End-Of-Input "character".
    */
-  lazy val NOTHING: Rule0 = new NothingMatcher().label("NOTHING")
+  lazy val NOTHING: Rule0 = new NothingMatcher()
 
   /**
    * A parser action removing the top element from the value stack.

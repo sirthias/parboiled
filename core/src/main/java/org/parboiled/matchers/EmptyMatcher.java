@@ -25,6 +25,11 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  */
 public class EmptyMatcher extends AbstractMatcher {
 
+    @Override
+    public String getDefaultLabel() {
+        return "Empty";
+    }
+
     public boolean match(MatcherContext context) {
         checkArgNotNull(context, "context");
         context.createNode();

@@ -27,9 +27,20 @@ import java.util.List;
  * A {@link Matcher} that executes all of its submatchers in sequence and only succeeds if all submatchers succeed.
  */
 public class SequenceMatcher extends AbstractMatcher {
+    private String defaultLabel = "Sequence";
 
     public SequenceMatcher(Rule[] subRules) {
         super(checkArgNotNull(subRules, "subRules"));
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return defaultLabel;
+    }
+
+    public SequenceMatcher defaultLabel(String defaultLabel) {
+        this.defaultLabel = defaultLabel;
+        return this;
     }
 
     public boolean match(MatcherContext context) {

@@ -17,7 +17,7 @@ abstract class Rule {
   /**
    * Creates a "NOT" syntactic predicate according to the PEG formalism.
    */
-  def unary_!(): Rule0 = new TestNotMatcher(matcher).label("TestNot")
+  def unary_!(): Rule0 = new TestNotMatcher(matcher)
 
   def ~(other: Rule0): this.type = withMatcher(append(other))
 
@@ -56,14 +56,14 @@ abstract class Rule {
 
   protected def append(other: Rule): Matcher = append(other.matcher)
 
-  protected def append(other: Matcher): Matcher = (matcher match {
+  protected def append(other: Matcher): Matcher = matcher match {
     case m: SequenceMatcher if (m.getLabel == "Sequence") => new SequenceMatcher(addSub(m.getChildren, other))
     case _ => new SequenceMatcher(Array(matcher, other))
-  }).label("Sequence")
+  }
 
   protected def appendChoice(other: Rule): Matcher = appendChoice(other.matcher)
 
-  protected def appendChoice(other: Matcher): Matcher = (matcher match {
+  protected def appendChoice(other: Matcher): Matcher = matcher match {
     case m: StringMatcher => other match {
       case o: StringMatcher => new FirstOfStringsMatcher(Array(m, o), Array(m.characters, o.characters))
       case _ => new FirstOfMatcher(Array(matcher, other))
@@ -74,8 +74,7 @@ abstract class Rule {
     }
     case m: FirstOfMatcher if (m.getLabel == "FirstOf") => new FirstOfMatcher(addSub(m.getChildren, other))
     case _ => new FirstOfMatcher(Array(matcher, other))
-  }).label("FirstOf")
-
+  }
 }
 
 object Rule {

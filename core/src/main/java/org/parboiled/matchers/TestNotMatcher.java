@@ -26,12 +26,16 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * position. Succeeds if the submatcher would fail.
  */
 public class TestNotMatcher extends AbstractMatcher {
-
     public final Matcher subMatcher;
 
     public TestNotMatcher(Rule subRule) {
         super(checkArgNotNull(subRule, "subRule"));
         this.subMatcher = getChildren().get(0);
+    }
+
+    @Override
+    public String getDefaultLabel() {
+        return "TestNot";
     }
 
     public boolean match(MatcherContext context) {
