@@ -27,22 +27,23 @@ import org.parboiled.trees.ImmutableGraphNode;
  * Abstract base class of most regular {@link Matcher}s.
  */
 public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implements Matcher, Cloneable {
-    private String customLabel;
+    private String label;
     private boolean nodeSuppressed;
     private boolean subnodesSuppressed;
     private boolean nodeSkipped;
     private Object tag;
 
-    public AbstractMatcher() {
-        this(new Rule[0]);
+    public AbstractMatcher(String label) {
+        this(new Rule[0], label);
     }
 
-    public AbstractMatcher(Rule subRule) {
-        this(new Rule[] {checkArgNotNull(subRule, "subRule")});
+    public AbstractMatcher(Rule subRule, String label) {
+        this(new Rule[] {checkArgNotNull(subRule, "subRule")}, label);
     }
 
-    public AbstractMatcher(Rule[] subRules) {
+    public AbstractMatcher(Rule[] subRules, String label) {
         super(ImmutableList.<Matcher>of(toMatchers(checkArgNotNull(subRules, "subRules"))));
+        this.label = label;
     }
 
     private static Matcher[] toMatchers(Rule[] subRules) {
@@ -70,16 +71,13 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     }
 
     public String getLabel() {
-        return hasCustomLabel() ? customLabel : getDefaultLabel();
+        return label;
     }
 
-    /**
-     * @return the label that is to be used if no custom label has been attached to this matcher.
-     */
-    public abstract String getDefaultLabel();
-
     public boolean hasCustomLabel() {
-        return customLabel != null;
+        // this is the default implementation for single character matchers
+        // complex matchers override with a custom implementation
+        return true;
     }
 
     @Override
@@ -88,9 +86,9 @@ public abstract class AbstractMatcher extends ImmutableGraphNode<Matcher> implem
     }
 
     public AbstractMatcher label(String label) {
-        if (Utils.equal(label, this.customLabel)) return this;
+        if (Utils.equal(label, this.label)) return this;
         AbstractMatcher clone = createClone();
-        clone.customLabel = label;
+        clone.label = label;
         return clone;
     }
 

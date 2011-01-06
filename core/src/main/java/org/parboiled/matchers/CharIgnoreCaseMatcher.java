@@ -30,13 +30,9 @@ public class CharIgnoreCaseMatcher extends AbstractMatcher {
     public final char charUp;
 
     public CharIgnoreCaseMatcher(char character) {
+        super('\'' + escape(Character.toLowerCase(character)) + '/' + escape(Character.toUpperCase(character)) + '\'');
         this.charLow = Character.toLowerCase(character);
         this.charUp = Character.toUpperCase(character);
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return '\'' + escape(charLow) + '/' + escape(charUp) + '\'';
     }
 
     public boolean match(MatcherContext context) {

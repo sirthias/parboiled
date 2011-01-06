@@ -16,11 +16,15 @@
 
 package org.parboiled.examples.java;
 
-import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatcherContext;
 import org.parboiled.matchers.CustomMatcher;
 
 public abstract class AbstractJavaCharacterMatcher extends CustomMatcher {
+
+    protected AbstractJavaCharacterMatcher(String label) {
+        super(label);
+    }
+
     @Override
     public final boolean isSingleCharMatcher() {
         return true;

@@ -25,23 +25,12 @@ import org.parboiled.matchervisitors.MatcherVisitor;
 /**
  * A {@link Matcher} that repeatedly tries its submatcher against the input. Always succeeds.
  */
-public class ZeroOrMoreMatcher extends AbstractMatcher {
+public class ZeroOrMoreMatcher extends CustomDefaultLabelMatcher<ZeroOrMoreMatcher> {
     public final Matcher subMatcher;
-    private String defaultLabel = "ZeroOrMore";
 
     public ZeroOrMoreMatcher(Rule subRule) {
-        super(checkArgNotNull(subRule, "subRule"));
+        super(checkArgNotNull(subRule, "subRule"), "ZeroOrMore");
         this.subMatcher = getChildren().get(0);
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return defaultLabel;
-    }
-
-    public ZeroOrMoreMatcher defaultLabel(String defaultLabel) {
-        this.defaultLabel = defaultLabel;
-        return this;
     }
 
     public boolean match(MatcherContext context) {

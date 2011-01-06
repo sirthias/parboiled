@@ -23,7 +23,6 @@ import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchervisitors.DoWithMatcherVisitor;
-import org.parboiled.matchervisitors.HasCustomLabelVisitor;
 import org.parboiled.support.ValueStack;
 
 import java.text.DecimalFormat;
@@ -225,7 +224,7 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
 
         public static final Predicate<RuleReport> namedRules = new Predicate<RuleReport>() {
             public boolean apply(RuleReport rep) {
-                return rep.getMatcher().accept(new HasCustomLabelVisitor());
+                return rep.getMatcher().hasCustomLabel();
             }
         };
 

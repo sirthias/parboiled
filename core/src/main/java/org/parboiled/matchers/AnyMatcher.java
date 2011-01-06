@@ -26,9 +26,8 @@ import org.parboiled.support.Chars;
  */
 public class AnyMatcher extends AbstractMatcher {
 
-    @Override
-    public String getDefaultLabel() {
-        return "ANY";
+    public AnyMatcher() {
+        super("ANY");
     }
 
     public boolean match(MatcherContext context) {

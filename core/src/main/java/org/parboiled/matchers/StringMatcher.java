@@ -33,8 +33,13 @@ public class StringMatcher extends SequenceMatcher {
     }
 
     @Override
-    public String getDefaultLabel() {
-        return '"' + String.valueOf(characters) + '"';
+    public String getLabel() {
+        return super.getLabel() != null ? super.getLabel() : '"' + String.valueOf(characters) + '"';
+    }
+
+    @Override
+    public boolean hasCustomLabel() {
+        return true;
     }
 
     @Override

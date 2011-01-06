@@ -24,23 +24,12 @@ import org.parboiled.matchervisitors.MatcherVisitor;
 /**
  * A {@link Matcher} that tries its submatcher once against the input and always succeeds.
  */
-public class OptionalMatcher extends AbstractMatcher {
+public class OptionalMatcher extends CustomDefaultLabelMatcher<OptionalMatcher> {
     public final Matcher subMatcher;
-    private String defaultLabel = "Optional";
 
     public OptionalMatcher(Rule subRule) {
-        super(checkArgNotNull(subRule, "subRule"));
+        super(checkArgNotNull(subRule, "subRule"), "Optional");
         this.subMatcher = getChildren().get(0);
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return defaultLabel;
-    }
-
-    public OptionalMatcher defaultLabel(String defaultLabel) {
-        this.defaultLabel = defaultLabel;
-        return this;
     }
 
     public boolean match(MatcherContext context) {

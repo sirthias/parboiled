@@ -22,7 +22,6 @@ import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
-import org.parboiled.matchervisitors.HasCustomLabelVisitor;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 
@@ -48,7 +47,7 @@ public final class ErrorUtils {
         checkArgNotNull(path, "path");
         Matcher found = path.parent != null ? findProperLabelMatcher(path.parent, errorIndex) : null;
         if (found != null) return found;
-        if (path.element.startIndex == errorIndex && path.element.matcher.accept(new HasCustomLabelVisitor())) {
+        if (path.element.startIndex == errorIndex && path.element.matcher.hasCustomLabel()) {
             return path.element.matcher;
         }
         return null;

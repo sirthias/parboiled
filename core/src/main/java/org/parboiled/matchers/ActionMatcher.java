@@ -35,7 +35,8 @@ public class ActionMatcher extends AbstractMatcher {
     public final boolean skipInPredicates;
 
     public ActionMatcher(Action action) {
-        this.action = checkArgNotNull(action, "action");
+        super(checkArgNotNull(action, "action").toString());
+        this.action = action;
 
         skipInPredicates = action instanceof SkippableAction && ((SkippableAction) action).skipInPredicates();
 
@@ -62,11 +63,6 @@ public class ActionMatcher extends AbstractMatcher {
                 }
             }
         }
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return action.toString();
     }
 
     @Override

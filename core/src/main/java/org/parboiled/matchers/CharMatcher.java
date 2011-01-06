@@ -30,21 +30,21 @@ public class CharMatcher extends AbstractMatcher {
     public final char character;
 
     public CharMatcher(char character) {
+        super(getLabel(character));
         this.character = character;
     }
 
-    @Override
-    public String getDefaultLabel() {
-        switch (character) {
+    private static String getLabel(char c) {
+        switch (c) {
             case Chars.DEL_ERROR:
             case Chars.INS_ERROR:
             case Chars.RESYNC:
             case Chars.INDENT:
             case Chars.DEDENT:
             case Chars.EOI:
-                return escape(character);
+                return escape(c);
             default:
-                return '\'' + escape(character) + '\'';
+                return '\'' + escape(c) + '\'';
         }
     }
 

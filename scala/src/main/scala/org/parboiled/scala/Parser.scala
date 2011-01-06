@@ -302,6 +302,8 @@ trait Parser {
   def anyOf(chars: Characters): Rule0 = {
     if (!chars.isSubtractive && chars.getChars().length == 1)
       ch(chars.getChars()(0))
+    else if (chars == Characters.NONE)
+      NOTHING
     else
       new Rule0(new AnyOfMatcher(chars))
   }

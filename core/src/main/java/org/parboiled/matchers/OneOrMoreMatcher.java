@@ -26,23 +26,12 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * A {@link Matcher} that repeatedly tries its submatcher against the input.
  * Succeeds if its submatcher succeeds at least once.
  */
-public class OneOrMoreMatcher extends AbstractMatcher {
+public class OneOrMoreMatcher extends CustomDefaultLabelMatcher<OneOrMoreMatcher> {
     public final Matcher subMatcher;
-    private String defaultLabel = "OneOrMore";
 
     public OneOrMoreMatcher(Rule subRule) {
-        super(checkArgNotNull(subRule, "subRule"));
+        super(checkArgNotNull(subRule, "subRule"), "OneOrMore");
         this.subMatcher = getChildren().get(0);
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return defaultLabel;
-    }
-
-    public OneOrMoreMatcher defaultLabel(String defaultLabel) {
-        this.defaultLabel = defaultLabel;
-        return this;
     }
 
     public boolean match(MatcherContext context) {

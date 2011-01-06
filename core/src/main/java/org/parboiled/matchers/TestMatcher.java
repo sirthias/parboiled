@@ -25,17 +25,12 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  * A special {@link Matcher} not actually matching any input but rather trying its submatcher against the current input
  * position. Succeeds if the submatcher would succeed.
  */
-public class TestMatcher extends AbstractMatcher {
+public class TestMatcher extends CustomDefaultLabelMatcher<TestMatcher> {
     public final Matcher subMatcher;
 
     public TestMatcher(Rule subRule) {
-        super(checkArgNotNull(subRule, "subRule"));
+        super(checkArgNotNull(subRule, "subRule"), "Test");
         this.subMatcher = getChildren().get(0);
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return "Test";
     }
 
     public boolean match(MatcherContext context) {

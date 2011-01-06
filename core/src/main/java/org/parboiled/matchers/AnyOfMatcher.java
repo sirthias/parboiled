@@ -28,14 +28,9 @@ public class AnyOfMatcher extends AbstractMatcher {
     public final Characters characters;
 
     public AnyOfMatcher(Characters characters) {
-        checkArgNotNull(characters, "characters");
+        super(checkArgNotNull(characters, "characters").toString());
         checkArgument(!characters.equals(Characters.NONE));
         this.characters = characters;
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return characters.toString();
     }
 
     public boolean match(MatcherContext context) {

@@ -30,14 +30,10 @@ public class CharRangeMatcher extends AbstractMatcher {
     public final char cHigh;
 
     public CharRangeMatcher(char cLow, char cHigh) {
+        super(escape(cLow) + ".." + escape(cHigh));
         checkArgument(cLow < cHigh);
         this.cLow = cLow;
         this.cHigh = cHigh;
-    }
-
-    @Override
-    public String getDefaultLabel() {
-        return escape(cLow) + ".." + escape(cHigh);
     }
 
     public boolean match(MatcherContext context) {

@@ -25,9 +25,8 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  */
 public class EmptyMatcher extends AbstractMatcher {
 
-    @Override
-    public String getDefaultLabel() {
-        return "Empty";
+    public EmptyMatcher() {
+        super("EMPTY");
     }
 
     public boolean match(MatcherContext context) {

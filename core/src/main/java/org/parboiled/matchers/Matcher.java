@@ -98,5 +98,4 @@ public interface Matcher extends Rule, GraphNode<Matcher> {
      * @return the value returned by the given visitor
      */
     <R> R accept(MatcherVisitor<R> visitor);
-
 }

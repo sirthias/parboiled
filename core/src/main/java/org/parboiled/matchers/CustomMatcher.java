@@ -30,15 +30,16 @@ import org.parboiled.matchervisitors.MatcherVisitor;
  */
 public abstract class CustomMatcher extends AbstractMatcher {
 
-    protected CustomMatcher() {
+    protected CustomMatcher(String label) {
+        super(label);
     }
 
-    protected CustomMatcher(Rule subRule) {
-        super(checkArgNotNull(subRule, "subRule"));
+    protected CustomMatcher(Rule subRule, String label) {
+        super(checkArgNotNull(subRule, "subRule"), label);
     }
 
-    protected CustomMatcher(Rule[] subRules) {
-        super(checkArgNotNull(subRules, "subRules"));
+    protected CustomMatcher(Rule[] subRules, String label) {
+        super(checkArgNotNull(subRules, "subRules"), label);
     }
 
     /**
