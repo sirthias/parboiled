@@ -40,12 +40,12 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public static final Rule EOI = new CharMatcher(Chars.EOI);
 
     /**
-     * Matches the special {@link Chars#INDENT} character produces by the {@link org.parboiled.buffers.IndentDedentInputBuffer}
+     * Matches the special {@link Chars#INDENT} character produces by the org.parboiled.buffers.IndentDedentInputBuffer
      */
     public static final Rule INDENT = new CharMatcher(Chars.INDENT);
 
     /**
-     * Matches the special {@link Chars#DEDENT} character produces by the {@link org.parboiled.buffers.IndentDedentInputBuffer}
+     * Matches the special {@link Chars#DEDENT} character produces by the org.parboiled.buffers.IndentDedentInputBuffer
      */
     public static final Rule DEDENT = new CharMatcher(Chars.DEDENT);
 

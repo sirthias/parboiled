@@ -16,8 +16,6 @@
 
 package org.parboiled;
 
-import org.parboiled.Context;
-
 /**
  * Instances of classes implementing this interface can be used directly in a rule definition to define a parser action.
  * If the class also implements the {@link org.parboiled.ContextAware} interface it will be used to inform the object of the
@@ -26,7 +24,7 @@ import org.parboiled.Context;
  * implement(s) {@link org.parboiled.ContextAware} its outer class(es) will also be informed object of the current parsing {@link org.parboiled.Context}
  * immediately before the invocation of the actions {@link #run} method.
  * This allows simple anonymous action class implementations directly in the parser rule definitions, even when
- * they access context-sensitive methods defined in the {@link BaseActions} or {@link BaseParser} classes.
+ * they access context-sensitive methods defined in the BaseActions or BaseParser classes.
  */
 public interface Action<V> {
 
