@@ -97,7 +97,7 @@ public class DefaultInputBuffer implements InputBuffer {
 
     protected void buildNewlines() {
         if (newlines == null) {
-            int count = 0, length = buffer.length;
+            int count = 0;
             for (int i = 0; i < length; i++) {
                 if (buffer[i] == '\n') {
                     count++;
