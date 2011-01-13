@@ -1,3 +1,24 @@
+Version 0.10.0 (2011-01-13)
+---------------------------
+- Switched build system from Ant to Apache Buildr
+- Completed mavenization, parboiled artifacts are now also available from the http://scala-tools.org/repo-releases/ maven repository
+- Split source into several modules creating distinct artifacts
+- Changed to 3 part version numbering in preparation of the coming semantic versioning compatibility (http://semver.org)
+- Fixed VerifyError with certain Var<...> constructs
+- Fixed IllegalStateException during error recovery involving AnyMatchers
+- Fixed bug in creation of expected string error message for AnyOf matchers
+- Fixed bug in DebuggingValueStack (thx to Matthieu Baechler)
+- Fixed GH issue #10 (ParseTreeUtils.findNodeByLabel() methods are non static)
+- Fixed bug in ErrorUtils
+- Fixed Java parser example to support non-ascii chars in identifiers
+- Added pushFromContext rule creator to Scala facade
+- Improved Scala Input wrapper
+- Removed internal dependency on jetbrains annotations
+- Removed internal dependency on google collections
+- Upgraded to ASM 3.3
+- Upgraded to Scala 2.8.1
+- Many smaller cleanup and improvements
+
 Version 0.9.9.0 (2010-10-04)
 ----------------------------
 - BREAKING CHANGES:
