@@ -22,7 +22,7 @@
       <version>0.10.0</version>
     </dependency>
   </dependencies>
-  <repositories>−
+  <repositories>
     <repository>
         <id>ScalaToolsMaven2Repository</id>
         <name>Scala-Tools Maven2 Repository</name>
