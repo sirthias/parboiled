@@ -1,8 +1,9 @@
 repositories.remote << 'http://repo1.maven.org/maven2'
-repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/releases/'
+#repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/releases/'
+repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/snapshots/'
 
 Buildr.settings.build['scala.version'] = "2.8.1"
-VERSION_NUMBER = "0.10.0"
+VERSION_NUMBER = "0.11.0-SNAPSHOT"
 
 require "buildr/scala"
 
