@@ -322,8 +322,7 @@ public class MatcherContext<V> implements Context<V> {
             throw new ParserRuntimeException(e,
                     printParseError(new BasicParseError(inputBuffer, currentIndex,
                             StringUtils.escape(String.format("Error while parsing %s '%s' at input position",
-                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer) +
-                            '\n' + e);
+                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath())))) + '\n' + e);
         }
     }
 }
