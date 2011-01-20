@@ -25,9 +25,32 @@ import static org.parboiled.buffers.InputBufferUtils.collectContent;
 import static org.testng.Assert.assertEquals;
 
 public class IndentDedentInputBufferTest {
+    
+    @Test
+    public void testIndentDedentInputBuffer0() {
+        InputBuffer buf = new IndentDedentInputBuffer(("" +
+                "###\n" +
+                "\n" +
+                "L1#X\n" +
+                "  \n" +
+                "  L2\n" +
+                "L12").toCharArray(), 2, "#");
+        
+        String bufContent = collectContent(buf);
+        assertEquals(bufContent, "" +
+                "L1\n" +
+                "»L2\n" +
+                "«L12");
+        
+        assertEquals(buf.extract(0, 2), "L1");
+        assertEquals(buf.extract(4, 7), "L2\n");
+        assertEquals(buf.extract(7, 11), "L12");
+        assertEquals(buf.getPosition(5).toString(), "Position{line=5, column=4}");
+        assertEquals(buf.extractLine(5), "  L2");        
+    }
 
     @Test
-    public void testIndentDedentInputBuffer() {
+    public void testIndentDedentInputBuffer1() {
         InputBuffer buf = new IndentDedentInputBuffer(("" +
                 "level 1\n" +
                 "  \tlevel 2\n" +
@@ -62,13 +85,12 @@ public class IndentDedentInputBufferTest {
     }
     
     @Test
-    public void testIndentDedentInputBuffer1() {
-        String input = FileUtils.readAllTextFromResource("IndentDedentBuffer1.test");
+    public void testIndentDedentInputBuffer2() {
+        String input = FileUtils.readAllTextFromResource("IndentDedentBuffer2.test");
         InputBuffer buf = new IndentDedentInputBuffer(input.toCharArray(), 4, "#");
         
         String bufContent = collectContent(buf);
-        assertEquals(bufContent, FileUtils.readAllTextFromResource("IndentDedentBuffer1.converted.test"));
-        assertEquals(buf.extractLine(6), "    Level 2      # another coment");
+        assertEquals(bufContent, FileUtils.readAllTextFromResource("IndentDedentBuffer2.converted.test"));
         
         String text = "go deep";
         int start = bufContent.indexOf(text);
@@ -76,11 +98,11 @@ public class IndentDedentInputBufferTest {
     }
 
     @Test
-    public void testIndentDedentInputBuffer2() {
-        String input = FileUtils.readAllTextFromResource("IndentDedentBuffer2.test");
+    public void testIndentDedentInputBuffer3() {
+        String input = FileUtils.readAllTextFromResource("IndentDedentBuffer3.test");
         InputBuffer buf = new IndentDedentInputBuffer(input.toCharArray(), 4, "//");
         String bufContent = collectContent(buf);
-        assertEquals(bufContent, FileUtils.readAllTextFromResource("IndentDedentBuffer2.converted.test"));        
+        assertEquals(bufContent, FileUtils.readAllTextFromResource("IndentDedentBuffer3.converted.test"));        
         assertEquals(buf.extract(0, bufContent.length()), input);
     }
     

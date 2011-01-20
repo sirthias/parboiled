@@ -16,19 +16,25 @@
 
 package org.parboiled.buffers;
 
-import static org.parboiled.common.Preconditions.*;
+import org.parboiled.common.IntArrayStack;
 import org.parboiled.support.Chars;
 
 import java.util.Arrays;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.checkArgument;
 
 /**
  * Immutable default implementation of an InputBuffer.
  */
 public class DefaultInputBuffer implements InputBuffer {
+    private final int length;
+    private final char[] buffer;
 
-    protected final int length;
-    protected final char[] buffer;
-    protected int[] newlines;
+    // the indices of the newline characters in the buffer
+    // built lazily, since the newline information is normally only needed in the case of parse errors when
+    // error messages need to be generated
+    private int[] newlines;
 
     /**
      * Constructs a new DefaultInputBuffer wrapping the given char array.
@@ -58,7 +64,10 @@ public class DefaultInputBuffer implements InputBuffer {
     }
 
     public String extract(int start, int end) {
-        return extractInternal(start, end);
+        if (start < 0) start = 0;
+        if (end >= length) end = length;
+        if (end <= start) return "";
+        return new String(buffer, start, end - start);
     }
 
     public Position getPosition(int index) {
@@ -69,7 +78,7 @@ public class DefaultInputBuffer implements InputBuffer {
     }
 
     // returns the zero based input line number the character with the given index is found in
-    protected static int getLine0(int[] newlines, int index) {
+    private static int getLine0(int[] newlines, int index) {
         int j = Arrays.binarySearch(newlines, index);
         return j >= 0 ? j : -(j + 1);
     }
@@ -80,14 +89,7 @@ public class DefaultInputBuffer implements InputBuffer {
         int start = lineNumber > 1 ? newlines[lineNumber - 2] + 1 : 0;
         int end = lineNumber <= newlines.length ? newlines[lineNumber - 1] : length;
         if (charAt(end - 1) == '\r') end--;
-        return extractInternal(start, end);
-    }
-
-    private String extractInternal(int start, int end) {
-        if (start < 0) start = 0;
-        if (end >= length) end = length;
-        if (end <= start) return "";
-        return new String(buffer, start, end - start);
+        return extract(start, end);
     }
 
     public int getLineCount() {
@@ -95,23 +97,17 @@ public class DefaultInputBuffer implements InputBuffer {
         return newlines.length + 1;
     }
 
-    protected void buildNewlines() {
+    private void buildNewlines() {
         if (newlines == null) {
-            int count = 0;
+            IntArrayStack newlines = new IntArrayStack();
             for (int i = 0; i < length; i++) {
                 if (buffer[i] == '\n') {
-                    count++;
+                    newlines.push(i);
                 }
             }
-            newlines = new int[count];
-            count = 0;
-            for (int i = 0; i < length; i++) {
-                if (buffer[i] == '\n') {
-                    newlines[count++] = i;
-                }
-            }
+            this.newlines = new int[newlines.size()];
+            newlines.getElements(this.newlines, 0);
         }
     }
-
 }
 

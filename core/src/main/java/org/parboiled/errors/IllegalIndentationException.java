@@ -17,26 +17,25 @@
 package org.parboiled.errors;
 
 import org.parboiled.buffers.DefaultInputBuffer;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.StringUtils;
 
 /**
  * Exception thrown by the IndentDedentInputbuffer upon detection of an illegal indentation.
  */
 public class IllegalIndentationException extends RuntimeException {
-    public final char[] input;
-    public final int lineNumber;
-    public final int indent;
+    public final InputBuffer buffer;
+    public final InputBuffer.Position position;
 
-    public IllegalIndentationException(char[] input, int lineNumber, int indent) {
-        this.input = input;
-        this.lineNumber = lineNumber;
-        this.indent = indent;
+    public IllegalIndentationException(InputBuffer buffer, InputBuffer.Position position) {
+        this.buffer = buffer;
+        this.position = position;
     }
 
     @Override
     public String getMessage() {
-        return "Illegal indentation in line " + lineNumber + ":\n" +
-                new DefaultInputBuffer(input).extractLine(lineNumber) + '\n' +
-                StringUtils.repeat('^', indent) + '\n';
+        return "Illegal indentation in line " + position.line + ":\n" +
+                buffer.extractLine(position.line) + '\n' +
+                StringUtils.repeat('^', position.column - 1) + '\n';
     }
 }
