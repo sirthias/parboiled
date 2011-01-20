@@ -16,9 +16,12 @@
 
 package org.parboiled.buffers;
 
+import org.parboiled.common.FileUtils;
+import org.parboiled.errors.IllegalIndentationException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.parboiled.support.Chars.*;
+import static org.parboiled.buffers.InputBufferUtils.collectContent;
 import static org.testng.Assert.assertEquals;
 
 public class IndentDedentInputBufferTest {
@@ -30,63 +33,76 @@ public class IndentDedentInputBufferTest {
                 "  \tlevel 2\n" +
                 "    still level 2\n" +
                 "\t    level 3\n" +
-                "     also 3\n" +
+                "      also 3\n" +
                 "    2 again\n" +
                 "        another 3\n" +
                 "and back to 1\n" +
-                "  another level 2 again").toCharArray(), 2);
-        String bufContent = getContent(buf);
+                "  another level 2 again").toCharArray(), 2, null);
+        
+        String bufContent = collectContent(buf);
         assertEquals(bufContent, "" +
                 "level 1\n" +
-                ">level 2\n" +
+                "»level 2\n" +
                 "still level 2\n" +
-                ">level 3\n" +
+                "»level 3\n" +
                 "also 3\n" +
-                "<2 again\n" +
-                ">another 3\n" +
-                "<<and back to 1\n" +
-                ">another level 2 again\n" +
-                "<");
+                "«2 again\n" +
+                "»another 3\n" +
+                "««and back to 1\n" +
+                "»another level 2 again\n" +
+                "«");
+        
+        String text = "another 3";
+        int start = bufContent.indexOf(text);
+        assertEquals(buf.extract(start, start + text.length()), text);  
 
-        assertEquals(buf.charAt(13), 'l');
-        assertEquals(buf.extract(9, 16), "level 2");
-        assertEquals(buf.extract(69, 105), "and back to 1\n  another level 2 again");
-        assertEquals(buf.getPosition(12), new InputBuffer.Position(2, 7));
-        assertEquals(buf.extractLine(2), "  \tlevel 2");
-        assertEquals(buf.getPosition(bufContent.length() - 1), new InputBuffer.Position(10, 1));
+        text = "back to 1";
+        start = bufContent.indexOf(text);
+        assertEquals(buf.extract(start, start + text.length()), text);
+    }
+    
+    @Test
+    public void testIndentDedentInputBuffer1() {
+        String input = FileUtils.readAllTextFromResource("IndentDedentBuffer1.test");
+        InputBuffer buf = new IndentDedentInputBuffer(input.toCharArray(), 4, "#");
+        
+        String bufContent = collectContent(buf);
+        assertEquals(bufContent, FileUtils.readAllTextFromResource("IndentDedentBuffer1.converted.test"));
+        assertEquals(buf.extractLine(6), "    Level 2      # another coment");
+        
+        String text = "go deep";
+        int start = bufContent.indexOf(text);
+        assertEquals(buf.extract(start, start + text.length()), text);        
     }
 
     @Test
     public void testIndentDedentInputBuffer2() {
-        InputBuffer buf = new IndentDedentInputBuffer(("" +
-                "level 1\n" +
-                "   \tlevel 2\n" +
-                "back to 1\n" +
-                "and one more").toCharArray(), 2);
-        assertEquals(getContent(buf), "" +
-                "level 1\n" +
-                ">level 2\n" +
-                "<back to 1\n" +
-                "and one more");
-
-        assertEquals(buf.extract(0, 30), "" +
-                "level 1\n" +
-                "   \tlevel 2\n" +
-                "back to 1\n" +
-                "and one more");
-        assertEquals(buf.extract(18, 30), "back to 1\nand one more");
+        String input = FileUtils.readAllTextFromResource("IndentDedentBuffer2.test");
+        InputBuffer buf = new IndentDedentInputBuffer(input.toCharArray(), 4, "//");
+        String bufContent = collectContent(buf);
+        assertEquals(bufContent, FileUtils.readAllTextFromResource("IndentDedentBuffer2.converted.test"));        
+        assertEquals(buf.extract(0, bufContent.length()), input);
     }
-
-    private String getContent(InputBuffer buf) {
-        StringBuilder sb = new StringBuilder();
-        int ix = 0;
-        while (true) {
-            char c = buf.charAt(ix++);
-            if (c == EOI) break;
-            sb.append(c);
+    
+    @Test
+    public void testIndentDedentInputBuffeIllegalIndent() {
+        try {
+            new IndentDedentInputBuffer(("" +
+                    "level 1\n" +
+                    "  \tlevel 2\n" +
+                    "    still level 2\n" +
+                    "\t    level 3\n" +
+                    "     illegal!!\n" +
+                    "    2 again\n" +
+                    "        another 3\n" +
+                    "and back to 1\n" +
+                    "  another level 2 again").toCharArray(), 2, null);
+        } catch(IllegalIndentationException e) {
+            assertEquals(e.getMessage(), "Illegal indentation in line 5:\n" +
+            "     illegal!!\n" +
+            "^^^^^\n");
+            return;
         }
-
-        return sb.toString().replace(INDENT, '>').replace(DEDENT, '<');
+        Assert.fail("Incorrect or no IllegalIndentationException thrown");
     }
-
 }

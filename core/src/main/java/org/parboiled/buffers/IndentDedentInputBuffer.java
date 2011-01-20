@@ -17,19 +17,26 @@
 package org.parboiled.buffers;
 
 import org.parboiled.common.IntArrayStack;
+import org.parboiled.errors.IllegalIndentationException;
 import org.parboiled.support.Chars;
-import static org.parboiled.common.Preconditions.*;
+
+import static org.parboiled.common.Preconditions.checkArgument;
 
 /**
  * Special, immutable InputBuffer implementation for indentation based grammars.
- * This InputBuffer collapses all space and tab characters at the beginning of a text line into either nothing (if
+ * <p>This InputBuffer collapses all space and tab characters at the beginning of a text line into either nothing (if
  * the line has the same indentation level as the previous line), a special {@link Chars#INDENT} character (if the line
  * has a greater indentation level than the previous line) or one or more {@link Chars#DEDENT} characters (if the line
- * has a lower indentation level than the previous line).
- * This means that the highest index of this InputBuffer is probably smaller than that of the original input text
- * buffer, since all line indentation have been collapsed. However, the implementation will make sure that
- * {@link #getPosition(int)}, {@link #extract(int, int)}, etc. will work as expected and always return the "correct"
- * result from the underlying, original input buffer.
+ * has a lower indentation level than the previous line).</p>
+ * <p>Blank lines (lines containing nothing but whitespace) are removed from the input and the buffer can, optionally,
+ * remove line comments (i.e. comments that start with a predefined character sequence and go to the end of the line).
+ * </p>
+ * <p>This means that the highest index of this InputBuffer is probably smaller than that of the original input text
+ * buffer, since all line indentations and blank lines have been collapsed. However, the implementation will make sure
+ * that {@link #getPosition(int)}, {@link #extract(int, int)}, etc. will work as expected and always return the
+ * "correct" result from the underlying, original input buffer.</p>
+ * <p>If the input contains illegal indentation the buffer throws an {@link org.parboiled.errors.IllegalIndentationException}
+ * during construction</p>
  */
 public class IndentDedentInputBuffer extends DefaultInputBuffer {
 
@@ -43,19 +50,26 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
     protected final char[] buffer2;
     protected int[] newlines2;
     protected final int tabStop;
+    protected final String lineCommentStart;
 
     /**
      * Creates a new IndentDedentInputBuffer around the given char array. Note that for performance reasons the given
      * char array is not defensively copied.
      *
-     * @param input   the input text.
-     * @param tabStop the number of characters in a tab stop.
+     * @param input            the input text.
+     * @param tabStop          the number of characters in a tab stop.
+     * @param lineCommentStart the string starting a line comment or null, if line comments are not defined
+     * @throws org.parboiled.errors.IllegalIndentationException
+     *          if the input contains illegal indentations
      */
-    public IndentDedentInputBuffer(char[] input, int tabStop) {
+    public IndentDedentInputBuffer(char[] input, int tabStop, String lineCommentStart) {
         super(input);
         checkArgument(tabStop > 0, "tabStop must be > 0");
+        checkArgument(lineCommentStart == null || lineCommentStart.indexOf('\n') == -1,
+                "lineCommentStart must not contain newlines");
         this.tabStop = tabStop;
-        buffer2 = buildBuffer2();
+        this.lineCommentStart = lineCommentStart;
+        buffer2 = new BufferBuilder().build();
         length2 = buffer2.length;
     }
 
@@ -96,100 +110,127 @@ public class IndentDedentInputBuffer extends DefaultInputBuffer {
         return ix2 + original - adapted;
     }
 
-    protected char[] buildBuffer2() {
-        StringBuilder sb = new StringBuilder();
-        IntArrayStack previousLevels = new IntArrayStack();
-        IntArrayStack newlines = new IntArrayStack();
-        IntArrayStack newlines2 = new IntArrayStack();
-        int length = buffer.length;
-        int currentLevel = 0;
-        int cursor = 0;
-        previousLevels.push(0);
+    private class BufferBuilder {
+        private final IntArrayStack previousLevels = new IntArrayStack();
+        private final IntArrayStack newlines = new IntArrayStack();
+        private final IntArrayStack newlines2 = new IntArrayStack();
+        private final char[] lineCommentStart = IndentDedentInputBuffer.this.lineCommentStart != null ?
+                IndentDedentInputBuffer.this.lineCommentStart.toCharArray() : null;
+        private int indexDelta = 0;
+        private int cursor = 0;
+        private char currentChar = IndentDedentInputBuffer.super.charAt(0);
 
-        // consume inital indent
-        loop1:
-        while (cursor < length) {
-            switch (buffer[cursor]) {
-                case ' ':
-                    cursor++;
-                    currentLevel++;
-                    break;
-                case '\t':
-                    cursor++;
-                    currentLevel = ((currentLevel / tabStop) + 1) * tabStop;
-                    break;
-                default:
-                    break loop1;
+        private void advance() {
+            currentChar = IndentDedentInputBuffer.super.charAt(++cursor);
+        }
+
+        private void skipLineComment() {
+            if (lineCommentStart != null && IndentDedentInputBuffer.super.test(cursor, lineCommentStart)) {
+                while (currentChar != '\n' && currentChar != Chars.EOI) {
+                    advance();
+                    indexDelta++;
+                }
             }
         }
-        int indexDelta = currentLevel;
 
-        // transform all other input
-        while (cursor < length) {
-            char c = buffer[cursor++];
-            sb.append(c);
-            if (c != '\n') continue;
-
-            newlines.push(cursor - 1);
-            newlines2.push(cursor - indexDelta - 1);
-
-            // consume line indent
+        private int skipIndent() {
             int indent = 0;
-            loop2:
-            while (cursor < length) {
-                switch (buffer[cursor]) {
+            loop:
+            while (true) {
+                switch (currentChar) {
                     case ' ':
-                        cursor++;
-                        indexDelta++;
                         indent++;
-                        break;
-                    case '\t':
-                        cursor++;
                         indexDelta++;
+                        advance();
+                        continue;
+                    case '\t':
                         indent = ((indent / tabStop) + 1) * tabStop;
-                        break;
+                        indexDelta++;
+                        advance();
+                        continue;
+                    case '\n':
+                        newlines.push(cursor);
+                        newlines2.push(cursor - indexDelta);
+                        indexDelta++;
+                        indent = 0;
+                        advance();
+                        continue;
+                    case Chars.EOI:
+                        break loop;
                     default:
-                        break loop2;
+                        skipLineComment();
+                        if (currentChar != '\n') break loop;
                 }
             }
+            return indent;
+        }
 
-            // generate INDENTS/DEDENTS
-            if (indent > currentLevel) {
-                previousLevels.push(currentLevel);
-                currentLevel = indent;
-                sb.append(Chars.INDENT);
-                indexDelta--;
-            } else {
-                while (indent < currentLevel && indent <= previousLevels.peek()) {
-                    currentLevel = previousLevels.pop();
-                    sb.append(Chars.DEDENT);
+        protected char[] build() {
+            StringBuilder sb = new StringBuilder();
+            previousLevels.push(0);
+
+            // consume inital indent
+            int currentLevel = skipIndent();
+
+            // transform all other input
+            while (currentChar != Chars.EOI) {
+                skipLineComment();
+                if (currentChar != '\n') {
+                    sb.append(currentChar);
+                    advance();
+                    continue;
+                }
+
+                // register newline
+                newlines.push(cursor);
+                newlines2.push(cursor - indexDelta);
+                sb.append(currentChar);
+                advance();
+
+                // consume line indent
+                int indent = skipIndent();
+
+                // generate INDENTS/DEDENTS
+                if (indent > currentLevel) {
+                    previousLevels.push(currentLevel);
+                    currentLevel = indent;
+                    sb.append(Chars.INDENT);
                     indexDelta--;
+                } else {
+                    while (indent < currentLevel) {
+                        currentLevel = previousLevels.pop();
+                        sb.append(Chars.DEDENT);
+                        indexDelta--;
+                    }
+                    if (indent > currentLevel) {
+                        int line = newlines.size() + 1;
+                        int lineStart = newlines.pop() + 1;  
+                        throw new IllegalIndentationException(buffer, line, indent);
+                    }
                 }
             }
-        }
 
-        // make sure to close all remaining indentation scopes
-        if (previousLevels.size() > 1) {
-            sb.append('\n');
-            newlines.push(cursor);
-            newlines2.push(cursor - indexDelta);
-            while (previousLevels.size() > 1) {
-                previousLevels.pop();
-                sb.append(Chars.DEDENT);
+            // make sure to close all remaining indentation scopes
+            if (previousLevels.size() > 1) {
+                sb.append('\n');
+                newlines.push(cursor);
+                newlines2.push(cursor - indexDelta);
+                while (previousLevels.size() > 1) {
+                    previousLevels.pop();
+                    sb.append(Chars.DEDENT);
+                }
             }
+
+            IndentDedentInputBuffer.this.newlines = new int[newlines.size()];
+            newlines.getElements(IndentDedentInputBuffer.this.newlines, 0);
+
+            IndentDedentInputBuffer.this.newlines2 = new int[newlines2.size()];
+            newlines2.getElements(IndentDedentInputBuffer.this.newlines2, 0);
+
+            char[] buffer = new char[sb.length()];
+            sb.getChars(0, sb.length(), buffer, 0);
+            return buffer;
         }
-
-        this.newlines = new int[newlines.size()];
-        newlines.getElements(this.newlines, 0);
-
-        this.newlines2 = new int[newlines2.size()];
-        newlines2.getElements(this.newlines2, 0);
-
-        char[] buffer = new char[sb.length()];
-        sb.getChars(0, sb.length(), buffer, 0);
-
-        return buffer;
     }
-
 }
 
