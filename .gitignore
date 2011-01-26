@@ -1,3 +1,6 @@
-parboiled.iml
 .idea/
-target/
+core/
+examples-java/
+examples-scala/
+java/
+scala/
