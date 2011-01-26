@@ -1,6 +1,6 @@
 .idea/
-core/
-examples-java/
-examples-scala/
-java/
-scala/
+/core
+/examples-java
+/examples-scala
+/java
+/scala
