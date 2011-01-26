@@ -17,7 +17,7 @@ define "parboiled" do
   manifest["Specification-Version"] = VERSION_NUMBER
   manifest["Specification-Vendor"] = "parboiled.org"
   manifest["Implementation-Title"] = "parboiled"
-  manifest["Implementation-Version"] = "${version}"
+  manifest["Implementation-Version"] = "#{VERSION_NUMBER}"
   manifest["Implementation-Vendor"] = "parboiled.org"
   manifest["Bundle-License"] = "http://www.apache.org/licenses/LICENSE-2.0.txt"
   manifest["Bundle-Version"] = VERSION_NUMBER
@@ -39,6 +39,7 @@ define "parboiled" do
     package(:jar).pom.from file("pom.xml")
     package :sources
     package :javadoc
+    doc.using :windowtitle=>"parboiled-core #{VERSION_NUMBER} API"
   end
 
   desc "The Java DSL and supporting code"
@@ -48,6 +49,7 @@ define "parboiled" do
     package(:jar).pom.from file("pom.xml")
     package :sources
     package :javadoc
+    doc.using :windowtitle=>"parboiled-java #{VERSION_NUMBER} API"
   end
 
   desc "The Scala DSL and supporting code"
@@ -57,6 +59,8 @@ define "parboiled" do
     test.using :testng
     package(:jar).pom.from file("pom.xml")
     package :sources
+    #package :javadoc
+    #doc.using :windowtitle=>"parboiled-scala #{VERSION_NUMBER} API"
   end
 
   desc "Examples using the Java DSL"
