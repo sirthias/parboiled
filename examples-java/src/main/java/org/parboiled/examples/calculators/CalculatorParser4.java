@@ -19,7 +19,6 @@ package org.parboiled.examples.calculators;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
-import org.parboiled.support.Var;
 
 /**
  * A calculator parser defining the same language as the CalculatorParser3 but using a rule building helper methods
@@ -47,13 +46,13 @@ public class CalculatorParser4 extends CalculatorParser<CalcNode> {
     }
 
     public Rule OperatorRule(Rule subRule, Rule operatorRule) {
-        Var<Character> op = new Var<Character>();
+        Character op;
         return Sequence(
                 subRule,
                 ZeroOrMore(
-                        operatorRule, op.set(matchedChar()),
-                        subRule,
-                        push(new CalcNode(op.get(), pop(1), pop()))
+                    operatorRule, DO(op = matchedChar()),
+                    subRule,
+                    push(new CalcNode(op, pop(1), pop()))
                 )
         );
     }

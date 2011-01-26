@@ -59,6 +59,13 @@ public interface Node<V> extends TreeNode<Node<V>> {
      * @return the value object
      */
     V getValue();
+    
+    /**
+     * Return the action arguments for the matcher that created this node.
+     * 
+     * @return the action arguments
+     */
+    Object[] getActionArguments();
 
     /**
      * @return true if there were parse errors in the input range covered by this node

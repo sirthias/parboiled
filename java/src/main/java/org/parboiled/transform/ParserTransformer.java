@@ -47,6 +47,7 @@ public class ParserTransformer {
         ParserClassNode classNode = new ParserClassNode(parserClass);
         new ClassNodeInitializer().process(classNode);
         runMethodTransformers(classNode);
+        new RuleMethodWrapperGenerator().process(classNode);
         new ConstructorGenerator().process(classNode);
         defineExtendedParserClass(classNode);
         return classNode;
@@ -83,6 +84,7 @@ public class ParserTransformer {
                 new InstructionGraphCreator(),
                 new ImplicitActionsConverter(),
                 new InstructionGroupCreator(),
+                new ActionVariablesAnalyzer(),
                 new InstructionGroupPreparer(),
                 new ActionClassGenerator(false),
                 new VarInitClassGenerator(false),
@@ -90,7 +92,6 @@ public class ParserTransformer {
                 new RuleMethodRewriter(),
                 new SuperCallRewriter(),
                 new BodyWithSuperCallReplacer(),
-                new VarFramingGenerator(),
                 new LabellingGenerator(),
                 new FlagMarkingGenerator(),
                 new CachingGenerator()

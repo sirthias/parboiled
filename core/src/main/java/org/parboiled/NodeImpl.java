@@ -32,15 +32,17 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     private final int startIndex;
     private final int endIndex;
     private final V value;
+    private final Object[] actionArgs;
     private final boolean hasError;
 
     public NodeImpl(Matcher matcher, List<Node<V>> children, int startIndex,
-                    int endIndex, V value, boolean hasError) {
+                    int endIndex, V value, Object[] actionArgs, boolean hasError) {
         super(children);
         this.matcher = checkArgNotNull(matcher, "matcher");
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.value = value;
+        this.actionArgs = actionArgs;
         this.hasError = hasError;
     }
 
@@ -63,6 +65,10 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     public V getValue() {
         return value;
     }
+    
+    public Object[] getActionArguments() {
+		return actionArgs;
+	}
 
     public boolean hasError() {
         return hasError;

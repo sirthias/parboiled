@@ -22,17 +22,17 @@
 
 package org.parboiled.transform;
 
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.common.Utils.toObjectArray;
+
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-
-import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.common.Preconditions.checkArgNotNull;
-import static org.parboiled.common.Preconditions.checkState;
-import static org.parboiled.common.Utils.toObjectArray;
 
 /**
  * Wraps the method code with caching and proxying constructs.
@@ -41,6 +41,7 @@ class CachingGenerator implements RuleMethodProcessor {
 
     private ParserClassNode classNode;
     private RuleMethod method;
+    private Type[] paramTypes;
     private InsnList instructions;
     private AbstractInsnNode current;
     private String cacheFieldName;
@@ -58,6 +59,7 @@ class CachingGenerator implements RuleMethodProcessor {
 
         this.classNode = classNode;
         this.method = method;
+        this.paramTypes = getParameterTypes();
         this.instructions = method.instructions;
         this.current = instructions.getFirst();
 
@@ -85,10 +87,25 @@ class CachingGenerator implements RuleMethodProcessor {
         insert(new InsnNode(POP));
         // stack:
     }
+    
+	private Type[] getParameterTypes() {
+		List<Type> paramTypes = new ArrayList<Type>(Arrays.asList(Type.getArgumentTypes(method.desc)));
+
+		int i = (method.access & ACC_STATIC) != 0 ? 0 : 1;
+		for (Iterator<Type> it = paramTypes.iterator(); it.hasNext(); ) {
+			it.next();
+			
+			if (method.getActionParams().get(i)) {
+				it.remove();
+			}
+			i++;
+		}
+		
+		return paramTypes.toArray(new Type[paramTypes.size()]);
+	}
 
     @SuppressWarnings( {"unchecked"})
     private void generateGetFromCache() {
-        Type[] paramTypes = Type.getArgumentTypes(method.desc);
         cacheFieldName = findUnusedCacheFieldName();
 
         // if we have no parameters we use a simple Rule field as cache, otherwise a HashMap
@@ -279,8 +296,6 @@ class CachingGenerator implements RuleMethodProcessor {
     }
 
     private void generateStoreInCache() {
-        Type[] paramTypes = Type.getArgumentTypes(method.desc);
-
         // stack: <rule>
         insert(new InsnNode(DUP));
         // stack: <rule> :: <rule>

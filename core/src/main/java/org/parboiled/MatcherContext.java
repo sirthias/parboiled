@@ -28,8 +28,8 @@ import org.parboiled.support.*;
 
 import java.util.List;
 
-import static org.parboiled.errors.ErrorUtils.printParseError;
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.errors.ErrorUtils.*;
 
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
@@ -71,6 +71,8 @@ public class MatcherContext<V> implements Context<V> {
     private int intTag;
     private boolean hasError;
     private boolean nodeSuppressed;
+    private Object[] args;
+    private Object[] locals;
 
     /**
      * Initializes a new root MatcherContext.
@@ -93,18 +95,21 @@ public class MatcherContext<V> implements Context<V> {
                           MatchHandler matchHandler, Matcher matcher, boolean fastStringMatching) {
         this(checkArgNotNull(inputBuffer, "inputBuffer"), checkArgNotNull(valueStack, "valueStack"),
                 checkArgNotNull(parseErrors, "parseErrors"), checkArgNotNull(matchHandler, "matchHandler"),
-                null, 0, fastStringMatching);
+                null, 0, new Object[0], new Object[0], fastStringMatching);
         this.currentChar = inputBuffer.charAt(0);
         this.matcher = ProxyMatcher.unwrap(checkArgNotNull(matcher, "matcher"));
         this.nodeSuppressed = matcher.isNodeSuppressed();
     }
 
     private MatcherContext(InputBuffer inputBuffer, ValueStack<V> valueStack, List<ParseError> parseErrors,
-                           MatchHandler matchHandler, MatcherContext<V> parent, int level, boolean fastStringMatching) {
+                           MatchHandler matchHandler, MatcherContext<V> parent, int level, 
+                           Object[] args, Object[] locals, boolean fastStringMatching) {
         this.inputBuffer = inputBuffer;
         this.valueStack = valueStack;
         this.parseErrors = parseErrors;
         this.matchHandler = matchHandler;
+        this.args = args;
+        this.locals = locals;
         this.parent = parent;
         this.level = level;
         this.fastStringMatching = fastStringMatching;
@@ -206,7 +211,7 @@ public class MatcherContext<V> implements Context<V> {
 
     private void checkActionContext() {
         // make sure all the constraints are met
-        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
+        Checks.ensure(ProxyMatcher.unwrap(DelegatingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
                 intTag > 0 && subContext.matcher instanceof ActionMatcher,
                 "Illegal call to getMatch(), getMatchStartIndex() or getMatchEndIndex(), " +
                         "only valid in Sequence rule actions that are not in first position");
@@ -267,8 +272,7 @@ public class MatcherContext<V> implements Context<V> {
     @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
         if (!nodeSuppressed && !matcher.isNodeSkipped()) {
-            node = new NodeImpl<V>(matcher, getSubNodes(), startIndex, currentIndex,
-                    valueStack.isEmpty() ? null : valueStack.peek(), hasError);
+            node = new NodeImpl<V>(matcher, getSubNodes(), startIndex, currentIndex, valueStack.isEmpty() ? null : valueStack.peek(), args, hasError);
 
             MatcherContext<V> nodeParentContext = parent;
             if (nodeParentContext != null) {
@@ -285,7 +289,7 @@ public class MatcherContext<V> implements Context<V> {
         if (subContext == null) {
             // init new level
             subContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, matchHandler, this, level + 1,
-                        fastStringMatching);
+                        args, locals, fastStringMatching);
         } else {
             subContext.path = null; // we always need to reset the MatcherPath, even for actions
         }
@@ -301,6 +305,8 @@ public class MatcherContext<V> implements Context<V> {
         sc.subNodes = ImmutableLinkedList.nil();
         sc.nodeSuppressed = nodeSuppressed || this.matcher.areSubnodesSuppressed() || matcher.isNodeSuppressed();
         sc.hasError = false;
+        sc.args = sc.parent.args;
+        sc.locals = sc.parent.locals;
         return sc;
     }
 
@@ -322,8 +328,33 @@ public class MatcherContext<V> implements Context<V> {
             throw new ParserRuntimeException(e,
                     printParseError(new BasicParseError(inputBuffer, currentIndex,
                             StringUtils.escape(String.format("Error while parsing %s '%s' at input position",
-                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer) +
-                            '\n' + e);
+                                    matcher instanceof ActionMatcher ? "action" : "rule", getPath()))), inputBuffer) + '\n' + e);
         }
     }
+    
+    @Override
+	public Object getVariable(int i) {
+		if (args != null && i < args.length) {
+			return args[i];
+		}
+		return locals[i - args.length];
+	}
+
+	@Override
+	public void setVariable(int i, Object value) {
+		if (args != null && i < args.length) {
+			args[i] = value;
+		}
+		locals[i - args.length] = value;
+	}
+
+	@Override
+	public void setMaxLocals(int locals) {
+		this.locals = new Object[locals];
+	}
+
+	@Override
+	public void setArgs(Object[] args) {
+		this.args = args;
+	}
 }

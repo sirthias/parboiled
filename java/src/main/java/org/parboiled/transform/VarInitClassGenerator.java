@@ -16,42 +16,108 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
+import static org.objectweb.asm.Opcodes.*;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.transform.Types.*;
+import org.objectweb.asm.commons.Method;
+import org.objectweb.asm.tree.InsnList;
+import org.parboiled.transform.InstructionGroup.GroupType;
+import org.parboiled.transform.InstructionGroup.VarInitGroup;
+import org.parboiled.transform.support.InsnListGenerator;
+
+import java.util.List;
 
 class VarInitClassGenerator extends GroupClassGenerator {
 
-    public VarInitClassGenerator(boolean forceCodeBuilding) {
-        super(forceCodeBuilding);
-    }
+	public VarInitClassGenerator(boolean forceCodeBuilding) {
+		super(forceCodeBuilding);
+	}
 
-    public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
-        checkArgNotNull(method, "method");
-        return method.containsVars();
-    }
+	public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
+		return method.containsVarInitializers();
+	}
 
-    @Override
-    protected boolean appliesTo(InstructionGraphNode node) {
-        return node.isVarInitRoot();
-    }
+	@Override
+	protected boolean appliesTo(InstructionGroup group) {
+		return group.getGroupType() == GroupType.VAR_INIT;
+	}
 
-    @Override
-    protected Type getBaseType() {
-        return BASE_VAR_INIT;
-    }
+	@Override
+	protected Type getBaseType() {
+		return BASE_ACTION;
+	}
 
-    @Override
-    protected void generateMethod(InstructionGroup group, ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "create", "()Ljava/lang/Object;", null, null);
-        convertXLoads(group);
-        group.getInstructions().accept(mv);
+	@Override
+	protected void generateMethod(InstructionGroup group, ClassWriter cw) {
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", '(' + CONTEXT_DESC + ")Z", null, null);
 
-        mv.visitInsn(ARETURN);
-        mv.visitMaxs(0, 0); // trigger automatic computing
-    }
+		// store context to 2nd local variable
+		// this context is later used for setVariable and getVariable calls
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitVarInsn(ASTORE, 2);
+		
+//		fixContextSwitches(group);
+		insertSetContextCalls(group);
+		
+		createAndSetArgumentArray((VarInitGroup)group);
+		
+		convertXLoadsAndXStores(group);
 
+		group.getInstructions().accept(mv);
+
+		mv.visitInsn(IRETURN);
+		mv.visitMaxs(0, 0); // trigger automatic computing
+	}
+
+	private void createAndSetArgumentArray(VarInitGroup group) {
+		InsnList instructions = group.getInstructions();
+		List<Type> targetArgumentTypes = group.getRuleActionArgumentTypes();
+
+		InsnListGenerator gen = new InsnListGenerator(ACC_PUBLIC, "run", '(' + CONTEXT_DESC + ")Z");
+		// load variable context
+		gen.loadLocal(2, CONTEXT);
+		
+		// create array for original arguments and local variables
+		gen.push(targetArgumentTypes.size());
+		gen.newArray(OBJECT);
+
+		// prepare for first argument
+		// duplicate array reference
+		gen.dup();
+		// load argument index onto stack
+		gen.push(0);
+
+		instructions.insertBefore(instructions.getFirst(), gen.instructions);
+
+		List<InstructionGraphNode> argNodes = group.getRuleActionArgumentNodes();
+		for (int arg = 0; arg < argNodes.size(); ) {
+			InstructionGraphNode argNode = argNodes.get(arg);
+
+			// store argument in array
+			gen.box(argNode.getResultValue().getType());
+			gen.arrayStore(OBJECT);
+
+			// prepare for next argument
+			arg++;
+			if (arg < argNodes.size()) {
+				// duplicate array reference
+				gen.dup();
+				// load argument index onto stack
+				gen.push(arg);
+			}
+
+			instructions.insert(argNode.getInstruction(), gen.instructions);
+		}
+
+		// store arguments as new variables
+		gen.invokeInterface(CONTEXT, new Method("setArgs", Type.VOID_TYPE, new Type[] { Type.getType(Object[].class) }));
+		
+		// load result value
+		gen.push(true);
+		gen.box(BOOLEAN_TYPE);
+		
+		instructions.add(gen.instructions);
+	}
 }

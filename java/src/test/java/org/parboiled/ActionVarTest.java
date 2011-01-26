@@ -17,7 +17,6 @@
 package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.support.Var;
 import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
@@ -31,8 +30,8 @@ public class ActionVarTest extends TestNgParboiledTest<Integer> {
 
         @SuppressWarnings( {"InfiniteRecursion"})
         public Rule A() {
-            Var<List<String>> list = new Var<List<String>>(new ArrayList<String>());
-            return Sequence('a', Optional(A(), list.get().add("Text"), push(list.get().size())));
+            List<String> list;
+            return Sequence(DO(list = new ArrayList<String>()), 'a', Optional(Sequence(A(), list.add("Text"), push(list.size()))));
         }
 
     }

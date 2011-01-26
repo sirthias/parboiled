@@ -18,7 +18,7 @@ package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
-import org.parboiled.support.Var;
+import org.parboiled.annotations.Var;
 import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
@@ -31,13 +31,16 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
 
         @SuppressWarnings( {"InfiniteRecursion"})
         public Rule Clause() {
-            Var<Integer> a = new Var<Integer>(-1);
+            Integer a;
             return Sequence(
-                    Digits(), a.set(peek()),
-                    SomeRule(a),
+            		DO(a = -1),
+                    Digits(), DO(a = peek()),
+                    SomeRule(a, 2),
                     Optional(
-                            '+',
-                            Clause(), push(a.get())
+                            Sequence(
+                                    '+',
+                                    Clause(), push(a)
+                            )
                     )
             );
         }
@@ -49,9 +52,9 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
                     push(Integer.parseInt(match()))
             );
         }
-
-        public Rule SomeRule(Var<Integer> var) {
-            return toRule(var.get() == count++);
+        
+        public Rule SomeRule(@Var Integer var, int ruleArg) {
+            return toRule(DO(var == count++));
         }
 
     }
@@ -64,8 +67,8 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
         ParserStatistics stats = ParserStatistics.generateFor(rule);
         assertEquals(stats.toString(), "" +
                 "Parser statistics for rule 'Clause':\n" +
-                "    Total rules       : 11\n" +
-                "        Actions       : 4\n" +
+                "    Total rules       : 12\n" +
+                "        Actions       : 5\n" +
                 "        Any           : 0\n" +
                 "        CharIgnoreCase: 0\n" +
                 "        Char          : 1\n" +
@@ -84,9 +87,9 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
                 "        TestNot       : 0\n" +
                 "        ZeroOrMore    : 0\n" +
                 "\n" +
-                "    Action Classes    : 4\n" +
+                "    Action Classes    : 5\n" +
                 "    ProxyMatchers     : 1\n" +
-                "    VarFramingMatchers: 1\n" +
+                "    DelegatingMatchers: 1\n" +
                 "MemoMismatchesMatchers: 0\n");
 
         test(rule, "1+2+3")

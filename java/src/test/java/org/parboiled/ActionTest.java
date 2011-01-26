@@ -130,7 +130,7 @@ public class ActionTest extends TestNgParboiledTest<Integer> {
                 "\n" +
                 "    Action Classes    : 8\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n" +
+                "    DelegatingMatchers: 0\n" +
                 "MemoMismatchesMatchers: 0\n");
 
         assertEquals(stats.printActionClassInstances(), "" +

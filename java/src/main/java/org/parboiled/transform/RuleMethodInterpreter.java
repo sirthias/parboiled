@@ -58,10 +58,19 @@ class RuleMethodInterpreter extends BasicInterpreter {
         return createNode(insn, super.newOperation(insn));
     }
 
-    @Override
-    public Value copyOperation(AbstractInsnNode insn, Value value) throws AnalyzerException {
-        return createNode(insn, super.copyOperation(insn, value), value);
-    }
+	@Override
+	public Value copyOperation(AbstractInsnNode insn, Value value)
+			throws AnalyzerException {
+		Value node = createNode(insn, super.copyOperation(insn, value), value);
+
+		// xSTORE instructions decouple different sets of action instructions
+		if (insn.getType() == AbstractInsnNode.VAR_INSN
+				&& insn.getOpcode() >= ISTORE && insn.getOpcode() <= ASTORE) {
+			return unwrap(value);
+		}
+
+		return node;
+	}
 
     @Override
     public Value unaryOperation(AbstractInsnNode insn, Value value) throws AnalyzerException {

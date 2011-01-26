@@ -522,6 +522,10 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         throw new UnsupportedOperationException("ACTION(...) calls can only be used in Rule creating parser methods");
     }
 
+    public boolean DO(Object value) {
+        return true;
+    }
+
     ///************************* HELPER METHODS ***************************///
 
     /**

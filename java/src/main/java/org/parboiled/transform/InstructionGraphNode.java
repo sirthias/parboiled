@@ -22,8 +22,10 @@
 
 package org.parboiled.transform;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.objectweb.asm.util.AbstractVisitor;
@@ -31,8 +33,6 @@ import org.objectweb.asm.util.AbstractVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.objectweb.asm.Opcodes.*;
 
 /**
  * A node in the instruction dependency graph.
@@ -43,7 +43,9 @@ class InstructionGraphNode implements Value {
     private final BasicValue resultValue;
     private final List<InstructionGraphNode> predecessors = new ArrayList<InstructionGraphNode>();
     private boolean isActionRoot;
-    private final boolean isVarInitRoot;
+    private final boolean isCallToRuleWithActionParams;
+    private boolean isActionParam;
+    private boolean isVarInitRoot;
     private final boolean isCallOnContextAware;
     private final boolean isXLoad;
     private final boolean isXStore;
@@ -53,7 +55,7 @@ class InstructionGraphNode implements Value {
         this.instruction = instruction;
         this.resultValue = resultValue;
         this.isActionRoot = AsmUtils.isActionRoot(instruction);
-        this.isVarInitRoot = AsmUtils.isVarRoot(instruction);
+        this.isCallToRuleWithActionParams = AsmUtils.isCallToRuleWithActionParams(instruction);
         this.isCallOnContextAware = AsmUtils.isCallOnContextAware(instruction);
         this.isXLoad = ILOAD <= instruction.getOpcode() && instruction.getOpcode() < IALOAD;
         this.isXStore = ISTORE <= instruction.getOpcode() && instruction.getOpcode() < IASTORE;
@@ -106,6 +108,22 @@ class InstructionGraphNode implements Value {
     public boolean isVarInitRoot() {
         return isVarInitRoot;
     }
+    
+    public void setIsVarInitRoot() {
+    	isVarInitRoot = true;
+    }
+    
+    public boolean isActionParam() {
+    	return isActionParam;
+    }
+    
+    public void setIsActionParam() {
+    	this.isActionParam = true;
+    }
+
+	public boolean isCallToRuleWithActionParams() {
+		return isCallToRuleWithActionParams;
+	}
 
     public boolean isCallOnContextAware() {
         return isCallOnContextAware;
@@ -128,11 +146,22 @@ class InstructionGraphNode implements Value {
         }
     }
 
-    public void addPredecessor(InstructionGraphNode node) {
-        if (!predecessors.contains(node)) {
-            predecessors.add(node);
-        }
-    }
+	public void addPredecessor(InstructionGraphNode node) {
+		if (!predecessors.contains(node)) {
+			predecessors.add(node);
+			if (isCallToRuleWithActionParams()) {
+				int paramIndex = predecessors.indexOf(node);
+
+				MethodInsnNode insn = (MethodInsnNode) getInstruction();
+				if (insn.getOpcode() != INVOKESTATIC) {
+					paramIndex--;
+				}
+				if (paramIndex >= 0 && AsmUtils.isActionParam(AsmUtils.getClassMethod(insn.owner, insn.name, insn.desc), paramIndex)) {
+					node.setIsActionParam();
+				}
+			}
+		}
+	}
 
     @Override
     public String toString() {

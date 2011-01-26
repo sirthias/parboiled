@@ -19,7 +19,6 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.common.ImmutableList;
-import org.parboiled.support.Var;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -45,12 +44,12 @@ public class VarInitClassGeneratorTest extends TransformationTest {
 
     static class Parser extends BaseParser<Integer> {
 
-        @SuppressWarnings({"UnusedDeclaration"})
-        public Rule A() {
-            Var<List<String>> list = new Var<List<String>>(new ArrayList<String>());
-            Var<Integer> i = new Var<Integer>(26);
-            return Sequence('a', list.get().add(match()));
-        }
+		@SuppressWarnings({ "UnusedDeclaration" })
+		public Rule A() {
+			List<String> list;
+			Integer i;
+			return Sequence(DO(list = new ArrayList<String>()), DO(i = 26), 'a', list.add(match()));
+		}
 
     }
 

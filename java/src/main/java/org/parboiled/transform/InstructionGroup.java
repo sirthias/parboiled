@@ -27,18 +27,57 @@ import java.util.List;
  * A group of instructions belonging to a ACTION or Var initializer
  */
 class InstructionGroup {
+	
+	static class VarInitGroup extends InstructionGroup {
+		protected InstructionGraphNode ruleCreationCallNode;
+		protected List<Type> ruleActionArgumentTypes;
+		protected List<InstructionGraphNode> ruleActionArgumentNodes;
+		
+		public VarInitGroup(RuleMethod ruleMethod, InstructionGraphNode root, InstructionGraphNode ruleCreationCallNode) {
+			super(ruleMethod, root, GroupType.VAR_INIT);
+			this.ruleCreationCallNode = ruleCreationCallNode;
+		}
+		
+		public void setRuleActionArgumentNodes(List<InstructionGraphNode> ruleActionArgumentNodes) {
+			this.ruleActionArgumentNodes = ruleActionArgumentNodes;
+		}
+		
+		public List<InstructionGraphNode> getRuleActionArgumentNodes() {
+			return ruleActionArgumentNodes;
+		}
+		
+		public void setRuleActionArgumentTypes(List<Type> ruleActionArgumentTypes) {
+			this.ruleActionArgumentTypes = ruleActionArgumentTypes;
+		}
+		
+		public List<Type> getRuleActionArgumentTypes() {
+			return ruleActionArgumentTypes;
+		}
+		
+		public InstructionGraphNode getRuleCreationCallNode() {
+			return ruleCreationCallNode;
+		}
+	}
+	
+	public static enum GroupType {
+		ACTION, VAR_INIT
+	};
 
     private final List<InstructionGraphNode> nodes = new ArrayList<InstructionGraphNode>();
     private final InsnList instructions = new InsnList();
+    private final RuleMethod ruleMethod;
     private final InstructionGraphNode root;
     private final List<FieldNode> fields = new ArrayList<FieldNode>();
     private String name;
+    private GroupType groupType;
     private Type groupClassType;
     private byte[] groupClassCode;
 
-    public InstructionGroup(InstructionGraphNode root) {
-        this.root = root;
-    }
+	public InstructionGroup(RuleMethod ruleMethod, InstructionGraphNode root, GroupType groupType) {
+		this.ruleMethod = ruleMethod;
+		this.root = root;
+		this.groupType = groupType;
+	}
 
     public List<InstructionGraphNode> getNodes() {
         return nodes;
@@ -47,6 +86,10 @@ class InstructionGroup {
     public InsnList getInstructions() {
         return instructions;
     }
+    
+    public RuleMethod getRuleMethod() {
+		return ruleMethod;
+	}
 
     public InstructionGraphNode getRoot() {
         return root;
@@ -59,9 +102,13 @@ class InstructionGroup {
     public String getName() {
         return name;
     }
-
+    
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public GroupType getGroupType() {
+    	return groupType;
     }
 
     public Type getGroupClassType() {

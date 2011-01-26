@@ -56,6 +56,9 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
         if (covered.contains(node)) return;
         covered.add(node);
 
+		if (node.isActionParam()) {
+			return;
+		}
         if (isImplicitAction(node)) {
             replaceWithActionWrapper(node);
             method.setContainsExplicitActions(true);

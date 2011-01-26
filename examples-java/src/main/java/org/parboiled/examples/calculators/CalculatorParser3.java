@@ -19,7 +19,6 @@ package org.parboiled.examples.calculators;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.examples.calculators.CalculatorParser3.CalcNode;
-import org.parboiled.support.Var;
 import org.parboiled.trees.ImmutableBinaryTreeNode;
 
 /**
@@ -37,29 +36,29 @@ public class CalculatorParser3 extends CalculatorParser<CalcNode> {
     }
 
     Rule Expression() {
-        Var<Character> op = new Var<Character>();
+        Character op;
         return Sequence(
                 Term(),
                 ZeroOrMore(
                         // we use a FirstOf(String, String) instead of a AnyOf(String) so we can use the
                         // fromStringLiteral transformation (see below), which automatically consumes trailing whitespace
-                        FirstOf("+ ", "- "), op.set(matchedChar()),
+                        FirstOf("+ ", "- "), DO(op = matchedChar()),
                         Term(),
 
                         // same as in CalculatorParser2
-                        push(new CalcNode(op.get(), pop(1), pop()))
+                        push(new CalcNode(op, pop(1), pop()))
                 )
         );
     }
 
     Rule Term() {
-        Var<Character> op = new Var<Character>();
+        Character op;
         return Sequence(
                 Factor(),
                 ZeroOrMore(
-                        FirstOf("* ", "/ "), op.set(matchedChar()),
+                        FirstOf("* ", "/ "), DO(op = matchedChar()),
                         Factor(),
-                        push(new CalcNode(op.get(), pop(1), pop()))
+                        push(new CalcNode(op, pop(1), pop()))
                 )
         );
     }

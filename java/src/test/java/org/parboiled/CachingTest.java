@@ -16,13 +16,13 @@
 
 package org.parboiled;
 
+import static org.parboiled.trees.GraphUtils.countAllDistinct;
+import static org.testng.Assert.assertEquals;
+
 import org.parboiled.annotations.Label;
 import org.parboiled.matchers.FirstOfMatcher;
 import org.parboiled.matchers.Matcher;
 import org.testng.annotations.Test;
-
-import static org.parboiled.trees.GraphUtils.countAllDistinct;
-import static org.testng.Assert.assertEquals;
 
 public class CachingTest {
 
@@ -91,7 +91,7 @@ public class CachingTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n" +
+                "    DelegatingMatchers: 0\n" +
                 "MemoMismatchesMatchers: 0\n");
 
         assertEquals(ParserStatistics.generateFor(parser.Rule2()).toString(), "" +
@@ -118,7 +118,7 @@ public class CachingTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n" +
+                "    DelegatingMatchers: 0\n" +
                 "MemoMismatchesMatchers: 0\n");
     }
 

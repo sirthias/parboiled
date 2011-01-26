@@ -22,17 +22,21 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
-
 import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.transform.AsmUtils.getLoadingOpcode;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.Method;
+import org.objectweb.asm.tree.*;
+import org.parboiled.matchers.DelegatingActionMatcher;
+import org.parboiled.transform.InstructionGroup.GroupType;
+import org.parboiled.transform.InstructionGroup.VarInitGroup;
+import org.parboiled.transform.support.InsnListGenerator;
 
 /**
  * Inserts action group class instantiation code at the groups respective placeholders.
  */
-class RuleMethodRewriter implements RuleMethodProcessor {
+class RuleMethodRewriter implements RuleMethodProcessor, Types {
 
     private RuleMethod method;
     private InstructionGroup group;
@@ -42,7 +46,7 @@ class RuleMethodRewriter implements RuleMethodProcessor {
     public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
-        return method.containsExplicitActions() || method.containsVars();
+        return method.containsExplicitActions() || method.containsVarInitializers();
     }
 
     public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
@@ -52,41 +56,82 @@ class RuleMethodRewriter implements RuleMethodProcessor {
 
         for (InstructionGroup group : method.getGroups()) {
             this.group = group;
+            
+            if (group.getGroupType() == GroupType.VAR_INIT) {
+            	insert(new TypeInsnNode(NEW, Type.getInternalName(DelegatingActionMatcher.class)));
+            	insert(new InsnNode(DUP));
+            }
+            
             createNewGroupClassInstance();
             initializeFields();
 
-            InstructionGraphNode root = group.getRoot();
-            if (root.isActionRoot()) {
-                removeGroupRootInstruction();
-            } else { // if (root.isVarInitRoot())
-                ((MethodInsnNode) root.getInstruction()).desc = "(Lorg/parboiled/common/Factory;)V";
+            switch (group.getGroupType()) {
+            case ACTION :
+            	 removeGroupRootInstruction();
+            	 break;
+            case VAR_INIT :
+            	initializeVarInitMatcher();
+            	break;
             }
         }
 
+        createSetMaxLocalsMatcher();
+        
         method.setBodyRewritten();
     }
+    
+	private void initializeVarInitMatcher() {
+		VarInitGroup varInitGroup = (VarInitGroup) group;
+		AbstractInsnNode ruleCallInsn = varInitGroup.getRuleCreationCallNode().getInstruction();
 
-    private void createNewGroupClassInstance() {
-        String internalName = group.getGroupClassType().getInternalName();
-        InstructionGraphNode root = group.getRoot();
-        insert(new TypeInsnNode(NEW, internalName));
-        insert(new InsnNode(DUP));
-        insert(new LdcInsnNode(method.name +
-                (root.isActionRoot() ? "_Action" + ++actionNr : "_VarInit" + ++varInitNr)));
-        insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+		InsnListGenerator gen = new InsnListGenerator();
 
-        if (root.isActionRoot() && method.hasSkipActionsInPredicatesAnnotation()) {
-            insert(new InsnNode(DUP));
-            insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
-        }
-    }
+		// stack: <DelegatingActionMatcher> <Action> <Object>
+		gen.checkCast(RULE);
+		// stack: <DelegatingActionMatcher> <Action> <Rule>
+		gen.swap();
+		// stack: <DelegatingActionMatcher> <Rule> <Action>
+		gen.invokeConstructor(Type.getType(DelegatingActionMatcher.class),
+				new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, ACTION }));
+
+		method.instructions.insert(ruleCallInsn, gen.instructions);
+	}
+
+	private void createSetMaxLocalsMatcher() {
+		int actionParams = method.getActionParams().cardinality();
+		int maxLocals = method.getActionVariableTypes().size() - actionParams - 1;
+		if (maxLocals > 0) {
+			AbstractInsnNode returnInsn = method.getReturnInstructionNode().getInstruction();
+			InsnListGenerator gen = new InsnListGenerator();
+			gen.newInstance(SET_MAX_LOCALS_MATCHER);
+			gen.dupX1();
+			gen.swap();
+			gen.push(maxLocals);
+			gen.invokeConstructor(SET_MAX_LOCALS_MATCHER, new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, Type.INT_TYPE }));
+			method.instructions.insertBefore(returnInsn, gen.instructions);
+		}
+	}
+
+	private void createNewGroupClassInstance() {
+		String internalName = group.getGroupClassType().getInternalName();
+		InstructionGraphNode root = group.getRoot();
+		insert(new TypeInsnNode(NEW, internalName));
+		insert(new InsnNode(DUP));
+		insert(new LdcInsnNode(method.name + (root.isActionRoot() ? "_Action" + ++actionNr : "_VarInit" + ++varInitNr)));
+		insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+
+		if (group.getGroupType() == GroupType.ACTION && method.hasSkipActionsInPredicatesAnnotation()) {
+			insert(new InsnNode(DUP));
+			insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
+		}
+	}
 
     private void initializeFields() {
         String internalName = group.getGroupClassType().getInternalName();
         for (FieldNode field : group.getFields()) {
             insert(new InsnNode(DUP));
             // the FieldNodes access and value members have been reused for the var index / Type respectively!
-            insert(new VarInsnNode(getLoadingOpcode((Type) field.value), field.access));
+            insert(new VarInsnNode(AsmUtils.getLoadingOpcode((Type) field.value), field.access));
             insert(new FieldInsnNode(PUTFIELD, internalName, field.name, field.desc));
         }
     }
@@ -94,7 +139,7 @@ class RuleMethodRewriter implements RuleMethodProcessor {
     private void insert(AbstractInsnNode insn) {
         method.instructions.insertBefore(group.getRoot().getInstruction(), insn);
     }
-
+    
     private void removeGroupRootInstruction() {
         method.instructions.remove(group.getRoot().getInstruction());
     }

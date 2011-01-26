@@ -22,17 +22,22 @@
 
 package org.parboiled.transform;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.transform.AsmUtils.*;
+
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.parboiled.support.Checks;
+import org.parboiled.transform.InstructionGroup.GroupType;
+import org.parboiled.transform.InstructionGroup.VarInitGroup;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.transform.AsmUtils.*;
 
 class InstructionGroupCreator implements RuleMethodProcessor  {
 
@@ -42,7 +47,7 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
     public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
-        return method.containsExplicitActions() || method.containsVars();
+        return method.containsExplicitActions() || method.containsVarInitializers();
     }
 
     public void process(ParserClassNode classNode, RuleMethod method) {
@@ -67,35 +72,30 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
     }
 
     private void createGroups() {
+    	// create one group per rule method call to initialize arguments
+    	createInitArgsGroups(method);
+    	
         for (InstructionGraphNode node : method.getGraphNodes()) {
-            if (node.isActionRoot() || node.isVarInitRoot()) {
-                InstructionGroup group = new InstructionGroup(node);
+            if (node.isActionRoot()) {
+				InstructionGroup group = new InstructionGroup(method, node, GroupType.ACTION);
                 markGroup(node, group);
                 method.getGroups().add(group);
             }
         }
     }
 
-    private void markGroup(InstructionGraphNode node, InstructionGroup group) {
-        Checks.ensure(
-                node == group.getRoot() || (!node.isActionRoot() && !node.isVarInitRoot()),
-                "Method '%s' contains illegal nesting of ACTION and/or Var initializer constructs",
-                method.name);
+	private void markGroup(InstructionGraphNode node, InstructionGroup group) {
+		Checks.ensure(node == group.getRoot() || (!node.isActionRoot() && !node.isVarInitRoot()),
+				"Method '%s' contains illegal nesting of ACTION and/or Var initializer constructs", method.name);
 
-        if (node.getGroup() != null) return; // already visited
+		if (node.getGroup() != null)
+			return; // already visited
 
-        node.setGroup(group);
-        if (!node.isXLoad()) {
-            if (node.isVarInitRoot()) {
-                checkState(node.getPredecessors().size() == 2);
-                markGroup(node.getPredecessors().get(1), group); // only color the second predecessor branch
-            } else {
-                for (InstructionGraphNode pred : node.getPredecessors()) {
-                    markGroup(pred, group);
-                }
-            }
-        }
-    }
+		node.setGroup(group);
+		for (InstructionGraphNode pred : node.getPredecessors()) {
+			markGroup(pred, group);
+		}
+	}
 
     // sort the group instructions according to their method index
     private void sort(InstructionGroup group) {
@@ -126,14 +126,21 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
 
     private void verify(InstructionGroup group) {
         List<InstructionGraphNode> nodes = group.getNodes();
+        if (group.getGroupType() == GroupType.VAR_INIT) {
+        	for (InstructionGraphNode node : nodes) {
+        		verifyAccess(node);
+        	}
+        	return;
+        }
+        
         int sizeMinus1 = nodes.size() - 1;
 
         // verify all instruction except for the last one (which must be the root)
         checkState(nodes.get(sizeMinus1) == group.getRoot());
         for (int i = 0; i < sizeMinus1; i++) {
             InstructionGraphNode node = nodes.get(i);
-            Checks.ensure(!node.isXStore(), "An ACTION or Var initializer in rule method '%s' " +
-                    "contains illegal writes to a local variable or parameter", method.name);
+//            Checks.ensure(!node.isXStore(), "An ACTION or Var initializer in rule method '%s' " +
+//                    "contains illegal writes to a local variable or parameter", method.name);
             verifyAccess(node);
         }
 
@@ -157,6 +164,10 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
             case INVOKESPECIAL:
             case INVOKEINTERFACE:
                 MethodInsnNode calledMethod = (MethodInsnNode) node.getInstruction();
+                if (calledMethod.owner.endsWith("$$parboiled")) {
+                	// skip re-targeted methods
+                	return;
+                }
                 Checks.ensure(!isPrivate(calledMethod.owner, calledMethod.name, calledMethod.desc),
                         "Rule method '%s' contains an illegal call to private method '%s'.\nMark '%s' protected or " +
                                 "package-private if you want to prevent public access!",
@@ -216,5 +227,62 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
         }
         return Modifier.isPrivate(modifiers);
     }
+    
+	private void createInitArgsGroups(RuleMethod method) {
+		if (! method.containsVarInitializers()) {
+			return;
+		}
+		for (InstructionGraphNode node : method.getRuleCallsWithActionParams()) {
+			MethodInsnNode ruleMethodInsn = (MethodInsnNode) node.getInstruction();
+			Method targetMethod = AsmUtils.getClassMethod(ruleMethodInsn.owner, ruleMethodInsn.name, ruleMethodInsn.desc);
+
+			int firstArg = ruleMethodInsn.getOpcode() == INVOKESTATIC ? 0 : 1;
+			List<Type> normalArgumentTypes = new ArrayList<Type>(Arrays.asList(Type.getArgumentTypes(ruleMethodInsn.desc)));
+			List<Type> actionArgumentTypes = new ArrayList<Type>();
+			List<InstructionGraphNode> actionArgumentNodes = new ArrayList<InstructionGraphNode>();
+
+			List<InstructionGraphNode> predecessors = node.getPredecessors();
+			VarInitGroup group = null;
+			for (int preds = predecessors.size(), pred = preds - 1; pred >= firstArg; pred--) {
+				int arg = pred - firstArg;
+				if (AsmUtils.isActionParam(targetMethod, arg)) {
+					InstructionGraphNode argNode = predecessors.get(pred);
+
+					actionArgumentTypes.add(0, normalArgumentTypes.remove(arg));
+					actionArgumentNodes.add(0, argNode);
+
+					if (group == null) {
+						InstructionGraphNode root = node;
+						if (firstArg == 1) {
+							// method is not static, root is set to ALOAD 0 or
+							// DUP
+							root = predecessors.get(0);
+						} else if (pred < preds - 1) {
+							// method is static and there are normal arguments
+							// after the last action
+							// parameter
+							root = predecessors.get(pred + 1);
+						}
+						group = new InstructionGroup.VarInitGroup(method, root, node);
+						root.setIsVarInitRoot();
+					}
+					// collect all instructions that initialize the
+					// corresponding action argument
+					markGroup(argNode, group);
+				}
+			}
+
+			group.setRuleActionArgumentTypes(actionArgumentTypes);
+			group.setRuleActionArgumentNodes(actionArgumentNodes);
+			method.getGroups().add(group);
+
+			// re-target rule creation call, since action parameters must be
+			// removed
+			ruleMethodInsn.owner = AsmUtils.getExtendedParserClassName(ruleMethodInsn.owner);
+			ruleMethodInsn.name = AsmUtils.renameRule(ruleMethodInsn.name, ruleMethodInsn.desc);
+			// remove action parameters from descriptor
+			ruleMethodInsn.desc = Type.getMethodDescriptor(Types.RULE, normalArgumentTypes.toArray(new Type[normalArgumentTypes.size()]));
+		}
+	}
 
 }

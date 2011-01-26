@@ -22,26 +22,26 @@
 
 package org.parboiled.transform;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.transform.AsmUtils.*;
+
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.BaseParser;
 import org.parboiled.common.StringUtils;
-import org.parboiled.support.Var;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
-
-import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.transform.AsmUtils.*;
 
 class RuleMethod extends MethodNode {
 
@@ -49,10 +49,8 @@ class RuleMethod extends MethodNode {
     private final List<LabelNode> usedLabels = new ArrayList<LabelNode>();
 
     private final Class<?> ownerClass;
-    private int parameterCount;
     private boolean containsImplicitActions; // calls to Boolean.valueOf(boolean)
     private boolean containsExplicitActions; // calls to BaseParser.ACTION(boolean)
-    private boolean containsVars; // calls to Var.<init>(T)
     private boolean containsPotentialSuperCalls;
     private boolean hasDontExtend;
     private boolean hasExplicitActionOnlyAnnotation;
@@ -66,17 +64,18 @@ class RuleMethod extends MethodNode {
     private int numberOfReturns;
     private InstructionGraphNode returnInstructionNode;
     private List<InstructionGraphNode> graphNodes;
-    private List<LocalVariableNode> localVarVariables;
     private boolean bodyRewritten;
     private boolean skipGeneration;
+    
+    private BitSet actionParams;
+    private List<InstructionGraphNode> rulesWithActionParams;
+	private List<BasicValue> actionVariableTypes;
 
     public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature, String[] exceptions,
                       boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno, boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
         this.ownerClass = ownerClass;
 
-        parameterCount = Type.getArgumentTypes(desc).length;
-        hasCachedAnnotation = parameterCount == 0;
         hasDontLabelAnnotation = hasDontLabelAnno;
         hasExplicitActionOnlyAnnotation = hasExplicitActionOnlyAnno;
         hasSkipActionsInPredicatesAnnotation = hasSkipActionsInPredicates;
@@ -99,10 +98,6 @@ class RuleMethod extends MethodNode {
         return hasDontExtend;
     }
 
-    public int getParameterCount() {
-        return parameterCount;
-    }
-
     public boolean containsImplicitActions() {
         return containsImplicitActions;
     }
@@ -119,12 +114,20 @@ class RuleMethod extends MethodNode {
         this.containsExplicitActions = containsExplicitActions;
     }
 
-    public boolean containsVars() {
-        return containsVars;
+    public boolean containsVarInitializers() {
+    	return rulesWithActionParams != null;
     }
 
     public boolean containsPotentialSuperCalls() {
         return containsPotentialSuperCalls;
+    }
+    
+    public BitSet getActionParams() {
+        return actionParams;
+    }
+    
+    public List<InstructionGraphNode> getRuleCallsWithActionParams() {
+        return rulesWithActionParams;
     }
 
     public boolean hasCachedAnnotation() {
@@ -171,10 +174,6 @@ class RuleMethod extends MethodNode {
         return graphNodes;
     }
 
-    public List<LocalVariableNode> getLocalVarVariables() {
-        return localVarVariables;
-    }
-
     public boolean isBodyRewritten() {
         return bodyRewritten;
     }
@@ -199,6 +198,10 @@ class RuleMethod extends MethodNode {
         if (node == null) {
             node = new InstructionGraphNode(insn, resultValue);
             graphNodes.set(index, node);
+            
+            if (node.isCallToRuleWithActionParams()) {
+            	getRuleCallsWithActionParams().add(node);
+            }
         }
         node.addPredecessors(predecessors);
         return node;
@@ -258,14 +261,13 @@ class RuleMethod extends MethodNode {
                 } else if (isActionRoot(owner, name)) {
                     containsExplicitActions = true;
                 }
-                break;
-
+			case INVOKEVIRTUAL:
+				if (rulesWithActionParams == null && AsmUtils.hasActionParams(AsmUtils.getClassMethod(owner, name, desc))) {
+					rulesWithActionParams = new ArrayList<InstructionGraphNode>();
+				}
+				break;
             case INVOKESPECIAL:
-                if ("<init>".equals(name)) {
-                    if (isVarRoot(owner, name, desc)) {
-                        containsVars = true;
-                    }
-                } else if (isAssignableTo(owner, BaseParser.class)) {
+                if (isAssignableTo(owner, BaseParser.class)) {
                     containsPotentialSuperCalls = true;
                 }
                 break;
@@ -289,15 +291,33 @@ class RuleMethod extends MethodNode {
     public void visitLineNumber(int line, Label start) {
         // do not record line numbers
     }
+    
+	@Override
+	public void visitEnd() {
+		super.visitEnd();
 
-    @Override
-    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        // only remember the local variables of Type org.parboiled.support.Var that are not parameters
-        if (index > parameterCount && Var.class.isAssignableFrom(getClassForType(Type.getType(desc)))) {
-            if (localVarVariables == null) localVarVariables = new ArrayList<LocalVariableNode>();
-            localVarVariables.add(new LocalVariableNode(name, desc, null, null, null, index));
-        }
-    }
+		this.actionParams = analyzeActionParams();
+		int parameterCount = Type.getArgumentTypes(desc).length;
+		this.hasCachedAnnotation = actionParams.cardinality() == parameterCount;
+	}
+    
+	private BitSet analyzeActionParams() {
+		BitSet actionParams = new BitSet();
+		if (visibleParameterAnnotations != null) {
+			for (int param = 0; param < visibleParameterAnnotations.length; param++) {
+				List<?> annotations = visibleParameterAnnotations[param];
+				if (annotations != null) {
+					for (Object annotation : annotations) {
+						if (((AnnotationNode) annotation).desc.equals(Types.VAR_ANNOTATION.getDescriptor())) {
+							actionParams.set(param + 1);
+						}
+					}
+				}
+			}
+		}
+
+		return actionParams;
+	}
 
     @Override
     public String toString() {
@@ -326,7 +346,15 @@ class RuleMethod extends MethodNode {
         skipGeneration = false;
     }
 
-    public void suppressNode() {
+    public List<BasicValue> getActionVariableTypes() {
+		return actionVariableTypes;
+	}
+    
+	public void setActionVariableTypes(List<BasicValue> actionVariableTypes) {
+		this.actionVariableTypes = actionVariableTypes;
+	}
+
+	public void suppressNode() {
         hasSuppressNodeAnnotation = true;
     }
     

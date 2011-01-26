@@ -16,12 +16,14 @@
 
 package org.parboiled.transform;
 
+import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.analysis.BasicValue;
 import org.parboiled.common.Base64;
 import org.parboiled.common.StringUtils;
 
@@ -30,8 +32,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.objectweb.asm.Opcodes.ALOAD;
 
 class InstructionGroupPreparer implements RuleMethodProcessor {
 
@@ -45,7 +45,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
     public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
-        return method.containsExplicitActions() || method.containsVars();
+        return method.containsExplicitActions() || method.containsVarInitializers();
     }
 
     public void process(ParserClassNode classNode, RuleMethod method) {
@@ -70,40 +70,54 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         }
     }
 
-    // create FieldNodes for all xLoad instructions
-    private void extractFields(InstructionGroup group) {
-        List<FieldNode> fields = group.getFields();
-        for (InstructionGraphNode node : group.getNodes()) {
-            if (node.isXLoad()) {
-                VarInsnNode insn = (VarInsnNode) node.getInstruction();
+	// create FieldNodes for all xLoad instructions that access normal
+	// parameters or local variables
+	private void extractFields(InstructionGroup group) {
+		List<FieldNode> fields = group.getFields();
+		for (InstructionGraphNode node : group.getNodes()) {
+			if (node.isXLoad()) {
+				VarInsnNode insn = (VarInsnNode) node.getInstruction();
 
-                // check whether we already have a field for the var with this index
-                int index;
-                for (index = 0; index < fields.size(); index++) {
-                    if (fields.get(index).access == insn.var) break;
-                }
+				if (insn.var < method.getActionVariableTypes().size() && method.getActionVariableTypes().get(insn.var) != null) {
+					// skip this instruction since it accesses an action
+					// variable
+					continue;
+				}
 
-                // if we don't, create a new field for the var
-                if (index == fields.size()) {
-                    // CAUTION, HACK!: for brevity we reuse the access field and the value field of the FieldNode
-                    // for keeping track of the original var index as well as the FieldNodes Type (respectively)
-                    // so we need to make sure that we correct for this when the field is actually written
-                    Type type = node.getResultValue().getType();
-                    fields.add(new FieldNode(insn.var, "field$" + index, type.getDescriptor(), null, type));
-                }
+				// check whether we already have a field for the var with this
+				// index
+				int index;
+				for (index = 0; index < fields.size(); index++) {
+					if (fields.get(index).access == insn.var)
+						break;
+				}
 
-                // normalize the instruction so instruction groups that are identical except for the variable
-                // indexes are still mapped to the same group class (name)
-                insn.var = index;
-            }
-        }
-    }
+				// if we don't, create a new field for the var
+				if (index == fields.size()) {
+					// CAUTION, HACK!: for brevity we reuse the access field and
+					// the value field of the FieldNode
+					// for keeping track of the original var index as well as
+					// the FieldNodes Type (respectively)
+					// so we need to make sure that we correct for this when the
+					// field is actually written
+					Type type = node.getResultValue().getType();
+					fields.add(new FieldNode(insn.var, "field$" + index, type.getDescriptor(), null, type));
+				}
+
+				// normalize the instruction so instruction groups that are
+				// identical except for the variable
+				// indexes are still mapped to the same group class (name)
+				// use negative index to mark variable for field based access
+				insn.var = -index;
+			}
+		}
+	}
 
     // set a group name base on the hash across all group instructions
     private void name(InstructionGroup group, ParserClassNode classNode) {
         synchronized (lock) {
             // generate an MD5 hash across the buffer, use only the first 96 bit
-            MD5Digester digester = new MD5Digester(classNode.name);
+            MD5Digester digester = new MD5Digester(classNode.name, group.getRuleMethod());
             group.getInstructions().accept(digester);
             byte[] hash = digester.getMD5Hash();
             byte[] hash96 = new byte[12];
@@ -121,9 +135,11 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         private static ByteBuffer buffer;
         private final List<Label> labels = new ArrayList<Label>();
         private final String parserClassName;
+        private final RuleMethod ruleMethod;
 
-        public MD5Digester(String parserClassName) {
+        public MD5Digester(String parserClassName, RuleMethod ruleMethod) {
             this.parserClassName = parserClassName;
+            this.ruleMethod = ruleMethod;
             if (digest == null) {
                 try {
                     digest = MessageDigest.getInstance("MD5");
@@ -152,6 +168,16 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         public void visitVarInsn(int opcode, int var) {
             update(opcode);
             update(var);
+            
+			// ensure that two actions with same number of action variables are
+			// named different if variable types differ
+			if (0 <= var && var < ruleMethod.getActionVariableTypes().size()) {
+				BasicValue value = ruleMethod.getActionVariableTypes().get(var);
+				if (value != null) {
+					update(value.getType().getInternalName());
+				}
+			}
+            
             if (opcode == ALOAD && var == 0) {
                 // make sure the names of identical actions differ if they are defined in different parent classes
                 update(parserClassName);

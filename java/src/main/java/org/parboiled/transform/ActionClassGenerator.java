@@ -16,11 +16,13 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import static org.objectweb.asm.Opcodes.*;
+import org.parboiled.transform.InstructionGroup.GroupType;
 
 class ActionClassGenerator extends GroupClassGenerator {
 
@@ -34,8 +36,8 @@ class ActionClassGenerator extends GroupClassGenerator {
     }
 
     @Override
-    protected boolean appliesTo(InstructionGraphNode node) {
-        return node.isActionRoot();
+    protected boolean appliesTo(InstructionGroup group) {
+        return group.getGroupType() == GroupType.ACTION;
     }
 
     @Override
@@ -47,8 +49,14 @@ class ActionClassGenerator extends GroupClassGenerator {
     protected void generateMethod(InstructionGroup group, ClassWriter cw) {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", '(' + Types.CONTEXT_DESC + ")Z", null, null);
 
-        insertSetContextCalls(group, 1);
-        convertXLoads(group);
+		// store context to 2nd local variable
+		// this context is later used for setVariable and getVariable calls
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitVarInsn(ASTORE, 2);
+        
+//        fixContextSwitches(group);
+        insertSetContextCalls(group);
+        convertXLoadsAndXStores(group);
 
         group.getInstructions().accept(mv);
 

@@ -16,13 +16,12 @@
 
 package org.parboiled.transform;
 
-import org.parboiled.BaseParser;
-import org.parboiled.Rule;
-import org.parboiled.support.Var;
-import org.parboiled.annotations.*;
-
 import static java.lang.Integer.parseInt;
 import static org.parboiled.common.StringUtils.isEmpty;
+
+import org.parboiled.BaseParser;
+import org.parboiled.Rule;
+import org.parboiled.annotations.*;
 
 @SuppressWarnings({"UnusedDeclaration"})
 @BuildParseTree
@@ -67,14 +66,14 @@ class TestParser extends BaseParser<Integer> {
 
     public Rule RuleWithComplexActionSetup(int param) {
         int i = 26, j = 18;
-        Var<String> string = new Var<String>("text");
+        String string;
         i += param;
         j -= i;
-        return Sequence('a' + i, i > param + j, string, ACTION(integer + param < string.get().length() - i - j));
+        return Sequence(DO (string = "text"), 'a' + i, i > param + j, string, ACTION(integer + param < string.length() - i - j));
     }
 
     public Rule BugIn0990() {
-        Var<Integer> var = new Var<Integer>();
+        Integer var = 0;
         return FirstOf("10", "2");
     }
 

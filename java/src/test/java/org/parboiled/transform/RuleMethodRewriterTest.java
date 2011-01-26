@@ -37,8 +37,7 @@ public class RuleMethodRewriterTest extends TransformationTest {
             new InstructionGroupPreparer(),
             new ActionClassGenerator(true),
             new VarInitClassGenerator(true),
-            new RuleMethodRewriter(),
-            new VarFramingGenerator()
+            new RuleMethodRewriter()
     );
 
     @BeforeClass

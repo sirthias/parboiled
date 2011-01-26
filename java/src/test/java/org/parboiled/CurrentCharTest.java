@@ -16,11 +16,10 @@
 
 package org.parboiled;
 
+import static org.testng.Assert.*;
+
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 public class CurrentCharTest {
 

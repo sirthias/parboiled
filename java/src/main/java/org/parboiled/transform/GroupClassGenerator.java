@@ -16,17 +16,21 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.transform.AsmUtils.*;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.analysis.BasicValue;
+import org.parboiled.transform.support.InsnListGenerator;
 
-import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.transform.AsmUtils.findLoadedClass;
-import static org.parboiled.transform.AsmUtils.loadClass;
+import java.util.HashSet;
 
-abstract class GroupClassGenerator implements RuleMethodProcessor {
+abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 
     private static final Object lock = new Object();
 
@@ -43,13 +47,13 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
         this.method = checkArgNotNull(method, "method");
 
         for (InstructionGroup group : method.getGroups()) {
-            if (appliesTo(group.getRoot())) {
+            if (appliesTo(group)) {
                 loadGroupClass(group);
             }
         }
     }
 
-    protected abstract boolean appliesTo(InstructionGraphNode group);
+    protected abstract boolean appliesTo(InstructionGroup group);
 
     private void loadGroupClass(InstructionGroup group) {
         createGroupClassType(group);
@@ -79,9 +83,17 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         generateClassBasics(group, classWriter);
         generateFields(group, classWriter);
-        generateConstructor(classWriter);
+        generateConstructor(group, classWriter);
         generateMethod(group, classWriter);
-        return classWriter.toByteArray();
+        byte[] code = classWriter.toByteArray();
+        
+//        PrintWriter writer = new PrintWriter(System.err);
+//        CheckClassAdapter.verify(new ClassReader(code), false, writer);
+//        
+//        TraceClassVisitor trace = new TraceClassVisitor(writer);
+//        new ClassReader(code).accept(trace, ClassReader.SKIP_FRAMES);
+        
+        return code;
     }
 
     private void generateClassBasics(InstructionGroup group, ClassWriter cw) {
@@ -101,18 +113,49 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
         }
     }
 
-    private void generateConstructor(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/String;)V", null, null);
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESPECIAL, getBaseType().getInternalName(), "<init>", "(Ljava/lang/String;)V");
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(0, 0); // trigger automatic computing
-    }
+	private void generateConstructor(InstructionGroup group, ClassWriter cw) {
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/String;)V", null, null);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitMethodInsn(INVOKESPECIAL, getBaseType().getInternalName(), "<init>", "(Ljava/lang/String;)V");
+		mv.visitInsn(RETURN);
+		mv.visitMaxs(0, 0); // trigger automatic computing
+	}
 
     protected abstract void generateMethod(InstructionGroup group, ClassWriter cw);
 
-    protected void insertSetContextCalls(InstructionGroup group, int localVarIx) {
+//    protected void fixContextSwitches(InstructionGroup group) {
+//        List<InstructionGraphNode> nodes = group.getNodes();
+//        InsnList instructions = group.getInstructions();
+//        for (int i = nodes.size() - 1; i >= 0; i--) {
+//            InstructionGraphNode node = nodes.get(i);
+//            if (!node.isContextSwitch()) continue;
+//
+//            // insert context switch
+//            String contextSwitchType = ((MethodInsnNode) node.getInstruction()).name;
+//            insertContextSwitch(instructions, getFirstOfSubtree(instructions, node, new HashSet<InstructionGraphNode>())
+//                    .getInstruction(), contextSwitchType);
+//
+//            // insert inverse context switch, reversing the context switch done before
+//            String reverse = contextSwitchType.startsWith("UP") ?
+//                    contextSwitchType.replace("UP", "DOWN") : contextSwitchType.replace("DOWN", "UP");
+//            insertContextSwitch(instructions, node.getInstruction(), reverse);
+//
+//            // remove original call
+//            instructions.remove(node.getInstruction());
+//        }
+//    }
+
+//    private void insertContextSwitch(InsnList instructions, AbstractInsnNode firstInsn, String contextSwitchType) {
+//        instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 0));
+//        instructions.insertBefore(firstInsn, new VarInsnNode(ALOAD, 1));
+//        instructions.insertBefore(firstInsn, new MethodInsnNode(INVOKEVIRTUAL,
+//                getBaseType().getInternalName(), contextSwitchType, CONTEXT_SWITCH_DESC));
+//        instructions.insertBefore(firstInsn, new VarInsnNode(ASTORE, 1));
+//    }
+
+    protected void insertSetContextCalls(InstructionGroup group) {
+    	int localVarIx = 2;
         InsnList instructions = group.getInstructions();
         for (InstructionGraphNode node : group.getNodes()) {
             if (node.isCallOnContextAware()) {
@@ -138,20 +181,100 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
         }
     }
 
-    protected void convertXLoads(InstructionGroup group) {
-        String owner = group.getGroupClassType().getInternalName();
-        for (InstructionGraphNode node : group.getNodes()) {
-            if (!node.isXLoad()) continue;
+	protected void convertXLoadsAndXStores(InstructionGroup group) {
+		InsnList instructions = group.getInstructions();
 
-            VarInsnNode insn = (VarInsnNode) node.getInstruction();
-            FieldNode field = group.getFields().get(insn.var);
+		for (InstructionGraphNode node : group.getNodes()) {
+			if (!(node.isXLoad() || node.isXStore())) {
+				continue;
+			}
 
-            // insert the correct GETFIELD after the xLoad
-            group.getInstructions().insert(insn, new FieldInsnNode(GETFIELD, owner, field.name, field.desc));
+			VarInsnNode insn = (VarInsnNode) node.getInstruction();
+			int var = insn.var;
+			
+			// check if this is a normal parameter or local variable
+			// --> load value from field
+			if (var <= 0) {
+				var = -var;
 
-            // change the load to ALOAD 0
-            group.getInstructions().set(insn, new VarInsnNode(ALOAD, 0));
+				FieldNode field = group.getFields().get(var);
+
+				// insert the correct GETFIELD after the xLoad
+				group.getInstructions().insert(insn,
+						new FieldInsnNode(GETFIELD, group.getGroupClassType().getInternalName(), field.name, field.desc));
+
+				// change the load to ALOAD 0
+				group.getInstructions().set(insn, new VarInsnNode(ALOAD, 0));
+				continue;
+			}
+			
+			// this is an action variable
+			BasicValue varValue = method.getActionVariableTypes().get(var);
+			Type varType = varValue.getType();
+
+			InsnListGenerator gen = new InsnListGenerator();
+
+			// load context, which is unaffected by UP(...) and DOWN(...)
+			// context switches
+			gen.loadLocal(2, CONTEXT);
+			
+			var = mapVarIndex(var);
+			if (node.isXStore()) {
+				gen.swap();
+				gen.push(var);
+				gen.swap();
+			} else {
+				gen.push(var);
+			}
+
+			if (node.isXStore()) {
+				gen.box(varType);
+				gen.invokeInterface(CONTEXT,
+						Method.getMethod("void setVariable(int, Object)"));
+			} else {
+				gen.invokeInterface(CONTEXT,
+						Method.getMethod("Object getVariable(int)"));
+				gen.unbox(varType);
+			}
+
+			instructions.insertBefore(node.getInstruction(), gen.instructions);
+			instructions.remove(node.getInstruction());
+		}
+	}
+
+	/**
+	 * Normalizes index of action variables
+	 * 
+	 * @param var Index of action variable.
+	 * @return Normalized index
+	 */
+	private int mapVarIndex(int var) {
+		int newVar = var;
+		for (BasicValue value : method.getActionVariableTypes()) {
+			if (value == null) {
+				newVar--;
+			}
+			if (var-- == 0) {
+				break;
+			}
+		}
+
+		return newVar;
+	}
+
+	private static InstructionGraphNode getFirstOfSubtree(InsnList instructions, InstructionGraphNode node,
+                                                         HashSet<InstructionGraphNode> covered) {
+        InstructionGraphNode first = node;
+        if (!covered.contains(node)) {
+            covered.add(node);
+            for (InstructionGraphNode predecessor : node.getPredecessors()) {
+                InstructionGraphNode firstOfPred = getFirstOfSubtree(instructions, predecessor, covered);
+                if (instructions.indexOf(first.getInstruction()) > instructions.indexOf(firstOfPred.getInstruction())) {
+                    first = firstOfPred;
+                }
+            }
         }
+        return first;
     }
 
 }

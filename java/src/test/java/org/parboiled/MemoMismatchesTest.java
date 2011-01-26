@@ -16,12 +16,11 @@
 
 package org.parboiled;
 
+import static org.testng.Assert.*;
+
 import org.parboiled.annotations.MemoMismatches;
 import org.parboiled.parserunners.ProfilingParseRunner;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 
 public class MemoMismatchesTest {
 
@@ -64,7 +63,7 @@ public class MemoMismatchesTest {
         ParserStatistics stats = ParserStatistics.generateFor(parser.Clause());
         assertEquals(stats.toString(), "" +
                 "Parser statistics for rule 'Clause':\n" +
-                "    Total rules       : 13\n" +
+                "    Total rules       : 15\n" +
                 "        Actions       : 0\n" +
                 "        Any           : 0\n" +
                 "        CharIgnoreCase: 0\n" +
@@ -86,7 +85,7 @@ public class MemoMismatchesTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n" +
+                "    DelegatingMatchers: 0\n" +
                 "MemoMismatchesMatchers: 0\n");
 
         ProfilingParseRunner runner = new ProfilingParseRunner(parser.Clause());
@@ -112,7 +111,7 @@ public class MemoMismatchesTest {
         ParserStatistics stats = ParserStatistics.generateFor(parser.Clause());
         assertEquals(stats.toString(), "" +
                 "Parser statistics for rule 'Clause':\n" +
-                "    Total rules       : 13\n" +
+                "    Total rules       : 15\n" +
                 "        Actions       : 0\n" +
                 "        Any           : 0\n" +
                 "        CharIgnoreCase: 0\n" +
@@ -134,7 +133,7 @@ public class MemoMismatchesTest {
                 "\n" +
                 "    Action Classes    : 0\n" +
                 "    ProxyMatchers     : 0\n" +
-                "    VarFramingMatchers: 0\n" +
+                "    DelegatingMatchers: 0\n" +
                 "MemoMismatchesMatchers: 1\n");
 
         ProfilingParseRunner runner = new ProfilingParseRunner(parser.Clause());

@@ -32,10 +32,11 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.parboiled.BaseParser;
 import org.parboiled.ContextAware;
-import org.parboiled.support.Var;
+import org.parboiled.Rule;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -58,6 +59,14 @@ class AsmUtils {
         checkArgNotNull(parserClassName, "parserClassName");
         return parserClassName + "$$parboiled";
     }
+    
+	public static String stripSuffix(String name) {
+		int index = name.indexOf("$$");
+		if (index > 0) {
+			return name.substring(0, index);
+		}
+		return name;
+	}
 
     public static Class<?> getClassForInternalName(String classDesc) {
         checkArgNotNull(classDesc, "classDesc");
@@ -301,26 +310,56 @@ class AsmUtils {
         return "ACTION".equals(methodName) && isAssignableTo(methodOwner, BaseParser.class);
     }
 
-    public static boolean isVarRoot(AbstractInsnNode insn) {
-        checkArgNotNull(insn, "insn");
-        if (insn.getOpcode() != Opcodes.INVOKESPECIAL) return false;
-        MethodInsnNode mi = (MethodInsnNode) insn;
-        return isVarRoot(mi.owner, mi.name, mi.desc);
-    }
-
-    public static boolean isVarRoot(String methodOwner, String methodName, String methodDesc) {
-        checkArgNotNull(methodOwner, "methodOwner");
-        checkArgNotNull(methodName, "methodName");
-        checkArgNotNull(methodDesc, "methodDesc");
-        return "<init>".equals(methodName) && "(Ljava/lang/Object;)V".equals(methodDesc) &&
-                isAssignableTo(methodOwner, Var.class);
-    }
-
     public static boolean isCallOnContextAware(AbstractInsnNode insn) {
-        checkArgNotNull(insn, "insn");
         if (insn.getOpcode() != Opcodes.INVOKEVIRTUAL && insn.getOpcode() != Opcodes.INVOKEINTERFACE) return false;
         MethodInsnNode mi = (MethodInsnNode) insn;
         return isAssignableTo(mi.owner, ContextAware.class);
     }
 
+    public static boolean isCallToRuleCreationMethod(AbstractInsnNode insn) {
+        if (insn.getType() != AbstractInsnNode.METHOD_INSN) return false;
+        MethodInsnNode mi = (MethodInsnNode) insn;
+        Type type = Type.getReturnType(mi.desc);
+        return type.getSort() == Type.OBJECT && isAssignableTo(type.getInternalName(), Rule.class);
+    }
+    
+	public static boolean isCallToRuleWithActionParams(AbstractInsnNode insn) {
+		if (isCallToRuleCreationMethod(insn)) {
+			MethodInsnNode methodInsn = (MethodInsnNode) insn;
+
+			return hasActionParams(getClassMethod(methodInsn.owner, methodInsn.name, methodInsn.desc));
+		}
+		return false;
+	}
+
+	public static boolean hasActionParams(Method method) {
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		for (Annotation[] individualAnnotations : parameterAnnotations) {
+			for (Annotation annotation : individualAnnotations) {
+				if (Type.getType(annotation.annotationType()).equals(Types.VAR_ANNOTATION)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isActionParam(Method method, int parameterIndex) {
+		if (parameterIndex < method.getParameterAnnotations().length) {
+			for (Annotation annotation : method.getParameterAnnotations()[parameterIndex]) {
+				if (Type.getType(annotation.annotationType()).equals(Types.VAR_ANNOTATION)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static String renameRule(String methodName, String methodDesc) {
+		String suffix = methodDesc.replaceAll("[(]|[)].*", "").replaceAll("[/;]|\\[\\]", "\\$");
+		if (suffix.length() > 0) {
+			return methodName + "$$" + suffix;
+		}
+		return methodName;
+	}
 }

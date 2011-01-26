@@ -17,17 +17,17 @@
 package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
+import static org.testng.Assert.assertEquals;
 import org.parboiled.common.FileUtils;
 import org.parboiled.common.ImmutableList;
+import org.parboiled.transform.InstructionGroup.GroupType;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.zip.CRC32;
-
-import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
-import static org.testng.Assert.assertEquals;
 
 public class InstructionGroupCreatorTest extends TransformationTest {
 
@@ -92,10 +92,10 @@ public class InstructionGroupCreatorTest extends TransformationTest {
                     .append(node.isVarInitRoot() ? "color=grey," : "")
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")
-                    .append(node.getGroup() != null && node.getGroup().getRoot().isActionRoot() ?
-                            "style=filled,fillcolor=\"/pastel15/" + (method.getGroups()
+                    .append(node.getGroup() != null && node.getGroup().getGroupType() == GroupType.ACTION ?
+                            "style=filled,fillcolor=\"/gnbu8/" + (method.getGroups()
                                     .indexOf(node.getGroup()) + 1) + "\"," : "")
-                    .append(node.getGroup() != null && node.getGroup().getRoot().isVarInitRoot() ?
+                    .append(node.getGroup() != null && node.getGroup().getGroupType() == GroupType.VAR_INIT ?
                             "style=filled,fillcolor=grey," : "")
                     .append("fontcolor=black];\n");
 

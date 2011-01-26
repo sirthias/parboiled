@@ -22,7 +22,8 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+
 import org.objectweb.asm.tree.analysis.Analyzer;
 
 /**
@@ -33,7 +34,7 @@ class InstructionGraphCreator implements RuleMethodProcessor {
     public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
-        return method.containsImplicitActions() || method.containsExplicitActions() || method.containsVars();
+        return method.containsImplicitActions() || method.containsExplicitActions() || method.containsVarInitializers();
     }
 
     public void process(ParserClassNode classNode, RuleMethod method) throws Exception {

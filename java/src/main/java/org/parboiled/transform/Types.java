@@ -19,25 +19,32 @@ package org.parboiled.transform;
 import org.objectweb.asm.Type;
 import org.parboiled.*;
 import org.parboiled.annotations.*;
-import org.parboiled.Action;
-import org.parboiled.BaseParser;
+import org.parboiled.matchers.InitArgsMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.matchers.VarFramingMatcher;
-import org.parboiled.support.Var;
+import org.parboiled.matchers.SetMaxLocalsMatcher;
 
 interface Types {
+
+	static final Type ACTION = Type.getType(Action.class);
     static final Type BASE_ACTION = Type.getType(BaseAction.class);
-    static final Type BASE_VAR_INIT = Type.getType(BaseVarInit.class);
     static final Type BASE_PARSER = Type.getType(BaseParser.class);
+    static final Type BOOLEAN_TYPE = Type.getType(Boolean.class);
     static final Type CONTEXT_AWARE = Type.getType(ContextAware.class);
     static final Type LABEL = Type.getType(Label.class);
     static final Type MATCHER = Type.getType(Matcher.class);
     static final Type PROXY_MATCHER = Type.getType(ProxyMatcher.class);
     static final Type RULE = Type.getType(Rule.class);
-    static final Type VAR = Type.getType(Var.class);
-    static final Type VAR_FRAMING_MATCHER = Type.getType(VarFramingMatcher.class);
 
+    // <types required for action parameters>
+    final Type CONTEXT = Type.getType(Context.class);
+    final Type VAR_ANNOTATION = Type.getType(Var.class);
+    final Type INIT_ARGS_MATCHER = Type.getType(InitArgsMatcher.class);
+    final Type SET_MAX_LOCALS_MATCHER = Type
+                    .getType(SetMaxLocalsMatcher.class);
+    final Type OBJECT = Type.getType(Object.class);
+    // </types required for action parameters>
+    
     static final String ACTION_DESC = Type.getType(Action.class).getDescriptor();
     static final String CACHED_DESC = Type.getType(Cached.class).getDescriptor();
     static final String CONTEXT_DESC = Type.getType(Context.class).getDescriptor();
@@ -54,5 +61,5 @@ interface Types {
     static final String MEMO_MISMATCHES_DESC = Type.getType(MemoMismatches.class).getDescriptor();
     static final String MATCHER_DESC = MATCHER.getDescriptor();
     static final String RULE_DESC = RULE.getDescriptor();
-    static final String VAR_DESC = VAR.getDescriptor();
+
 }
