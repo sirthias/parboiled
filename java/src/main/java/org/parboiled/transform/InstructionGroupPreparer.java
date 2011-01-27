@@ -174,7 +174,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
 			if (0 <= var && var < ruleMethod.getActionVariableTypes().size()) {
 				BasicValue value = ruleMethod.getActionVariableTypes().get(var);
 				if (value != null) {
-					update(value.getType().getInternalName());
+					update(value.getType().getDescriptor());
 				}
 			}
             
