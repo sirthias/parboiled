@@ -33,8 +33,8 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
         public Rule Clause() {
             Integer a;
             return Sequence(
-            		DO(a = -1),
-                    Digits(), DO(a = peek()),
+            		a = -1,
+                    Digits(), a = peek(),
                     SomeRule(a, 2),
                     Optional(
                             Sequence(
@@ -89,7 +89,7 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
                 "\n" +
                 "    Action Classes    : 5\n" +
                 "    ProxyMatchers     : 1\n" +
-                "    DelegatingMatchers: 1\n" +
+                "    DelegatingMatchers: 2\n" +
                 "MemoMismatchesMatchers: 0\n");
 
         test(rule, "1+2+3")

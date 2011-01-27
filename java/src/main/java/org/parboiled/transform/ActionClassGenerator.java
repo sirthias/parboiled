@@ -54,11 +54,15 @@ class ActionClassGenerator extends GroupClassGenerator {
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitVarInsn(ASTORE, 2);
         
-//        fixContextSwitches(group);
         insertSetContextCalls(group);
         convertXLoadsAndXStores(group);
 
         group.getInstructions().accept(mv);
+        
+        if (group.getRoot().isAssignmentAction()) {
+        	mv.visitInsn(POP);
+        	mv.visitLdcInsn(true);
+        }
 
         mv.visitInsn(IRETURN);
         mv.visitMaxs(0, 0); // trigger automatic computing

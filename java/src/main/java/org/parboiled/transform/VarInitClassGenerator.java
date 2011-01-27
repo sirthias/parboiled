@@ -58,7 +58,6 @@ class VarInitClassGenerator extends GroupClassGenerator {
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitVarInsn(ASTORE, 2);
 		
-//		fixContextSwitches(group);
 		insertSetContextCalls(group);
 		
 		createAndSetArgumentArray((VarInitGroup)group);

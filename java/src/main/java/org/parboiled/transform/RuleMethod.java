@@ -186,6 +186,11 @@ class RuleMethod extends MethodNode {
         checkState(StringUtils.isNotEmpty(name));
         return name.charAt(0) == '$';
     }
+    
+    public InstructionGraphNode insertGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
+    	graphNodes.add(instructions.indexOf(insn), null);
+    	return setGraphNode(insn, resultValue, predecessors);
+    }
 
     public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
         if (graphNodes == null) {
@@ -254,7 +259,7 @@ class RuleMethod extends MethodNode {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-        switch (opcode) {
+    	switch (opcode) {
             case INVOKESTATIC:
                 if (!hasExplicitActionOnlyAnnotation && isBooleanValueOfZ(owner, name, desc)) {
                     containsImplicitActions = true;
@@ -290,6 +295,16 @@ class RuleMethod extends MethodNode {
     @Override
     public void visitLineNumber(int line, Label start) {
         // do not record line numbers
+    }
+    
+    @Override
+    public void visitVarInsn(int opcode, int var) {
+    	// actions that assign values to action variables
+    	if (!hasExplicitActionOnlyAnnotation && !ownerClass.equals(BaseParser.class)) {
+    		containsImplicitActions |= ISTORE <= opcode && opcode < IASTORE;
+    	}
+    	
+    	super.visitVarInsn(opcode, var);
     }
     
 	@Override

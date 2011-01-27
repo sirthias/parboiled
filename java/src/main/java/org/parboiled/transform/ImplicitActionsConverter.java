@@ -16,20 +16,24 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.AASTORE;
+import static org.objectweb.asm.Opcodes.ANEWARRAY;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.checkState;
+import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.TypeInsnNode;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
+import org.objectweb.asm.tree.analysis.BasicValue;
+import org.objectweb.asm.tree.analysis.Value;
 
 /**
  * Makes all implicit action expressions in a rule method explicit.
@@ -63,11 +67,15 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
             replaceWithActionWrapper(node);
             method.setContainsExplicitActions(true);
             return;
+        } else if (wrapVarAssignment(node)) {
+        	method.setContainsExplicitActions(true);
+        	return;
         }
         if (!node.isActionRoot()) {
-            for (InstructionGraphNode predecessor : node.getPredecessors()) {
-                walkNode(predecessor);
-            }
+			for (InstructionGraphNode predecessor : node.getPredecessors()
+					.toArray(new InstructionGraphNode[node.getPredecessors().size()])) {
+				walkNode(predecessor);
+			}
         }
     }
 
@@ -77,13 +85,69 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
         node.setIsActionRoot();
         node.setInstruction(insn);
     }
+    
+    private InstructionGraphNode getStoreInstructionNode(InstructionGraphNode node) {
+    	if (node.isXStore()) return node;
+    	
+    	for (InstructionGraphNode succ : node.getSuccessors()) {
+    		if (covered.contains(succ)) continue;
+    		InstructionGraphNode storeNode = getStoreInstructionNode(succ);
+    		if (storeNode != null) {
+    			return storeNode;
+    		}
+    	}
+    	return null;
+    }
+    
+    private boolean wrapVarAssignment(InstructionGraphNode node) {
+    	// an assignment to an action variable
+    	
+    	// find root instruction that creates the value for variable assignment and the one, 
+        // that is passed to the rule method
+    	InstructionGraphNode n = node;
+    	while (n.getSuccessors().size() == 1 && n.getPredecessors().size() == 1) {
+    		n = n.getPredecessors().get(0);
+    	}
+    	
+    	// at least one subtree must contain a store instruction
+    	InstructionGraphNode storeInsnNode = getStoreInstructionNode(n);
+    	if (storeInsnNode == null) return false;
+    	
+    	// if auto boxing is involved then there may be more than one dependent
+    	InstructionGraphNode ruleCreationNode = null;
+    	for (InstructionGraphNode dependent : node.getSuccessors()) {
+    		if (isObjectArgumentToRuleCreatingMethodCall(node, dependent) || 
+					isStoredIntoObjectArray(dependent)) {
+    			ruleCreationNode = dependent;
+    			break;
+    		}
+    	}
+    	
+    	if (ruleCreationNode != null) {
+    		int nodeIdx = method.instructions.indexOf(node.getInstruction());
+    		int storeIsnsIdx = method.instructions.indexOf(storeInsnNode.getInstruction());
+    		
+    		InstructionGraphNode lastNode = nodeIdx < storeIsnsIdx ? storeInsnNode : node;
+    		
+    		AbstractInsnNode actionInsn = createActionWrappingInsn();
+    		method.instructions.insert(lastNode.getInstruction(), actionInsn);
+    		InstructionGraphNode actionNode = method.insertGraphNode(actionInsn, new BasicValue(Type.getType(Object.class)), Arrays.<Value>asList(node, storeInsnNode));
+    		covered.add(actionNode);
+    		
+    		actionNode.setIsAssignmentAction();
+    		
+    		return true;
+    	}
+    	
+    	return false;
+    }
 
     private boolean isImplicitAction(InstructionGraphNode node) {
         // an implicit action must be a call to Boolean.valueOf(boolean)
         if (!isBooleanValueOfZ(node.getInstruction())) return false;
 
         // it must have exactly one other instruction that depends on it
-        List<InstructionGraphNode> dependents = getDependents(node);
+        List<InstructionGraphNode> dependents = node.getSuccessors();
         if (dependents.size() != 1) return false;
 
         // this dependent instruction must be rule method call
@@ -101,7 +165,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
         MethodInsnNode mi = (MethodInsnNode) insn;
         if (!Types.RULE.equals(Type.getReturnType(mi.desc))) return false;
 
-        // Doesthe result of the Boolean.valueOf(boolean) call correspond to an Object parameter ?
+        // Does the result of the Boolean.valueOf(boolean) call correspond to an Object parameter ?
         Type[] argTypes = Type.getArgumentTypes(mi.desc);
         int argIndex = getArgumentIndex(dependent, node);
         checkState(argIndex < argTypes.length);
@@ -114,7 +178,7 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
         if (insn.getOpcode() != AASTORE) return false;
 
         // Does this instruction store into an array of Object ?
-        List<InstructionGraphNode> dependents = getDependents(dependent);
+        List<InstructionGraphNode> dependents = dependent.getSuccessors();
         checkState(dependents.size() == 1); // an AASTORE instruction should have exactly one dependent
         AbstractInsnNode newArrayInsn = dependents.get(0).getInstruction();
         checkState(newArrayInsn.getOpcode() == ANEWARRAY); // which should be a n ANEWARRAY instruction
@@ -130,16 +194,6 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
             }
         }
         throw new IllegalStateException();
-    }
-
-    private List<InstructionGraphNode> getDependents(InstructionGraphNode predecessor) {
-        List<InstructionGraphNode> dependents = new ArrayList<InstructionGraphNode>();
-        for (InstructionGraphNode node : method.getGraphNodes()) {
-            if (node.getPredecessors().contains(predecessor)) {
-                dependents.add(node);
-            }
-        }
-        return dependents;
     }
 
     private MethodInsnNode createActionWrappingInsn() {

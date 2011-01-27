@@ -42,6 +42,8 @@ class InstructionGraphNode implements Value {
     private AbstractInsnNode instruction;
     private final BasicValue resultValue;
     private final List<InstructionGraphNode> predecessors = new ArrayList<InstructionGraphNode>();
+    private final List<InstructionGraphNode> successors = new ArrayList<InstructionGraphNode>();
+    private boolean isAssignmentAction;
     private boolean isActionRoot;
     private final boolean isCallToRuleWithActionParams;
     private boolean isActionParam;
@@ -80,6 +82,10 @@ class InstructionGraphNode implements Value {
     public List<InstructionGraphNode> getPredecessors() {
         return predecessors;
     }
+    
+    public List<InstructionGraphNode> getSuccessors() {
+        return successors;
+    }
 
     public InstructionGroup getGroup() {
         return group;
@@ -104,6 +110,15 @@ class InstructionGraphNode implements Value {
     public void setIsActionRoot() {
         isActionRoot = true;
     }
+    
+    public void setIsAssignmentAction() {
+    	setIsActionRoot();
+		this.isAssignmentAction = true;
+	}
+    
+    public boolean isAssignmentAction() {
+		return isAssignmentAction;
+	}
 
     public boolean isVarInitRoot() {
         return isVarInitRoot;
@@ -120,7 +135,7 @@ class InstructionGraphNode implements Value {
     public void setIsActionParam() {
     	this.isActionParam = true;
     }
-
+    
 	public boolean isCallToRuleWithActionParams() {
 		return isCallToRuleWithActionParams;
 	}
@@ -145,10 +160,11 @@ class InstructionGraphNode implements Value {
             }
         }
     }
-
+    
 	public void addPredecessor(InstructionGraphNode node) {
 		if (!predecessors.contains(node)) {
 			predecessors.add(node);
+			node.successors.add(this);
 			if (isCallToRuleWithActionParams()) {
 				int paramIndex = predecessors.indexOf(node);
 
@@ -162,7 +178,15 @@ class InstructionGraphNode implements Value {
 			}
 		}
 	}
-
+	
+	public boolean removePredecessor(InstructionGraphNode node) {
+		if (predecessors.remove(node)) {
+			node.successors.remove(this);
+			return true;
+		}
+		return false;
+	}
+	
     @Override
     public String toString() {
         return instruction.getOpcode() != -1 ? AbstractVisitor.OPCODES[instruction.getOpcode()] : super.toString();
