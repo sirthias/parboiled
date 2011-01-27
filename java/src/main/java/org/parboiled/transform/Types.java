@@ -38,7 +38,7 @@ interface Types {
 
     // <types required for action parameters>
     final Type CONTEXT = Type.getType(Context.class);
-    final Type VAR_ANNOTATION = Type.getType(Var.class);
+    final Type ARG_ANNOTATION = Type.getType(Arg.class);
     final Type INIT_ARGS_MATCHER = Type.getType(InitArgsMatcher.class);
     final Type SET_MAX_LOCALS_MATCHER = Type
                     .getType(SetMaxLocalsMatcher.class);

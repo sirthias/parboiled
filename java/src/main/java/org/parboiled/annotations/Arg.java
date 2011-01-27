@@ -27,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
-public @interface Var {
+@Target({ ElementType.PARAMETER })
+public @interface Arg {
 
 }

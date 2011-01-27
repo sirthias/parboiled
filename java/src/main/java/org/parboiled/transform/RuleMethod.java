@@ -323,7 +323,7 @@ class RuleMethod extends MethodNode {
 				List<?> annotations = visibleParameterAnnotations[param];
 				if (annotations != null) {
 					for (Object annotation : annotations) {
-						if (((AnnotationNode) annotation).desc.equals(Types.VAR_ANNOTATION.getDescriptor())) {
+						if (((AnnotationNode) annotation).desc.equals(Types.ARG_ANNOTATION.getDescriptor())) {
 							actionParams.set(param + 1);
 						}
 					}
