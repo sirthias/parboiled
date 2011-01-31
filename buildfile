@@ -59,8 +59,8 @@ define "parboiled" do
     test.using :testng
     package(:jar).pom.from file("pom.xml")
     package :sources
-    #package :javadoc
-    #doc.using :windowtitle=>"parboiled-scala #{VERSION_NUMBER} API"
+    package :scaladoc
+    doc.using "doc-title".to_sym=>"parboiled-scala #{VERSION_NUMBER} API"
   end
 
   desc "Examples using the Java DSL"
