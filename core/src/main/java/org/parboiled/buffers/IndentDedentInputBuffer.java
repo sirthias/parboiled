@@ -116,7 +116,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
             // transform all other input
             while (currentChar != Chars.EOI) {
                 int commentChars = skipLineComment();
-                if (currentChar != '\n') {
+                if (currentChar != '\n' && currentChar != Chars.EOI) {
                     builder.append(currentChar);
                     advance();
                     continue;

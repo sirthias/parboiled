@@ -107,6 +107,19 @@ public class IndentDedentInputBufferTest {
     }
     
     @Test
+    public void testIndentDedentInputBuffer4() {
+        InputBuffer buf = new IndentDedentInputBuffer(("" +
+                "level 1\n" +
+                "  level 2 # comment").toCharArray(), 2, "#");
+        
+        String bufContent = collectContent(buf);
+        assertEquals(bufContent, "" +
+                "level 1\n" +
+                "»level 2 \n" +
+                "«");
+    }
+    
+    @Test
     public void testIndentDedentInputBuffeIllegalIndent() {
         try {
             new IndentDedentInputBuffer(("" +
