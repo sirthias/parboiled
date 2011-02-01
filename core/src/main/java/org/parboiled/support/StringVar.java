@@ -16,8 +16,6 @@
 
 package org.parboiled.support;
 
-import static org.parboiled.common.Preconditions.*;
-
 /**
  * Simple specialization of a {@link Var} for Strings. Provides a few convenience helper methods.
  */
@@ -49,16 +47,18 @@ public class StringVar extends Var<String> {
 
     /**
      * Appends the given string.
+     * If this instance is currently uninitialized the given string is used for initialization.
      *
      * @param text the text to append
      * @return true
      */
     public boolean append(String text) {
-        return set(checkedGet().concat(text));
+        return set(get() == null ? text : get().concat(text));
     }
 
     /**
      * Appends the given string.
+     * If this instance is currently uninitialized the given string is used for initialization.
      *
      * @param text the text to append
      * @return this instance
@@ -67,42 +67,21 @@ public class StringVar extends Var<String> {
         append(text);
         return this;
     }
-    
-    /**
-     * Appends the given string.
-     * If there is currently no String instance set the method will simply set the given string.
-     *
-     * @param text the text to append
-     * @return true
-     */
-    public boolean safeAppend(String text) {
-        return set(get() == null ? text : get().concat(text));
-    }
-
-    /**
-     * Appends the given string.
-     * If there is currently no String instance set the method will simply set the given string.
-     *
-     * @param text the text to append
-     * @return this instance
-     */
-    public StringVar safeAppended(String text) {
-        safeAppend(text);
-        return this;
-    }
 
     /**
      * Appends the given char.
+     * If this instance is currently uninitialized the given char is used for initialization.
      *
      * @param c the char to append
      * @return true
      */
     public boolean append(char c) {
-        return set(checkedGet() + c);
+        return set(get() == null ? String.valueOf(c) : get() + c);
     }
 
     /**
      * Appends the given char.
+     * If this instance is currently uninitialized the given string is used for initialization.
      *
      * @param c the char to append
      * @return this instance
@@ -110,35 +89,6 @@ public class StringVar extends Var<String> {
     public StringVar appended(char c) {
         append(c);
         return this;
-    }
-
-    /**
-     * Appends the given string.
-     * If there is currently no String instance set the method will simply set the given string.
-     *
-     * @param c the char to append
-     * @return true
-     */
-    public boolean safeAppend(char c) {
-        return set(get() == null ? String.valueOf(c) : get() + c);
-    }
-
-    /**
-     * Appends the given string.
-     * If there is currently no String instance set the method will simply set the given string.
-     *
-     * @param c the char to append
-     * @return this instance
-     */
-    public StringVar safeAppended(char c) {
-        safeAppend(c);
-        return this;
-    }
-
-    private String checkedGet() {
-        String value = get();
-        checkNotNull(value, "Cannot append to a null String");
-        return value;
     }
 }
 
