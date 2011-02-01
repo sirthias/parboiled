@@ -16,25 +16,35 @@
 
 package org.parboiled.support;
 
-import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.common.Preconditions.checkNotNull;
 
 /**
- * Simple specialization of a {@link Var} for Strings. Provides a few convenience helper methods.
+ * Simple specialization of a {@link org.parboiled.support.Var} for StringBuilders.
+ * Provides a few convenience helper methods.
  */
-public class StringVar extends Var<String> {
+public class StringBuilderVar extends Var<StringBuilder> {
 
     /**
      * Initializes a new StringVar with a null initial value.
      */
-    public StringVar() {
+    public StringBuilderVar() {
     }
 
     /**
-     * Initializes a new StringVar with the given initial value.
+     * Initializes a new StringBuilderVar with the given initial string.
      *
      * @param value the initial value
      */
-    public StringVar(String value) {
+    public StringBuilderVar(String value) {
+        super(new StringBuilder(value));
+    }
+    
+    /**
+     * Initializes a new StringBuilderVar with the given initial StringBuilder instance.
+     *
+     * @param value the initial value
+     */
+    public StringBuilderVar(StringBuilder value) {
         super(value);
     }
 
@@ -48,13 +58,31 @@ public class StringVar extends Var<String> {
     }
 
     /**
+     * @return the String representation of the underlying StringBuilder.
+     */
+    public String getString() {
+        return checkedGet().toString();
+    }
+    
+    /**
+     * @return the char[] representation of the underlying StringBuilder.
+     */
+    public char[] getChars() {
+        StringBuilder sb = checkedGet();
+        char[] buf = new char[sb.length()];
+        sb.getChars(0, buf.length, buf, 0);
+        return buf;
+    }
+
+    /**
      * Appends the given string.
      *
      * @param text the text to append
      * @return true
      */
     public boolean append(String text) {
-        return set(checkedGet().concat(text));
+        checkedGet().append(text);
+        return true;
     }
 
     /**
@@ -63,8 +91,8 @@ public class StringVar extends Var<String> {
      * @param text the text to append
      * @return this instance
      */
-    public StringVar appended(String text) {
-        append(text);
+    public StringBuilderVar appended(String text) {
+        checkedGet().append(text);
         return this;
     }
 
@@ -75,7 +103,8 @@ public class StringVar extends Var<String> {
      * @return true
      */
     public boolean append(char c) {
-        return set(checkedGet() + c);
+        checkedGet().append(c);
+        return true;
     }
 
     /**
@@ -84,8 +113,8 @@ public class StringVar extends Var<String> {
      * @param c the char to append
      * @return this instance
      */
-    public StringVar appended(char c) {
-        append(c);
+    public StringBuilderVar appended(char c) {
+        checkedGet().append(c);
         return this;
     }
 
@@ -97,7 +126,8 @@ public class StringVar extends Var<String> {
      * @return true
      */
     public boolean append(String text1, String text2) {
-        return set(checkedGet().concat(text1.concat(text2)));
+        checkedGet().append(text1).append(text2);
+        return true;
     }
 
     /**
@@ -107,14 +137,14 @@ public class StringVar extends Var<String> {
      * @param text2 the second text to append
      * @return this instance
      */
-    public StringVar appended(String text1, String text2) {
-        append(text1, text2);
+    public StringBuilderVar appended(String text1, String text2) {
+        checkedGet().append(text1).append(text2);
         return this;
     }
 
-    private String checkedGet() {
-        String value = get();
-        checkNotNull(value, "Cannot append to a null String");
+    private StringBuilder checkedGet() {
+        StringBuilder value = get();
+        checkNotNull(value, "Cannot append to a null StringBuilder");
         return value;
     }
 }
