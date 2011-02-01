@@ -76,6 +76,7 @@ public class StringBuilderVar extends Var<StringBuilder> {
 
     /**
      * Appends the given string.
+     * If there is currently no StringBuilder instance set the method will throw a NullPointerException.
      *
      * @param text the text to append
      * @return true
@@ -87,6 +88,7 @@ public class StringBuilderVar extends Var<StringBuilder> {
 
     /**
      * Appends the given string.
+     * If there is currently no StringBuilder instance set the method will throw a NullPointerException.
      *
      * @param text the text to append
      * @return this instance
@@ -95,9 +97,37 @@ public class StringBuilderVar extends Var<StringBuilder> {
         checkedGet().append(text);
         return this;
     }
+    
+    /**
+     * Appends the given string.
+     * If there is currently no StringBuilder instance set the method will create a new StringBuilder instance
+     * initialized with the given string.
+     *
+     * @param text the text to append
+     * @return true
+     */
+    public boolean safeAppend(String text) {
+        if (get() == null) return set(new StringBuilder(text));
+        get().append(text);
+        return true;
+    }
+
+    /**
+     * Appends the given string.
+     * If there is currently no StringBuilder instance set the method will create a new StringBuilder instance
+     * initialized with the given string.
+     *
+     * @param text the text to append
+     * @return this instance
+     */
+    public StringBuilderVar safeAppended(String text) {
+        safeAppend(text);
+        return this;
+    }
 
     /**
      * Appends the given char.
+     * If there is currently no StringBuilder instance set the method will throw a NullPointerException.
      *
      * @param c the char to append
      * @return true
@@ -109,6 +139,7 @@ public class StringBuilderVar extends Var<StringBuilder> {
 
     /**
      * Appends the given char.
+     * If there is currently no StringBuilder instance set the method will throw a NullPointerException.
      *
      * @param c the char to append
      * @return this instance
@@ -117,28 +148,31 @@ public class StringBuilderVar extends Var<StringBuilder> {
         checkedGet().append(c);
         return this;
     }
-
+    
     /**
-     * Appends the given strings.
+     * Appends the given char.
+     * If there is currently no StringBuilder instance set the method will create a new StringBuilder instance
+     * initialized with the given char.
      *
-     * @param text1 the first text to append
-     * @param text2 the second text to append
+     * @param c the char to append
      * @return true
      */
-    public boolean append(String text1, String text2) {
-        checkedGet().append(text1).append(text2);
+    public boolean safeAppend(char c) {
+        if (get() == null) return set(new StringBuilder().append(c));
+        get().append(c);
         return true;
     }
 
     /**
-     * Appends the given strings.
+     * Appends the given char.
+     * If there is currently no StringBuilder instance set the method will create a new StringBuilder instance
+     * initialized with the given char.
      *
-     * @param text1 the first text to append
-     * @param text2 the second text to append
+     * @param c the char to append
      * @return this instance
      */
-    public StringBuilderVar appended(String text1, String text2) {
-        checkedGet().append(text1).append(text2);
+    public StringBuilderVar safeAppended(char c) {
+        safeAppend(c);
         return this;
     }
 

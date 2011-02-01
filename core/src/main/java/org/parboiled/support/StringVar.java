@@ -67,6 +67,29 @@ public class StringVar extends Var<String> {
         append(text);
         return this;
     }
+    
+    /**
+     * Appends the given string.
+     * If there is currently no String instance set the method will simply set the given string.
+     *
+     * @param text the text to append
+     * @return true
+     */
+    public boolean safeAppend(String text) {
+        return set(get() == null ? text : get().concat(text));
+    }
+
+    /**
+     * Appends the given string.
+     * If there is currently no String instance set the method will simply set the given string.
+     *
+     * @param text the text to append
+     * @return this instance
+     */
+    public StringVar safeAppended(String text) {
+        safeAppend(text);
+        return this;
+    }
 
     /**
      * Appends the given char.
@@ -90,25 +113,25 @@ public class StringVar extends Var<String> {
     }
 
     /**
-     * Appends the given strings.
+     * Appends the given string.
+     * If there is currently no String instance set the method will simply set the given string.
      *
-     * @param text1 the first text to append
-     * @param text2 the second text to append
+     * @param c the char to append
      * @return true
      */
-    public boolean append(String text1, String text2) {
-        return set(checkedGet().concat(text1.concat(text2)));
+    public boolean safeAppend(char c) {
+        return set(get() == null ? String.valueOf(c) : get() + c);
     }
 
     /**
-     * Appends the given strings.
+     * Appends the given string.
+     * If there is currently no String instance set the method will simply set the given string.
      *
-     * @param text1 the first text to append
-     * @param text2 the second text to append
+     * @param c the char to append
      * @return this instance
      */
-    public StringVar appended(String text1, String text2) {
-        append(text1, text2);
+    public StringVar safeAppended(char c) {
+        safeAppend(c);
         return this;
     }
 
