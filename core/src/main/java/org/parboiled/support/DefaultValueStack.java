@@ -63,11 +63,13 @@ public class DefaultValueStack<V> implements ValueStack<V> {
     }
 
     public int size() {
-        return size(head);
-    }
-
-    private static int size(Element head) {
-        return head == null ? 0 : size(head.tail) + 1;
+        Element cursor = head;
+        int size = 0;
+        while (cursor != null) {
+            size++;
+            cursor = cursor.tail;
+        }
+        return size;
     }
 
     public void clear() {
