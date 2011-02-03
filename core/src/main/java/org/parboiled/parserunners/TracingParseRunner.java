@@ -21,12 +21,12 @@ import org.parboiled.Context;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.common.Tuple2;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
+import org.parboiled.support.Position;
 
 /**
  * A {@link org.parboiled.parserunners.ParseRunner} implementation used for debugging purposes.
@@ -130,7 +130,7 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
         }
 
         private void print(MatcherContext<?> context, boolean matched) {
-            InputBuffer.Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
+            Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
             MatcherPath path = context.getPath();
             MatcherPath prefix = lastPath != null ? path.commonPrefix(lastPath) : null;
             if (prefix != null && prefix.length() > 1) log.append("..(").append(prefix.length() - 1).append(")../");

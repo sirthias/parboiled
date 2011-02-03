@@ -17,13 +17,14 @@
 package org.parboiled.errors;
 
 import static org.parboiled.common.Preconditions.*;
-import org.parboiled.buffers.DefaultInputBuffer;
+
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.Position;
 
 import java.util.List;
 
@@ -139,7 +140,7 @@ public final class ErrorUtils {
                                            InputBuffer inputBuffer) {
         checkArgNotNull(inputBuffer, "inputBuffer");
         checkArgument(startIndex < endIndex);
-        DefaultInputBuffer.Position pos = inputBuffer.getPosition(startIndex);
+        Position pos = inputBuffer.getPosition(startIndex);
         StringBuilder sb = new StringBuilder(String.format(format, errorMessage, pos.line, pos.column));
         sb.append('\n');
 

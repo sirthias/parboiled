@@ -19,6 +19,7 @@ package org.parboiled.buffers;
 import org.parboiled.common.IntArrayStack;
 import org.parboiled.errors.IllegalIndentationException;
 import org.parboiled.support.Chars;
+import org.parboiled.support.Position;
 
 import static org.parboiled.common.Preconditions.checkArgument;
 

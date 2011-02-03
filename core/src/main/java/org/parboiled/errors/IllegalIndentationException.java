@@ -16,18 +16,18 @@
 
 package org.parboiled.errors;
 
-import org.parboiled.buffers.DefaultInputBuffer;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.StringUtils;
+import org.parboiled.support.Position;
 
 /**
  * Exception thrown by the IndentDedentInputbuffer upon detection of an illegal indentation.
  */
 public class IllegalIndentationException extends RuntimeException {
     public final InputBuffer buffer;
-    public final InputBuffer.Position position;
+    public final Position position;
 
-    public IllegalIndentationException(InputBuffer buffer, InputBuffer.Position position) {
+    public IllegalIndentationException(InputBuffer buffer, Position position) {
         this.buffer = buffer;
         this.position = position;
     }

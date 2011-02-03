@@ -18,6 +18,7 @@ package org.parboiled.buffers;
 
 import org.parboiled.common.IntArrayStack;
 import org.parboiled.support.Chars;
+import org.parboiled.support.Position;
 
 import java.util.Arrays;
 

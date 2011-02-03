@@ -16,6 +16,8 @@
 
 package org.parboiled.buffers;
 
+import org.parboiled.support.Position;
+
 import java.util.Arrays;
 import static org.parboiled.common.Preconditions.*;
 
