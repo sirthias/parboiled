@@ -103,20 +103,20 @@ public final class StringUtils {
     //***********************************************************************************************
 
     /**
-     * <p>Joins the elements of the provided <code>Collection</code> into
+     * <p>Joins the elements of the provided <code>Iterable</code> into
      * a single String containing the provided elements.</p>
      * <p/>
      * <p>No delimiter is added before or after the list.
      * A <code>null</code> separator is the same as an empty String ("").</p>
      *
-     * @param collection the <code>Collection</code> of values to join together, may be null
+     * @param iterable the <code>Iterable</code> of values to join together, may be null
      * @param separator  the separator character to use, null treated as ""
      * @return the joined String, <code>null</code> if null iterator input
      */
-    public static String join(Collection collection, String separator) {
-        return collection == null ? null : join(collection.iterator(), separator);
+    public static String join(Iterable iterable, String separator) {
+        return iterable == null ? null : join(iterable.iterator(), separator);
     }
-
+    
     /**
      * <p>Joins the elements of the provided <code>Iterator</code> into
      * a single String containing the provided elements.</p>
