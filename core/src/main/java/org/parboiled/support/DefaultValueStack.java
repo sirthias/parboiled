@@ -119,7 +119,9 @@ public class DefaultValueStack<V> implements ValueStack<V> {
 
     public V pop(int down) {
         head = pop(down, head);
-        return tempValue;
+        V result = tempValue;
+        tempValue = null; // avoid memory leak
+        return result;
     }
 
     @SuppressWarnings("unchecked")
