@@ -16,7 +16,7 @@ class TracingTest extends ParboiledTest with TestNGSuite {
   @Test
   def testTraceParse() {
     val log = new StringBuilderSink 
-    parse(TracingParseRunner(parser.InputLine).filter(Rules.only(parser.Factor, parser.Term)).withLog(log), "1+2") {
+    parse(TracingParseRunner(parser.InputLine).filter(Rules.only(parser.Factor, parser.Term)).log(log), "1+2") {
       assertEquals(log.toString,
          """Starting new parsing run
 InputLine/Expression/Term/Factor, matched, cursor at 1:2 after "1"
@@ -30,7 +30,7 @@ InputLine/Expression/Term/Factor, matched, cursor at 1:2 after "1"
   @Test
   def testTraceParse2() {
     val log = new StringBuilderSink 
-    parse(TracingParseRunner(parser.InputLine).filter(Rules.below(parser.Factor) && !Rules.below(parser.Digits)).withLog(log), "1+2") {
+    parse(TracingParseRunner(parser.InputLine).filter(Rules.below(parser.Factor) && !Rules.below(parser.Digits)).log(log), "1+2") {
       assertEquals(log.toString,
          """Starting new parsing run
 InputLine/Expression/Term/Factor/Number/Digits, matched, cursor at 1:2 after "1"

@@ -35,10 +35,9 @@ public class TracingParseRunnerTest {
         CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
 
         StringBuilderSink log = new StringBuilderSink();
-        TracingParseRunner<Integer> runner = new TracingParseRunner<Integer>(parser.InputLine(),
-                and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits()))),
-                log
-        );
+        TracingParseRunner<Integer> runner = new TracingParseRunner<Integer>(parser.InputLine())
+                .withFilter(and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits()))))
+                .withLog(log);
         ParsingResult<Integer> result = runner.run("2*(4+5");
 
         assertEquals(printParseErrors(result), "" +

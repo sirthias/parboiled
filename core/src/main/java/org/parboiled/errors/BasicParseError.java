@@ -23,11 +23,10 @@ import org.parboiled.buffers.InputBuffer;
  * A basic {@link ParseError} implementation for a one-char parse error with an optional error message.
  */
 public class BasicParseError implements ParseError {
-
     private final InputBuffer inputBuffer;
     private final int startIndex;
-    private int endIndex;
     private final String errorMessage;
+    private int endIndex;
     private int indexDelta;
 
     public BasicParseError(InputBuffer inputBuffer, int errorIndex, String errorMessage) {

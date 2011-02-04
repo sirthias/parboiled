@@ -36,15 +36,7 @@ import java.util.List;
  * It never causes the parser to perform more than one parsing run and is the fastest way to determine
  * whether a given input conforms to the rule grammar.
  */
-public class BasicParseRunner<V> implements ParseRunner<V> {
-
-    protected final List<ParseError> parseErrors = new ArrayList<ParseError>();
-    protected final ValueStack<V> valueStack;
-    protected final Object initialValueStackSnapshot;
-    public final Matcher rootMatcher;
-    protected InputBuffer inputBuffer;
-    protected MatcherContext<V> rootContext;
-    protected boolean matched;
+public class BasicParseRunner<V> extends AbstractParseRunner<V> implements MatchHandler {
 
     /**
      * Create a new BasicParseRunner instance with the given rule and input text and returns the result of
@@ -66,64 +58,19 @@ public class BasicParseRunner<V> implements ParseRunner<V> {
      * @param rule the parser rule
      */
     public BasicParseRunner(Rule rule) {
-        this(checkArgNotNull(rule, "rule"), new DefaultValueStack<V>());
-    }
-
-    /**
-     * Creates a new BasicParseRunner instance for the given rule using the given ValueStack instance.
-     *
-     * @param rule       the parser rule
-     * @param valueStack the value stack
-     */
-    public BasicParseRunner(Rule rule, ValueStack<V> valueStack) {
-        this.rootMatcher = checkArgNotNull((Matcher) rule, "rule");
-        this.valueStack = checkArgNotNull(valueStack, "valueStack");
-        this.initialValueStackSnapshot = valueStack.takeSnapshot();
-    }
-
-    public ParsingResult<V> run(String input) {
-        checkArgNotNull(input, "input");
-        return run(input.toCharArray());
-    }
-
-    public ParsingResult<V> run(char[] input) {
-        checkArgNotNull(input, "input");
-        return run(new DefaultInputBuffer(input));
+        super(rule);
     }
 
     public ParsingResult<V> run(InputBuffer inputBuffer) {
         checkArgNotNull(inputBuffer, "inputBuffer");
-        this.inputBuffer = inputBuffer;
-        matched = runRootContext();
-        return new ParsingResult<V>(matched, rootContext.getNode(), rootContext.getValueStack(), parseErrors,
-                this.inputBuffer);
+        resetValueStack();
+        
+        MatcherContext<V> rootContext = createRootContext(inputBuffer, this, true);
+        boolean matched = rootContext.runMatcher();
+        return createParsingResult(matched, rootContext);
     }
 
-    protected boolean runRootContext() {
-        return runRootContext(new Handler(), true);
+    public boolean match(MatcherContext<?> context) {
+        return context.getMatcher().match(context);
     }
-
-    protected boolean runRootContext(MatchHandler handler, boolean fastStringMatching) {
-        valueStack.restoreSnapshot(initialValueStackSnapshot);
-        rootContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, handler, rootMatcher,
-                fastStringMatching);
-        return handler.matchRoot(rootContext);
-    }
-
-    /**
-     * The most trivial {@link MatchHandler} implementation.
-     * Simply delegates to the given Context for performing the match, without any additional logic.
-     */
-    public static final class Handler implements MatchHandler {
-
-        public boolean matchRoot(MatcherContext<?> rootContext) {
-            return rootContext.runMatcher();
-        }
-
-        public boolean match(MatcherContext<?> context) {
-            return context.getMatcher().match(context);
-        }
-
-    }
-
 }
