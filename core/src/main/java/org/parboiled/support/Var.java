@@ -111,7 +111,7 @@ public class Var<T> extends Reference<T> {
     public boolean enterFrame() {
         if (level++ > 0) {
             if (stack == null) stack = new LinkedList<T>();
-            stack.add(getAndClear());
+            stack.add(get());
         }
         return set(initialValueFactory.create());
     }

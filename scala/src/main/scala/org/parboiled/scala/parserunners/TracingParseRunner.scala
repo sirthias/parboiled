@@ -4,8 +4,8 @@ import org.parboiled.parserunners.{TracingParseRunner => PTracingParseRunner}
 import org.parboiled.scala._
 import org.parboiled.Context
 import utils.Predicate
-import org.parboiled.common.{Predicate => PPredicate, Tuple2 => T2}
 import org.parboiled.support.MatcherPath
+import org.parboiled.common.{Sink, Predicate => PPredicate, Tuple2 => T2}
 
 /**
  * A wrapper for org.parboiled.parserunners.TracingParseRunner which returns a scala ParsingResult.
@@ -36,8 +36,9 @@ class TracingParseRunner[V](val inner: PTracingParseRunner[V]) extends ParseRunn
     new TracingParseRunner[V](new PTracingParseRunner[V](inner.rootMatcher, new PPredicate[T2[Context[_], Boolean]] {
       def apply(t: T2[Context[_], Boolean]) = filter(t.a, t.b)
     }))
-
-  def traceLog: String = inner.getLog
+  
+  def withLog(log: Sink[String]) =
+    new TracingParseRunner[V](new PTracingParseRunner[V](inner.rootMatcher, inner.filter, log));
 }
 
 abstract class TracingPredicate extends Predicate[(Context[_], Boolean)]

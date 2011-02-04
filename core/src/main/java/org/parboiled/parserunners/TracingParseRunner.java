@@ -21,9 +21,7 @@ import org.parboiled.Context;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
-import org.parboiled.common.Predicate;
-import org.parboiled.common.Predicates;
-import org.parboiled.common.Tuple2;
+import org.parboiled.common.*;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.Position;
@@ -34,17 +32,16 @@ import org.parboiled.support.Position;
  * rules did match and which didn't.
  */
 public class TracingParseRunner<V> extends BasicParseRunner<V> {
-
-    private final StringBuilder log = new StringBuilder();
-    private final Predicate<Tuple2<Context<?>, Boolean>> filter;
-
+    public final Predicate<Tuple2<Context<?>, Boolean>> filter;
+    public final Sink<String> log;
+    
     /**
      * Creates a new TracingParseRunner instance for the given rule.
      *
      * @param rule the parser rule
      */
     public TracingParseRunner(Rule rule) {
-        this(checkArgNotNull(rule, "rule"), Predicates.alwaysTrue());
+        this(rule, Predicates.alwaysTrue());
     }
 
     /**
@@ -62,24 +59,21 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      */
     @SuppressWarnings({"unchecked"})
     public TracingParseRunner(Rule rule, Predicate<?> filter) {
+        this(rule, filter, new ConsoleSink());
+    }
+    
+    @SuppressWarnings( {"unchecked"})
+    public TracingParseRunner(Rule rule, Predicate<?> filter, Sink<String> log) {
         super(checkArgNotNull(rule, "rule"));
         this.filter = (Predicate<Tuple2<Context<?>, Boolean>>) checkArgNotNull(filter, "filter");
-    }
-
-    /**
-     * Retrieves a string containing all generated log messages.
-     *
-     * @return the log messages
-     */
-    public String getLog() {
-        return log.toString();
+        this.log = log;
     }
 
     @SuppressWarnings({"SimplifiableIfStatement"})
     @Override
     protected boolean runRootContext() {
         // run a basic match
-        if (runRootContext(new Handler(log, filter), true)) {
+        if (runRootContext(new Handler(filter, log), true)) {
             return true;
         }
 
@@ -104,17 +98,17 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      * For the actual matching this handler relies on another, inner {@link org.parboiled.MatchHandler} instance it delegates to.
      */
     public static class Handler implements MatchHandler {
-        private final StringBuilder log;
         private final Predicate<Tuple2<Context<?>, Boolean>> filter;
+        private final Sink<String> log;
         private MatcherPath lastPath;
 
-        public Handler(StringBuilder log, Predicate<Tuple2<Context<?>, Boolean>> filter) {
-            this.log = log;
+        public Handler(Predicate<Tuple2<Context<?>, Boolean>> filter, Sink<String> log) {
             this.filter = filter;
+            this.log = log;
         }
 
         public boolean matchRoot(MatcherContext<?> rootContext) {
-            log.setLength(0);
+            log.receive("Starting new parsing run\n");
             lastPath = null;
             return rootContext.runMatcher();
         }
@@ -133,22 +127,13 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
             Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
             MatcherPath path = context.getPath();
             MatcherPath prefix = lastPath != null ? path.commonPrefix(lastPath) : null;
-            if (prefix != null && prefix.length() > 1) log.append("..(").append(prefix.length() - 1).append(")../");
-            log.append(path.toString(prefix != null ? prefix.parent : null));
+            if (prefix != null && prefix.length() > 1) log.receive("..(" + (prefix.length() - 1) + ")../");
+            log.receive(path.toString(prefix != null ? prefix.parent : null));
             String line = context.getInputBuffer().extractLine(pos.line);
-            log.append(", ")
-                    .append(matched ? "matched" : "failed")
-                    .append(", cursor at ")
-                    .append(pos.line)
-                    .append(':')
-                    .append(pos.column)
-                    .append(" after \"")
-                    .append(line.substring(0, Math.min(line.length(), pos.column - 1)))
-                    .append("\"\n");
+            log.receive(", " + (matched ? "matched" : "failed") + ", cursor at " + pos.line + ':' + pos.column +
+                    " after \"" + line.substring(0, Math.min(line.length(), pos.column - 1)) +  "\"\n");
             lastPath = path;
         }
-
     }
-
 }
 
