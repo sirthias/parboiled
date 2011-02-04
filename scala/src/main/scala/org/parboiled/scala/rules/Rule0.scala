@@ -3,6 +3,7 @@ package org.parboiled.scala.rules
 import org.parboiled.matchers._
 import java.lang.String
 import Rule._
+import org.parboiled.support.IndexRange
 
 /**
  * A rule which does not affect the parsers value stack.
@@ -22,6 +23,7 @@ class Rule0(val matcher: Matcher) extends Rule {
   def ~[A, B, C, D, E, F](other: Rule6[A, B, C, D, E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[A, B, C, D, E, F, G](other: Rule7[A, B, C, D, E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule1[R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule1[R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule1[R](append(push(exec(GetMatch, f))))
   def ~~>[Z, R](f: Z => R) = new ReductionRule1[Z, R](append(push(exec(stack1(Pop), f))))
   def ~~>[Y, Z, R](f: (Y, Z) => R) = new ReductionRule2[Y, Z, R](append(push(exec(stack2(Pop), f))))

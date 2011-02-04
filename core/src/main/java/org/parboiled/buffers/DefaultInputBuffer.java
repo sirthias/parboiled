@@ -18,6 +18,7 @@ package org.parboiled.buffers;
 
 import org.parboiled.common.IntArrayStack;
 import org.parboiled.support.Chars;
+import org.parboiled.support.IndexRange;
 import org.parboiled.support.Position;
 
 import java.util.Arrays;
@@ -69,6 +70,10 @@ public class DefaultInputBuffer implements InputBuffer {
         if (end >= length) end = length;
         if (end <= start) return "";
         return new String(buffer, start, end - start);
+    }
+
+    public String extract(IndexRange range) {
+        return new String(buffer, range.start, Math.min(range.end, length) - range.start);
     }
 
     public Position getPosition(int index) {

@@ -19,6 +19,7 @@ package org.parboiled.buffers;
 import org.parboiled.common.IntArrayStack;
 import org.parboiled.errors.IllegalIndentationException;
 import org.parboiled.support.Chars;
+import org.parboiled.support.IndexRange;
 import org.parboiled.support.Position;
 
 import static org.parboiled.common.Preconditions.checkArgument;
@@ -76,6 +77,10 @@ public class IndentDedentInputBuffer implements InputBuffer {
 
     public String extract(int start, int end) {
         return origBuffer.extract(map(start), map(end));
+    }
+
+    public String extract(IndexRange range) {
+        return origBuffer.extract(map(range.start), map(range.end));
     }
 
     public Position getPosition(int index) {

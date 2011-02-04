@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.parboiled.support.Checks;
+import org.parboiled.support.IndexRange;
 
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 
@@ -49,7 +50,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the input text matched by the context immediately preceding the action expression that is currently
+     * <p>Returns the input text matched by the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
@@ -59,9 +60,21 @@ public abstract class BaseActions<V> implements ContextAware<V> {
         check();
         return context.getMatch();
     }
+    
+    /**
+     * Creates a new {@link IndexRange} instance covering the input text matched by the rule immediately preceding the
+     * action expression that is currently being evaluated. This call can only be used in actions that are part of a
+     * Sequence rule and are not at first position in this Sequence.
+     *  
+     * @return a new IndexRange instance
+     */
+    public IndexRange matchRange() {
+        check();
+        return context.getMatchRange();
+    }
 
     /**
-     * <p>Returns the input text matched by the context immediately preceding the action expression that is currently
+     * <p>Returns the input text matched by the rule immediately preceding the action expression that is currently
      * being evaluated. If the matched input text is empty the given default string is returned.
      * This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
@@ -76,7 +89,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the first character of the input text matched by the context immediately preceding the action
+     * <p>Returns the first character of the input text matched by the rule immediately preceding the action
      * expression that is currently being evaluated. This call can only be used in actions that are part of a Sequence
      * rule and are not at first position in this Sequence.</p>
      * <p>If the immediately preceding rule did not match anything this method throws a GrammarException. If you need
@@ -91,7 +104,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the start index of the matched rule immediately preceding the action expression that is currently
+     * <p>Returns the start index of the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
@@ -103,7 +116,7 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
-     * <p>Returns the end location of the matched rule immediately preceding the action expression that is currently
+     * <p>Returns the end location of the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *

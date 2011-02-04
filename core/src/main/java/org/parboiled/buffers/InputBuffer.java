@@ -16,6 +16,7 @@
 
 package org.parboiled.buffers;
 
+import org.parboiled.support.IndexRange;
 import org.parboiled.support.Position;
 
 /**
@@ -50,6 +51,14 @@ public interface InputBuffer {
      * @return a new String (non-interned)
      */
     String extract(int start, int end);
+    
+    /**
+     * Constructs a new {@link String} from all character covered by the given IndexRange.
+     *
+     * @param range the IndexRange
+     * @return a new String (non-interned)
+     */
+    String extract(IndexRange range);
 
     /**
      * Returns the line and column number of the character with the given index encapsulated in a

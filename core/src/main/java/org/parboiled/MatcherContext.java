@@ -204,11 +204,16 @@ public class MatcherContext<V> implements Context<V> {
         return subContext.currentIndex;
     }
 
+    public IndexRange getMatchRange() {
+        checkActionContext();
+        return new IndexRange(subContext.startIndex, subContext.currentIndex);
+    }
+
     private void checkActionContext() {
         // make sure all the constraints are met
         Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
                 intTag > 0 && subContext.matcher instanceof ActionMatcher,
-                "Illegal call to getMatch(), getMatchStartIndex() or getMatchEndIndex(), " +
+                "Illegal call to getMatch(), getMatchStartIndex(), getMatchEndIndex() or getMatchRange(), " +
                         "only valid in Sequence rule actions that are not in first position");
     }
 
