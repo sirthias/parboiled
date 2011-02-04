@@ -39,7 +39,10 @@ public class ReportingParseRunner<V> extends AbstractParseRunner<V> {
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
+     * @deprecated  As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
+     * this static method. This method will be removed in one of the coming releases.
      */
+    @Deprecated
     public static <V> ParsingResult<V> run(Rule rule, String input) {
         checkArgNotNull(rule, "rule");
         checkArgNotNull(input, "input");

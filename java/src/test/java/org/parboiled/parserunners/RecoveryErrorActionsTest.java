@@ -63,7 +63,7 @@ public class RecoveryErrorActionsTest {
     public void testRecoveryErrorActions1() {
         Parser parser = Parboiled.createParser(Parser.class);
 
-        ParsingResult<?> result = RecoveringParseRunner.run(parser.Clause(), "abcd");
+        ParsingResult<?> result = new RecoveringParseRunner(parser.Clause()).run("abcd");
         assertFalse(result.hasErrors());
         assertEquals(toList(result.valueStack), Arrays.asList(2.0, 1, "b", "a"));
     }
@@ -72,7 +72,7 @@ public class RecoveryErrorActionsTest {
     public void testRecoveryErrorActions2() {
         Parser parser = Parboiled.createParser(Parser.class);
 
-        ParsingResult<?> result = RecoveringParseRunner.run(parser.Clause(), "axx");
+        ParsingResult<?> result = new RecoveringParseRunner(parser.Clause()).run("axx");
         assertEquals(printParseErrors(result), "" +
                 "Invalid input 'x...', expected B (line 1, pos 2):\n" +
                 "axx\n" +

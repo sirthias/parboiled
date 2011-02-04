@@ -72,7 +72,7 @@ public class IndentDedentTest {
                 "  stay there\n" +
                 "          go back big time\n" +
                 " and return";
-        ParsingResult result = RecoveringParseRunner.run(rule, source);
+        ParsingResult result = new RecoveringParseRunner(rule).run(source);
         assertEquals(parser.indents, 3);
         assertEquals(parser.dedents, 2);
         assertEquals(parser.currentIndent, 1);

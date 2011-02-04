@@ -40,7 +40,7 @@ public class ReportingParseRunnerTest {
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.CompilationUnit();
-        ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
+        ParsingResult result = new ReportingParseRunner(rule).run(sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
                 "Invalid input ';', expected Spacing, Expression or ')' (line 5, pos 32):\n" +
@@ -61,7 +61,7 @@ public class ReportingParseRunnerTest {
 
         JavaParser parser = Parboiled.createParser(JavaParser.class);
         Rule rule = parser.CompilationUnit();
-        ParsingResult result = ReportingParseRunner.run(rule, sourceWithErrors);
+        ParsingResult result = new ReportingParseRunner(rule).run(sourceWithErrors);
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
                 "Invalid input 't', expected Whitespace, \"/*\", \"//\", Dim, '=', ',' or ';' (line 5, pos 22):\n" +
