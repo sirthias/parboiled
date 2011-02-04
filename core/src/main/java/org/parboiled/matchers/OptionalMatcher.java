@@ -33,7 +33,6 @@ public class OptionalMatcher extends CustomDefaultLabelMatcher<OptionalMatcher> 
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         subMatcher.getSubContext(context).runMatcher();
         context.createNode();
         return true;

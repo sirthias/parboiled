@@ -37,7 +37,6 @@ public class CharRangeMatcher extends AbstractMatcher {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         char c = context.getCurrentChar();
         if (c < cLow || c > cHigh) return false;
 

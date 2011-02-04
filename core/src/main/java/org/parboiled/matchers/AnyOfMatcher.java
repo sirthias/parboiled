@@ -34,7 +34,6 @@ public class AnyOfMatcher extends AbstractMatcher {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         if (!characters.contains(context.getCurrentChar())) return false;
         context.advanceIndex(1);
         context.createNode();
