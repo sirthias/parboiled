@@ -119,5 +119,6 @@ public class DebuggingValueStack<V> extends DefaultValueStack<V> {
         LinkedList<V> elements = new LinkedList<V>();
         for (V v : this) elements.addFirst(v);
         log.receive(StringUtils.join(elements, ", "));
+        log.receive("\n");
     }
 }
