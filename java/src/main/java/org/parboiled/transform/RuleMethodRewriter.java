@@ -75,7 +75,7 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
             }
         }
 
-        createInvocationFrameMatcher();
+        createExecutionFrameMatcher();
         
         method.setBodyRewritten();
     }
@@ -97,7 +97,7 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
 		method.instructions.insert(ruleCallInsn, gen.instructions);
 	}
 
-	private void createInvocationFrameMatcher() {
+	private void createExecutionFrameMatcher() {
 		int actionParams = method.getActionParams().cardinality();
 		int maxLocals = method.getActionVariableTypes().size() - actionParams - 1;
 		if (actionParams > 0 || maxLocals > 0) {

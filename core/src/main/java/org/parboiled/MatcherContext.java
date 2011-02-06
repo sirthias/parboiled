@@ -102,14 +102,14 @@ public class MatcherContext<V> implements Context<V> {
 
     private MatcherContext(InputBuffer inputBuffer, ValueStack<V> valueStack, List<ParseError> parseErrors,
                            MatchHandler matchHandler, MatcherContext<V> parent, int level, 
-                           CallStack variablesStack, boolean fastStringMatching) {
+                           CallStack callStack, boolean fastStringMatching) {
         this.inputBuffer = inputBuffer;
         this.valueStack = valueStack;
         this.parseErrors = parseErrors;
         this.matchHandler = matchHandler;
         this.parent = parent;
         this.level = level;
-        this.callStack = variablesStack;
+        this.callStack = callStack;
         this.fastStringMatching = fastStringMatching;
     }
 
