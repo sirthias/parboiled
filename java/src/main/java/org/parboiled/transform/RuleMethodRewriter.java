@@ -75,7 +75,7 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
             }
         }
 
-        createSetMaxLocalsMatcher();
+        createInvocationFrameMatcher();
         
         method.setBodyRewritten();
     }
@@ -97,17 +97,17 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
 		method.instructions.insert(ruleCallInsn, gen.instructions);
 	}
 
-	private void createSetMaxLocalsMatcher() {
+	private void createInvocationFrameMatcher() {
 		int actionParams = method.getActionParams().cardinality();
 		int maxLocals = method.getActionVariableTypes().size() - actionParams - 1;
-		if (maxLocals > 0) {
+		if (actionParams > 0 || maxLocals > 0) {
 			AbstractInsnNode returnInsn = method.getReturnInstructionNode().getInstruction();
 			InsnListGenerator gen = new InsnListGenerator();
-			gen.newInstance(SET_MAX_LOCALS_MATCHER);
+			gen.newInstance(EXECUTION_FRAME_MATCHER);
 			gen.dupX1();
 			gen.swap();
 			gen.push(maxLocals);
-			gen.invokeConstructor(SET_MAX_LOCALS_MATCHER, new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, Type.INT_TYPE }));
+			gen.invokeConstructor(EXECUTION_FRAME_MATCHER, new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, Type.INT_TYPE }));
 			method.instructions.insertBefore(returnInsn, gen.instructions);
 		}
 	}

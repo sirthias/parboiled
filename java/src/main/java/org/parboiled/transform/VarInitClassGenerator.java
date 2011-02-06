@@ -77,6 +77,8 @@ class VarInitClassGenerator extends GroupClassGenerator {
 		InsnListGenerator gen = new InsnListGenerator(ACC_PUBLIC, "run", '(' + CONTEXT_DESC + ")Z");
 		// load variable context
 		gen.loadLocal(2, CONTEXT);
+		// load variable stack
+		gen.invokeInterface(CONTEXT, new Method("getCallStack", CALL_STACK, new Type[0]));
 		
 		// create array for original arguments and local variables
 		gen.push(targetArgumentTypes.size());
@@ -111,7 +113,7 @@ class VarInitClassGenerator extends GroupClassGenerator {
 		}
 
 		// store arguments as new variables
-		gen.invokeInterface(CONTEXT, new Method("setArgs", Type.VOID_TYPE, new Type[] { Type.getType(Object[].class) }));
+		gen.invokeInterface(CALL_STACK, new Method("setArguments", Type.VOID_TYPE, new Type[] { Type.getType(Object[].class) }));
 		
 		// load result value
 		gen.push(true);

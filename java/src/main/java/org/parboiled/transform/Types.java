@@ -22,7 +22,8 @@ import org.parboiled.annotations.*;
 import org.parboiled.matchers.InitArgsMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
-import org.parboiled.matchers.SetMaxLocalsMatcher;
+import org.parboiled.matchers.ExecutionFrameMatcher;
+import org.parboiled.support.CallStack;
 
 interface Types {
 
@@ -38,10 +39,11 @@ interface Types {
 
     // <types required for action parameters>
     final Type CONTEXT = Type.getType(Context.class);
-    final Type ARG_ANNOTATION = Type.getType(Arg.class);
+    final Type CALL_STACK = Type.getType(CallStack.class);
+    final Type VAR_ANNOTATION = Type.getType(Var.class);
     final Type INIT_ARGS_MATCHER = Type.getType(InitArgsMatcher.class);
-    final Type SET_MAX_LOCALS_MATCHER = Type
-                    .getType(SetMaxLocalsMatcher.class);
+    final Type EXECUTION_FRAME_MATCHER = Type
+                    .getType(ExecutionFrameMatcher.class);
     final Type OBJECT = Type.getType(Object.class);
     // </types required for action parameters>
     

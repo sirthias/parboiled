@@ -28,8 +28,6 @@ import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.parboiled.transform.support.InsnListGenerator;
 
-import java.util.HashSet;
-
 abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 
     private static final Object lock = new Object();
@@ -187,6 +185,8 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 			// load context, which is unaffected by UP(...) and DOWN(...)
 			// context switches
 			gen.loadLocal(2, CONTEXT);
+			// load variable stack
+			gen.invokeInterface(CONTEXT, new Method("getCallStack", CALL_STACK, new Type[0]));
 			
 			var = mapVarIndex(var);
 			if (node.isXStore()) {
@@ -197,15 +197,13 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 				gen.push(var);
 			}
 
-			if (node.isXStore()) {
-				gen.box(varType);
-				gen.invokeInterface(CONTEXT,
-						Method.getMethod("void setVariable(int, Object)"));
-			} else {
-				gen.invokeInterface(CONTEXT,
-						Method.getMethod("Object getVariable(int)"));
-				gen.unbox(varType);
-			}
+            if (node.isXStore()) {
+                gen.box(varType);
+                gen.invokeInterface(CALL_STACK, Method.getMethod("void setVariable(int, Object)"));
+            } else {
+                gen.invokeInterface(CALL_STACK, Method.getMethod("Object getVariable(int)"));
+                gen.unbox(varType);
+            }
 
 			instructions.insertBefore(node.getInstruction(), gen.instructions);
 			instructions.remove(node.getInstruction());

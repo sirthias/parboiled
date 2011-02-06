@@ -18,7 +18,7 @@ package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
-import org.parboiled.annotations.Arg;
+import org.parboiled.annotations.Var;
 import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
@@ -53,7 +53,7 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
             );
         }
         
-        public Rule SomeRule(@Arg Integer var, int ruleArg) {
+        public Rule SomeRule(@Var Integer var, int ruleArg) {
             return toRule(DO(var == count++));
         }
 

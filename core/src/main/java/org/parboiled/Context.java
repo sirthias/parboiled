@@ -21,6 +21,7 @@ import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ValueStack;
+import org.parboiled.support.CallStack;
 
 import java.util.List;
 
@@ -176,35 +177,11 @@ public interface Context<V> {
     int getMatchEndIndex();
     
     /**
-     * Sets the action variable with index <code>i</code> to the given <code>value</code>.
-     * 
-     * @param i index of the action variable
-     * @param value value of the action variable
+     * Returns the call stack instance used during this parsing run.
+     *
+     * @return the call stack
      */
-    void setVariable(int i, Object value);
-
-    /**
-     * Returns the value for the action variable with index <code>i</code>.
-     * 
-     * @param i index of the action variable
-     * @return value of the action variable
-     */
-    Object getVariable(int i);
-
-	/**
-	 * Sets maximum number of local action variables for the actions contained in
-	 * a matcher.
-	 * 
-	 * @param locals number of local action variables
-	 */
-	void setMaxLocals(int locals);
-
-	/**
-	 * Initializes the action parameters for the actions contained in a matcher.
-	 * 
-	 * @param args values for the action parameters
-	 */
-    void setArgs(Object[] args);
+    CallStack getCallStack();
 
     /**
      * Returns the value stack instance used during this parsing run.

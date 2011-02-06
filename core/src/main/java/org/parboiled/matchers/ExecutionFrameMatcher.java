@@ -24,17 +24,21 @@ package org.parboiled.matchers;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
-public class SetMaxLocalsMatcher extends DelegatingMatcher {
+public class ExecutionFrameMatcher extends DelegatingMatcher {
 	protected int maxLocals;
 
-	public SetMaxLocalsMatcher(Rule inner, int maxLocals) {
+	public ExecutionFrameMatcher(Rule inner, int maxLocals) {
 		super(inner);
 		this.maxLocals = maxLocals;
 	}
 
 	@Override
 	public <V> boolean match(MatcherContext<V> context) {
-		context.setMaxLocals(maxLocals);
-		return super.match(context);
+		context.getCallStack().pushFrame(maxLocals);
+		try {
+		    return super.match(context);
+		} finally {
+		    context.getCallStack().popFrame();
+		}
 	}
 }

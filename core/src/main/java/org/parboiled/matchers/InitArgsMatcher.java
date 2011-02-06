@@ -25,16 +25,16 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 
 public class InitArgsMatcher extends DelegatingMatcher {
-	protected Object[] args;
+    protected Object[] args;
 
-	public InitArgsMatcher(Rule inner, Object[] args) {
-		super(inner);
-		this.args = args;
-	}
+    public InitArgsMatcher(Rule inner, Object[] args) {
+        super(inner);
+        this.args = args;
+    }
 
-	@Override
-	public boolean match(MatcherContext context) {
-		context.setArgs(args);
-		return super.match(context);
-	}
+    @Override
+    public boolean match(MatcherContext context) {
+        context.getCallStack().setArguments(args);
+        return super.match(context);
+    }
 }

@@ -336,7 +336,7 @@ class AsmUtils {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		for (Annotation[] individualAnnotations : parameterAnnotations) {
 			for (Annotation annotation : individualAnnotations) {
-				if (Type.getType(annotation.annotationType()).equals(Types.ARG_ANNOTATION)) {
+				if (Type.getType(annotation.annotationType()).equals(Types.VAR_ANNOTATION)) {
 					return true;
 				}
 			}
@@ -347,7 +347,7 @@ class AsmUtils {
 	public static boolean isActionParam(Method method, int parameterIndex) {
 		if (parameterIndex < method.getParameterAnnotations().length) {
 			for (Annotation annotation : method.getParameterAnnotations()[parameterIndex]) {
-				if (Type.getType(annotation.annotationType()).equals(Types.ARG_ANNOTATION)) {
+				if (Type.getType(annotation.annotationType()).equals(Types.VAR_ANNOTATION)) {
 					return true;
 				}
 			}
