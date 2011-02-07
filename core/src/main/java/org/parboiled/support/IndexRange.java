@@ -7,6 +7,9 @@ import static org.parboiled.common.Preconditions.checkArgument;
  * A simple immutable container for a range of indices into an underlying InputBuffer.
  */
 public final class IndexRange {
+
+    public static final IndexRange EMPTY = new IndexRange(0, 0);
+    
     /**
      * The index of the first character in the range.
      */
@@ -31,6 +34,13 @@ public final class IndexRange {
      */
     public boolean isEmpty() {
         return start == end;
+    }
+
+    /**
+     * @return the number of characters covered by this range
+     */
+    public int length() {
+        return end - start;
     }
 
     /**
