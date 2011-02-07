@@ -127,6 +127,18 @@ public abstract class BaseActions<V> implements ContextAware<V> {
         check();
         return context.getMatchEndIndex();
     }
+    
+    /**
+     * <p>Returns the number of characters matched by the rule immediately preceding the action expression that is
+     * currently being evaluated. This call can only be used in actions that are part of a Sequence rule and are not
+     * at first position in this Sequence.</p>
+     * 
+     * @return the number of characters matched
+     */
+    public int matchLength() {
+        check();
+        return context.getMatchLength();
+    }
 
     /**
      * Pushes the given value onto the value stack. Equivalent to push(0, value).

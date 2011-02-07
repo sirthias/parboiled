@@ -177,6 +177,15 @@ public interface Context<V> {
     int getMatchEndIndex();
 
     /**
+     * <p>Returns the number of characters matched by the rule immediately preceding the action expression that is
+     * currently being evaluated. This call can only be used in actions that are part of a Sequence rule and are not
+     * at first position in this Sequence.</p>
+     * 
+     * @return the number of characters matched
+     */
+    int getMatchLength();
+    
+    /**
      * Creates a new {@link IndexRange} instance covering the input text matched by the rule immediately preceding the
      * action expression that is currently being evaluated. This call can only be used in actions that are part of a
      * Sequence rule and are not at first position in this Sequence.
@@ -184,7 +193,7 @@ public interface Context<V> {
      * @return a new IndexRange instance
      */
     IndexRange getMatchRange();
-
+    
     /**
      * Returns the value stack instance used during this parsing run.
      *

@@ -204,6 +204,11 @@ public class MatcherContext<V> implements Context<V> {
         return subContext.currentIndex;
     }
 
+    public int getMatchLength() {
+        checkActionContext();
+        return subContext.currentIndex - subContext.getStartIndex();
+    }
+
     public IndexRange getMatchRange() {
         checkActionContext();
         return new IndexRange(subContext.startIndex, subContext.currentIndex);
