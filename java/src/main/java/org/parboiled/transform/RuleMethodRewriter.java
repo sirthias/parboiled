@@ -53,6 +53,20 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
         this.method = checkArgNotNull(method, "method");
         actionNr = 0;
         varInitNr = 0;
+        
+        // map variable indexes by subtracting the number of preceding action arguments
+        for (InstructionGraphNode node : method.getGraphNodes()) {
+			if (node.getGroup() == null && (node.isXLoad() || node.isXStore())) {
+				VarInsnNode varInsn = (VarInsnNode)node.getInstruction();
+				
+				int maxVar = Math.min(varInsn.var, method.getActionParams().length());
+				for (int i = 0; i < maxVar; i++) {
+					if (method.getActionParams().get(i)) {
+						varInsn.var--;
+					}
+				}
+			}
+        }
 
         for (InstructionGroup group : method.getGroups()) {
             this.group = group;
