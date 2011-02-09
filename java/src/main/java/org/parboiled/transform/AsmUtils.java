@@ -57,6 +57,9 @@ class AsmUtils {
 
     public static String getExtendedParserClassName(String parserClassName) {
         checkArgNotNull(parserClassName, "parserClassName");
+        if (parserClassName.endsWith("$$parboiled")) {
+        	return parserClassName;
+        }
         return parserClassName + "$$parboiled";
     }
     
