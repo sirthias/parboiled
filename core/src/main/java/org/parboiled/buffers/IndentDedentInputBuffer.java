@@ -92,10 +92,12 @@ public class IndentDedentInputBuffer implements InputBuffer {
     }
 
     public int getLineCount() {return origBuffer.getLineCount();}
-    
+
     private int map(int convIndex) {
-        return convIndex < 0 ? indexMap[0] :
-                convIndex >= indexMap.length ? indexMap[indexMap.length-1] + 1 : indexMap[convIndex]; 
+        if (convIndex < 0) return indexMap[0];
+        if (convIndex < indexMap.length) return indexMap[convIndex];
+        if (indexMap.length == 0) return 1;
+        return indexMap[indexMap.length - 1] + 1;
     }
 
     private class BufferConverter {
@@ -197,7 +199,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
                 while (currentChar != '\n' && currentChar != Chars.EOI) {
                     advance();
                 }
-                return cursor-start;
+                return cursor - start;
             }
             return 0;
         }
@@ -210,18 +212,18 @@ public class IndentDedentInputBuffer implements InputBuffer {
                 indexMap.push(cursor);
                 sb.append(c);
             }
-            
+
             private void appendNewline(int commentChars) {
                 indexMap.push(cursor - commentChars);
                 sb.append('\n');
             }
-            
+
             public char[] getChars() {
                 char[] buffer = new char[sb.length()];
                 sb.getChars(0, sb.length(), buffer, 0);
                 return buffer;
             }
-            
+
             public int[] getIndexMap() {
                 return indexMap.toArray();
             }

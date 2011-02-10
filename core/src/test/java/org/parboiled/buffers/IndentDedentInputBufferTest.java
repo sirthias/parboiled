@@ -18,6 +18,7 @@ package org.parboiled.buffers;
 
 import org.parboiled.common.FileUtils;
 import org.parboiled.errors.IllegalIndentationException;
+import org.parboiled.support.Chars;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -120,7 +121,7 @@ public class IndentDedentInputBufferTest {
     }
     
     @Test
-    public void testIndentDedentInputBuffeIllegalIndent() {
+    public void testIndentDedentInputBufferIllegalIndent() {
         try {
             new IndentDedentInputBuffer(("" +
                     "level 1\n" +
@@ -139,5 +140,11 @@ public class IndentDedentInputBufferTest {
             return;
         }
         Assert.fail("Incorrect or no IllegalIndentationException thrown");
+    }
+    
+    @Test
+    public void testEmptyIndentDedentInputBuffer() {
+        InputBuffer buf = new IndentDedentInputBuffer(new char[0], 2, "#");
+        assertEquals(buf.extract(0, 1), "");
     }
 }
