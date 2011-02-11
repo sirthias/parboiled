@@ -83,13 +83,11 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         for (int i = 0; i < method.getGraphNodes().size(); i++) {
             InstructionGraphNode node = method.getGraphNodes().get(i);
             // generate node
-            boolean isSpecial = node.isActionRoot() || node.isVarInitRoot() ||
-                    node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
+            boolean isSpecial = node.isActionRoot() || node.isXLoad() || node.isXStore() || node.isCallOnContextAware();
             sb.append(" ").append(i)
                     .append(" [")
                     .append(isSpecial ? "penwidth=2.0," : "penwidth=1.0,")
                     .append(node.isActionRoot() ? "color=skyblue," : "")
-                    .append(node.isVarInitRoot() ? "color=grey," : "")
                     .append(node.isXLoad() ? "color=orange," : "")
                     .append(node.isXStore() ? "color=red," : "")
                     .append(node.getGroup() != null && node.getGroup().getGroupType() == GroupType.ACTION ?

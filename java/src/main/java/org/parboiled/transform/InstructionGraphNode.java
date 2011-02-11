@@ -47,7 +47,6 @@ class InstructionGraphNode implements Value {
     private boolean isActionRoot;
     private final boolean isCallToRuleWithActionParams;
     private boolean isActionParam;
-    private boolean isVarInitRoot;
     private final boolean isCallOnContextAware;
     private final boolean isXLoad;
     private final boolean isXStore;
@@ -120,14 +119,6 @@ class InstructionGraphNode implements Value {
 		return isAssignmentAction;
 	}
 
-    public boolean isVarInitRoot() {
-        return isVarInitRoot;
-    }
-    
-    public void setIsVarInitRoot() {
-    	isVarInitRoot = true;
-    }
-    
     public boolean isActionParam() {
     	return isActionParam;
     }

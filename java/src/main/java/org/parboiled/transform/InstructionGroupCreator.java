@@ -42,8 +42,9 @@ import java.util.*;
 class InstructionGroupCreator implements RuleMethodProcessor  {
 
     private final Map<String, Integer> memberModifiers = new HashMap<String, Integer>();
+    private ParserClassNode classNode;
     private RuleMethod method;
-
+    
     public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
@@ -51,6 +52,7 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
     }
 
     public void process(ParserClassNode classNode, RuleMethod method) {
+        this.classNode = checkArgNotNull(classNode, "classNode");
         this.method = checkArgNotNull(method, "method");
 
         // create groups
@@ -85,7 +87,7 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
     }
 
 	private void markGroup(InstructionGraphNode node, InstructionGroup group) {
-		Checks.ensure(node == group.getRoot() || (!node.isActionRoot() && !node.isVarInitRoot()),
+		Checks.ensure(node == group.getRoot() || !node.isActionRoot(),
 				"Method '%s' contains illegal nesting of ACTION and/or Var initializer constructs", method.name);
 
 		if (node.getGroup() != null)
@@ -234,7 +236,6 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
 		}
 		for (InstructionGraphNode node : method.getRuleCallsWithActionParams()) {
 			MethodInsnNode ruleMethodInsn = (MethodInsnNode) node.getInstruction();
-			Method targetMethod = AsmUtils.getClassMethod(ruleMethodInsn.owner, ruleMethodInsn.name, ruleMethodInsn.desc);
 
 			int firstArg = ruleMethodInsn.getOpcode() == INVOKESTATIC ? 0 : 1;
 			List<Type> normalArgumentTypes = new ArrayList<Type>(Arrays.asList(Type.getArgumentTypes(ruleMethodInsn.desc)));
@@ -242,36 +243,36 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
 			List<InstructionGraphNode> actionArgumentNodes = new ArrayList<InstructionGraphNode>();
 
 			List<InstructionGraphNode> predecessors = node.getPredecessors();
-			VarInitGroup group = null;
-			for (int preds = predecessors.size(), pred = preds - 1; pred >= firstArg; pred--) {
-				int arg = pred - firstArg;
-				if (AsmUtils.isActionParam(targetMethod, arg)) {
-					InstructionGraphNode argNode = predecessors.get(pred);
+			VarInitGroup group = new InstructionGroup.VarInitGroup(method, node);
+            for (int preds = predecessors.size(), pred = preds - 1; pred >= firstArg; pred--) {
+                InstructionGraphNode argNode = predecessors.get(pred);
+                if (argNode.isActionParam()) {
+                    int arg = pred - firstArg;
+                    actionArgumentTypes.add(0, normalArgumentTypes.remove(arg));
+                    actionArgumentNodes.add(0, argNode);
 
-					actionArgumentTypes.add(0, normalArgumentTypes.remove(arg));
-					actionArgumentNodes.add(0, argNode);
-
-					if (group == null) {
-						group = new InstructionGroup.VarInitGroup(method, node);
-						node.setIsVarInitRoot();
-					}
-					// collect all instructions that initialize the
-					// corresponding action argument
-					markGroup(argNode, group);
-				}
-			}
+                    // collect all instructions that initialize the
+                    // corresponding action argument
+                    markGroup(argNode, group);
+                }
+            }
 
 			group.setRuleActionArgumentTypes(actionArgumentTypes);
 			group.setRuleActionArgumentNodes(actionArgumentNodes);
 			method.getGroups().add(group);
 
-			// re-target rule creation call, since action parameters must be
-			// removed
-            ruleMethodInsn.owner = AsmUtils.getExtendedParserClassName(firstArg == 1 ? node.getPredecessors().get(0).getResultValue()
-                    .getType().getInternalName() : ruleMethodInsn.owner);
-			ruleMethodInsn.name = AsmUtils.renameRule(ruleMethodInsn.name, ruleMethodInsn.desc);
-			// remove action parameters from descriptor
-			ruleMethodInsn.desc = Type.getMethodDescriptor(Types.RULE, normalArgumentTypes.toArray(new Type[normalArgumentTypes.size()]));
+            String targetType = AsmUtils.stripSuffix(firstArg == 1 ? node.getPredecessors().get(0).getResultValue().getType()
+                    .getInternalName() : ruleMethodInsn.owner);
+            if (targetType.equals(classNode.getParentType().getInternalName())) {
+                // re-target rule creation call, since action parameters can be
+                // removed
+                ruleMethodInsn.owner = AsmUtils.getExtendedParserClassName(firstArg == 1 ? node.getPredecessors().get(0).getResultValue()
+                        .getType().getInternalName() : ruleMethodInsn.owner);
+                ruleMethodInsn.name = AsmUtils.renameRule(ruleMethodInsn.name, ruleMethodInsn.desc);
+                // remove action parameters from descriptor
+                ruleMethodInsn.desc = Type.getMethodDescriptor(Types.RULE,
+                        normalArgumentTypes.toArray(new Type[normalArgumentTypes.size()]));
+            }
 		}
 	}
 
