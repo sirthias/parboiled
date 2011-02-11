@@ -1,9 +1,9 @@
 repositories.remote << 'http://repo1.maven.org/maven2'
-#repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/releases/'
-repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/snapshots/'
+repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/releases/'
+#repositories.release_to[:url] = 'http://nexus.scala-tools.org/content/repositories/snapshots/'
 
 Buildr.settings.build['scala.version'] = "2.8.1"
-VERSION_NUMBER = "0.11.0-SNAPSHOT"
+VERSION_NUMBER = "0.10.1"
 
 require "buildr/scala"
 
@@ -27,7 +27,7 @@ define "parboiled" do
   manifest["Bundle-Vendor"] = "parboiled.org"
   manifest["Bundle-SymbolicName"] = "org.parboiled"
 
-  ASM = ["asm:asm:jar:3.3", "asm:asm-tree:jar:3.3", "asm:asm-analysis:jar:3.3", "asm:asm-util:jar:3.3"]
+  ASM = ["asm:asm:jar:3.3.1", "asm:asm-tree:jar:3.3.1", "asm:asm-analysis:jar:3.3.1", "asm:asm-util:jar:3.3.1"]
   SCALATEST = "org.scalatest:scalatest:jar:1.2"
 
   compile.using :deprecation => true, :target => "1.5", :other => ["-encoding", "UTF-8"], :lint=> "all"
