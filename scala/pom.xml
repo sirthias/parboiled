@@ -1,8 +1,10 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.parboiled</groupId>
   <artifactId>parboiled-scala</artifactId>
-  <version>0.10.0</version>
+  <version>0.10.1</version>
+  <inceptionYear>2009</inceptionYear>
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -19,14 +21,20 @@
     <dependency>
       <groupId>org.parboiled</groupId>
       <artifactId>parboiled-core</artifactId>
-      <version>0.10.0</version>
+      <version>0.10.1</version>
     </dependency>
   </dependencies>
-  <repositories>−
+  <repositories>
     <repository>
-        <id>ScalaToolsMaven2Repository</id>
-        <name>Scala-Tools Maven2 Repository</name>
-        <url>http://scala-tools.org/repo-releases/</url>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases/</url>
+    </repository>
+    <repository>
+      <id>scala-tools.org.snapshots</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-snapshots/</url>
+      <snapshots />
     </repository>
   </repositories>
 </project>

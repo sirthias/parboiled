@@ -40,7 +40,6 @@ public class MemoMismatchesMatcher implements Matcher {
 
     @SuppressWarnings({"unchecked"})
     public <V> boolean match(MatcherContext<V> context) {
-        checkArgNotNull(context, "context");
         int pos = context.getCurrentIndex();
         if (memo == pos) {
             return false;

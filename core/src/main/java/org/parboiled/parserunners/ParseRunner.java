@@ -16,14 +16,33 @@
 
 package org.parboiled.parserunners;
 
-import static org.parboiled.common.Preconditions.*;
 import org.parboiled.buffers.InputBuffer;
+import org.parboiled.errors.ParseError;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ValueStack;
+
+import java.util.List;
 
 /**
  * A ParseRunner performs the actual parsing run of a given parser rule on a given input text.
  */
 public interface ParseRunner<V> {
+
+    /**
+     * Initializes the parse runner with the given error list.
+     *
+     * @param parseErrors the error list to start off with
+     * @return this instance
+     */
+    ParseRunner<V> withParseErrors(List<ParseError> parseErrors);
+
+    /**
+     * Initializes the parse runner with the given ValueStack instance.
+     *
+     * @param valueStack the ValueStack to use
+     * @return this instance
+     */
+    ParseRunner<V> withValueStack(ValueStack<V> valueStack);
 
     /**
      * Performs the actual parse and creates a corresponding ParsingResult instance.
@@ -36,9 +55,16 @@ public interface ParseRunner<V> {
     /**
      * Performs the actual parse and creates a corresponding ParsingResult instance.
      *
+     * @param input the input text to parse
+     * @return the ParsingResult for the run
+     */
+    ParsingResult<V> run(char[] input);
+
+    /**
+     * Performs the actual parse and creates a corresponding ParsingResult instance.
+     *
      * @param inputBuffer the inputBuffer to use
      * @return the ParsingResult for the run
      */
     ParsingResult<V> run(InputBuffer inputBuffer);
-
 }

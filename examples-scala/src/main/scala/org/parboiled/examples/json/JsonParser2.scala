@@ -31,11 +31,11 @@ class JsonParser2 extends Parser {
   def Json: Rule1[AstNode] = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ EOI }
   
   def JsonObject: Rule1[ObjectNode] = rule {
-    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ((members: List[MemberNode]) => ObjectNode(members))
+    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ObjectNode
   }
 
   def Pair: Rule1[MemberNode] = rule {
-    JsonString ~ ": " ~ Value ~~> ((key: StringNode, value: AstNode) => MemberNode(key.text, value))
+    JsonString ~~> (_.text) ~ ": " ~ Value ~~> MemberNode
   }
 
   def Value: Rule1[AstNode] = rule {
@@ -43,15 +43,15 @@ class JsonParser2 extends Parser {
   }
 
   def JsonString: Rule1[StringNode] = rule {
-    "\"" ~ zeroOrMore(Character) ~> ((matched: String) => StringNode(matched)) ~ "\" "
+    "\"" ~ zeroOrMore(Character) ~> StringNode ~ "\" "
   }
 
   def JsonNumber: Rule1[NumberNode] = rule {
-    group(Integer ~ optional(Frac ~ optional(Exp))) ~> ((matched: String) => NumberNode(BigDecimal(matched))) ~ WhiteSpace
+    group(Integer ~ optional(Frac ~ optional(Exp))) ~> ((matched) => NumberNode(BigDecimal(matched))) ~ WhiteSpace
   }
 
   def JsonArray: Rule1[ArrayNode] = rule {
-    "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> ((elements: List[AstNode]) => ArrayNode(elements))
+    "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> ArrayNode
   }
 
   def Character: Rule0 = rule { EscapedChar | NormalChar }

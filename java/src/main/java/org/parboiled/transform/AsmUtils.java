@@ -22,7 +22,6 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -42,6 +41,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 class AsmUtils {
 
@@ -135,18 +136,30 @@ class AsmUtils {
         for (int i = 0; i < types.length; i++) {
             argTypes[i] = getClassForType(types[i]);
         }
-        Class<?> current = clazz;
-        while (true) {
+        Method method = findMethod(clazz, methodName, argTypes);
+        if (method == null) {
+            throw new RuntimeException("Method '" + methodName + "' with descriptor '" +
+                    methodDesc + "' not found in '" + clazz + "\' or any supertype");
+        }
+        return method;
+    }
+
+    private static Method findMethod(Class<?> clazz, String methodName, Class<?>[] argTypes) {
+        Method found = null;
+        if (clazz != null) {
             try {
-                return current.getDeclaredMethod(methodName, argTypes);
+                found = clazz.getDeclaredMethod(methodName, argTypes);
             } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-                if (Object.class.equals(current)) {
-                    throw new RuntimeException("Method '" + methodName + "' with descriptor '" +
-                            methodDesc + "' not found in '" + clazz + "\' or any superclass", e);
+                found = findMethod(clazz.getSuperclass(), methodName, argTypes);
+                if (found == null) {
+                    for (Class<?> interfaceClass : clazz.getInterfaces()) {
+                        found = findMethod(interfaceClass, methodName, argTypes);
+                        if (found != null) break;
+                    }
                 }
             }
         }
+        return found;
     }
 
     public static Constructor getClassConstructor(String classInternalName, String constructorDesc) {

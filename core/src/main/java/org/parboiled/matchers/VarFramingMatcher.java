@@ -37,7 +37,6 @@ public class VarFramingMatcher implements Matcher {
     }
 
     public <V> boolean match(MatcherContext<V> context) {
-        checkArgNotNull(context, "context");
         for (Var var : variables) {
             var.enterFrame();
         }

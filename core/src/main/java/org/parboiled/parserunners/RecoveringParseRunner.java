@@ -16,45 +16,46 @@
 
 package org.parboiled.parserunners;
 
-import static org.parboiled.common.Preconditions.*;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.buffers.MutableInputBuffer;
+import org.parboiled.common.Preconditions;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
 import org.parboiled.matchervisitors.*;
-import org.parboiled.support.Chars;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
-import org.parboiled.support.ValueStack;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.checkState;
 import static org.parboiled.support.Chars.*;
 
 /**
- * A {@link ParseRunner} implementation that is able to recover from {@link InvalidInputError}s in the input and therefore
- * report more than just the first {@link InvalidInputError} if the input does not conform to the rule grammar.
+ * A {@link org.parboiled.parserunners.ParseRunner} implementation that is able to recover from {@link org.parboiled.errors.InvalidInputError}s in the input and therefore
+ * report more than just the first {@link org.parboiled.errors.InvalidInputError} if the input does not conform to the rule grammar.
  * Error recovery is done by attempting to either delete an error character, insert a potentially missing character
  * or do both at once (which is equivalent to a one char replace) whereby this implementation is able to determine
  * itself which of these options is the best strategy.
  * If the parse error cannot be overcome by either deleting, inserting or replacing one character a resynchronization
  * rule is determined and the parsing process resynchronized, so that parsing can still continue.
  * In this way the RecoveringParseRunner is able to completely parse all input texts (This ParseRunner never returns
- * an unmatched {@link ParsingResult}.
- * If the input is error free this {@link ParseRunner} implementation will only perform one parsing run, with the same
- * speed as the {@link BasicParseRunner}. However, if there are {@link InvalidInputError}s in the input potentially
+ * an unmatched {@link org.parboiled.support.ParsingResult}).
+ * If the input is error free this {@link org.parboiled.parserunners.ParseRunner} implementation will only perform one parsing run, with the same
+ * speed as the {@link org.parboiled.parserunners.BasicParseRunner}. However, if there are {@link org.parboiled.errors.InvalidInputError}s in the input potentially
  * many more runs are performed to properly report all errors and test the various recovery strategies.
  */
-public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
-
+public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
     private int errorIndex;
     private InvalidInputError currentError;
     private MutableInputBuffer buffer;
+    private ParsingResult<V> lastParsingResult;
 
     /**
      * Create a new RecoveringParseRunner instance with the given rule and input text and returns the result of
@@ -63,7 +64,10 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
+     * @deprecated  As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
+     * this static method. This method will be removed in one of the coming releases.
      */
+    @Deprecated
     public static <V> ParsingResult<V> run(Rule rule, String input) {
         checkArgNotNull(rule, "rule");
         checkArgNotNull(input, "input");
@@ -76,60 +80,64 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
      * @param rule the parser rule
      */
     public RecoveringParseRunner(Rule rule) {
-        super(checkArgNotNull(rule, "rule"));
+        super(rule);
     }
 
-    /**
-     * Creates a new RecoveringParseRunner instance for the given rule using the given ValueStack instance.
-     *
-     * @param rule       the parser rule
-     * @param valueStack the value stack
-     */
-    public RecoveringParseRunner(Rule rule, ValueStack<V> valueStack) {
-        super(checkArgNotNull(rule, "rule"), checkArgNotNull(valueStack, "valueStack"));
-    }
+    public ParsingResult<V> run(InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
+        resetValueStack();
 
-    @Override
-    protected boolean runRootContext() {
-        // run a basic match
-        if (super.runRootContext()) {
-            return true;
+        // first, run a basic match
+        ParseRunner<V> basicRunner = new BasicParseRunner<V>(getRootMatcher())
+                .withParseErrors(getParseErrors())
+                .withValueStack(getValueStack());
+        lastParsingResult = basicRunner.run(inputBuffer);
+        
+        if (!lastParsingResult.matched) {
+            // locate first error
+            performLocatingRun(inputBuffer);
+            checkState(errorIndex >= 0); // we failed before so we must fail again
+
+            // in order to be able to apply fixes we need to wrap the input buffer with a mutability wrapper
+            buffer = new MutableInputBuffer(inputBuffer);
+            
+            // report first error
+            performReportingRun();
+
+            // fix and report until done
+            while (!fixError(errorIndex)) {
+                performReportingRun();
+            }
         }
-
-        if (attemptRecordingMatch()) {
-            throw new IllegalStateException(); // we failed before so we must fail again
-        }
-
-        // in order to be able to apply fixes we need to wrap the input buffer with a mutability wrapper
-        inputBuffer = buffer = new MutableInputBuffer(inputBuffer);
-
-        do {
-            performErrorReportingRun();
-        } while (!fixError(errorIndex));
-
-        return true;
+        return lastParsingResult;
     }
 
-    protected boolean attemptRecordingMatch() {
-        RecordingParseRunner.Handler handler = new RecordingParseRunner.Handler(getInnerHandler());
-        boolean matched = runRootContext(handler, false); // run without fast string matching
-        errorIndex = handler.getErrorIndex();
-        return matched;
+    private boolean performLocatingRun(InputBuffer inputBuffer) {
+        resetValueStack();
+        ParseRunner<V> locatingRunner = new ErrorLocatingParseRunner<V>(getRootMatcher(), getInnerHandler())
+                .withParseErrors(getParseErrors())
+                .withValueStack(getValueStack());
+        lastParsingResult = locatingRunner.run(inputBuffer);
+        errorIndex = lastParsingResult.matched ? -1 :
+                getParseErrors().remove(getParseErrors().size() - 1).getStartIndex();
+        return lastParsingResult.matched;
     }
-
-    protected void performErrorReportingRun() {
-        ReportingParseRunner.Handler handler = new ReportingParseRunner.Handler(errorIndex, getInnerHandler());
-        if (runRootContext(handler, false)) {
-            throw new IllegalStateException(); // we failed before so we should really be failing again
-        }
-        currentError = handler.getParseError();
+    
+    private void performReportingRun() {
+        resetValueStack();
+        ParseRunner<V> reportingRunner = new ErrorReportingParseRunner<V>(getRootMatcher(), errorIndex, getInnerHandler())
+                .withParseErrors(getParseErrors())
+                .withValueStack(getValueStack());
+        ParsingResult<V> result = reportingRunner.run(buffer);
+        Preconditions.checkState(!result.matched); // we failed before so we should really be failing again
+        currentError = (InvalidInputError) getParseErrors().get(getParseErrors().size() - 1);
     }
-
-    protected MatchHandler getInnerHandler() {
-        return errorIndex >= 0 ? new Handler(currentError) : new BasicParseRunner.Handler();
+    
+    private MatchHandler getInnerHandler() {
+        return errorIndex >= 0 ? new Handler(currentError) : null;
     }
-
-    protected boolean fixError(int fixIndex) {
+    
+    private boolean fixError(int fixIndex) {
         if (tryFixBySingleCharDeletion(fixIndex)) return true;
         int nextErrorAfterDeletion = errorIndex;
 
@@ -169,14 +177,14 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             if (buffer.charAt(fixIndex) == EOI) return true;
             buffer.insertChar(fixIndex, RESYNC);
             currentError.shiftIndexDeltaBy(1);
-            attemptRecordingMatch(); // find the next parse error
+            performLocatingRun(buffer); // find the next parse error
         }
         return errorIndex == -1;
     }
-
-    protected boolean tryFixBySingleCharDeletion(int fixIndex) {
+    
+    private boolean tryFixBySingleCharDeletion(int fixIndex) {
         buffer.insertChar(fixIndex, DEL_ERROR);
-        boolean nowErrorFree = attemptRecordingMatch();
+        boolean nowErrorFree = performLocatingRun(buffer);
         if (nowErrorFree) {
             currentError.shiftIndexDeltaBy(1); // compensate for the inserted DEL_ERROR char
         } else {
@@ -187,7 +195,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
     }
 
     @SuppressWarnings({"ConstantConditions"})
-    protected Character findBestSingleCharInsertion(int fixIndex) {
+    private Character findBestSingleCharInsertion(int fixIndex) {
         GetStarterCharVisitor getStarterCharVisitor = new GetStarterCharVisitor();
         int bestNextErrorIndex = -1;
         Character bestChar = null;
@@ -199,7 +207,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
             buffer.insertChar(fixIndex, starterChar);
             buffer.insertChar(fixIndex, INS_ERROR);
-            if (attemptRecordingMatch()) {
+            if (performLocatingRun(buffer)) {
                 currentError.shiftIndexDeltaBy(2); // compensate for the inserted chars
                 return null; // success, exit immediately
             }
@@ -216,10 +224,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         return bestChar;
     }
 
-    protected Character findBestSingleCharReplacement(int fixIndex) {
-        /*errorIndex = fixIndex;
-        return 'x';*/
-
+    private Character findBestSingleCharReplacement(int fixIndex) {
         buffer.insertChar(fixIndex, DEL_ERROR);
         Character bestChar = findBestSingleCharInsertion(fixIndex + 2);
         if (bestChar == null) { // success, we found a fix that renders the complete input error free
@@ -230,12 +235,13 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
         }
         return bestChar;
     }
-
+    
     /**
-     * A {@link MatchHandler} implementation that recognizes the special {@link Chars#RESYNC} character
-     * to overcome {@link InvalidInputError}s at the respective error indices.
+     * A {@link org.parboiled.MatchHandler} implementation that recognizes the special
+     * {@link org.parboiled.support.Chars#RESYNC} character to overcome {@link InvalidInputError}s at the respective
+     * error indices.
      */
-    public static class Handler implements MatchHandler {
+    private static class Handler implements MatchHandler {
         private final IsSingleCharMatcherVisitor isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor();
         private final InvalidInputError currentError;
         private int fringeIndex;
@@ -249,10 +255,6 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
          */
         public Handler(InvalidInputError currentError) {
             this.currentError = currentError;
-        }
-
-        public boolean matchRoot(MatcherContext<?> rootContext) {
-            return rootContext.runMatcher();
         }
 
         public boolean match(MatcherContext<?> context) {
@@ -289,7 +291,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             return context.getParent() == null; // always resync on the root if there is nothing else
         }
 
-        protected boolean prepareErrorLocation(MatcherContext context) {
+        private boolean prepareErrorLocation(MatcherContext context) {
             switch (context.getCurrentChar()) {
                 case DEL_ERROR:
                     return willMatchDelError(context);
@@ -299,7 +301,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             return true;
         }
 
-        protected boolean willMatchDelError(MatcherContext context) {
+        private boolean willMatchDelError(MatcherContext context) {
             int preSkipIndex = context.getCurrentIndex();
             context.advanceIndex(2); // skip del marker char and illegal char
             if (!runTestMatch(context)) {
@@ -313,7 +315,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             return true;
         }
 
-        protected boolean willMatchInsError(MatcherContext context) {
+        private boolean willMatchInsError(MatcherContext context) {
             int preSkipIndex = context.getCurrentIndex();
             context.advanceIndex(1); // skip ins marker char
             if (!runTestMatch(context)) {
@@ -327,13 +329,13 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             return true;
         }
 
-        protected boolean runTestMatch(MatcherContext context) {
+        private boolean runTestMatch(MatcherContext context) {
             TestMatcher testMatcher = new TestMatcher(context.getMatcher());
             MatcherContext testContext = testMatcher.getSubContext(context);
             return prepareErrorLocation(testContext) && testContext.runMatcher();
         }
 
-        protected boolean resynchronize(MatcherContext context) {
+        private boolean resynchronize(MatcherContext context) {
             context.clearNodeSuppression();
             context.markError();
 
@@ -388,7 +390,7 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             }
         }
 
-        protected int gobbleIllegalCharacters(MatcherContext context, List<Matcher> followMatchers) {
+        private int gobbleIllegalCharacters(MatcherContext context, List<Matcher> followMatchers) {
             while_loop:
             while (true) {
                 char currentChar = context.getCurrentChar();
@@ -409,7 +411,6 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
      * in order to maintain a consistent Value Stack state.
      */
     private static class CollectResyncActionsVisitor extends DefaultMatcherVisitor<List<ActionMatcher>> {
-
         private final Set<Matcher> visited = new HashSet<Matcher>();
         private final List<ActionMatcher> actions = new ArrayList<ActionMatcher>();
 
@@ -455,5 +456,4 @@ public class RecoveringParseRunner<V> extends BasicParseRunner<V> {
             return actions;
         }
     }
-
 }

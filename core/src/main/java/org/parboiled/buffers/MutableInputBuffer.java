@@ -16,6 +16,9 @@
 
 package org.parboiled.buffers;
 
+import org.parboiled.support.IndexRange;
+import org.parboiled.support.Position;
+
 import java.util.Arrays;
 import static org.parboiled.common.Preconditions.*;
 
@@ -55,6 +58,10 @@ public class MutableInputBuffer implements InputBuffer {
 
     public String extract(int start, int end) {
         return buffer.extract(fix(start), fix(end));
+    }
+
+    public String extract(IndexRange range) {
+        return buffer.extract(fix(range.start), fix(range.end));
     }
 
     public int getLineCount() {

@@ -69,11 +69,11 @@ public abstract class ParboiledTest<V> {
     }
 
     public TestResult<V> test(Rule rule, String input) {
-        return new TestResult<V>(ReportingParseRunner.<V>run(rule, input));
+        return new TestResult<V>(new ReportingParseRunner<V>(rule).run(input));
     }
 
     public TestResult<V> testWithRecovery(Rule rule, String input) {
-        return new TestResult<V>(RecoveringParseRunner.<V>run(rule, input));
+        return new TestResult<V>(new RecoveringParseRunner<V>(rule).run(input));
     }
 
     protected abstract void fail(String message);

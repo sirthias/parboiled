@@ -71,7 +71,6 @@ public class ProxyMatcher implements Matcher, Cloneable {
     }
 
     public <V> boolean match(MatcherContext<V> context) {
-        checkArgNotNull(context, "context");
         if (dirty) apply();
         return target.match(context);
     }

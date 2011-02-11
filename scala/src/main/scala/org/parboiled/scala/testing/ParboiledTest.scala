@@ -63,11 +63,6 @@ trait ParboiledTest {
 
   def parseTreeRoot: Node[Result] = parsingResult.parseTreeRoot
 
-  def traceLog: String = pRunner.value match {
-    case t: TracingParseRunner[_] => t.traceLog
-    case _ => ""
-  }
-
   def errors: String = ErrorUtils.printParseErrors(parsingResult)
 
   def parseTree: String = ParseTreeUtils.printNodeTree(parsingResult)

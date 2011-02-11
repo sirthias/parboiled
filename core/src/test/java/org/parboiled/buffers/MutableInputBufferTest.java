@@ -16,6 +16,7 @@
 
 package org.parboiled.buffers;
 
+import org.parboiled.support.Position;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -41,20 +42,20 @@ public class MutableInputBufferTest {
         assertEquals(buf.extractLine(4), "gh");
         assertEquals(buf.extractLine(5), "");
 
-        assertEquals(buf.getPosition(0), new InputBuffer.Position(1,1));
-        assertEquals(buf.getPosition(1), new InputBuffer.Position(1,2));
-        assertEquals(buf.getPosition(2), new InputBuffer.Position(1,3));
-        assertEquals(buf.getPosition(3), new InputBuffer.Position(1,4));
-        assertEquals(buf.getPosition(4), new InputBuffer.Position(1,5));
-        assertEquals(buf.getPosition(5), new InputBuffer.Position(2,1));
-        assertEquals(buf.getPosition(6), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(7), new InputBuffer.Position(2,3));
-        assertEquals(buf.getPosition(8), new InputBuffer.Position(2,4));
-        assertEquals(buf.getPosition(9), new InputBuffer.Position(3,1));
-        assertEquals(buf.getPosition(10), new InputBuffer.Position(4,1));
-        assertEquals(buf.getPosition(11), new InputBuffer.Position(4,2));
-        assertEquals(buf.getPosition(12), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(13), new InputBuffer.Position(5,1));
+        assertEquals(buf.getPosition(0), new Position(1,1));
+        assertEquals(buf.getPosition(1), new Position(1,2));
+        assertEquals(buf.getPosition(2), new Position(1,3));
+        assertEquals(buf.getPosition(3), new Position(1,4));
+        assertEquals(buf.getPosition(4), new Position(1,5));
+        assertEquals(buf.getPosition(5), new Position(2,1));
+        assertEquals(buf.getPosition(6), new Position(2,2));
+        assertEquals(buf.getPosition(7), new Position(2,3));
+        assertEquals(buf.getPosition(8), new Position(2,4));
+        assertEquals(buf.getPosition(9), new Position(3,1));
+        assertEquals(buf.getPosition(10), new Position(4,1));
+        assertEquals(buf.getPosition(11), new Position(4,2));
+        assertEquals(buf.getPosition(12), new Position(4,3));
+        assertEquals(buf.getPosition(13), new Position(5,1));
 
         // ************* INSERT FIRST CHAR ************
         buf.insertChar(6, 'X');
@@ -70,21 +71,21 @@ public class MutableInputBufferTest {
         assertEquals(buf.extractLine(4), "gh");
         assertEquals(buf.extractLine(5), "");
 
-        assertEquals(buf.getPosition(0), new InputBuffer.Position(1,1));
-        assertEquals(buf.getPosition(1), new InputBuffer.Position(1,2));
-        assertEquals(buf.getPosition(2), new InputBuffer.Position(1,3));
-        assertEquals(buf.getPosition(3), new InputBuffer.Position(1,4));
-        assertEquals(buf.getPosition(4), new InputBuffer.Position(1,5));
-        assertEquals(buf.getPosition(5), new InputBuffer.Position(2,1));
-        assertEquals(buf.getPosition(6), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(7), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(8), new InputBuffer.Position(2,3));
-        assertEquals(buf.getPosition(9), new InputBuffer.Position(2,4));
-        assertEquals(buf.getPosition(10), new InputBuffer.Position(3,1));
-        assertEquals(buf.getPosition(11), new InputBuffer.Position(4,1));
-        assertEquals(buf.getPosition(12), new InputBuffer.Position(4,2));
-        assertEquals(buf.getPosition(13), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(14), new InputBuffer.Position(5,1));
+        assertEquals(buf.getPosition(0), new Position(1,1));
+        assertEquals(buf.getPosition(1), new Position(1,2));
+        assertEquals(buf.getPosition(2), new Position(1,3));
+        assertEquals(buf.getPosition(3), new Position(1,4));
+        assertEquals(buf.getPosition(4), new Position(1,5));
+        assertEquals(buf.getPosition(5), new Position(2,1));
+        assertEquals(buf.getPosition(6), new Position(2,2));
+        assertEquals(buf.getPosition(7), new Position(2,2));
+        assertEquals(buf.getPosition(8), new Position(2,3));
+        assertEquals(buf.getPosition(9), new Position(2,4));
+        assertEquals(buf.getPosition(10), new Position(3,1));
+        assertEquals(buf.getPosition(11), new Position(4,1));
+        assertEquals(buf.getPosition(12), new Position(4,2));
+        assertEquals(buf.getPosition(13), new Position(4,3));
+        assertEquals(buf.getPosition(14), new Position(5,1));
 
         // ************* INSERT SECOND CHAR ************
         buf.insertChar(13, 'Y');
@@ -101,22 +102,22 @@ public class MutableInputBufferTest {
         assertEquals(buf.extractLine(4), "gh");
         assertEquals(buf.extractLine(5), "");
 
-        assertEquals(buf.getPosition(0), new InputBuffer.Position(1,1));
-        assertEquals(buf.getPosition(1), new InputBuffer.Position(1,2));
-        assertEquals(buf.getPosition(2), new InputBuffer.Position(1,3));
-        assertEquals(buf.getPosition(3), new InputBuffer.Position(1,4));
-        assertEquals(buf.getPosition(4), new InputBuffer.Position(1,5));
-        assertEquals(buf.getPosition(5), new InputBuffer.Position(2,1));
-        assertEquals(buf.getPosition(6), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(7), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(8), new InputBuffer.Position(2,3));
-        assertEquals(buf.getPosition(9), new InputBuffer.Position(2,4));
-        assertEquals(buf.getPosition(10), new InputBuffer.Position(3,1));
-        assertEquals(buf.getPosition(11), new InputBuffer.Position(4,1));
-        assertEquals(buf.getPosition(12), new InputBuffer.Position(4,2));
-        assertEquals(buf.getPosition(13), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(14), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(15), new InputBuffer.Position(5,1));
+        assertEquals(buf.getPosition(0), new Position(1,1));
+        assertEquals(buf.getPosition(1), new Position(1,2));
+        assertEquals(buf.getPosition(2), new Position(1,3));
+        assertEquals(buf.getPosition(3), new Position(1,4));
+        assertEquals(buf.getPosition(4), new Position(1,5));
+        assertEquals(buf.getPosition(5), new Position(2,1));
+        assertEquals(buf.getPosition(6), new Position(2,2));
+        assertEquals(buf.getPosition(7), new Position(2,2));
+        assertEquals(buf.getPosition(8), new Position(2,3));
+        assertEquals(buf.getPosition(9), new Position(2,4));
+        assertEquals(buf.getPosition(10), new Position(3,1));
+        assertEquals(buf.getPosition(11), new Position(4,1));
+        assertEquals(buf.getPosition(12), new Position(4,2));
+        assertEquals(buf.getPosition(13), new Position(4,3));
+        assertEquals(buf.getPosition(14), new Position(4,3));
+        assertEquals(buf.getPosition(15), new Position(5,1));
 
         // ************* INSERT THIRD CHAR AT SAME POSITION AS FIRST CHAR************
         buf.insertChar(6, 'Z');
@@ -134,23 +135,23 @@ public class MutableInputBufferTest {
         assertEquals(buf.extractLine(4), "gh");
         assertEquals(buf.extractLine(5), "");
 
-        assertEquals(buf.getPosition(0), new InputBuffer.Position(1,1));
-        assertEquals(buf.getPosition(1), new InputBuffer.Position(1,2));
-        assertEquals(buf.getPosition(2), new InputBuffer.Position(1,3));
-        assertEquals(buf.getPosition(3), new InputBuffer.Position(1,4));
-        assertEquals(buf.getPosition(4), new InputBuffer.Position(1,5));
-        assertEquals(buf.getPosition(5), new InputBuffer.Position(2,1));
-        assertEquals(buf.getPosition(6), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(7), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(8), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(9), new InputBuffer.Position(2,3));
-        assertEquals(buf.getPosition(10), new InputBuffer.Position(2,4));
-        assertEquals(buf.getPosition(11), new InputBuffer.Position(3,1));
-        assertEquals(buf.getPosition(12), new InputBuffer.Position(4,1));
-        assertEquals(buf.getPosition(13), new InputBuffer.Position(4,2));
-        assertEquals(buf.getPosition(14), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(15), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(16), new InputBuffer.Position(5,1));
+        assertEquals(buf.getPosition(0), new Position(1,1));
+        assertEquals(buf.getPosition(1), new Position(1,2));
+        assertEquals(buf.getPosition(2), new Position(1,3));
+        assertEquals(buf.getPosition(3), new Position(1,4));
+        assertEquals(buf.getPosition(4), new Position(1,5));
+        assertEquals(buf.getPosition(5), new Position(2,1));
+        assertEquals(buf.getPosition(6), new Position(2,2));
+        assertEquals(buf.getPosition(7), new Position(2,2));
+        assertEquals(buf.getPosition(8), new Position(2,2));
+        assertEquals(buf.getPosition(9), new Position(2,3));
+        assertEquals(buf.getPosition(10), new Position(2,4));
+        assertEquals(buf.getPosition(11), new Position(3,1));
+        assertEquals(buf.getPosition(12), new Position(4,1));
+        assertEquals(buf.getPosition(13), new Position(4,2));
+        assertEquals(buf.getPosition(14), new Position(4,3));
+        assertEquals(buf.getPosition(15), new Position(4,3));
+        assertEquals(buf.getPosition(16), new Position(5,1));
 
         // ************* UNDO INSERTION OF FIRST CHAR************
         assertEquals(buf.undoCharInsertion(7), 'X');
@@ -167,22 +168,22 @@ public class MutableInputBufferTest {
         assertEquals(buf.extractLine(4), "gh");
         assertEquals(buf.extractLine(5), "");
 
-        assertEquals(buf.getPosition(0), new InputBuffer.Position(1,1));
-        assertEquals(buf.getPosition(1), new InputBuffer.Position(1,2));
-        assertEquals(buf.getPosition(2), new InputBuffer.Position(1,3));
-        assertEquals(buf.getPosition(3), new InputBuffer.Position(1,4));
-        assertEquals(buf.getPosition(4), new InputBuffer.Position(1,5));
-        assertEquals(buf.getPosition(5), new InputBuffer.Position(2,1));
-        assertEquals(buf.getPosition(6), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(7), new InputBuffer.Position(2,2));
-        assertEquals(buf.getPosition(8), new InputBuffer.Position(2,3));
-        assertEquals(buf.getPosition(9), new InputBuffer.Position(2,4));
-        assertEquals(buf.getPosition(10), new InputBuffer.Position(3,1));
-        assertEquals(buf.getPosition(11), new InputBuffer.Position(4,1));
-        assertEquals(buf.getPosition(12), new InputBuffer.Position(4,2));
-        assertEquals(buf.getPosition(13), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(14), new InputBuffer.Position(4,3));
-        assertEquals(buf.getPosition(15), new InputBuffer.Position(5,1));
+        assertEquals(buf.getPosition(0), new Position(1,1));
+        assertEquals(buf.getPosition(1), new Position(1,2));
+        assertEquals(buf.getPosition(2), new Position(1,3));
+        assertEquals(buf.getPosition(3), new Position(1,4));
+        assertEquals(buf.getPosition(4), new Position(1,5));
+        assertEquals(buf.getPosition(5), new Position(2,1));
+        assertEquals(buf.getPosition(6), new Position(2,2));
+        assertEquals(buf.getPosition(7), new Position(2,2));
+        assertEquals(buf.getPosition(8), new Position(2,3));
+        assertEquals(buf.getPosition(9), new Position(2,4));
+        assertEquals(buf.getPosition(10), new Position(3,1));
+        assertEquals(buf.getPosition(11), new Position(4,1));
+        assertEquals(buf.getPosition(12), new Position(4,2));
+        assertEquals(buf.getPosition(13), new Position(4,3));
+        assertEquals(buf.getPosition(14), new Position(4,3));
+        assertEquals(buf.getPosition(15), new Position(5,1));
     }
 
 }

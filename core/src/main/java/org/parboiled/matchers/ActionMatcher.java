@@ -76,7 +76,6 @@ public class ActionMatcher extends AbstractMatcher {
 
     @SuppressWarnings({"unchecked"})
     public <V> boolean match(MatcherContext<V> context) {
-        checkArgNotNull(context, "context");
         if (skipInPredicates && context.inPredicate()) return true;
 
         // actions need to run in the parent context

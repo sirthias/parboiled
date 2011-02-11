@@ -17,6 +17,7 @@
 package org.parboiled.examples.calculators;
 
 import org.parboiled.Parboiled;
+import org.parboiled.common.StringBuilderSink;
 import org.parboiled.support.ParsingResult;
 import org.testng.annotations.Test;
 import org.parboiled.parserunners.TracingParseRunner;
@@ -32,9 +33,11 @@ public class TracingParseRunnerTest {
     @Test
     public void testTracingParseRunner() {
         CalculatorParser1 parser = Parboiled.createParser(CalculatorParser1.class);
-        TracingParseRunner<Integer> runner = new TracingParseRunner<Integer>(parser.InputLine(),
-                and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits())))
-        );
+
+        StringBuilderSink log = new StringBuilderSink();
+        TracingParseRunner<Integer> runner = new TracingParseRunner<Integer>(parser.InputLine())
+                .withFilter(and(rules(parser.Number(), parser.Parens()), not(rulesBelow(parser.Digits()))))
+                .withLog(log);
         ParsingResult<Integer> result = runner.run("2*(4+5");
 
         assertEquals(printParseErrors(result), "" +
@@ -42,7 +45,7 @@ public class TracingParseRunnerTest {
                 "2*(4+5\n" +
                 "      ^\n");
 
-        assertEquals(runner.getLog(), "" +
+        assertEquals(log.toString(), "Starting new parsing run\n" +
                 "InputLine/Expression/Term/Factor/Number/Digits, matched, cursor at 1:2 after \"2\"\n" +
                 "..(4)../Number/Number_Action1, matched, cursor at 1:2 after \"2\"\n" +
                 "..(4)../Number, matched, cursor at 1:2 after \"2\"\n" +
@@ -85,5 +88,4 @@ public class TracingParseRunnerTest {
                 "..(7)../Parens/')', failed, cursor at 1:7 after \"2*(4+5\"\n" +
                 "..(7)../Parens, failed, cursor at 1:7 after \"2*(4+5\"\n");
     }
-
 }

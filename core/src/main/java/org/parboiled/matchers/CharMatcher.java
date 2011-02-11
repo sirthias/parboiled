@@ -49,7 +49,6 @@ public class CharMatcher extends AbstractMatcher {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         if (context.getCurrentChar() != character) return false;
         context.advanceIndex(1);
         context.createNode();

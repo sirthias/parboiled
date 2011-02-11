@@ -114,5 +114,4 @@ public class Reference<T> {
     public boolean isNotSet() {
         return value == null;
     }
-
 }

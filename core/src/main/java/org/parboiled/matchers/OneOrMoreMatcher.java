@@ -35,7 +35,6 @@ public class OneOrMoreMatcher extends CustomDefaultLabelMatcher<OneOrMoreMatcher
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         boolean matched = subMatcher.getSubContext(context).runMatcher();
         if (!matched) return false;
 

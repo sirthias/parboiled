@@ -34,7 +34,6 @@ public class TestMatcher extends CustomDefaultLabelMatcher<TestMatcher> {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         int lastIndex = context.getCurrentIndex();
         Object valueStackSnapshot = context.getValueStack().takeSnapshot();
 

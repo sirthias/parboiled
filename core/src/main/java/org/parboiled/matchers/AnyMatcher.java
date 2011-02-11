@@ -31,7 +31,6 @@ public class AnyMatcher extends AbstractMatcher {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         if (context.getCurrentChar() == Chars.EOI) return false;
         context.advanceIndex(1);
         context.createNode();

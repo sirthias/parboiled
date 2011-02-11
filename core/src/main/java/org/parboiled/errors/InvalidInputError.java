@@ -27,7 +27,6 @@ import java.util.List;
  * language grammar.
  */
 public class InvalidInputError extends BasicParseError {
-
     private final List<MatcherPath> failedMatchers;
 
     public InvalidInputError(InputBuffer inputBuffer, int startIndex,

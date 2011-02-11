@@ -101,7 +101,7 @@ public class Main {
     }
 
     protected ParsingResult<?> run(Rule rootRule, String sourceText) {
-        return ReportingParseRunner.run(rootRule, sourceText);
+        return new ReportingParseRunner(rootRule).run(sourceText);
     }
 
     private static long time(long start) {
