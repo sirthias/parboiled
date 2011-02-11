@@ -243,7 +243,6 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
 
 			List<InstructionGraphNode> predecessors = node.getPredecessors();
 			VarInitGroup group = null;
-			InstructionGraphNode root = null;
 			for (int preds = predecessors.size(), pred = preds - 1; pred >= firstArg; pred--) {
 				int arg = pred - firstArg;
 				if (AsmUtils.isActionParam(targetMethod, arg)) {
@@ -253,19 +252,8 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
 					actionArgumentNodes.add(0, argNode);
 
 					if (group == null) {
-						root = node;
-						if (firstArg == 1) {
-							// method is not static, root is set to ALOAD 0 or
-							// DUP
-							root = predecessors.get(0);
-						} else if (pred < preds - 1) {
-							// method is static and there are normal arguments
-							// after the last action
-							// parameter
-							root = predecessors.get(pred + 1);
-						}
-						group = new InstructionGroup.VarInitGroup(method, root, node);
-						root.setIsVarInitRoot();
+						group = new InstructionGroup.VarInitGroup(method, node);
+						node.setIsVarInitRoot();
 					}
 					// collect all instructions that initialize the
 					// corresponding action argument
@@ -279,7 +267,8 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
 
 			// re-target rule creation call, since action parameters must be
 			// removed
-			ruleMethodInsn.owner = AsmUtils.getExtendedParserClassName(firstArg == 1 ? root.getResultValue().getType().getInternalName() : ruleMethodInsn.owner);
+            ruleMethodInsn.owner = AsmUtils.getExtendedParserClassName(firstArg == 1 ? node.getPredecessors().get(0).getResultValue()
+                    .getType().getInternalName() : ruleMethodInsn.owner);
 			ruleMethodInsn.name = AsmUtils.renameRule(ruleMethodInsn.name, ruleMethodInsn.desc);
 			// remove action parameters from descriptor
 			ruleMethodInsn.desc = Type.getMethodDescriptor(Types.RULE, normalArgumentTypes.toArray(new Type[normalArgumentTypes.size()]));

@@ -22,7 +22,6 @@
 
 package org.parboiled.transform;
 
-import static org.objectweb.asm.Opcodes.*;
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 import org.objectweb.asm.Type;
@@ -30,7 +29,6 @@ import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.*;
 import org.parboiled.matchers.DelegatingActionMatcher;
 import org.parboiled.transform.InstructionGroup.GroupType;
-import org.parboiled.transform.InstructionGroup.VarInitGroup;
 import org.parboiled.transform.support.InsnListGenerator;
 
 /**
@@ -58,34 +56,27 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
         for (InstructionGraphNode node : method.getGraphNodes()) {
 			if (node.getGroup() == null && (node.isXLoad() || node.isXStore())) {
 				VarInsnNode varInsn = (VarInsnNode)node.getInstruction();
-				
-				int maxVar = Math.min(varInsn.var, method.getActionParams().length());
-				for (int i = 0; i < maxVar; i++) {
-					if (method.getActionParams().get(i)) {
-						varInsn.var--;
-					}
-				}
+				varInsn.var = mapParamIndex(varInsn.var);
 			}
         }
 
         for (InstructionGroup group : method.getGroups()) {
             this.group = group;
             
-            if (group.getGroupType() == GroupType.VAR_INIT) {
-            	insert(new TypeInsnNode(NEW, Type.getInternalName(DelegatingActionMatcher.class)));
-            	insert(new InsnNode(DUP));
-            }
+            InsnListGenerator gen = new InsnListGenerator();
             
-            createNewGroupClassInstance();
-            initializeFields();
+            createNewGroupClassInstance(gen);
+            initializeFields(gen);
 
             switch (group.getGroupType()) {
+            case VAR_INIT : 
+                initializeVarInitMatcher(gen);
+                method.instructions.insert(group.getRoot().getInstruction(), gen.instructions);
+                break;
             case ACTION :
-            	 removeGroupRootInstruction();
-            	 break;
-            case VAR_INIT :
-            	initializeVarInitMatcher();
-            	break;
+                method.instructions.insertBefore(group.getRoot().getInstruction(), gen.instructions);
+                removeGroupRootInstruction();
+                break;
             }
         }
 
@@ -94,22 +85,28 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
         method.setBodyRewritten();
     }
     
-	private void initializeVarInitMatcher() {
-		VarInitGroup varInitGroup = (VarInitGroup) group;
-		AbstractInsnNode ruleCallInsn = varInitGroup.getRuleCreationCallNode().getInstruction();
+    private void initializeVarInitMatcher(InsnListGenerator gen) {
+        // execute construction of DelegatingActionMatcher before creation of
+        // var init action
+        gen.pushInsns();
+        // stack: <Object>
+        gen.checkCast(RULE);
 
-		InsnListGenerator gen = new InsnListGenerator();
+        gen.newInstance(Type.getType(DelegatingActionMatcher.class));
+        // stack: <Rule> <DelegatingActionMatcher>
+        gen.dupX1();
+        // stack: <DelegatingActionMatcher> <Rule> <DelegatingActionMatcher>
+        gen.swap();
+        // stack: <DelegatingActionMatcher> <DelegatingActionMatcher> <Rule>
 
-		// stack: <DelegatingActionMatcher> <Action> <Object>
-		gen.checkCast(RULE);
-		// stack: <DelegatingActionMatcher> <Action> <Rule>
-		gen.swap();
-		// stack: <DelegatingActionMatcher> <Rule> <Action>
-		gen.invokeConstructor(Type.getType(DelegatingActionMatcher.class),
-				new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, ACTION }));
+        gen.peekInsns().insert(gen.instructions);
+        gen.popInsns();
+        // stack: ... <DelegatingActionMatcher> <Rule> <Action>
 
-		method.instructions.insert(ruleCallInsn, gen.instructions);
-	}
+        // stack: ... <DelegatingActionMatcher> <Rule> <Action>
+        gen.invokeConstructor(Type.getType(DelegatingActionMatcher.class),
+                new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, ACTION }));
+    }
 
 	private void createExecutionFrameMatcher() {
 		int actionParams = method.getActionParams().cardinality();
@@ -126,37 +123,41 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
 		}
 	}
 
-	private void createNewGroupClassInstance() {
-		String internalName = group.getGroupClassType().getInternalName();
+	private void createNewGroupClassInstance(InsnListGenerator gen) {
 		InstructionGraphNode root = group.getRoot();
-		insert(new TypeInsnNode(NEW, internalName));
-		insert(new InsnNode(DUP));
-		insert(new LdcInsnNode(method.name + (root.isActionRoot() ? "_Action" + ++actionNr : "_VarInit" + ++varInitNr)));
-		insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+		gen.newInstance(group.getGroupClassType());
+		gen.dup();
+		gen.push(method.name + (root.isActionRoot() ? "_Action" + ++actionNr : "_VarInit" + ++varInitNr));
+		gen.invokeConstructor(group.getGroupClassType(), new Method("<init>", "(Ljava/lang/String;)V"));
 
 		if (group.getGroupType() == GroupType.ACTION && method.hasSkipActionsInPredicatesAnnotation()) {
-			insert(new InsnNode(DUP));
-			insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
+			gen.dup();
+			gen.invokeVirtual(group.getGroupClassType(), new Method("setSkipInPredicates", "()V"));
 		}
 	}
 
-    private void initializeFields() {
-        String internalName = group.getGroupClassType().getInternalName();
+    private void initializeFields(InsnListGenerator gen) {
         for (FieldNode field : group.getFields()) {
-            insert(new InsnNode(DUP));
+            gen.dup();
+            
             // the FieldNodes access and value members have been reused for the var index / Type respectively!
-            insert(new VarInsnNode(AsmUtils.getLoadingOpcode((Type) field.value), field.access));
-            insert(new FieldInsnNode(PUTFIELD, internalName, field.name, field.desc));
+            gen.instructions.add(new VarInsnNode(AsmUtils.getLoadingOpcode((Type) field.value), mapParamIndex(field.access)));
+            gen.putField(group.getGroupClassType(), field.name, Type.getType(field.desc));
         }
     }
 
-    private void insert(AbstractInsnNode insn) {
-        method.instructions.insertBefore(group.getRoot().getInstruction(), insn);
-    }
-    
     private void removeGroupRootInstruction() {
         method.instructions.remove(group.getRoot().getInstruction());
     }
 
+    private int mapParamIndex(int param) {
+        int maxParam = Math.min(param, method.getActionParams().length());
+        for (int i = 0; i < maxParam; i++) {
+            if (method.getActionParams().get(i)) {
+                param--;
+            }
+        }
+        return param;
+    }
 }
 

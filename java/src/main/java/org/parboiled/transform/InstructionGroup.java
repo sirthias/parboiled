@@ -29,13 +29,11 @@ import java.util.List;
 class InstructionGroup {
 	
 	static class VarInitGroup extends InstructionGroup {
-		protected InstructionGraphNode ruleCreationCallNode;
 		protected List<Type> ruleActionArgumentTypes;
 		protected List<InstructionGraphNode> ruleActionArgumentNodes;
 		
-		public VarInitGroup(RuleMethod ruleMethod, InstructionGraphNode root, InstructionGraphNode ruleCreationCallNode) {
-			super(ruleMethod, root, GroupType.VAR_INIT);
-			this.ruleCreationCallNode = ruleCreationCallNode;
+		public VarInitGroup(RuleMethod ruleMethod, InstructionGraphNode ruleCreationCallNode) {
+			super(ruleMethod, ruleCreationCallNode, GroupType.VAR_INIT);
 		}
 		
 		public void setRuleActionArgumentNodes(List<InstructionGraphNode> ruleActionArgumentNodes) {
@@ -52,10 +50,6 @@ class InstructionGroup {
 		
 		public List<Type> getRuleActionArgumentTypes() {
 			return ruleActionArgumentTypes;
-		}
-		
-		public InstructionGraphNode getRuleCreationCallNode() {
-			return ruleCreationCallNode;
 		}
 	}
 	

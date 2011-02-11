@@ -32,7 +32,8 @@ class BodyWithSuperCallReplacer implements RuleMethodProcessor {
     public boolean appliesTo(ParserClassNode classNode, RuleMethod method) {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
-        return !method.isBodyRewritten() && method.getOwnerClass() == classNode.getParentClass();
+        return method.getActionParams().cardinality() == 0 && !method.isBodyRewritten()
+                && method.getOwnerClass() == classNode.getParentClass();
     }
 
     public void process(ParserClassNode classNode, RuleMethod method) throws Exception {
