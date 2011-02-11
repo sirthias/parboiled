@@ -358,8 +358,8 @@ scala.Int
       </span>
       </h4>
       
-            <p class="shortcomment cmt">Returns a new TracingParseRunner with the attached filter predicate limiting the tracing printout.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Returns a new TracingParseRunner with the attached filter predicate limiting the tracing printout.
+            <p class="shortcomment cmt">Attaches the given filter predicate limiting the tracing printout.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Attaches the given filter predicate limiting the tracing printout.
 You can supply an expression consisting of either the predefined Predicates (see the Lines, Rules, Matched and
 Mismatched objects) or custom functions with one of the following signatures as TracingPredicates:
 Context[_] =&gt; Boolean
@@ -478,6 +478,26 @@ possible to check whether the contents of the list are of the requested typed.
         </div><div class="block">
           definition classes: Any
         </div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.parserunners.TracingParseRunner#log">
+      <a id="log(Sink[String]):TracingParseRunner[V]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">log</span>
+        
+        <span class="params">(<span name="log">log: <span class="extype" name="org.parboiled.common.Sink">Sink</span>[String]</span>)</span>
+        <span class="result">: <a href="" class="extype" name="org.parboiled.scala.parserunners.TracingParseRunner">TracingParseRunner</a>[V]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Attaches the given log sink to this TracingParseRunner instance.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Attaches the given log sink to this TracingParseRunner instance.
+</p></div>
             
             
             
@@ -611,18 +631,6 @@ possible to check whether the contents of the list are of the requested typed.
             
           </div>
           
-    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.parserunners.TracingParseRunner#traceLog">
-      <a id="traceLog:String"></a>
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol">
-        <span class="name">traceLog</span>
-        
-        
-        <span class="result">: String</span>
-      </span>
-      </h4>
-      
     </li><li visbl="pub" data-isabs="false" name="scala.AnyRef#wait">
       <a id="wait():Unit"></a>
       <h4 class="signature">
