@@ -37,6 +37,15 @@ trait Parser {
   }
 
   /**
+   * Defines a parser rule wrapping the given rule construction block with caching and recursion protection
+   * using the given rule option(s).
+   */
+  def rule[T <: Rule](firstOption: RuleOption, more: RuleOption*)(block: => T)(implicit creator: Matcher => T): T = {
+    val ruleMethod = getCurrentRuleMethod
+    rule(ruleMethod.getMethodName, ruleMethod, firstOption +: more, block, creator)
+  }
+  
+  /**
    * Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
    * Labels the constructed rule with the given label and optionally marks it according to the given rule options.
    */
