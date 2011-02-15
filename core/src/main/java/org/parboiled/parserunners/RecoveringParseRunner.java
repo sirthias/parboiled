@@ -428,7 +428,9 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             for (int i = children.size() - 1; i >= 0; i--) {
                 if (children.get(i).accept(this) != null) return actions;
             }
-            throw new IllegalStateException(); // a FirstOf where all subs lead to recursions?
+            // a FirstOf where all subs lead to recursions,
+            // so go up one level and try another branch of the next FirstOf one level up
+            return null;
         }
 
         @Override
