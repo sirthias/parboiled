@@ -83,6 +83,10 @@ public class DefaultInputBuffer implements InputBuffer {
         return new Position(line + 1, column);
     }
 
+    public int getOriginalIndex(int index) {
+        return index;
+    }
+
     // returns the zero based input line number the character with the given index is found in
     private static int getLine0(int[] newlines, int index) {
         int j = Arrays.binarySearch(newlines, index);

@@ -71,6 +71,17 @@ public interface InputBuffer {
     Position getPosition(int index);
 
     /**
+     * Translates the given index from the scope of this InputBuffer to the scope of the original, underlying char
+     * array. The {@link DefaultInputBuffer} implementation simply returns the given index, but other implementations
+     * like the {@link IndentDedentInputBuffer} or the {@link MutableInputBuffer} need to "undo" all compressions and
+     * index shiftings performed internally in order to return the underlying index. 
+     * 
+     * @param index the index relative to this InputBuffer
+     * @return the index relative to the underlying string or char array
+     */
+    int getOriginalIndex(int index);
+
+    /**
      * Constructs a new {@link String} containing all characters with the given line number except for the trailing
      * newline.
      *

@@ -87,6 +87,10 @@ public class IndentDedentInputBuffer implements InputBuffer {
         return origBuffer.getPosition(map(index));
     }
 
+    public int getOriginalIndex(int index) {
+        return map(index);
+    }
+
     public String extractLine(int lineNumber) {
         return origBuffer.extractLine(lineNumber);
     }

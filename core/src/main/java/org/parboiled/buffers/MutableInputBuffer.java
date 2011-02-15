@@ -52,6 +52,10 @@ public class MutableInputBuffer implements InputBuffer {
         return buffer.getPosition(fix(index));
     }
 
+    public int getOriginalIndex(int index) {
+        return fix(index);
+    }
+
     public String extractLine(int lineNumber) {
         return buffer.extractLine(lineNumber);
     }
@@ -111,5 +115,4 @@ public class MutableInputBuffer implements InputBuffer {
         inserts = newInserts;
         return removedChar;
     }
-
 }
