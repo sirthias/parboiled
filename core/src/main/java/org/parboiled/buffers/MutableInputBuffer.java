@@ -53,7 +53,7 @@ public class MutableInputBuffer implements InputBuffer {
     }
 
     public int getOriginalIndex(int index) {
-        return fix(index);
+        return buffer.getOriginalIndex(fix(index));
     }
 
     public String extractLine(int lineNumber) {
