@@ -21,6 +21,8 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.buffers.MutableInputBuffer;
+import org.parboiled.common.ImmutableLinkedList;
+import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
@@ -30,9 +32,7 @@ import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 import static org.parboiled.common.Preconditions.checkState;
@@ -388,6 +388,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             return true;
         }
 
+        @SuppressWarnings({"ConstantConditions"})
         private void rerunAndExecuteErrorActions(MatcherContext context) {
             // the context is for the resync action, which at this point has FAILED, i.e. ALL its sub actions haven't
             // had a chance to change the value stack, even the ones having run before the actual parse error matcher
@@ -403,7 +404,9 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
 
             for (Matcher sub : context.getMatcher().getChildren()) {
                 if (errorMode) {
-                    for (ActionMatcher action : sub.accept(new CollectResyncActionsVisitor())) {
+                    List<ActionMatcher> errorActions = sub.accept(new CollectResyncActionsVisitor());
+                    checkState(errorActions != null);
+                    for (ActionMatcher action : errorActions) {
                         action.getSubContext(context).runMatcher();
                     }
                     continue;
@@ -441,51 +444,50 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * in order to maintain a consistent Value Stack state.
      */
     private static class CollectResyncActionsVisitor extends DefaultMatcherVisitor<List<ActionMatcher>> {
-        private final Set<Matcher> visited = new HashSet<Matcher>();
-        private final List<ActionMatcher> actions = new ArrayList<ActionMatcher>();
+        private ImmutableLinkedList<SequenceMatcher> path = ImmutableLinkedList.nil();
 
         @Override
         public List<ActionMatcher> visit(ActionMatcher matcher) {
-            actions.add(matcher);
-            return actions;
+            return ImmutableList.of(matcher);
         }
-
+ 
         @Override
         public List<ActionMatcher> visit(FirstOfMatcher matcher) {
-            // go through all subs in reverse order (because the simplest fall-back cases are often in last position)
-            // and try all of them until we hit a path that does not lead to a recursion
-            List<Matcher> children = matcher.getChildren();
-            for (int i = children.size() - 1; i >= 0; i--) {
-                if (children.get(i).accept(this) != null) return actions;
+            for (Matcher child : matcher.getChildren()) {
+                List<ActionMatcher> actions = child.accept(this);
+                if (actions != null) return actions;
             }
-            // a FirstOf where all subs lead to recursions,
-            // so go up one level and try another branch of the next FirstOf one level up
             return null;
         }
-
+ 
         @Override
         public List<ActionMatcher> visit(OneOrMoreMatcher matcher) {
             return matcher.subMatcher.accept(this);
         }
-
+ 
         @Override
         public List<ActionMatcher> visit(SequenceMatcher matcher) {
-            if (visited.contains(matcher)) {
-                // we hit a recursion, so signal to the next FirstOf parent that we need to take another path in order
-                // to collect all actions
+            if (path.contains(matcher)) {
                 return null;
             }
-
-            visited.add(matcher);
+ 
+            ImmutableLinkedList<SequenceMatcher> previousPath = path;
+            path = path.prepend(matcher);
+            
+            List<ActionMatcher> actions = new ArrayList<ActionMatcher>(); 
             for (Matcher sub : matcher.getChildren()) {
-                sub.accept(this);
+                List<ActionMatcher> subActions = sub.accept(this);
+                if (subActions == null) return null;
+                actions.addAll(subActions);
             }
+            
+            path = previousPath; 
             return actions;
         }
-
+ 
         @Override
         public List<ActionMatcher> defaultValue(AbstractMatcher matcher) {
-            return actions;
+            return ImmutableList.of();
         }
     }
 }
