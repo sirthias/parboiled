@@ -181,8 +181,11 @@ public class MatcherContext<V> implements Context<V> {
     public String getMatch() {
         checkActionContext();
         MatcherContext prevContext = subContext;
-        return hasError ? ParseTreeUtils.getNodeText(prevContext.node, inputBuffer) :
-                inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
+        if (hasError) {
+            Node prevNode = prevContext.node;
+            return prevNode != null ? ParseTreeUtils.getNodeText(prevNode, inputBuffer) : "";
+        }
+        return inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
     }
 
     public char getFirstMatchChar() {
@@ -264,13 +267,6 @@ public class MatcherContext<V> implements Context<V> {
         if (!hasError) {
             hasError = true;
             if (parent != null) parent.markError();
-        }
-    }
-
-    public void clearNodeSuppression() {
-        if (nodeSuppressed) {
-            nodeSuppressed = false;
-            if (parent != null) parent.clearNodeSuppression();
         }
     }
 

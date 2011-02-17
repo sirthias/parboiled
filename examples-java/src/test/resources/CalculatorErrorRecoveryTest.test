@@ -18,7 +18,6 @@ X1+2
       [Factor, {1}]E '1'
         [Number, {1}]E '1'
           [Digits]E '1'
-            [Digit] '1'
       [ZeroOrMore, {1}]
     [ZeroOrMore, {3}] '+2'
       [FirstOf, {3}] '+2'
@@ -55,7 +54,6 @@ x1+*2
       [Factor, {1}]E '1'
         [Number, {1}]E '1'
           [Digits]E '1'
-            [Digit] '1'
       [ZeroOrMore, {1}]
     [ZeroOrMore, {3}]E '+2'
       [FirstOf, {3}]E '+2'
@@ -65,7 +63,6 @@ x1+*2
             [Factor, {2}]E '2'
               [Number, {2}]E '2'
                 [Digits, {1}]E '2'
-                  [Digit, {1}] '2'
             [ZeroOrMore, {2}]
   [EOI, {3}]
 ###
@@ -114,7 +111,6 @@ Invalid input 'X', expected Term (line 1, pos 3):
             [Factor, {2}]E '2'
               [Number, {2}]E '2'
                 [Digits, {1}]E '2'
-                  [Digit, {1}] '2'
             [ZeroOrMore, {2}]
   [EOI, {3}]
 ###
@@ -283,7 +279,6 @@ Invalid input 'X', expected Expression (line 1, pos 6):
                           [Factor, {3}]E '3'
                             [Number, {3}]E '3'
                               [Digits, {2}]E '3'
-                                [Digit, {2}] '3'
                           [ZeroOrMore, {3}]
                         [ZeroOrMore, {-1}] '-4'
                           [FirstOf, {-1}] '-4'
@@ -401,7 +396,6 @@ Invalid input 'X', expected Term (line 1, pos 8):
                                 [Factor, {4}]E '4'
                                   [Number, {4}]E '4'
                                     [Digits, {3}]E '4'
-                                      [Digit, {3}] '4'
                                 [ZeroOrMore, {4}]
                       [')', {-1}] ')'
       [FirstOf, {-6}] '-5'
@@ -573,7 +567,6 @@ Invalid input 'X', expected Term (line 1, pos 11):
             [Factor, {5}]E '5'
               [Number, {5}]E '5'
                 [Digits, {-1}]E '5'
-                  [Digit, {-1}] '5'
             [ZeroOrMore, {5}]
   [EOI, {-6}]
 ###
@@ -752,7 +745,6 @@ Invalid input '*', expected Term (line 1, pos 3):
             [Factor, {6}]E '6'
               [Number, {6}]E '6'
                 [Digits, {1}]E '6'
-                  [Digit, {1}] '6'
             [ZeroOrMore, {6}]
   [EOI, {7}]
 ###
@@ -777,7 +769,6 @@ Invalid input '+', expected Term (line 1, pos 3):
             [Factor, {0}]E '0'
               [Number, {0}]E '0'
                 [Digits, {1}]E '0'
-                  [Digit, {1}]E '0'
             [ZeroOrMore, {0}]
       [FirstOf, {3}] '+2'
         [Sequence, {3}] '+2'
@@ -874,7 +865,6 @@ Invalid input 'EOI', expected '*', '/', '+', '-' or ')' (line 1, pos 8):
                             [Factor, {2}]E '2'
                               [Number, {2}]E '2'
                                 [Digits, {1}]E '2'
-                                  [Digit, {1}] '2'
                             [ZeroOrMore, {2}]
                   [')', {3}] ')'
               [ZeroOrMore, {3}]
@@ -1021,7 +1011,6 @@ Invalid input 'y', expected '*', '/', '+', '-' or EOI (line 1, pos 13):
                     [Factor, {0}]E '0'
                       [Number, {0}]E '0'
                         [Digits, {2}]E '0'
-                          [Digit, {2}]E '0'
                     [ZeroOrMore, {0}]E '*(5-1'
                       [FirstOf, {0}]E '*(5-1'
                         [Sequence, {0}]E '*(5-1'

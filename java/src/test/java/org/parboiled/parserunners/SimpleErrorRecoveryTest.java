@@ -53,7 +53,7 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void testSingleCharRecovery() {
+    public void testSingleRecovery() {
         Parser parser = Parboiled.createParser(Parser.class);
         testWithRecovery(parser.Clause(), "AaA")
                 .hasErrors("" +
@@ -80,7 +80,6 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "    [\" has \"] ' has '\n" +
                         "  [Object]E 'animals'\n" +
                         "    [\"animals\"]E 'animals'\n" +
-                        "      ['i'] 'i'\n" +
                         "  [EOI]\n");
 
         testWithRecovery(parser.Clause().suppressSubnodes(), "Alice has anximals")
@@ -88,11 +87,7 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "Invalid input 'x', expected 'i' (line 1, pos 13):\n" +
                         "Alice has anximals\n" +
                         "            ^\n")
-                .hasParseTree("" +
-                        "[Clause]E 'Alice has animals'\n" +
-                        "  [Object]E 'animals'\n" +
-                        "    [\"animals\"]E 'animals'\n" +
-                        "      ['i'] 'i'\n");
+                .hasParseTree("[Clause]E 'Alice has animals'\n");
 
         testWithRecovery(parser.Clause(), "Alice has anmals")
                 .hasErrors("" +
@@ -109,7 +104,6 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "    [\" has \"] ' has '\n" +
                         "  [Object]E 'animals'\n" +
                         "    [\"animals\"]E 'animals'\n" +
-                        "      ['i']E 'i'\n" +
                         "  [EOI]\n");
 
         testWithRecovery(parser.Clause(), "Alixyce has animals")
@@ -151,7 +145,6 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "  [Subject]E 'Alice'\n" +
                         "    [Name]E 'Alice'\n" +
                         "      [\"Alice\"]E 'Alice'\n" +
-                        "        ['c']E 'c'\n" +
                         "    [ZeroOrMore]\n" +
                         "  [Verb] ' has '\n" +
                         "    [\" has \"] ' has '\n" +
@@ -172,7 +165,6 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "    [ZeroOrMore]\n" +
                         "  [Verb]E ' loves '\n" +
                         "    [\" loves \"]E ' loves '\n" +
-                        "      ['v']E 'v'\n" +
                         "  [Object] 'animals'\n" +
                         "    [\"animals\"] 'animals'\n" +
                         "  [EOI]\n");
@@ -195,20 +187,16 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "  [Subject]E 'Alice and Emilio'\n" +
                         "    [Name]E 'Alice'\n" +
                         "      [\"Alice\"]E 'Alice'\n" +
-                        "        ['c'] 'c'\n" +
                         "    [ZeroOrMore]E ' and Emilio'\n" +
                         "      [Sequence]E ' and Emilio'\n" +
                         "        [FirstOf] ' and '\n" +
                         "          [\" and \"] ' and '\n" +
                         "        [Name]E 'Emilio'\n" +
                         "          [\"Emilio\"]E 'Emilio'\n" +
-                        "            ['i']E 'i'\n" +
                         "  [Verb]E ' love '\n" +
                         "    [\" love \"]E ' love '\n" +
-                        "      ['v']E 'v'\n" +
                         "  [Object] 'animals'\n" +
                         "    [\"animals\"] 'animals'\n" +
                         "  [EOI]\n");
     }
-
 }

@@ -72,6 +72,10 @@ public final class StringUtils {
                 return "INS_ERROR";
             case Chars.RESYNC:
                 return "RESYNC";
+            case Chars.RESYNC_START:
+                return "RESYNC_START";
+            case Chars.RESYNC_END:
+                return "RESYNC_END";
             case Chars.INDENT:
                 return "INDENT";
             case Chars.DEDENT:

@@ -38,10 +38,21 @@ public class Chars {
     public static final char INS_ERROR = '\uFDEE';
 
     /**
-     * Special non-character used during error recovery. Signals that a rule resynchronization had to be performed
+     * Special non-character used during error recovery. Signals that a rule resynchronization has to be performed
      * at the current input location.
      */
     public static final char RESYNC = '\uFDED';
+    
+    /**
+     * Special non-character used during error recovery. Signals that all characters up to the RESYNC_END
+     * character need to be skipped as part of a resynchronization.
+     */
+    public static final char RESYNC_START = '\uFDEB';
+    
+    /**
+     * Special non-character used during error recovery. Signals the end of a resynchronization block.
+     */
+    public static final char RESYNC_END = '\uFDEC';
 
     /**
      * Special non-character used by the {@link org.parboiled.buffers.IndentDedentInputBuffer}.

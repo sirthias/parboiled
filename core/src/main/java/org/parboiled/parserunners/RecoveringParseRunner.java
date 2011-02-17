@@ -134,7 +134,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
     }
     
     private MatchHandler getInnerHandler() {
-        return errorIndex >= 0 ? new Handler(currentError) : null;
+        return errorIndex >= 0 ? new Handler() : null;
     }
     
     private boolean fixError(int fixIndex) {
@@ -241,21 +241,10 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * {@link org.parboiled.support.Chars#RESYNC} character to overcome {@link InvalidInputError}s at the respective
      * error indices.
      */
-    private static class Handler implements MatchHandler {
+    private class Handler implements MatchHandler {
         private final IsSingleCharMatcherVisitor isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor();
-        private final InvalidInputError currentError;
         private int fringeIndex;
         private MatcherPath lastMatchPath;
-
-        /**
-         * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its endIndex
-         * to the correct index if the error corresponds to an error that can only be overcome by resynchronizing.
-         *
-         * @param currentError an optional InvalidInputError whose endIndex is to set during resyncing
-         */
-        public Handler(InvalidInputError currentError) {
-            this.currentError = currentError;
-        }
 
         public boolean match(MatcherContext<?> context) {
             Matcher matcher = context.getMatcher();
@@ -277,9 +266,10 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // if we didn't match we might have to resynchronize, however we only resynchronize
             // if we are at a RESYNC location and the matcher is a SequenceMatchers that has already
             // matched at least one character and that is a parent of the last match
-            return context.getInputBuffer().charAt(fringeIndex) == RESYNC &&
+            char fringeChar = context.getInputBuffer().charAt(fringeIndex);
+            return (fringeChar == RESYNC || fringeChar == RESYNC_START) &&
                     qualifiesForResync(context, matcher) &&
-                    resynchronize(context);
+                    resynchronize(context, fringeChar);
         }
 
         @SuppressWarnings({"SimplifiableIfStatement"})
@@ -310,7 +300,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 return false;
             }
             context.setStartIndex(context.getCurrentIndex());
-            context.clearNodeSuppression();
             if (context.getParent() != null) context.getParent().markError();
             return true;
         }
@@ -324,7 +313,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 return false;
             }
             context.setStartIndex(context.getCurrentIndex());
-            context.clearNodeSuppression();
             context.markError();
             return true;
         }
@@ -335,8 +323,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             return prepareErrorLocation(testContext) && testContext.runMatcher();
         }
 
-        private boolean resynchronize(MatcherContext context) {
-            context.clearNodeSuppression();
+        private boolean resynchronize(MatcherContext context, char fringeChar) {
             context.markError();
 
             // create a node for the failed Sequence, taking ownership of all sub nodes created so far
@@ -345,22 +332,42 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // by resyncing we flip an unmatched sequence to a matched one, so in order to keep the value stack
             // consistent we go into a special "error action mode" and execute the minimal set of actions underneath
             // the resync sequence
-            executeErrorActions(context);
+            rerunAndExecuteErrorActions(context);
 
             // skip over all characters that are not legal followers of the failed Sequence
-            context.advanceIndex(1); // gobble RESYNC marker
-            fringeIndex++;
-            List<Matcher> followMatchers = new FollowMatchersVisitor().getFollowMatchers(context);
-            int endIndex = gobbleIllegalCharacters(context, followMatchers);
-
-            if (currentError != null && currentError.getStartIndex() == fringeIndex && endIndex - fringeIndex > 1) {
-                currentError.setEndIndex(endIndex);
+            context.advanceIndex(1); // gobble RESYNC or RESYNC_START marker
+            
+            switch(fringeChar) {
+                case RESYNC:
+                    // this RESYNC error is the last error, we establish the length of the bad sequence and
+                    // change this RESYNC marker to a RESYNC_START / RESYNC_END block
+                    List<Matcher> followMatchers = new FollowMatchersVisitor().getFollowMatchers(context);
+                    int endIndex = gobbleIllegalCharacters(context, followMatchers);
+                    currentError.setEndIndex(endIndex);
+                    buffer.replaceInsertedChar(currentError.getStartIndex() - 1, RESYNC_START);
+                    buffer.insertChar(endIndex, RESYNC_END);
+                    context.setCurrentIndex(endIndex + 1);
+                    break;
+                
+                case RESYNC_START:
+                    // a RESYNC error we have already recovered from before
+                    // simply skip all characters up to the RESYNC_END
+                    while (context.getCurrentChar() != RESYNC_END) {
+                        context.advanceIndex(1);
+                        checkState(context.getCurrentChar() != EOI); // we MUST find a RESYNC_END before EOI
+                    }
+                    context.advanceIndex(1); // also gobble the RESYNC_END itself
+                    break;
+                
+                default:
+                    throw new IllegalStateException();
             }
-
+            
+            fringeIndex = context.getCurrentIndex();
             return true;
         }
 
-        private void executeErrorActions(MatcherContext context) {
+        private void rerunAndExecuteErrorActions(MatcherContext context) {
             // the context is for the resync action, which at this point has FAILED, i.e. ALL its sub actions haven't
             // had a chance to change the value stack, even the ones having run before the actual parse error matcher
             // so we need to rerun all sub matchers of the resync sequence up to the point of the parse error
