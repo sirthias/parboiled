@@ -72,11 +72,11 @@ public class TimeParser extends BaseParser<Object> {
     }
 
     Rule OneDigit() {
-        return Sequence(Digit(), push(Integer.parseInt(match())));
+        return Sequence(Digit(), push(Integer.parseInt(matchOrDefault("0"))));
     }
 
     Rule TwoDigits() {
-        return Sequence(Sequence(Digit(), Digit()), push(Integer.parseInt(match())));
+        return Sequence(Sequence(Digit(), Digit()), push(Integer.parseInt(matchOrDefault("0"))));
     }
 
     Rule Digit() {

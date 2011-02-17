@@ -25,6 +25,7 @@ import org.parboiled.common.Preconditions;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
 import org.parboiled.matchervisitors.*;
+import org.parboiled.support.Chars;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 
@@ -56,6 +57,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
     private InvalidInputError currentError;
     private MutableInputBuffer buffer;
     private ParsingResult<V> lastParsingResult;
+    private Matcher rootMatcherWithoutPTB; // the root matcher with parse tree building disabled
 
     /**
      * Create a new RecoveringParseRunner instance with the given rule and input text and returns the result of
@@ -64,8 +66,8 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
-     * @deprecated  As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
-     * this static method. This method will be removed in one of the coming releases.
+     * @deprecated As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
+     *             this static method. This method will be removed in one of the coming releases.
      */
     @Deprecated
     public static <V> ParsingResult<V> run(Rule rule, String input) {
@@ -94,13 +96,16 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
         lastParsingResult = basicRunner.run(inputBuffer);
         
         if (!lastParsingResult.matched) {
+            // for better performance disable parse tree building during the recovery runs
+            rootMatcherWithoutPTB = (Matcher) getRootMatcher().suppressNode();
+
             // locate first error
             performLocatingRun(inputBuffer);
             checkState(errorIndex >= 0); // we failed before so we must fail again
 
             // in order to be able to apply fixes we need to wrap the input buffer with a mutability wrapper
             buffer = new MutableInputBuffer(inputBuffer);
-            
+
             // report first error
             performReportingRun();
 
@@ -108,13 +113,19 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             while (!fixError(errorIndex)) {
                 performReportingRun();
             }
+
+            // rerun once more with parse tree building enabled to create a parse tree for the fixed input
+            if (!getRootMatcher().isNodeSuppressed()) {
+                performFinalRun();
+                checkState(lastParsingResult.matched);
+            }
         }
         return lastParsingResult;
     }
 
     private boolean performLocatingRun(InputBuffer inputBuffer) {
         resetValueStack();
-        ParseRunner<V> locatingRunner = new ErrorLocatingParseRunner<V>(getRootMatcher(), getInnerHandler())
+        ParseRunner<V> locatingRunner = new ErrorLocatingParseRunner<V>(rootMatcherWithoutPTB, getInnerHandler())
                 .withParseErrors(getParseErrors())
                 .withValueStack(getValueStack());
         lastParsingResult = locatingRunner.run(inputBuffer);
@@ -125,7 +136,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
     
     private void performReportingRun() {
         resetValueStack();
-        ParseRunner<V> reportingRunner = new ErrorReportingParseRunner<V>(getRootMatcher(), errorIndex, getInnerHandler())
+        ParseRunner<V> reportingRunner = new ErrorReportingParseRunner<V>(rootMatcherWithoutPTB, errorIndex, getInnerHandler())
                 .withParseErrors(getParseErrors())
                 .withValueStack(getValueStack());
         ParsingResult<V> result = reportingRunner.run(buffer);
@@ -133,6 +144,14 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
         currentError = (InvalidInputError) getParseErrors().get(getParseErrors().size() - 1);
     }
     
+    private void performFinalRun() {
+        resetValueStack();
+        Handler handler = new Handler();
+        MatcherContext<V> rootContext = createRootContext(buffer, handler, false);
+        boolean matched = handler.match(rootContext);
+        lastParsingResult = createParsingResult(matched, rootContext);
+    }
+
     private MatchHandler getInnerHandler() {
         return errorIndex >= 0 ? new Handler() : null;
     }
@@ -173,8 +192,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             }
         } else {
             // we can't fix the error with a single char fix, so fall back to resynchronization
-            // however, if we are already at EOI there is not much more we can do
-            if (buffer.charAt(fixIndex) == EOI) return true;
             buffer.insertChar(fixIndex, RESYNC);
             currentError.shiftIndexDeltaBy(1);
             performLocatingRun(buffer); // find the next parse error
@@ -337,33 +354,37 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // skip over all characters that are not legal followers of the failed Sequence
             context.advanceIndex(1); // gobble RESYNC or RESYNC_START marker
             
-            switch(fringeChar) {
+            switch (fringeChar) {
                 case RESYNC:
                     // this RESYNC error is the last error, we establish the length of the bad sequence and
                     // change this RESYNC marker to a RESYNC_START / RESYNC_END block
-                    List<Matcher> followMatchers = new FollowMatchersVisitor().getFollowMatchers(context);
-                    int endIndex = gobbleIllegalCharacters(context, followMatchers);
-                    currentError.setEndIndex(endIndex);
                     buffer.replaceInsertedChar(currentError.getStartIndex() - 1, RESYNC_START);
-                    buffer.insertChar(endIndex, RESYNC_END);
-                    context.setCurrentIndex(endIndex + 1);
+                    if (context.getCurrentChar() != Chars.EOI) {
+                        List<Matcher> followMatchers = new FollowMatchersVisitor().getFollowMatchers(context);
+                        int endIndex = gobbleIllegalCharacters(context, followMatchers);
+                        currentError.setEndIndex(endIndex);
+                        buffer.insertChar(endIndex, RESYNC_END);
+                    }
                     break;
                 
                 case RESYNC_START:
-                    // a RESYNC error we have already recovered from before
-                    // simply skip all characters up to the RESYNC_END
-                    while (context.getCurrentChar() != RESYNC_END) {
-                        context.advanceIndex(1);
-                        checkState(context.getCurrentChar() != EOI); // we MUST find a RESYNC_END before EOI
+                    if (context.getCurrentChar() != Chars.EOI) {
+                        // a RESYNC error we have already recovered from before
+                        // simply skip all characters up to the RESYNC_END
+                        while (context.getCurrentChar() != RESYNC_END) {
+                            context.advanceIndex(1);
+                            checkState(context.getCurrentChar() != EOI); // we MUST find a RESYNC_END before EOI
+                        }
                     }
-                    context.advanceIndex(1); // also gobble the RESYNC_END itself
                     break;
                 
                 default:
                     throw new IllegalStateException();
             }
             
+            context.advanceIndex(1); // also gobble the RESYNC_END itself
             fringeIndex = context.getCurrentIndex();
+            
             return true;
         }
 
@@ -373,6 +394,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // so we need to rerun all sub matchers of the resync sequence up to the point of the parse error
             // and then run the minimal set of action in "error action mode"
 
+            int savedCurrentIndex = context.getCurrentIndex();
             context.setCurrentIndex(context.getStartIndex()); // restart matching the resync sequence
 
             Matcher lastGoodSub = lastMatchPath == null ? null :
@@ -395,6 +417,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                     errorMode = true;
                 }
             }
+            context.setCurrentIndex(savedCurrentIndex);
         }
 
         private int gobbleIllegalCharacters(MatcherContext context, List<Matcher> followMatchers) {

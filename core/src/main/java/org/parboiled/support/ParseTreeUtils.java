@@ -273,10 +273,13 @@ public final class ParseTreeUtils {
                         i++;
                         break;
                     case Chars.INS_ERROR:
+                    case Chars.EOI:
                         break;
                     case Chars.RESYNC_START:
-                        i++;
-                        while (inputBuffer.charAt(i) != Chars.RESYNC_END) i++;
+                        do {
+                            i++;
+                            c = inputBuffer.charAt(i); 
+                        } while (c != Chars.RESYNC_END && c != Chars.EOI);
                         break;
                     case Chars.RESYNC_END:
                     case Chars.RESYNC:

@@ -18,12 +18,13 @@ package org.parboiled.matchervisitors;
 
 import org.parboiled.MatcherContext;
 import org.parboiled.matchers.*;
+import org.parboiled.support.Chars;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Collects the matchers that can legally follow the currently running matcher according to the grammar into a given
+ * Collects the matchers that can legally follow the given matcher according to the grammar into a given
  * list. The visitor returns true if the collected matchers are all possible followers, and false if other matchers
  * higher up the rule stack can also follow.
  */
@@ -46,9 +47,6 @@ public class FollowMatchersVisitor extends DefaultMatcherVisitor<Boolean> {
 
     @Override
     public Boolean visit(OneOrMoreMatcher matcher) {
-        // since this call is only legal when we are currently within a match of the sub matcher,
-        // i.e. the submatcher can either match once more or the repetition can legally terminate which means
-        // our follower set addition is incomplete -> return false
         followMatchers.add(matcher.subMatcher);
         return false;
     }
@@ -73,5 +71,4 @@ public class FollowMatchersVisitor extends DefaultMatcherVisitor<Boolean> {
     public Boolean defaultValue(AbstractMatcher matcher) {
         return false;
     }
-
 }
