@@ -72,6 +72,7 @@ public class MatcherContext<V> implements Context<V> {
     private int intTag;
     private boolean hasError;
     private boolean nodeSuppressed;
+    private boolean inErrorRecovery;
 
     /**
      * Initializes a new root MatcherContext.
@@ -171,6 +172,10 @@ public class MatcherContext<V> implements Context<V> {
                 parent != null && parent.inPredicate();
     }
 
+    public boolean inErrorRecovery() {
+        return inErrorRecovery;
+    }
+    
     public boolean isNodeSuppressed() {
         return nodeSuppressed;
     }
@@ -245,6 +250,10 @@ public class MatcherContext<V> implements Context<V> {
         checkArgument(currentIndex >= 0);
         this.currentIndex = currentIndex;
         currentChar = inputBuffer.charAt(currentIndex);
+    }
+    
+    public void setInErrorRecovery(boolean flag) {
+        inErrorRecovery = flag;
     }
 
     public void advanceIndex(int delta) {

@@ -426,13 +426,14 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                     preError = false;
                 }
                 if (!preError) {
+                    context.setInErrorRecovery(true);
                     List<ActionMatcher> errorActions = child.accept(new CollectResyncActionsVisitor());
                     checkState(errorActions != null);
                     for (ActionMatcher errorAction : errorActions) {
-                        boolean ok = errorAction.getSubContext(context).runMatcher();
-                        Checks.ensure(ok, "Action '%s' is run during error recovery resync and must not return false",
-                                errorAction);
+                        // execute the error actions without looking at their boolean results !!!
+                        errorAction.getSubContext(context).runMatcher();
                     }
+                    context.setInErrorRecovery(false);
                 }
             }
 
