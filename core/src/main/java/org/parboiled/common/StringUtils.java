@@ -76,6 +76,8 @@ public final class StringUtils {
                 return "RESYNC_START";
             case Chars.RESYNC_END:
                 return "RESYNC_END";
+            case Chars.RESYNC_EOI:
+                return "RESYNC_EOI";
             case Chars.INDENT:
                 return "INDENT";
             case Chars.DEDENT:

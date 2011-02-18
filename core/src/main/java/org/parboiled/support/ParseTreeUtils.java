@@ -276,12 +276,11 @@ public final class ParseTreeUtils {
                     case Chars.EOI:
                         break;
                     case Chars.RESYNC_START:
-                        do {
-                            i++;
-                            c = inputBuffer.charAt(i); 
-                        } while (c != Chars.RESYNC_END && c != Chars.EOI);
+                        i++;
+                        while (inputBuffer.charAt(i) != Chars.RESYNC_END) i++;
                         break;
                     case Chars.RESYNC_END:
+                    case Chars.RESYNC_EOI:
                     case Chars.RESYNC:
                         // we should only see proper RESYNC_START / RESYNC_END blocks
                         throw new IllegalStateException();
