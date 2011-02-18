@@ -33,8 +33,7 @@ import java.util.List;
  */
 public final class ErrorUtils {
 
-    private ErrorUtils() {
-    }
+    private ErrorUtils() {}
 
     /**
      * Finds the Matcher in the given failedMatcherPath whose label is best for presentation in "expected" strings

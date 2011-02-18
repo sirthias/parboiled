@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.matchers.MatcherUtils.unwrap;
 
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
@@ -219,8 +220,8 @@ public class MatcherContext<V> implements Context<V> {
 
     private void checkActionContext() {
         // make sure all the constraints are met
-        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
-                intTag > 0 && subContext.matcher instanceof ActionMatcher,
+        Checks.ensure(unwrap(matcher) instanceof SequenceMatcher && intTag > 0 &&
+                subContext.matcher instanceof ActionMatcher,
                 "Illegal call to getMatch(), getMatchStartIndex(), getMatchEndIndex() or getMatchRange(), " +
                         "only valid in Sequence rule actions that are not in first position");
     }
