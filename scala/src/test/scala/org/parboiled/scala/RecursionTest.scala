@@ -15,7 +15,9 @@ class RecursionTest extends ParboiledTest with TestNGSuite {
     def LotsOfAs: Rule0 = rule {ignoreCase('a') ~ optional(LotsOfAs)}
   }
 
-  val parser = new RecursionParser().withParseTreeBuilding()
+  val parser = new RecursionParser() {
+    override val buildParseTree = true
+  }
 
   @Test
   def testRuleTreeConstruction() {

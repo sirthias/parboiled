@@ -11,7 +11,11 @@ import org.parboiled.common.Predicates
 import org.parboiled.scala.parserunners.ReportingParseRunner
 
 class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
-  val parser = new SimpleCalculator1().withParseTreeBuilding()
+  
+  val parser = new SimpleCalculator1() {
+    override val buildParseTree = true
+  }
+  
   type Result = Int
 
   @Test

@@ -15,7 +15,9 @@ class SemanticPredicateTest extends ParboiledTest with TestNGSuite {
 
   type Result = Int
 
-  val parser = new TestParser().withParseTreeBuilding()
+  val parser = new TestParser() {
+    override val buildParseTree = true
+  }
 
   @Test
   def testWithContext() {

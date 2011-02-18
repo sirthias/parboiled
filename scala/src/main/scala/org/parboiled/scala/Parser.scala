@@ -14,20 +14,15 @@ import utils.Utils._
 trait Parser {
 
   private val cache = mutable.Map.empty[RuleMethod, Rule]
-
-  /**
-   *  Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
-   * This flag has to be set before the root is being built in order to have any effect.
-   */
-  var buildParseTree = false
-
   private val lock = new AnyRef()
 
   /**
-   * Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
+   * Indicates whether parboiled will create a parse tree during a parsing run of this parser.
+   * Override and return true (you can also do this with a "override val buildParseTree = true") to enable
+   * parse tree building.
    */
-  def withParseTreeBuilding(): this.type = {buildParseTree = true; this}
-
+  def buildParseTree = false
+  
   /**
    * Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
    */

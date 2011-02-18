@@ -20,7 +20,9 @@ class SimpleTest extends ParboiledTest with TestNGSuite {
     def Digit = rule {"0" - "9"}
   }
 
-  val parser = new SimpleParser().withParseTreeBuilding()
+  val parser = new SimpleParser() {
+    override val buildParseTree = true
+  }
 
   @Test
   def testRuleTreeConstruction() {
