@@ -27,7 +27,7 @@ import org.parboiled.common.Preconditions;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
 import org.parboiled.matchervisitors.*;
-import org.parboiled.support.Chars;
+import org.parboiled.support.Checks;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 
@@ -417,31 +417,24 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             int savedCurrentIndex = context.getCurrentIndex();
             context.setCurrentIndex(context.getStartIndex()); // restart matching the resync sequence
 
-            List<Matcher> children = context.getMatcher().getChildren();
-            List<Matcher> subs = new ArrayList<Matcher>();
-            int errorIx = 0;
-            if (lastMatchPath != null) {
-                Matcher lastGoodSub = unwrap(lastMatchPath.getElementAtLevel(context.getLevel() + 1).matcher);
-                for (int i = 0; i < children.size(); i++) {
-                    if (unwrap(children.get(i)) == lastGoodSub) {
-                        errorIx = i + 1;
-                        break;
+            boolean preError = true;
+            for (Matcher child : context.getMatcher().getChildren()) {
+                if (preError && !child.getSubContext(context).runMatcher()) {
+                    // run what will be the preceding matcher of all error actions
+                    new EmptyMatcher().getSubContext(context).runMatcher();
+                    context.setIntTag(1); // signal that at least one rule has run before the error actions
+                    preError = false;
+                }
+                if (!preError) {
+                    List<ActionMatcher> errorActions = child.accept(new CollectResyncActionsVisitor());
+                    checkState(errorActions != null);
+                    for (ActionMatcher errorAction : errorActions) {
+                        boolean ok = errorAction.getSubContext(context).runMatcher();
+                        Checks.ensure(ok, "Action '%s' is run during error recovery resync and must not return false",
+                                errorAction);
                     }
                 }
-                checkState(errorIx > 0);
             }
-            subs.addAll(children.subList(0, errorIx)); // queue all subs that have run before the error
-            subs.add(new EmptyMatcher()); // queue what will be the preceding matcher of all error actions
-
-            // queue all error actions underneath the error matchers
-            for (Matcher child : children.subList(errorIx, children.size())) {
-                List<ActionMatcher> errorActions = child.accept(new CollectResyncActionsVisitor());
-                checkState(errorActions != null);
-                subs.addAll(errorActions);
-            }
-
-            // run all queued matchers in a sequence
-            context.getSubContext(new SequenceMatcher(subs.toArray(new Rule[subs.size()]))).runMatcher();
 
             context.setCurrentIndex(savedCurrentIndex);
         }

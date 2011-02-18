@@ -64,12 +64,45 @@ public class RecoveryErrorActionsTest extends TestNgParboiledTest<Object> {
     @Test
     public void testRecoveryErrorActions2() {
         Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "axcd")
+                .hasErrors("" +
+                        "Invalid input 'x', expected B (line 1, pos 2):\n" +
+                        "axcd\n" +
+                        " ^\n")
+                .hasResult("a", "b", 1, 2.0);
+    }
+    
+    @Test
+    public void testRecoveryErrorActions3() {
+        Parser parser = Parboiled.createParser(Parser.class);
         testWithRecovery(parser.Clause(), "axx")
                 .hasErrors("" +
                         "Invalid input 'x...', expected B (line 1, pos 2):\n" +
                         "axx\n" +
                         " ^^\n")
                 .hasResult("a", "", 1, 2.0);
+    }
+    
+    @Test
+    public void testRecoveryErrorActions4() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "abx")
+                .hasErrors("" +
+                        "Invalid input 'x', expected C (line 1, pos 3):\n" +
+                        "abx\n" +
+                        "  ^\n")
+                .hasResult("a", "b", 1, 2.0);
+    }
+    
+    @Test
+    public void testRecoveryErrorActions5() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "abxyz")
+                .hasErrors("" +
+                        "Invalid input 'x...', expected C (line 1, pos 3):\n" +
+                        "abxyz\n" +
+                        "  ^^^\n")
+                .hasResult("a", "b", 1, 2.0);
     }
 
     @Test
