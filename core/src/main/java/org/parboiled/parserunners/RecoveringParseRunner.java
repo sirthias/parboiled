@@ -290,21 +290,19 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
 
             // if we didn't match we might have to resynchronize
             if (matcher instanceof SequenceMatcher) {
-                char fringeChar = context.getInputBuffer().charAt(fringeIndex);
-                switch(fringeChar) {
+                switch(context.getCurrentChar()) {
                     case RESYNC:
                     case RESYNC_START:
                     case RESYNC_EOI:
                         // however we only resynchronize if we are at a RESYNC location and the matcher is a SequenceMatcher
                         // that has already matched at least one character and that is a parent of the last match
-                        return qualifiesForResync(context, matcher) && resynchronize(context, fringeChar);
+                        return qualifiesForResync(context) && resynchronize(context);
                 }
             }
             return false;
         }
 
-        @SuppressWarnings( {"SimplifiableIfStatement"})
-        private boolean qualifiesForResync(MatcherContext context, Matcher matcher) {
+        private boolean qualifiesForResync(MatcherContext context) {
             if (context.getCurrentIndex() == context.getStartIndex() || !context.getPath().isPrefixOf(lastMatchPath)) {
                 // if we have a sequence that hasn't match anything yet or is not a prefix we might still have to
                 // resync on it if there is no other sequence parent anymore
@@ -364,7 +362,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             return prepareErrorLocation(testContext) && testContext.runMatcher();
         }
 
-        private boolean resynchronize(MatcherContext context, char fringeChar) {
+        private boolean resynchronize(MatcherContext context) {
             context.markError();
 
             // create a node for the failed Sequence, taking ownership of all sub nodes created so far
@@ -375,11 +373,8 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // the resync sequence
             rerunAndExecuteErrorActions(context);
             
-            // 
-            checkState(context.getCurrentChar() == fringeChar);
-
             // skip over all characters that are not legal followers of the failed Sequence
-            switch (fringeChar) {
+            switch (context.getCurrentChar()) {
                 case RESYNC:
                     // this RESYNC error is the last error, we establish the length of the bad sequence and
                     // change this RESYNC marker to a RESYNC_START / RESYNC_END block
@@ -412,7 +407,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                     throw new IllegalStateException();
             }
 
-            fringeIndex = context.getCurrentIndex();
             return true;
         }
 
