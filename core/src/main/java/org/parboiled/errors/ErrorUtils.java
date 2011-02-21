@@ -138,7 +138,7 @@ public final class ErrorUtils {
     public static String printErrorMessage(String format, String errorMessage, int startIndex, int endIndex,
                                            InputBuffer inputBuffer) {
         checkArgNotNull(inputBuffer, "inputBuffer");
-        checkArgument(startIndex < endIndex);
+        checkArgument(startIndex <= endIndex);
         Position pos = inputBuffer.getPosition(startIndex);
         StringBuilder sb = new StringBuilder(String.format(format, errorMessage, pos.line, pos.column));
         sb.append('\n');
@@ -147,7 +147,7 @@ public final class ErrorUtils {
         sb.append(line);
         sb.append('\n');
 
-        int charCount = Math.min(endIndex - startIndex, StringUtils.length(line) - pos.column + 2);
+        int charCount = Math.max(Math.min(endIndex - startIndex, StringUtils.length(line) - pos.column + 2), 1);
         for (int i = 0; i < pos.column - 1; i++) sb.append(' ');
         for (int i = 0; i < charCount; i++) sb.append('^');
         sb.append("\n");

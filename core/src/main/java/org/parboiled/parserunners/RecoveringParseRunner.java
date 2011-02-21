@@ -289,26 +289,32 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             }
 
             // if we didn't match we might have to resynchronize
-            char fringeChar = context.getInputBuffer().charAt(fringeIndex);
-            switch(fringeChar) {
-                case RESYNC:
-                case RESYNC_START:
-                case RESYNC_EOI:
-                    // however we only resynchronize if we are at a RESYNC location and the matcher is a SequenceMatcher
-                    // that has already matched at least one character and that is a parent of the last match
-                    return qualifiesForResync(context, matcher) && resynchronize(context, fringeChar);
-                default:
-                    return false;
+            if (matcher instanceof SequenceMatcher) {
+                char fringeChar = context.getInputBuffer().charAt(fringeIndex);
+                switch(fringeChar) {
+                    case RESYNC:
+                    case RESYNC_START:
+                    case RESYNC_EOI:
+                        // however we only resynchronize if we are at a RESYNC location and the matcher is a SequenceMatcher
+                        // that has already matched at least one character and that is a parent of the last match
+                        return qualifiesForResync(context, matcher) && resynchronize(context, fringeChar);
+                }
             }
+            return false;
         }
 
         @SuppressWarnings( {"SimplifiableIfStatement"})
         private boolean qualifiesForResync(MatcherContext context, Matcher matcher) {
-            if (matcher instanceof SequenceMatcher && context.getCurrentIndex() > context.getStartIndex() &&
-                    context.getPath().isPrefixOf(lastMatchPath)) {
-                return true;
-            }
-            return context.getParent() == null; // always resync on the root if there is nothing else
+            if (context.getCurrentIndex() == context.getStartIndex() || !context.getPath().isPrefixOf(lastMatchPath)) {
+                // if we have a sequence that hasn't match anything yet or is not a prefix we might still have to
+                // resync on it if there is no other sequence parent anymore
+                MatcherContext parent = context.getParent();
+                while (parent != null) {
+                    if (parent.getMatcher() instanceof SequenceMatcher) return false;
+                    parent = parent.getParent();
+                }
+            }            
+            return true;
         }
 
         private boolean prepareErrorLocation(MatcherContext context) {
@@ -368,6 +374,9 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // consistent we go into a special "error action mode" and execute the minimal set of actions underneath
             // the resync sequence
             rerunAndExecuteErrorActions(context);
+            
+            // 
+            checkState(context.getCurrentChar() == fringeChar);
 
             // skip over all characters that are not legal followers of the failed Sequence
             switch (fringeChar) {
@@ -385,7 +394,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
 
                 case RESYNC_START:
                     // a RESYNC error we have already recovered from before
-                    context.advanceIndex(1); // gobble RESYNC marker
+                    context.advanceIndex(1); // gobble RESYNC_START
                     while (context.getCurrentChar() != RESYNC_END) {
                         context.advanceIndex(1); // skip all characters up to the RESYNC_END
                         checkState(context.getCurrentChar() != EOI); // we MUST find a RESYNC_END before EOI
@@ -394,7 +403,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                     break;
                 
                 case RESYNC_EOI:
-                    // if we are resyncing on EOI we don't swall anything
+                    // if we are resyncing on EOI we don't swallow anything
                     // we also do not have to update the currentError since we only hit this code here
                     // in the final run
                     break;
