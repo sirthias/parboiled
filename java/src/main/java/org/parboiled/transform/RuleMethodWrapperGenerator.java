@@ -66,26 +66,30 @@ public class RuleMethodWrapperGenerator implements Opcodes, Types {
 			gen.loadThis();
 			offset = 1;
 		}
+		
+		Type[] argumentTypes = Type.getArgumentTypes(method.desc);
+		
 		// load non-action parameters
-		for (int param = 0; param < Type.getArgumentTypes(method.desc).length; param++) {
+		for (int param = 0; param < argumentTypes.length; param++) {
 			if (! method.getActionParams().get(param + offset)) {
 				gen.loadArg(param);
 			}
 		}
 		gen.visitMethodInsn(INVOKEVIRTUAL, classNode.name, newName, newDesc);
 
-		Type[] argumentTypes = Type.getArgumentTypes(method.desc);
-
-		// load arguments into variables array
-		gen.push(argumentTypes.length);
+		// load action parameters into array
+		gen.push(method.getActionParams().cardinality());
 		gen.newArray(OBJECT);
-		for (int i = 0; i < argumentTypes.length; i++) {
-			gen.dup();
-			gen.push(i);
-			gen.loadArg(i);
-			gen.box(argumentTypes[i]);
-			gen.arrayStore(OBJECT);
-		}
+		int index = 0;
+        for (int param = 0; param < argumentTypes.length; param++) {
+            if (method.getActionParams().get(param + offset)) {
+                gen.dup();
+                gen.push(index);
+                gen.loadArg(param);
+                gen.box(argumentTypes[param]);
+                gen.arrayStore(OBJECT);
+            }
+        }
 
 		gen.invokeConstructor(INIT_ARGS_MATCHER, new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, Type.getType(Object[].class) }));
 		gen.returnValue();

@@ -31,6 +31,7 @@ class InstructionGroup {
 	static class VarInitGroup extends InstructionGroup {
 		protected List<Type> ruleActionArgumentTypes;
 		protected List<InstructionGraphNode> ruleActionArgumentNodes;
+		protected boolean isRetargetedCall;
 		
 		public VarInitGroup(RuleMethod ruleMethod, InstructionGraphNode ruleCreationCallNode) {
 			super(ruleMethod, ruleCreationCallNode, GroupType.VAR_INIT);
@@ -51,6 +52,14 @@ class InstructionGroup {
 		public List<Type> getRuleActionArgumentTypes() {
 			return ruleActionArgumentTypes;
 		}
+		
+		public void setIsRetargetedCall() {
+            this.isRetargetedCall = true;
+        }
+		
+		public boolean isRetargetedCall() {
+            return isRetargetedCall;
+        }
 	}
 	
 	public static enum GroupType {

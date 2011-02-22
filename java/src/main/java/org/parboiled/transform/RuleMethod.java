@@ -69,7 +69,7 @@ class RuleMethod extends MethodNode {
     
     private BitSet actionParams;
     private List<InstructionGraphNode> rulesWithActionParams;
-	private List<BasicValue> actionVariableTypes;
+	private List<Type> actionVariableTypes;
 
     public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature, String[] exceptions,
                       boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno, boolean hasSkipActionsInPredicates) {
@@ -361,11 +361,11 @@ class RuleMethod extends MethodNode {
         skipGeneration = false;
     }
 
-    public List<BasicValue> getActionVariableTypes() {
+    public List<Type> getActionVariableTypes() {
 		return actionVariableTypes;
 	}
     
-	public void setActionVariableTypes(List<BasicValue> actionVariableTypes) {
+	public void setActionVariableTypes(List<Type> actionVariableTypes) {
 		this.actionVariableTypes = actionVariableTypes;
 	}
 

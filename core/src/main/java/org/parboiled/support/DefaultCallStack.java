@@ -57,7 +57,8 @@ public class DefaultCallStack implements CallStack {
     public void setVariable(int i, Object value) {
         if (i < currentFrame.arguments.length) {
             currentFrame.arguments[i] = value;
+        } else {
+            currentFrame.locals[i - currentFrame.arguments.length] = value;
         }
-        currentFrame.locals[i - currentFrame.arguments.length] = value;
     }
 }

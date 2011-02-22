@@ -19,6 +19,8 @@ package org.parboiled.transform;
 import org.objectweb.asm.Type;
 import org.parboiled.*;
 import org.parboiled.annotations.*;
+import org.parboiled.matchers.DelegatingActionMatcher;
+import org.parboiled.matchers.DelegatingMatcher;
 import org.parboiled.matchers.InitArgsMatcher;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchers.ProxyMatcher;
@@ -42,6 +44,8 @@ interface Types {
     final Type CALL_STACK = Type.getType(CallStack.class);
     final Type VAR_ANNOTATION = Type.getType(Var.class);
     final Type INIT_ARGS_MATCHER = Type.getType(InitArgsMatcher.class);
+    final Type DELEGATING_MATCHER = Type.getType(DelegatingMatcher.class);
+    final Type DELEGATING_ACTION_MATCHER = Type.getType(DelegatingActionMatcher.class);
     final Type EXECUTION_FRAME_MATCHER = Type
                     .getType(ExecutionFrameMatcher.class);
     final Type OBJECT = Type.getType(Object.class);

@@ -25,7 +25,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.*;
-import org.objectweb.asm.tree.analysis.BasicValue;
 import org.parboiled.transform.support.InsnListGenerator;
 
 abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
@@ -177,8 +176,7 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 			}
 			
 			// this is an action variable
-			BasicValue varValue = method.getActionVariableTypes().get(var);
-			Type varType = varValue.getType();
+			Type varType = method.getActionVariableTypes().get(var);
 
 			InsnListGenerator gen = new InsnListGenerator();
 
@@ -218,8 +216,8 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 	 */
 	private int mapVarIndex(int var) {
 		int newVar = var;
-		for (BasicValue value : method.getActionVariableTypes()) {
-			if (value == null) {
+		for (Type type : method.getActionVariableTypes()) {
+			if (type == null) {
 				newVar--;
 			}
 			if (var-- == 0) {

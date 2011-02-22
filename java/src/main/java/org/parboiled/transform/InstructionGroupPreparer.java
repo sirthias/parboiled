@@ -23,7 +23,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.VarInsnNode;
-import org.objectweb.asm.tree.analysis.BasicValue;
 import org.parboiled.common.Base64;
 import org.parboiled.common.StringUtils;
 
@@ -172,9 +171,9 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
 			// ensure that two actions with same number of action variables are
 			// named different if variable types differ
 			if (0 <= var && var < ruleMethod.getActionVariableTypes().size()) {
-				BasicValue value = ruleMethod.getActionVariableTypes().get(var);
-				if (value != null) {
-					update(value.getType().getDescriptor());
+				Type varType = ruleMethod.getActionVariableTypes().get(var);
+				if (varType != null) {
+					update(varType.getDescriptor());
 				}
 			}
             

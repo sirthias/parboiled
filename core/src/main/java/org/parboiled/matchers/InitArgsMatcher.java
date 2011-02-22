@@ -33,7 +33,7 @@ public class InitArgsMatcher extends DelegatingMatcher {
     }
 
     @Override
-    public boolean match(MatcherContext context) {
+    public <V> boolean match(MatcherContext<V> context) {
         context.getCallStack().setArguments(args);
         return super.match(context);
     }

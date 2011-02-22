@@ -27,14 +27,18 @@ import static org.parboiled.common.Preconditions.*;
 import static org.parboiled.transform.AsmUtils.*;
 
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.analysis.BasicValue;
+import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.support.Checks;
 import org.parboiled.transform.InstructionGroup.GroupType;
 import org.parboiled.transform.InstructionGroup.VarInitGroup;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -266,12 +270,43 @@ class InstructionGroupCreator implements RuleMethodProcessor  {
             if (targetType.equals(classNode.getParentType().getInternalName())) {
                 // re-target rule creation call, since action parameters can be
                 // removed
+                group.setIsRetargetedCall();
+                
                 ruleMethodInsn.owner = AsmUtils.getExtendedParserClassName(firstArg == 1 ? node.getPredecessors().get(0).getResultValue()
                         .getType().getInternalName() : ruleMethodInsn.owner);
                 ruleMethodInsn.name = AsmUtils.renameRule(ruleMethodInsn.name, ruleMethodInsn.desc);
                 // remove action parameters from descriptor
                 ruleMethodInsn.desc = Type.getMethodDescriptor(Types.RULE,
                         normalArgumentTypes.toArray(new Type[normalArgumentTypes.size()]));
+            } else {
+                // this rule creation call cannot be re-targeted,
+                // hence insert default values for action arguments
+                for (int i = 0; i < actionArgumentTypes.size(); i++) {
+                    Type argType = actionArgumentTypes.get(i);
+                    
+                    AbstractInsnNode ldcInsn;
+                    switch (argType.getSort()) {
+                    case Type.OBJECT:
+                    case Type.ARRAY:
+                        ldcInsn = new LdcInsnNode(null);
+                        break;
+                    case Type.DOUBLE:
+                        ldcInsn = new InsnNode(DCONST_0);
+                        break;
+                    case Type.FLOAT:
+                        ldcInsn = new InsnNode(FCONST_0);
+                        break;
+                    case Type.LONG:
+                        ldcInsn = new InsnNode(LCONST_0);
+                        break;
+                    default:
+                        ldcInsn = new InsnNode(ICONST_0);
+                        break;
+                    }
+                    
+                    method.instructions.insert(actionArgumentNodes.get(i).getInstruction(), ldcInsn);
+                    method.insertGraphNode(ldcInsn, new BasicValue(argType), Collections.<Value> emptyList());
+                }
             }
 		}
 	}

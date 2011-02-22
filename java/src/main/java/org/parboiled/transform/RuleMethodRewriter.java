@@ -24,11 +24,12 @@ package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.*;
-import org.parboiled.matchers.DelegatingActionMatcher;
 import org.parboiled.transform.InstructionGroup.GroupType;
+import org.parboiled.transform.InstructionGroup.VarInitGroup;
 import org.parboiled.transform.support.InsnListGenerator;
 
 /**
@@ -70,7 +71,7 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
 
             switch (group.getGroupType()) {
             case VAR_INIT : 
-                initializeVarInitMatcher(gen);
+                initializeVarInitMatcher((VarInitGroup) group, gen);
                 method.instructions.insert(group.getRoot().getInstruction(), gen.instructions);
                 break;
             case ACTION :
@@ -85,14 +86,25 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
         method.setBodyRewritten();
     }
     
-    private void initializeVarInitMatcher(InsnListGenerator gen) {
+    private void initializeVarInitMatcher(VarInitGroup group, InsnListGenerator gen) {
         // execute construction of DelegatingActionMatcher before creation of
         // var init action
         gen.pushInsns();
         // stack: <Object>
-        gen.checkCast(RULE);
+        
+        if (! group.isRetargetedCall()) {
+            // a call to a rule-creation method that is executed with fake
+            // parameters, hence the resulting matcher for initializing the
+            // arguments has to be removed
+            gen.checkCast(DELEGATING_MATCHER);
+            gen.invokeVirtual(DELEGATING_MATCHER,  new Method("getDelegate", MATCHER, new Type[0]));
+            // stack: <Matcher>
+        } else {
+            gen.checkCast(RULE);
+            // stack: <Rule>
+        }
 
-        gen.newInstance(Type.getType(DelegatingActionMatcher.class));
+        gen.newInstance(DELEGATING_ACTION_MATCHER);
         // stack: <Rule> <DelegatingActionMatcher>
         gen.dupX1();
         // stack: <DelegatingActionMatcher> <Rule> <DelegatingActionMatcher>
@@ -104,13 +116,21 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
         // stack: ... <DelegatingActionMatcher> <Rule> <Action>
 
         // stack: ... <DelegatingActionMatcher> <Rule> <Action>
-        gen.invokeConstructor(Type.getType(DelegatingActionMatcher.class),
+        gen.invokeConstructor(DELEGATING_ACTION_MATCHER,
                 new Method("<init>", Type.VOID_TYPE, new Type[] { RULE, ACTION }));
     }
 
 	private void createExecutionFrameMatcher() {
 		int actionParams = method.getActionParams().cardinality();
-		int maxLocals = method.getActionVariableTypes().size() - actionParams - 1;
+		int args = Type.getArgumentTypes(method.desc).length;
+		
+		int maxLocals = 0;
+		for (int i = args; i < method.getActionVariableTypes().size(); i++) {
+		    if (method.getActionVariableTypes().get(i) != null) {
+		        maxLocals++;
+		    }
+		}
+		
 		if (actionParams > 0 || maxLocals > 0) {
 			AbstractInsnNode returnInsn = method.getReturnInstructionNode().getInstruction();
 			InsnListGenerator gen = new InsnListGenerator();
@@ -141,7 +161,7 @@ class RuleMethodRewriter implements RuleMethodProcessor, Types {
             gen.dup();
             
             // the FieldNodes access and value members have been reused for the var index / Type respectively!
-            gen.instructions.add(new VarInsnNode(AsmUtils.getLoadingOpcode((Type) field.value), mapParamIndex(field.access)));
+            gen.instructions.add(new VarInsnNode(((Type) field.value).getOpcode(Opcodes.ILOAD), mapParamIndex(field.access)));
             gen.putField(group.getGroupClassType(), field.name, Type.getType(field.desc));
         }
     }

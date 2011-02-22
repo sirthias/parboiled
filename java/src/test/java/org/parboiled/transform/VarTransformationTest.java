@@ -20,8 +20,9 @@ import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.Var;
+import org.parboiled.parserunners.BasicParseRunner;
+import org.parboiled.support.ParsingResult;
 import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
@@ -31,7 +32,8 @@ public class VarTransformationTest extends TestNgParboiledTest<Integer> {
     static class ParserA extends BaseParser<Object> {
         public Rule RuleA(@Var int actionParam, int constant) {
             int local;
-            return Sequence(local = constant, CharRange('0', '9'), local = actionParam + Integer.valueOf(match()), actionParam = local);
+            return Sequence(local = constant, CharRange('0', '9'), local = actionParam + Integer.valueOf(match()), actionParam = local,
+                    push(actionParam));
         }
     }
 
@@ -39,7 +41,7 @@ public class VarTransformationTest extends TestNgParboiledTest<Integer> {
         ParserA parserA = Parboiled.createParser(ParserA.class);
 
         public Rule RuleB(@Var int constant) {
-            return getParserA().RuleA(2, 0);
+            return getParserA().RuleA(constant, 2);
         }
 
         public ParserA getParserA() {
@@ -59,7 +61,9 @@ public class VarTransformationTest extends TestNgParboiledTest<Integer> {
 
     @Test
     public void testComposition() {
-        Parboiled.createParser(ComposedParser.class);
+        ComposedParser parser = Parboiled.createParser(ComposedParser.class);
+        ParsingResult<Object> result = new BasicParseRunner<Object>(parser.RuleB(3)).run("5");
+        assertEquals(result.resultValue, 8);
     }
 
     @Test

@@ -42,7 +42,7 @@ public class DelegatingMatcher implements Matcher {
 	public List<Matcher> getChildren() {
 		return inner.getChildren();
 	}
-
+	
 	// Rule
 	public Rule label(String label) {
 		inner = (Matcher) inner.label(label);
@@ -139,6 +139,10 @@ public class DelegatingMatcher implements Matcher {
 	@Override
 	public Object getTag() {
 		return inner.getTag();
+	}
+	
+	public Matcher getDelegate() {
+	    return inner;
 	}
 
 }
