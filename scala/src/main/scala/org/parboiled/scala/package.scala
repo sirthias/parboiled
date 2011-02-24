@@ -91,7 +91,7 @@ package object scala {
   /**
    * A parser action removing the top element from the value stack.
    */
-  lazy val DROP1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label(nameAction("Drop1"))
+  lazy val DROP: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label(nameAction("Drop"))
 
   /**
    * A parser action removing the top two elements from the value stack.
