@@ -189,6 +189,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
                         advance();
                         continue;
                     case Chars.EOI:
+                        indent = 0;
                         break loop;
                     default:
                         if (skipLineComment() == 0) break loop;
