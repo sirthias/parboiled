@@ -18,6 +18,7 @@ package org.parboiled.test;
 
 import org.parboiled.Node;
 import org.parboiled.Rule;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.parserunners.ReportingParseRunner;
@@ -80,9 +81,17 @@ public abstract class ParboiledTest<V> {
     public TestResult<V> test(Rule rule, String input) {
         return new TestResult<V>(new ReportingParseRunner<V>(rule).run(input));
     }
+    
+    public TestResult<V> test(Rule rule, InputBuffer inputBuffer) {
+        return new TestResult<V>(new ReportingParseRunner<V>(rule).run(inputBuffer));
+    }
 
     public TestResult<V> testWithRecovery(Rule rule, String input) {
         return new TestResult<V>(new RecoveringParseRunner<V>(rule).run(input));
+    }
+    
+    public TestResult<V> testWithRecovery(Rule rule, InputBuffer inputBuffer) {
+        return new TestResult<V>(new RecoveringParseRunner<V>(rule).run(inputBuffer));
     }
 
     protected abstract void fail(String message);

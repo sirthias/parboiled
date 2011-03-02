@@ -222,7 +222,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
     private Character findBestSingleCharInsertion(int fixIndex) {
         GetStarterCharVisitor getStarterCharVisitor = new GetStarterCharVisitor();
         int bestNextErrorIndex = -1;
-        Character bestChar = null;
+        Character bestChar = '\u0000'; // non-null default
         for (MatcherPath failedMatcherPath : currentError.getFailedMatchers()) {
             Character starterChar = failedMatcherPath.element.matcher.accept(getStarterCharVisitor);
             checkState(starterChar != null); // we should only have single character matchers

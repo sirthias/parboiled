@@ -53,7 +53,7 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void testSingleRecovery() {
+    public void testRecovery() {
         Parser parser = Parboiled.createParser(Parser.class);
         testWithRecovery(parser.Clause(), "AaA")
                 .hasErrors("" +
@@ -198,5 +198,21 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "  [Object] 'animals'\n" +
                         "    [\"animals\"] 'animals'\n" +
                         "  [EOI]\n");
+        
+        testWithRecovery(parser.Clause(), "Alice has cars!!")
+                .hasErrors("" +
+                        "Invalid input '!...', expected EOI (line 1, pos 15):\n" +
+                        "Alice has cars!!\n" +
+                        "              ^^\n")
+                .hasParseTree("" +
+                        "[Clause]E 'Alice has cars'\n" +
+                        "  [Subject] 'Alice'\n" +
+                        "    [Name] 'Alice'\n" +
+                        "      [\"Alice\"] 'Alice'\n" +
+                        "    [ZeroOrMore]\n" +
+                        "  [Verb] ' has '\n" +
+                        "    [\" has \"] ' has '\n" +
+                        "  [Object] 'cars'\n" +
+                        "    [\"cars\"] 'cars'\n");
     }
 }
