@@ -17,7 +17,7 @@ abstract class Rule {
   /**
    * Creates a "NOT" syntactic predicate according to the PEG formalism.
    */
-  def unary_!(): Rule0 = new TestNotMatcher(matcher)
+  def unary_! : Rule0 = new TestNotMatcher(matcher)
 
   def ~(other: Rule0): this.type = withMatcher(append(other))
 
@@ -38,13 +38,13 @@ abstract class Rule {
 
   def label(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
 
-  def suppressNode(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
+  def suppressNode: this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
 
-  def suppressSubnodes(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
+  def suppressSubnodes: this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
 
-  def skipNode(): this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
+  def skipNode: this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
 
-  def memoMismatches(): this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
+  def memoMismatches: this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
 
   override def toString = getClass.getSimpleName + ": " + matcher.toString
 
