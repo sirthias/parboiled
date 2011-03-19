@@ -10,20 +10,16 @@
   </parent>
 
   <groupId>org.parboiled</groupId>
-  <artifactId>parboiled-scala</artifactId>
+  <artifactId>parboiled-examples-scala</artifactId>
   <version>0.10.2-SNAPSHOT</version>
 
-  <name>parboiled-scala</name>
-  <description>parboiled for Scala</description>
+  <name>parboiled-scala-examples</name>
+  <description>examples for parboiled-scala</description>
 
   <dependencies>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.parboiled</groupId>
-      <artifactId>parboiled-core</artifactId>
+      <artifactId>parboiled-scala</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

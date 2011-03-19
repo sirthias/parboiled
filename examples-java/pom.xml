@@ -10,13 +10,18 @@
   </parent>
 
   <groupId>org.parboiled</groupId>
-  <artifactId>parboiled-core</artifactId>
+  <artifactId>parboiled-examples-java</artifactId>
   <version>0.10.2-SNAPSHOT</version>
 
-  <name>parboiled-core</name>
-  <description>parboiled core library</description>
+  <name>parboiled-java-examples</name>
+  <description>examples for parboiled-java</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.parboiled</groupId>
+      <artifactId>parboiled-java</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
