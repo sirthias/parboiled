@@ -7,7 +7,7 @@ url, user, pass = Buildr.settings.user[upload_to].values_at('url', 'user', 'pass
 repositories.release_to = { :url => url, :username => user, :password => pass }   
 
 Buildr.settings.build['scala.version'] = "2.8.1"
-VERSION_NUMBER = "0.11.0-SNAPSHOT"
+VERSION_NUMBER = "0.11.0"
 
 require "buildr/scala"
 
