@@ -30,7 +30,6 @@ public class EmptyMatcher extends AbstractMatcher {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         context.createNode();
         return true;
     }

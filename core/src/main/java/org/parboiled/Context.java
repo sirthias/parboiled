@@ -19,6 +19,7 @@ package org.parboiled;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.IndexRange;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ValueStack;
 import org.parboiled.support.CallStack;
@@ -116,14 +117,21 @@ public interface Context<V> {
     List<Node<V>> getSubNodes();
 
     /**
-     * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
+     * Determines if the current rule is running somewhere underneath a Test/TestNot rule.
      *
      * @return true if the current context has a parent which corresponds to a Test/TestNot rule
      */
     boolean inPredicate();
+    
+    /**
+     * Determines if the action calling this method is run during the resynchronization phase of an error recovery.
+     *
+     * @return true if the action calling this method is run during the resynchronization phase of an error recovery
+     */
+    boolean inErrorRecovery();
 
     /**
-     * Returns true if the current context is for or below a rule marked @SuppressNode or below one
+     * Determines if the current context is for or below a rule marked @SuppressNode or below one
      * marked @SuppressSubnodes.
      *
      * @return true or false
@@ -131,14 +139,14 @@ public interface Context<V> {
     boolean isNodeSuppressed();
 
     /**
-     * Returns true if this context or any sub node recorded a parse error.
+     * Determines if this context or any sub node recorded a parse error.
      *
      * @return true if this context or any sub node recorded a parse error
      */
     boolean hasError();
 
     /**
-     * <p>Returns the input text matched by the context immediately preceding the action expression that is currently
+     * <p>Returns the input text matched by the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
@@ -147,7 +155,7 @@ public interface Context<V> {
     String getMatch();
 
     /**
-     * <p>Returns the first character of the input text matched by the context immediately preceding the action
+     * <p>Returns the first character of the input text matched by the rule immediately preceding the action
      * expression that is currently being evaluated. This call can only be used in actions that are part of a Sequence
      * rule and are not at first position in this Sequence.</p>
      * <p>If the immediately preceding rule did not match anything this method throws a GrammarException. If you need
@@ -158,7 +166,7 @@ public interface Context<V> {
     char getFirstMatchChar();
 
     /**
-     * <p>Returns the start index of the context immediately preceding the action expression that is currently
+     * <p>Returns the start index of the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
@@ -167,7 +175,7 @@ public interface Context<V> {
     int getMatchStartIndex();
 
     /**
-     * <p>Returns the end index of the context immediately preceding the action expression that is currently
+     * <p>Returns the end index of the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
      *
@@ -183,6 +191,24 @@ public interface Context<V> {
      */
     CallStack getCallStack();
 
+    /**
+     * <p>Returns the number of characters matched by the rule immediately preceding the action expression that is
+     * currently being evaluated. This call can only be used in actions that are part of a Sequence rule and are not
+     * at first position in this Sequence.</p>
+     * 
+     * @return the number of characters matched
+     */
+    int getMatchLength();
+    
+    /**
+     * Creates a new {@link IndexRange} instance covering the input text matched by the rule immediately preceding the
+     * action expression that is currently being evaluated. This call can only be used in actions that are part of a
+     * Sequence rule and are not at first position in this Sequence.
+     *  
+     * @return a new IndexRange instance
+     */
+    IndexRange getMatchRange();
+    
     /**
      * Returns the value stack instance used during this parsing run.
      *

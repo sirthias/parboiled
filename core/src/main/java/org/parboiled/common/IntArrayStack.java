@@ -62,6 +62,15 @@ public class IntArrayStack {
     }
 
     /**
+     * @return all elements in a new array.
+     */
+    public int[] toArray() {
+        int[] array = new int[size()];
+        getElements(array, 0);
+        return array;
+    }
+
+    /**
      * Empties the stack.
      */
     public void clear() {

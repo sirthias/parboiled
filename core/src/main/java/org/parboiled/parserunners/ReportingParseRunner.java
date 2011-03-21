@@ -16,16 +16,13 @@
 
 package org.parboiled.parserunners;
 
-import static org.parboiled.common.Preconditions.*;
-import org.parboiled.MatchHandler;
-import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.buffers.InputBuffer;
+import org.parboiled.common.Preconditions;
 import org.parboiled.errors.InvalidInputError;
-import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
-import org.parboiled.support.*;
+import org.parboiled.support.ParsingResult;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * A {@link ParseRunner} implementation that properly reports the first {@link InvalidInputError} if the input
@@ -33,7 +30,7 @@ import java.util.List;
  * It performs exactly as the {@link BasicParseRunner} on valid input, however, on invalid input two more parsing
  * runs are initiated: one for recording the first parse error and one for collecting the error report information.
  */
-public class ReportingParseRunner<V> extends BasicParseRunner<V> {
+public class ReportingParseRunner<V> extends AbstractParseRunner<V> {
 
     /**
      * Create a new ReportingParseRunner instance with the given rule and input text and returns the result of
@@ -42,7 +39,10 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
+     * @deprecated  As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
+     * this static method. This method will be removed in one of the coming releases.
      */
+    @Deprecated
     public static <V> ParsingResult<V> run(Rule rule, String input) {
         checkArgNotNull(rule, "rule");
         checkArgNotNull(input, "input");
@@ -52,112 +52,51 @@ public class ReportingParseRunner<V> extends BasicParseRunner<V> {
     /**
      * Creates a new ReportingParseRunner instance for the given rule.
      *
-     * @param rule  the parser rule
+     * @param rule the parser rule
      */
     public ReportingParseRunner(Rule rule) {
-        super(checkArgNotNull(rule, "rule"));
+        super(rule);
     }
 
-    /**
-     * Creates a new ReportingParseRunner instance for the given rule using the given ValueStack instance.
-     *
-     * @param rule  the parser rule
-     * @param valueStack  the value stack
-     */
-    public ReportingParseRunner(Rule rule, ValueStack<V> valueStack) {
-        super(checkArgNotNull(rule, "rule"), checkArgNotNull(valueStack, "valueStack"));
-    }
+    public ParsingResult<V> run(InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
+        resetValueStack();
 
-    @SuppressWarnings({"SimplifiableIfStatement"})
-    @Override
-    protected boolean runRootContext() {
-        // run a basic match
-        if (super.runRootContext()) {
-            return true;
-        }
+        // first, run a basic match
+        ParsingResult<V> result = runBasicMatch(inputBuffer);
+        if (result.matched) return result; // all good
 
-        // ok, we have a parse error, so run again without fast string matching and with our recording handler
-        RecordingParseRunner.Handler recordingHandler = new RecordingParseRunner.Handler();
-        if (runRootContext(recordingHandler, false)) {
-            throw new IllegalStateException(); // we failed before so we should really be failing again
-        }
-
+        // ok, we have a parse error, so determine the error location
+        resetValueStack();
+        result = runLocatingMatch(inputBuffer);
+        Preconditions.checkState(!result.matched); // we failed before so we should really be failing again
+        Preconditions.checkState(result.parseErrors.size() == 1);
+        
         // finally perform a third, reporting run (now that we know the error location)
-        Handler reportingHandler = new Handler(recordingHandler.getErrorIndex());
-        if (runRootContext(reportingHandler, false)) {
-            throw new IllegalStateException(); // we failed before so we should really be failing again
-        }
-
-        return false;
+        resetValueStack();
+        result = runReportingMatch(inputBuffer, result.parseErrors.get(0).getStartIndex());
+        Preconditions.checkState(!result.matched); // we failed before so we should really be failing again
+        return result;
     }
 
-    /**
-     * A {@link org.parboiled.MatchHandler} implementation that reports the {@link InvalidInputError} at a given error index.
-     * For the actual matching this handler relies on another, inner {@link org.parboiled.MatchHandler} instance it delegates to.
-     */
-    public static class Handler implements MatchHandler {
-        private final IsSingleCharMatcherVisitor isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor();
-        private final int errorIndex;
-        private final MatchHandler inner;
-        private final List<MatcherPath> failedMatchers = new ArrayList<MatcherPath>();
-        private InvalidInputError parseError;
-        private boolean seeking;
-
-        /**
-         * Create a new handler that can report the {@link InvalidInputError} at the given error index.
-         * It relies on a new {@link BasicParseRunner.Handler} instance for the actual matching.
-         *
-         * @param errorIndex the InputLocation of the error to be reported
-         */
-        public Handler(int errorIndex) {
-            this(errorIndex, new BasicParseRunner.Handler());
-        }
-
-        /**
-         * Create a new handler that can report the {@link InvalidInputError} at the given error index.
-         * It relies on the given {@link MatchHandler} instance for the actual matching.
-         *
-         * @param errorIndex the InputLocation of the error to be reported
-         * @param inner      the inner MatchHandler to use
-         */
-        public Handler(int errorIndex, MatchHandler inner) {
-            this.errorIndex = errorIndex;
-            this.inner = checkArgNotNull(inner, "inner");
-        }
-
-        /**
-         * Returns the {@link InvalidInputError} instance that was created during the reporting run.
-         *
-         * @return the InvalidInputError
-         */
-        public InvalidInputError getParseError() {
-            return parseError;
-        }
-
-        public boolean matchRoot(MatcherContext<?> rootContext) {
-            failedMatchers.clear();
-            seeking = errorIndex > 0;
-            inner.matchRoot(rootContext);
-
-            parseError = new InvalidInputError(rootContext.getInputBuffer(), errorIndex, failedMatchers, null);
-            rootContext.getParseErrors().add(parseError);
-            return false;
-        }
-
-        public boolean match(MatcherContext<?> context) {
-            boolean matched = inner.match(context);
-            if (context.getCurrentIndex() == errorIndex) {
-                if (matched && seeking) {
-                    seeking = false;
-                }
-                if (!matched && !seeking && context.getMatcher().accept(isSingleCharMatcherVisitor)) {
-                    failedMatchers.add(context.getPath());
-                }
-            }
-            return matched;
-        }
-
+    protected ParsingResult<V> runBasicMatch(InputBuffer inputBuffer) {
+        ParseRunner<V> basicRunner = new BasicParseRunner<V>(getRootMatcher())
+            .withParseErrors(getParseErrors())
+            .withValueStack(getValueStack());
+        return basicRunner.run(inputBuffer);
     }
 
+    protected ParsingResult<V> runLocatingMatch(InputBuffer inputBuffer) {
+        ParseRunner<V> locatingRunner = new ErrorLocatingParseRunner<V>(getRootMatcher())
+                .withValueStack(getValueStack());
+        return locatingRunner.run(inputBuffer);
+    }
+
+    protected ParsingResult<V> runReportingMatch(InputBuffer inputBuffer, int errorIndex) {
+        ParseRunner<V> reportingRunner = new ErrorReportingParseRunner<V>(getRootMatcher(), errorIndex)
+                .withParseErrors(getParseErrors())
+                .withValueStack(getValueStack());
+        return reportingRunner.run(inputBuffer);
+    }
 }
 

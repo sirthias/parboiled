@@ -16,17 +16,16 @@
 
 package org.parboiled.support;
 
-import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Node;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.Predicates;
 import org.parboiled.common.StringUtils;
-import org.parboiled.matchervisitors.IsSingleCharMatcherVisitor;
 
 import java.util.Collection;
 import java.util.List;
 
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 import static org.parboiled.trees.GraphUtils.printTree;
 
@@ -228,7 +227,7 @@ public final class ParseTreeUtils {
         checkArgNotNull(predicate, "predicate");
         if (parents != null && !parents.isEmpty()) {
             int parentsSize = parents.size();
-            for (int i = parentsSize-1; i >= 0; i--) {
+            for (int i = parentsSize - 1; i >= 0; i--) {
                 Node<V> found = findLastNode(parents.get(i), predicate);
                 if (found != null) return found;
             }
@@ -261,26 +260,37 @@ public final class ParseTreeUtils {
      * @return null if node is null otherwise a string with the matched input text (which can be empty)
      */
     public static String getNodeText(Node<?> node, InputBuffer inputBuffer) {
+        checkArgNotNull(node, "node");
         checkArgNotNull(inputBuffer, "inputBuffer");
-        if (node == null) return null;
-        if (!node.hasError()) {
-            return getRawNodeText(node, inputBuffer);
-        }
-        // if the node has a parse error we cannot simpy cut a string out of the underlying input buffer, since we
-        // would also include illegal characters, so we need to build it bottom up
-        if (node.getMatcher().accept(new IsSingleCharMatcherVisitor())) {
-            return String.valueOf(inputBuffer.charAt(node.getStartIndex()));
-        } else {
+        if (node.hasError()) {
+            // if the node has a parse error we cannot simply cut a string out of the underlying input buffer, since we
+            // would also include illegal characters, so we need to build it constructively
             StringBuilder sb = new StringBuilder();
-            int index = node.getStartIndex();
-            for (Node<?> child : node.getChildren()) {
-                addInputLocations(inputBuffer, sb, index, child.getStartIndex());
-                sb.append(getNodeText(child, inputBuffer));
-                index = child.getEndIndex();
+            for (int i = node.getStartIndex(); i < node.getEndIndex(); i++) {
+                char c = inputBuffer.charAt(i);
+                switch (c) {
+                    case Chars.DEL_ERROR:
+                        i++;
+                        break;
+                    case Chars.INS_ERROR:
+                    case Chars.EOI:
+                        break;
+                    case Chars.RESYNC_START:
+                        i++;
+                        while (inputBuffer.charAt(i) != Chars.RESYNC_END) i++;
+                        break;
+                    case Chars.RESYNC_END:
+                    case Chars.RESYNC_EOI:
+                    case Chars.RESYNC:
+                        // we should only see proper RESYNC_START / RESYNC_END blocks
+                        throw new IllegalStateException();
+                    default:
+                        sb.append(c);
+                }
             }
-            addInputLocations(inputBuffer, sb, index, node.getEndIndex());
             return sb.toString();
-        }
+        }        
+        return inputBuffer.extract(node.getStartIndex(), node.getEndIndex());
     }
 
     /**
@@ -305,35 +315,6 @@ public final class ParseTreeUtils {
             }
         }
         return collection;
-    }
-
-    private static void addInputLocations(InputBuffer inputBuffer, StringBuilder sb, int start, int end) {
-        for (int i = start; i < end; i++) {
-            char c = inputBuffer.charAt(i);
-            switch (c) {
-                case Chars.DEL_ERROR:
-                    i++;
-                    break;
-                case Chars.INS_ERROR:
-                    break;
-                case Chars.RESYNC:
-                    return;
-                default:
-                    sb.append(c);
-            }
-        }
-    }
-
-    /**
-     * Returns the raw input text matched by the given node, without error correction.
-     *
-     * @param node        the node
-     * @param inputBuffer the underlying inputBuffer
-     * @return null if node is null otherwise a string with the matched input text (which can be empty)
-     */
-    public static String getRawNodeText(Node<?> node, InputBuffer inputBuffer) {
-        checkArgNotNull(inputBuffer, "inputBuffer");
-        return node == null ? null : inputBuffer.extract(node.getStartIndex(), node.getEndIndex());
     }
 
     /**

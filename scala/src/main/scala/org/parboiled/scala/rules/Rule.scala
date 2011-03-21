@@ -4,9 +4,9 @@ import org.parboiled.matchers._
 import org.parboiled.Action
 import org.parboiled.Context
 import java.lang.String
-import org.parboiled.support.ValueStack
 import org.parboiled.scala._
 import Rule._
+import org.parboiled.support.{IndexRange, ValueStack}
 
 /**
  * The base class of all scala parser rules.
@@ -17,7 +17,7 @@ abstract class Rule {
   /**
    * Creates a "NOT" syntactic predicate according to the PEG formalism.
    */
-  def unary_!(): Rule0 = new TestNotMatcher(matcher)
+  def unary_! : Rule0 = new TestNotMatcher(matcher)
 
   def ~(other: Rule0): this.type = withMatcher(append(other))
 
@@ -38,13 +38,13 @@ abstract class Rule {
 
   def label(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
 
-  def suppressNode(): this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
+  def suppressNode: this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
 
-  def suppressSubnodes(): this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
+  def suppressSubnodes: this.type = withMatcher(matcher.suppressSubnodes().asInstanceOf[Matcher])
 
-  def skipNode(): this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
+  def skipNode: this.type = withMatcher(matcher.skipNode().asInstanceOf[Matcher])
 
-  def memoMismatches(): this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
+  def memoMismatches: this.type = withMatcher(matcher.memoMismatches().asInstanceOf[Matcher])
 
   override def toString = getClass.getSimpleName + ": " + matcher.toString
 
@@ -78,8 +78,9 @@ abstract class Rule {
 }
 
 object Rule {
-  private[parboiled] val GetMatchedChar: (Context[Any] => Char) = _.getFirstMatchChar
   private[parboiled] val GetMatch: (Context[Any] => String) = _.getMatch
+  private[parboiled] val GetMatchedChar: (Context[Any] => Char) = _.getFirstMatchChar
+  private[parboiled] val GetMatchRange: (Context[Any] => IndexRange) = _.getMatchRange
   private[parboiled] val Pop = (vs:ValueStack[Any], _:Int) => vs.pop
   private[parboiled] val Peek: ((ValueStack[Any], Int) => Any) = _.peek(_)
 

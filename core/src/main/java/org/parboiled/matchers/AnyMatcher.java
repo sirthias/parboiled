@@ -31,8 +31,16 @@ public class AnyMatcher extends AbstractMatcher {
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
-        if (context.getCurrentChar() == Chars.EOI) return false;
+        switch (context.getCurrentChar()) {
+            case Chars.DEL_ERROR:
+            case Chars.INS_ERROR:
+            case Chars.RESYNC:
+            case Chars.RESYNC_START:
+            case Chars.RESYNC_END:
+            case Chars.RESYNC_EOI:
+            case Chars.EOI:
+                return false;
+        }
         context.advanceIndex(1);
         context.createNode();
         return true;

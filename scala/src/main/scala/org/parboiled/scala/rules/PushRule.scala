@@ -3,6 +3,7 @@ package org.parboiled.scala.rules
 import org.parboiled.matchers._
 import java.lang.String
 import Rule._
+import org.parboiled.support.IndexRange
 
 /**
  * The base class of all rules pushing a certain number of elements onto the parser value stack.
@@ -26,6 +27,7 @@ class Rule1[+A](val matcher: Matcher) extends PushRule {
   def ~[B, C, D, E, F](other: Rule5[B, C, D, E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[B, C, D, E, F, G](other: Rule6[B, C, D, E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule2[A, R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule2[A, R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule2[A, R](append(push(exec(GetMatch, f))))
   def ~~>[R](f: A => R) = new Rule1[R](append(push(exec(stack1(Pop), f))))
   def ~~>[Z, R](f: (Z, A) => R) = new ReductionRule1[Z, R](append(push(exec(stack2(Pop), f))))
@@ -66,6 +68,7 @@ class Rule2[+A, +B](val matcher: Matcher) extends PushRule {
   def ~[C, D, E, F](other: Rule4[C, D, E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[C, D, E, F, G](other: Rule5[C, D, E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule3[A, B, R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule3[A, B, R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule3[A, B, R](append(push(exec(GetMatch, f))))
   def ~~>[R](f: B => R) = new Rule2[A, R](append(push(exec(stack1(Pop), f))))
   def ~~>[R](f: (A, B) => R) = new Rule1[R](append(push(exec(stack2(Pop), f))))
@@ -107,6 +110,7 @@ class Rule3[+A, +B, +C](val matcher: Matcher) extends PushRule {
   def ~[D, E, F](other: Rule3[D, E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[D, E, F, G](other: Rule4[D, E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule4[A, B, C, R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule4[A, B, C, R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule4[A, B, C, R](append(push(exec(GetMatch, f))))
   def ~~>[R](f: C => R) = new Rule3[A, B, R](append(push(exec(stack1(Pop), f))))
   def ~~>[R](f: (B, C) => R) = new Rule2[A, R](append(push(exec(stack2(Pop), f))))
@@ -153,6 +157,7 @@ class Rule4[+A, +B, +C, +D](val matcher: Matcher) extends PushRule {
   def ~[E, F](other: Rule2[E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[E, F, G](other: Rule3[E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule5[A, B, C, D, R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule5[A, B, C, D, R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule5[A, B, C, D, R](append(push(exec(GetMatch, f))))
   def ~~>[R](f: D => R) = new Rule4[A, B, C, R](append(push(exec(stack1(Pop), f))))
   def ~~>[R](f: (C, D) => R) = new Rule3[A, B, R](append(push(exec(stack2(Pop), f))))
@@ -204,6 +209,7 @@ class Rule5[+A, +B, +C, +D, +E](val matcher: Matcher) extends PushRule {
   def ~[F](other: Rule1[F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[F, G](other: Rule2[F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule6[A, B, C, D, E, R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule6[A, B, C, D, E, R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule6[A, B, C, D, E, R](append(push(exec(GetMatch, f))))
   def ~~>[R](f: E => R) = new Rule5[A, B, C, D, R](append(push(exec(stack1(Pop), f))))
   def ~~>[R](f: (D, E) => R) = new Rule4[A, B, C, R](append(push(exec(stack2(Pop), f))))
@@ -257,6 +263,7 @@ class Rule6[+A, +B, +C, +D, +E, +F](val matcher: Matcher) extends PushRule {
   def ~[FF >: F, R](other: ReductionRule1[FF, R]) = new Rule6[A, B, C, D, E, R](append(other))
   def ~[G](other: Rule1[G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule7[A, B, C, D, E, F, R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule7[A, B, C, D, E, F, R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule7[A, B, C, D, E, F, R](append(push(exec(GetMatch, f))))
   def ~~>[R](f: E => R) = new Rule6[A, B, C, D, E, R](append(push(exec(stack1(Pop), f))))
   def ~~>[R](f: (E, F) => R) = new Rule5[A, B, C, D, R](append(push(exec(stack2(Pop), f))))

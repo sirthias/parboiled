@@ -37,7 +37,7 @@ public class ReportingParseRunnerTest {
     public void testErrorLocation() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Line();
-        ParsingResult result = ReportingParseRunner.run(rule, "Text;;Something");
+        ParsingResult result = new ReportingParseRunner(rule).run("Text;;Something");
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
                 "Invalid input ';' (line 1, pos 6):\n" +

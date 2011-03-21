@@ -19,11 +19,12 @@ package org.parboiled.parserunners;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.matchervisitors.DoWithMatcherVisitor;
-import org.parboiled.support.ValueStack;
+import org.parboiled.support.ParsingResult;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -39,15 +40,16 @@ import static org.parboiled.common.Utils.humanize;
  *
  * @param <V>
  */
-public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
-
+public class ProfilingParseRunner<V> extends AbstractParseRunner<V> implements MatchHandler {
     private final Map<Rule, RuleReport> ruleReports = new HashMap<Rule, RuleReport>();
+    private int runMatches;
     private int totalRuns;
     private int totalMatches;
     private int totalMismatches;
     private int totalRematches;
     private int totalRemismatches;
     private long totalNanoTime;
+    private long timeCorrection;
 
     private final DoWithMatcherVisitor.Action updateStatsAction = new DoWithMatcherVisitor.Action() {
         public void process(Matcher matcher) {
@@ -80,23 +82,34 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
      * @param rule the parser rule
      */
     public ProfilingParseRunner(Rule rule) {
-        super(checkArgNotNull(rule, "rule"));
+        super(rule);
     }
 
-    /**
-     * Creates a new ProfilingParseRunner instance for the given rule using the given ValueStack instance.
-     *
-     * @param rule       the parser rule
-     * @param valueStack the value stack
-     */
-    public ProfilingParseRunner(Rule rule, ValueStack<V> valueStack) {
-        super(checkArgNotNull(rule, "rule"), checkArgNotNull(valueStack, "valueStack"));
-    }
-
-    @Override
-    protected boolean runRootContext() {
+    public ParsingResult<V> run(InputBuffer inputBuffer) {
+        checkArgNotNull(inputBuffer, "inputBuffer");
+        resetValueStack();
         totalRuns++;
-        return runRootContext(new Handler(), true);
+
+        MatcherContext<V> rootContext = createRootContext(inputBuffer, this, true);
+        rootContext.getMatcher().accept(new DoWithMatcherVisitor(new DoWithMatcherVisitor.Action() {
+            public void process(Matcher matcher) {
+                RuleStats ruleStats = (RuleStats) matcher.getTag();
+                if (ruleStats == null) {
+                    ruleStats = new RuleStats();
+                    matcher.setTag(ruleStats);
+                } else {
+                    ruleStats.clear();
+                }
+            }
+        }));
+
+        runMatches = 0;
+        long timeStamp = System.nanoTime() - timeCorrection;
+        boolean matched = rootContext.runMatcher();
+        totalNanoTime += System.nanoTime() - timeCorrection - timeStamp;
+
+        getRootMatcher().accept(new DoWithMatcherVisitor(updateStatsAction));
+        return createParsingResult(matched, rootContext);
     }
 
     public Report getReport() {
@@ -104,84 +117,57 @@ public class ProfilingParseRunner<V> extends BasicParseRunner<V> {
                 totalNanoTime, new ArrayList<RuleReport>(ruleReports.values()));
     }
 
-    public class Handler implements MatchHandler {
-        private long timeCorrection;
-        private int totalMatches;
+    public boolean match(MatcherContext<?> context) {
+        long timeStamp = System.nanoTime();
+        Matcher matcher = context.getMatcher();
+        RuleStats ruleStats = ((RuleStats) matcher.getTag());
+        int pos = context.getCurrentIndex();
 
-        public boolean matchRoot(MatcherContext<?> rootContext) {
-            rootContext.getMatcher().accept(new DoWithMatcherVisitor(new DoWithMatcherVisitor.Action() {
-                public void process(Matcher matcher) {
-                    RuleStats ruleStats = (RuleStats) matcher.getTag();
-                    if (ruleStats == null) {
-                        ruleStats = new RuleStats();
-                        matcher.setTag(ruleStats);
-                    } else {
-                        ruleStats.clear();
-                    }
-                }
-            }));
+        int subMatches = -++runMatches;
+        int matchSubs = ruleStats.matchSubs;
+        int rematchSubs = ruleStats.rematchSubs;
+        int mismatchSubs = ruleStats.mismatchSubs;
+        int remismatchSubs = ruleStats.remismatchSubs;
 
-            totalMatches = 0;
-            long timeStamp = System.nanoTime() - timeCorrection;
-            boolean matched = rootContext.runMatcher();
-            totalNanoTime += System.nanoTime() - timeCorrection - timeStamp;
+        long time = System.nanoTime();
+        timeCorrection += time - timeStamp;
+        timeStamp = time - timeCorrection;
 
-            rootMatcher.accept(new DoWithMatcherVisitor(updateStatsAction));
-            return matched;
-        }
+        boolean matched = matcher.match(context);
 
-        public boolean match(MatcherContext<?> context) {
-            long timeStamp = System.nanoTime();
-            Matcher matcher = context.getMatcher();
-            RuleStats ruleStats = ((RuleStats) matcher.getTag());
-            int pos = context.getCurrentIndex();
+        time = System.nanoTime();
+        ruleStats.nanoTime += time - timeCorrection - timeStamp;
+        timeStamp = time;
 
-            int subMatches = -++totalMatches;
-            int matchSubs = ruleStats.matchSubs;
-            int rematchSubs = ruleStats.rematchSubs;
-            int mismatchSubs = ruleStats.mismatchSubs;
-            int remismatchSubs = ruleStats.remismatchSubs;
+        subMatches += runMatches;
 
-            long time = System.nanoTime();
-            timeCorrection += time - timeStamp;
-            timeStamp = time - timeCorrection;
-
-            boolean matched = matcher.match(context);
-
-            time = System.nanoTime();
-            ruleStats.nanoTime += time - timeCorrection - timeStamp;
-            timeStamp = time;
-
-            subMatches += totalMatches;
-
-            Integer posMatches = ruleStats.positionMatches.get(pos);
-            if (matched) {
-                ruleStats.matches++;
-                ruleStats.matchSubs = matchSubs + subMatches;
-                if (posMatches == null) {
-                    posMatches = 1;
-                } else if (posMatches > 0) {
-                    posMatches++;
-                    ruleStats.rematchSubs = rematchSubs + subMatches;
-                } else if (posMatches < 0) {
-                    posMatches = 0;
-                }
-            } else {
-                ruleStats.mismatches++;
-                ruleStats.mismatchSubs = mismatchSubs + subMatches;
-                if (posMatches == null) {
-                    posMatches = -1;
-                } else if (posMatches < 0) {
-                    posMatches--;
-                    ruleStats.remismatchSubs = remismatchSubs + subMatches;
-                } else if (posMatches > 0) {
-                    posMatches = 0;
-                }
+        Integer posMatches = ruleStats.positionMatches.get(pos);
+        if (matched) {
+            ruleStats.matches++;
+            ruleStats.matchSubs = matchSubs + subMatches;
+            if (posMatches == null) {
+                posMatches = 1;
+            } else if (posMatches > 0) {
+                posMatches++;
+                ruleStats.rematchSubs = rematchSubs + subMatches;
+            } else if (posMatches < 0) {
+                posMatches = 0;
             }
-            ruleStats.positionMatches.put(pos, posMatches);
-            timeCorrection += System.nanoTime() - timeStamp;
-            return matched;
+        } else {
+            ruleStats.mismatches++;
+            ruleStats.mismatchSubs = mismatchSubs + subMatches;
+            if (posMatches == null) {
+                posMatches = -1;
+            } else if (posMatches < 0) {
+                posMatches--;
+                ruleStats.remismatchSubs = remismatchSubs + subMatches;
+            } else if (posMatches > 0) {
+                posMatches = 0;
+            }
         }
+        ruleStats.positionMatches.put(pos, posMatches);
+        timeCorrection += System.nanoTime() - timeStamp;
+        return matched;
     }
 
     private static class RuleStats {

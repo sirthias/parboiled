@@ -31,24 +31,24 @@ class JsonParser1 extends Parser {
   def Json = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ EOI }
 
   def JsonObject: Rule1[ObjectNode] = rule {
-    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> (ObjectNode(_))
+    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ObjectNode
   }
 
   def Pair = rule {
-    JsonString ~ ": " ~ Value ~~> ((key, value) => MemberNode(key.text, value))
+    JsonString ~~> (_.text) ~ ": " ~ Value ~~> MemberNode
   }
 
   def Value: Rule1[AstNode] = rule {
     JsonString | JsonNumber | JsonObject | JsonArray | JsonTrue | JsonFalse | JsonNull
   }
 
-  def JsonString = rule { "\"" ~ zeroOrMore(Character) ~> (StringNode(_)) ~ "\" " }
+  def JsonString = rule { "\"" ~ zeroOrMore(Character) ~> StringNode ~ "\" " }
 
   def JsonNumber = rule {
     group(Integer ~ optional(Frac ~ optional(Exp))) ~> (s => NumberNode(BigDecimal(s))) ~ WhiteSpace
   }
 
-  def JsonArray = rule { "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> (ArrayNode(_)) }
+  def JsonArray = rule { "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> ArrayNode }
 
   def Character = rule { EscapedChar | NormalChar }
 
@@ -93,7 +93,7 @@ class JsonParser1 extends Parser {
    */
   def parseJson(json: String): AstNode = {
     val parsingResult = ReportingParseRunner(Json).run(json)
-    parsingResult.resultOption match {
+    parsingResult.result match {
       case Some(astRoot) => astRoot
       case None => throw new ParsingException("Invalid JSON source:\n" +
               ErrorUtils.printParseErrors(parsingResult)) 

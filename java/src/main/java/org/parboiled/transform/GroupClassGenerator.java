@@ -72,7 +72,8 @@ abstract class GroupClassGenerator implements RuleMethodProcessor, Types {
 
     private void createGroupClassType(InstructionGroup group) {
         String s = classNode.name;
-        String groupClassInternalName = s.substring(0, classNode.name.lastIndexOf('/')) + '/' + group.getName();
+        int lastSlash = classNode.name.lastIndexOf('/');
+        String groupClassInternalName = (lastSlash >= 0 ? s.substring(0, lastSlash) : s)+ '/' + group.getName();
         group.setGroupClassType(Type.getObjectType(groupClassInternalName));
     }
 

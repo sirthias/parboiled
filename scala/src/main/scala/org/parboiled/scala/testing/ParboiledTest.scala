@@ -55,18 +55,11 @@ trait ParboiledTest {
 
   def matched: Boolean = parsingResult.matched
 
-  def result: Result = parsingResult.result
-
-  def resultOption: Option[Result] = parsingResult.resultOption
+  def result: Option[Result] = parsingResult.result
 
   def parseErrors: List[ParseError] = parsingResult.parseErrors
 
   def parseTreeRoot: Node[Result] = parsingResult.parseTreeRoot
-
-  def traceLog: String = pRunner.value match {
-    case t: TracingParseRunner[_] => t.traceLog
-    case _ => ""
-  }
 
   def errors: String = ErrorUtils.printParseErrors(parsingResult)
 

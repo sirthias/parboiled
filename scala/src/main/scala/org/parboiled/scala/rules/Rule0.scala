@@ -3,6 +3,7 @@ package org.parboiled.scala.rules
 import org.parboiled.matchers._
 import java.lang.String
 import Rule._
+import org.parboiled.support.IndexRange
 
 /**
  * A rule which does not affect the parsers value stack.
@@ -22,15 +23,16 @@ class Rule0(val matcher: Matcher) extends Rule {
   def ~[A, B, C, D, E, F](other: Rule6[A, B, C, D, E, F]) = new Rule6[A, B, C, D, E, F](append(other))
   def ~[A, B, C, D, E, F, G](other: Rule7[A, B, C, D, E, F, G]) = new Rule7[A, B, C, D, E, F, G](append(other))
   def ~:>[R](f: Char => R) = new Rule1[R](append(push(exec(GetMatchedChar, f))))
+  def ~>>[R](f: IndexRange => R) = new Rule1[R](append(push(exec(GetMatchRange, f))))
   def ~>[R](f: String => R) = new Rule1[R](append(push(exec(GetMatch, f))))
   def ~~>[Z, R](f: Z => R) = new ReductionRule1[Z, R](append(push(exec(stack1(Pop), f))))
-  def ~~>[Y, Z, R](f: (Y, Z) => R) = new ReductionRule2[Y, Z, R](append(push(exec(stack1(Pop), f))))
+  def ~~>[Y, Z, R](f: (Y, Z) => R) = new ReductionRule2[Y, Z, R](append(push(exec(stack2(Pop), f))))
   def ~~>[X, Y, Z, R](f: (X, Y, Z) => R) = new ReductionRule3[X, Y, Z, R](append(push(exec(stack3(Pop), f))))
   def ~~?[Z](f: Z => Boolean) = new PopRule1(append(exec(stack1(Pop), f)))
   def ~~?[Y, Z](f: (Y, Z) => Boolean) = new PopRule2[Y, Z](append(exec(stack2(Pop), f)))
   def ~~?[X, Y, Z](f: (X, Y, Z) => Boolean) = new PopRule3[X, Y, Z](append(exec(stack3(Pop), f)))
   def ~~%[Z](f: Z => Unit) = new PopRule1[Z](append(ok(exec(stack1(Pop), f))))
-  def ~~%[Y, Z](f: (Y, Z) => Unit) = new PopRule2[Y, Z](append(ok(exec(stack1(Pop), f))))
+  def ~~%[Y, Z](f: (Y, Z) => Unit) = new PopRule2[Y, Z](append(ok(exec(stack2(Pop), f))))
   def ~~%[X, Y, Z](f: (X, Y, Z) => Unit) = new PopRule3[X, Y, Z](append(ok(exec(stack3(Pop), f))))
   def |(other: Rule0) = new Rule0(appendChoice(other))
   def -(upperBound: String): Rule0 = throw new IllegalArgumentException("char range operator '-' only allowed on single character strings")

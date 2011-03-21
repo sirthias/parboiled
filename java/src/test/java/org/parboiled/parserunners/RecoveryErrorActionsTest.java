@@ -19,19 +19,13 @@ package org.parboiled.parserunners;
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
-import org.parboiled.support.ParsingResult;
+import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+public class RecoveryErrorActionsTest extends TestNgParboiledTest<Object> {
 
-import static org.parboiled.errors.ErrorUtils.printParseErrors;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-
-public class RecoveryErrorActionsTest {
-
+    @BuildParseTree
     public static class Parser extends BaseParser<Object> {
 
         Rule Clause() {
@@ -62,28 +56,64 @@ public class RecoveryErrorActionsTest {
     @Test
     public void testRecoveryErrorActions1() {
         Parser parser = Parboiled.createParser(Parser.class);
-
-        ParsingResult<?> result = RecoveringParseRunner.run(parser.Clause(), "abcd");
-        assertFalse(result.hasErrors());
-        assertEquals(toList(result.valueStack), Arrays.asList(2.0, 1, "b", "a"));
+        testWithRecovery(parser.Clause(), "abcd")
+                .hasNoErrors()
+                .hasResult("a", "b", 1, 2.0);
     }
 
     @Test
     public void testRecoveryErrorActions2() {
         Parser parser = Parboiled.createParser(Parser.class);
-
-        ParsingResult<?> result = RecoveringParseRunner.run(parser.Clause(), "axx");
-        assertEquals(printParseErrors(result), "" +
-                "Invalid input 'x...', expected B (line 1, pos 2):\n" +
-                "axx\n" +
-                " ^^\n");
-        assertEquals(toList(result.valueStack), Arrays.asList(2.0, 1, "", "a"));
+        testWithRecovery(parser.Clause(), "axcd")
+                .hasErrors("" +
+                        "Invalid input 'x', expected B (line 1, pos 2):\n" +
+                        "axcd\n" +
+                        " ^\n")
+                .hasResult("a", "b", 1, 2.0);
+    }
+    
+    @Test
+    public void testRecoveryErrorActions3() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "axx")
+                .hasErrors("" +
+                        "Invalid input 'x...', expected B (line 1, pos 2):\n" +
+                        "axx\n" +
+                        " ^^\n")
+                .hasResult("a", "", 1, 2.0);
+    }
+    
+    @Test
+    public void testRecoveryErrorActions4() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "abx")
+                .hasErrors("" +
+                        "Invalid input 'x', expected C (line 1, pos 3):\n" +
+                        "abx\n" +
+                        "  ^\n")
+                .hasResult("a", "b", 1, 2.0);
+    }
+    
+    @Test
+    public void testRecoveryErrorActions5() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "abxyz")
+                .hasErrors("" +
+                        "Invalid input 'x...', expected C (line 1, pos 3):\n" +
+                        "abxyz\n" +
+                        "  ^^^\n")
+                .hasResult("a", "b", 1, 2.0);
     }
 
-    private <T> List<T> toList(Iterable<T> iterable) {
-        List<T> list = new ArrayList<T>();
-        for (T t : iterable) list.add(t);
-        return list;
+    @Test
+    public void testRecoveryOnEmptyBuffer() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        testWithRecovery(parser.Clause(), "")
+                .hasErrors("" +
+                        "Invalid input 'EOI', expected Clause (line 1, pos 1):\n" +
+                        "\n" +
+                        "^\n")
+                .hasParseTree("[Clause]E\n")
+                .hasResult("", "", 1, 2.0);
     }
-
 }

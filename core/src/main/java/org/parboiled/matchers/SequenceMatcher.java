@@ -33,7 +33,6 @@ public class SequenceMatcher extends CustomDefaultLabelMatcher<SequenceMatcher> 
     }
 
     public boolean match(MatcherContext context) {
-        checkArgNotNull(context, "context");
         Object valueStackSnapshot = context.getValueStack().takeSnapshot();
 
         List<Matcher> children = getChildren();

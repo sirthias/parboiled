@@ -73,7 +73,7 @@ public class JavaTest {
                 "    VarFramingMatchers: 0\n" +
                 "MemoMismatchesMatchers: 7\n");
 
-        ParsingResult<Object> parsingResult = RecoveringParseRunner.run(compilationUnit, testSource);
+        ParsingResult<Object> parsingResult = new RecoveringParseRunner<Object>(compilationUnit).run(testSource);
         if (parsingResult.hasErrors()) {
             fail("\n--- ParseErrors ---\n" +
                     StringUtils.join(parsingResult.parseErrors, "---\n") +

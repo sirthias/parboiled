@@ -1,0 +1,25 @@
+
+# This is an initial comment
+# on two lines
+
+Level 1
+  # what about comments opening an indentation?
+    Level 2      # another coment
+
+    # and yet another one
+        Level 3
+        more level 3
+
+    back on 2
+        3 again # with comment
+
+here we are at one again
+        and go deep right away
+   # comments don't matter
+     # they can be anywhere
+        still on 2
+
+                #start another one on 3
+            three
+
+   # indented comment at the end?

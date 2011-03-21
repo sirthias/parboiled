@@ -91,18 +91,18 @@ package object scala {
   /**
    * A parser action removing the top element from the value stack.
    */
-  lazy val POP1: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label(nameAction("Pop1"))
+  lazy val DROP: PopRule1[Any] = new ActionMatcher(action(ok(stack1[Any](Pop)))).label(nameAction("Drop"))
 
   /**
    * A parser action removing the top two elements from the value stack.
    */
-  lazy val POP2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label(nameAction("Pop2"))
+  lazy val DROP2: PopRule2[Any, Any] = new ActionMatcher(action(ok(stack2[Any, Any](Pop)))).label(nameAction("Drop2"))
 
   /**
    * A parser action removing the top three elements from the value stack.
    */
-  lazy val POP3: PopRule3[Any, Any, Any] =
-    new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label(nameAction("Pop3"))
+  lazy val DROP3: PopRule3[Any, Any, Any] =
+    new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label(nameAction("Drop3"))
 
   type RuleMethod = StackTraceElement
 

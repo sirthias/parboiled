@@ -16,17 +16,30 @@
 
 package org.parboiled.support;
 
+import org.parboiled.common.ConsoleSink;
+import org.parboiled.common.Sink;
 import org.parboiled.common.StringUtils;
 
 import java.util.LinkedList;
 
 public class DebuggingValueStack<V> extends DefaultValueStack<V> {
-
+    public final Sink<String> log;
+    
     public DebuggingValueStack() {
+        this(new ConsoleSink());
+    }
+    
+    public DebuggingValueStack(Sink<String> log) {
+        this.log = log;
     }
 
     public DebuggingValueStack(Iterable<V> values) {
+        this(values, new ConsoleSink());
+    }
+    
+    public DebuggingValueStack(Iterable<V> values, Sink<String> log) {
         super(values);
+        this.log = log;
     }
 
     @Override
@@ -100,11 +113,12 @@ public class DebuggingValueStack<V> extends DefaultValueStack<V> {
     }
 
     protected void log(String action) {
-        System.out.print(action);
-        System.out.print(StringUtils.repeat(' ', 15 - action.length()));
-        System.out.print(": ");
+        log.receive(action);
+        log.receive(StringUtils.repeat(' ', 15 - action.length()));
+        log.receive(": ");
         LinkedList<V> elements = new LinkedList<V>();
         for (V v : this) elements.addFirst(v);
-        System.out.println(StringUtils.join(elements, ", "));
+        log.receive(StringUtils.join(elements, ", "));
+        log.receive("\n");
     }
 }

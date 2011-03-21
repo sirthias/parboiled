@@ -34,12 +34,19 @@ public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInput
     public String format(InvalidInputError error) {
         if (error == null) return "";
 
-        String errorMessage = String.format("Invalid input '%s%s'", StringUtils.escape(String.valueOf(
-                error.getInputBuffer().charAt(error.getStartIndex()))),
-                error.getEndIndex() - error.getStartIndex() > 1 ? "..." : ""
-        );
+        int len = error.getEndIndex() - error.getStartIndex();
+        StringBuilder sb = new StringBuilder("Invalid input");
+        if (len > 0) {
+            sb.append(" '")
+                    .append(StringUtils.escape(String.valueOf(error.getInputBuffer().charAt(error.getStartIndex()))));
+            if (len > 1) sb.append("...");
+            sb.append('\'');
+        }
         String expectedString = getExpectedString(error);
-        return StringUtils.isEmpty(expectedString) ? errorMessage : errorMessage + ", expected " + expectedString;
+        if (StringUtils.isNotEmpty(expectedString)) {
+            sb.append(", expected ").append(expectedString);
+        }
+        return sb.toString();
     }
 
     public String getExpectedString(InvalidInputError error) {

@@ -16,39 +16,40 @@
 
 package org.parboiled.parserunners;
 
-import static org.parboiled.common.Preconditions.*;
 import org.parboiled.Context;
 import org.parboiled.MatchHandler;
 import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.buffers.InputBuffer;
-import org.parboiled.common.Predicate;
-import org.parboiled.common.Predicates;
-import org.parboiled.common.Tuple2;
+import org.parboiled.common.*;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.MatcherPath;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.support.Position;
+
+import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * A {@link org.parboiled.parserunners.ParseRunner} implementation used for debugging purposes.
  * It exhibits the same behavior as the {@link ReportingParseRunner} but collects debugging information as to which
  * rules did match and which didn't.
  */
-public class TracingParseRunner<V> extends BasicParseRunner<V> {
-
-    private final StringBuilder log = new StringBuilder();
-    private final Predicate<Tuple2<Context<?>, Boolean>> filter;
+public class TracingParseRunner<V> extends ReportingParseRunner<V> implements MatchHandler {
+    private Predicate<Tuple2<Context<?>, Boolean>> filter;
+    private Sink<String> log;
+    private MatcherPath lastPath;
 
     /**
-     * Creates a new TracingParseRunner instance for the given rule.
+     * Creates a new TracingParseRunner instance without filter and a console log for the given rule.
      *
      * @param rule the parser rule
      */
     public TracingParseRunner(Rule rule) {
-        this(checkArgNotNull(rule, "rule"), Predicates.alwaysTrue());
+        super(rule);
     }
 
     /**
-     * Creates a new TracingParseRunner instance for the given rule.
+     * Attaches the given filter to this TracingParseRunner instance.
      * The given filter is used to select the matchers to print tracing statements for.
      * NOTE: The given filter must be of type Predicate<Tuple2<Context<?>, Boolean>>. The reason this type is not
      * directly specified in the constructors signature is that this would make predicate expressions using the
@@ -56,99 +57,71 @@ public class TracingParseRunner<V> extends BasicParseRunner<V> {
      * much more cumbersome to write (due to Java limited type parameters inference logic you would have to explicitly
      * state the type parameters in many places).
      *
-     * @param rule   the parser rule
      * @param filter the matcher filter selecting the matchers to print tracing statements for. Must be of type
      *               Predicate<Tuple2<Context<?>, Boolean>>.
+     * @return this instance
      */
-    @SuppressWarnings({"unchecked"})
-    public TracingParseRunner(Rule rule, Predicate<?> filter) {
-        super(checkArgNotNull(rule, "rule"));
+    @SuppressWarnings( {"unchecked"})
+    public TracingParseRunner<V> withFilter(Predicate<?> filter) {
         this.filter = (Predicate<Tuple2<Context<?>, Boolean>>) checkArgNotNull(filter, "filter");
+        return this;
+    }
+
+    public Predicate<Tuple2<Context<?>, Boolean>> getFilter() {
+        if (filter == null) {
+            withFilter(Predicates.alwaysTrue());
+        }
+        return filter;
     }
 
     /**
-     * Retrieves a string containing all generated log messages.
+     * Attaches the given log to this TracingParseRunner instance.
      *
-     * @return the log messages
+     * @param log the log to use
+     * @return this instance
      */
-    public String getLog() {
-        return log.toString();
+    public TracingParseRunner<V> withLog(Sink<String> log) {
+        this.log = log;
+        return this;
     }
 
-    @SuppressWarnings({"SimplifiableIfStatement"})
+    public Sink<String> getLog() {
+        if (filter == null) {
+            withLog(new ConsoleSink());
+        }
+        return log;
+    }
+
     @Override
-    protected boolean runRootContext() {
-        // run a basic match
-        if (runRootContext(new Handler(log, filter), true)) {
-            return true;
-        }
+    protected ParsingResult<V> runBasicMatch(InputBuffer inputBuffer) {
+        getLog().receive("Starting new parsing run\n");
+        lastPath = null;
 
-        // ok, we have a parse error, so run again without fast string matching and with our recording handler
-        RecordingParseRunner.Handler recordingHandler = new RecordingParseRunner.Handler();
-        if (runRootContext(recordingHandler, false)) {
-            throw new IllegalStateException(); // we failed before so we should really be failing again
-        }
-
-        // finally perform a third, reporting run (now that we know the error location)
-        ReportingParseRunner.Handler reportingHandler = new ReportingParseRunner.Handler(
-                recordingHandler.getErrorIndex());
-        if (runRootContext(reportingHandler, false)) {
-            throw new IllegalStateException(); // we failed before so we should really be failing again
-        }
-
-        return false;
+        MatcherContext<V> rootContext = createRootContext(inputBuffer, this, true);
+        boolean matched = rootContext.runMatcher();
+        return createParsingResult(matched, rootContext);
     }
 
-    /**
-     * A {@link org.parboiled.MatchHandler} implementation that reports the {@link org.parboiled.errors.InvalidInputError} at a given error index.
-     * For the actual matching this handler relies on another, inner {@link org.parboiled.MatchHandler} instance it delegates to.
-     */
-    public static class Handler implements MatchHandler {
-        private final StringBuilder log;
-        private final Predicate<Tuple2<Context<?>, Boolean>> filter;
-        private MatcherPath lastPath;
-
-        public Handler(StringBuilder log, Predicate<Tuple2<Context<?>, Boolean>> filter) {
-            this.log = log;
-            this.filter = filter;
+    @SuppressWarnings( {"unchecked"})
+    public boolean match(MatcherContext<?> context) {
+        Matcher matcher = context.getMatcher();
+        boolean matched = matcher.match(context);
+        if (getFilter().apply(new Tuple2<Context<?>, Boolean>(context, matched))) {
+            print(context, matched);
         }
-
-        public boolean matchRoot(MatcherContext<?> rootContext) {
-            log.setLength(0);
-            lastPath = null;
-            return rootContext.runMatcher();
-        }
-
-        @SuppressWarnings({"unchecked"})
-        public boolean match(MatcherContext<?> context) {
-            Matcher matcher = context.getMatcher();
-            boolean matched = matcher.match(context);
-            if (filter.apply(new Tuple2<Context<?>, Boolean>(context, matched))) {
-                print(context, matched);
-            }
-            return matched;
-        }
-
-        private void print(MatcherContext<?> context, boolean matched) {
-            InputBuffer.Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
-            MatcherPath path = context.getPath();
-            MatcherPath prefix = lastPath != null ? path.commonPrefix(lastPath) : null;
-            if (prefix != null && prefix.length() > 1) log.append("..(").append(prefix.length() - 1).append(")../");
-            log.append(path.toString(prefix != null ? prefix.parent : null));
-            String line = context.getInputBuffer().extractLine(pos.line);
-            log.append(", ")
-                    .append(matched ? "matched" : "failed")
-                    .append(", cursor at ")
-                    .append(pos.line)
-                    .append(':')
-                    .append(pos.column)
-                    .append(" after \"")
-                    .append(line.substring(0, Math.min(line.length(), pos.column - 1)))
-                    .append("\"\n");
-            lastPath = path;
-        }
-
+        return matched;
     }
 
+    private void print(MatcherContext<?> context, boolean matched) {
+        Position pos = context.getInputBuffer().getPosition(context.getCurrentIndex());
+        MatcherPath path = context.getPath();
+        MatcherPath prefix = lastPath != null ? path.commonPrefix(lastPath) : null;
+        if (prefix != null && prefix.length() > 1) getLog().receive("..(" + (prefix.length() - 1) + ")../");
+        getLog().receive(path.toString(prefix != null ? prefix.parent : null));
+        String line = context.getInputBuffer().extractLine(pos.line);
+        getLog().receive(", " + (matched ? "matched" : "failed") + ", cursor at " + pos.line + ':' + pos.column +
+                " after \"" + line.substring(0, Math.min(line.length(), pos.column - 1)) + "\"\n");
+        lastPath = path;
+    }
 }
 

@@ -17,7 +17,9 @@ class NTimesTest extends ParboiledTest with TestNGSuite {
     def Digit = ("0" - "9") ~> (_.toInt)
   }
 
-  val parser = new NTimesParser().withParseTreeBuilding()
+  val parser = new NTimesParser() {
+    override val buildParseTree = true
+  }
 
   @Test
   def testNTimes() {

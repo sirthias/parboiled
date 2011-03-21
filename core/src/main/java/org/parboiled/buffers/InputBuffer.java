@@ -16,6 +16,9 @@
 
 package org.parboiled.buffers;
 
+import org.parboiled.support.IndexRange;
+import org.parboiled.support.Position;
+
 /**
  * Abstraction of a simple char[] buffer holding the input text to be parsed.
  */
@@ -48,16 +51,35 @@ public interface InputBuffer {
      * @return a new String (non-interned)
      */
     String extract(int start, int end);
+    
+    /**
+     * Constructs a new {@link String} from all character covered by the given IndexRange.
+     *
+     * @param range the IndexRange
+     * @return a new String (non-interned)
+     */
+    String extract(IndexRange range);
 
     /**
      * Returns the line and column number of the character with the given index encapsulated in a
-     * {@link InputBuffer.Position}
+     * {@link org.parboiled.support.Position}
      * object. The very first character has the line number 1 and the column number 1.
      *
      * @param index the index of the character to get the line number of
      * @return the line number
      */
     Position getPosition(int index);
+
+    /**
+     * Translates the given index from the scope of this InputBuffer to the scope of the original, underlying char
+     * array. The {@link DefaultInputBuffer} implementation simply returns the given index, but other implementations
+     * like the {@link IndentDedentInputBuffer} or the {@link MutableInputBuffer} need to "undo" all compressions and
+     * index shiftings performed internally in order to return the underlying index. 
+     * 
+     * @param index the index relative to this InputBuffer
+     * @return the index relative to the underlying string or char array
+     */
+    int getOriginalIndex(int index);
 
     /**
      * Constructs a new {@link String} containing all characters with the given line number except for the trailing
@@ -74,41 +96,4 @@ public interface InputBuffer {
      * @return number of lines in the input buffer.
      */
     int getLineCount();
-
-    /**
-     * Simple container class for a line/column position in the input text.
-     */
-    public static class Position {
-        public final int line;
-        public final int column;
-
-        public Position(int line, int column) {
-            this.line = line;
-            this.column = column;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Position)) return false;
-            Position position = (Position) o;
-            return column == position.column && line == position.line;
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = line;
-            result = 31 * result + column;
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Position{" +
-                    "line=" + line +
-                    ", column=" + column +
-                    '}';
-        }
-    }
 }

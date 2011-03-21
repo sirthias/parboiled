@@ -1,3 +1,45 @@
+Version 0.11.0 (2011-03-21)
+---------------------------
+Core:
+- Major overhaul of RecoveryParseRunner, fixed numerous bugs, improved performance
+- Changed RecoveringParseRunner to not create additional ParseTreeNodes underneath error nodes
+- Added Context.inErrorRecovery method
+- Added "strict" flag to IndentDedentBuffer for enabling/disabling exception throwing on illegal indentations
+- Fixed bug in IndentDedentBuffer leaving blank lines on indented comments before EOI
+- Smaller fixes, cleanups and improvements 
+Java:
+- Switched internal class name resolving from using the current Threads ContextClassLoader to using the respective
+  class' own ClassLoader in an attempt to increase compatibility with a broader range of application environments
+Scala:
+- Simplified ParsingResult to be more scala idiomatic, removed "result", renamed "resultOption" to "result",
+  removed "hasErrors" method
+- Renamed POPx rules to DROP, DROP2 and DROP3
+- Removed Parser.withParseTreeBuilding method, changed Parser.buildParseTree from var to a def, which needs to be
+  overridden in order to activate parse tree building
+- Removed empty parens on a number of rule marker methods
+- Added overloads with Rule2 parameter to optional, zeroOrMore, oneOrMore and nTimes
+
+Version 0.10.1 (2011-02-11)
+---------------------------
+Core:
+- Added Context.getMatchLength() method and helpers
+- Added support for IndexRanges
+- Completely overhauled ParseRunner implementations architecture in preparation for coming extensions
+- Deprecated static run methods of main ParseRunners
+- Improved logging architecture for DebuggingValueStack and TracingParseRunner
+- Moved class InputBuffer.Position into package org.parboiled.support
+- Fixed small memory leak in DefaultValueStack
+- Completely rewrote IndentDedentBuffer implementation (the previous one had serious limitations)
+- Many smaller fixes, cleanups and improvements 
+Java:
+- Added StringBuilderVar helper for parser actions 
+- Fixed bug causing StringIndexOutOfBoundsException during parser extension for parsers without package prefix
+- Fixed NPE in AsmUtils caused by actions involving methods defined in super-interfaces
+- Upgraded to ASM 3.3.1
+Scala:
+- Fixed bug in Rule0 causing ClassCastException in certain cases involving ReductionRule2s and PopRule2s
+- Moved Input.collectContents from scala module into core
+
 Version 0.10.0 (2011-01-13)
 ---------------------------
 - Switched build system from Ant to Apache Buildr
