@@ -589,20 +589,21 @@ possible to check whether the contents of the list are of the requested typed.
           </div>
           
     </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Input#transformIndents">
-      <a id="transformIndents(Int,String):Input"></a>
+      <a id="transformIndents(Int,String,Boolean):Input"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
         <span class="name">transformIndents</span>
         
-        <span class="params">(<span name="tabStop">tabStop: <span class="extype" name="scala.Int">Int</span> =<span class="symbol">2</span></span>, <span name="lineCommentStart">lineCommentStart: String =<span class="symbol">null</span></span>)</span>
+        <span class="params">(<span name="tabStop">tabStop: <span class="extype" name="scala.Int">Int</span> =<span class="symbol">2</span></span>, <span name="lineCommentStart">lineCommentStart: String =<span class="symbol">null</span></span>, <span name="strict">strict: <span class="extype" name="scala.Boolean">Boolean</span> =<span class="symbol">false</span></span>)</span>
         <span class="result">: <a href="" class="extype" name="org.parboiled.scala.Input">Input</a></span>
       </span>
       </h4>
       
             <p class="shortcomment cmt">Causes the input to be wrapped with a IndentDedentInputBuffer.</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Causes the input to be wrapped with a IndentDedentInputBuffer.
-</p></div>
+            <div class="fullcomment"><div class="comment cmt"><p>Causes the input to be wrapped with a IndentDedentInputBuffer.</p></div><dl class="paramcmts block"><dt class="param">tabStop</dt><dd class="cmt"><p>the number of characters in a tab stop.</p></dd><dt class="param">lineCommentStart</dt><dd class="cmt"><p>the string starting a line comment or null, if line comments are not defined</p></dd><dt class="param">strict</dt><dd class="cmt"><p>signals whether an IllegalIndentationException should be thrown on
+&quot;semi-dedents&quot;, if false the buffer silently accepts these
+</p></dd></dl>
             
             
             

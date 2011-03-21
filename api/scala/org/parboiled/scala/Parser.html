@@ -305,7 +305,7 @@ part of compilation it is not possible to check whether the contents of the list
     </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#buildParseTree">
       <a id="buildParseTree:Boolean"></a>
       <h4 class="signature">
-      <span class="kind">var</span>
+      <span class="kind">def</span>
       <span class="symbol">
         <span class="name">buildParseTree</span>
         
@@ -314,9 +314,10 @@ part of compilation it is not possible to check whether the contents of the list
       </span>
       </h4>
       
-            <p class="shortcomment cmt"> Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.</p>
-            <div class="fullcomment"><div class="comment cmt"><p> Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
-This flag has to be set before the root is being built in order to have any effect.
+            <p class="shortcomment cmt">Indicates whether parboiled will create a parse tree during a parsing run of this parser.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Indicates whether parboiled will create a parse tree during a parsing run of this parser.
+Override and return true (you can also do this with a &quot;override val buildParseTree = true&quot;) to enable
+parse tree building.
 </p></div>
             
             
@@ -598,6 +599,50 @@ possible to check whether the contents of the list are of the requested typed.
           </div>
           
     </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#nTimes">
+      <a id="nTimes[A, B](Int,Rule2[A, B],Rule0):Rule1[List[(A, B)]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">nTimes</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="times">times: <span class="extype" name="scala.Int">Int</span></span>, <span name="sub">sub: Rule2[A, B]</span>, <span name="separator">separator: Rule0</span>)</span>
+        <span class="result">: Rule1[List[(A, B)]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+of the given separator rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+</p></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#nTimes">
+      <a id="nTimes[A, B](Int,Rule2[A, B]):Rule1[List[(A, B)]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">nTimes</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="times">times: <span class="extype" name="scala.Int">Int</span></span>, <span name="sub">sub: Rule2[A, B]</span>)</span>
+        <span class="result">: Rule1[List[(A, B)]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+of the given separator rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+</p></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#nTimes">
       <a id="nTimes[A](Int,Rule1[A],Rule0):Rule1[List[A]]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
@@ -797,6 +842,27 @@ If the given number is zero the result is equivalent to the EMPTY match.
           </div>
           
     </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#oneOrMore">
+      <a id="oneOrMore[A, B](Rule2[A, B],Rule0):Rule1[List[(A, B)]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">oneOrMore</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="sub">sub: Rule2[A, B]</span>, <span name="separator">separator: Rule0</span>)</span>
+        <span class="result">: Rule1[List[(A, B)]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that one or more times tries to match a given sub rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
+separator rule has to match. So this rule matches following sequences:</p><ul><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul><p>This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+</p></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#oneOrMore">
       <a id="oneOrMore[A](Rule1[A],Rule0):Rule1[List[A]]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
@@ -832,6 +898,28 @@ separator rule has to match. So this rule matches following sequences:</p><ul><l
             <p class="shortcomment cmt">Creates a rule that one or more times tries to match a given sub rule.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
 separator rule has to match. So this rule matches following sequences:</p><ul><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#oneOrMore">
+      <a id="oneOrMore[A, B](Rule2[A, B]):Rule1[List[(A, B)]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">oneOrMore</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="sub">sub: Rule2[A, B]</span>)</span>
+        <span class="result">: Rule1[List[(A, B)]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that tries the given sub rule repeatedly until it fails.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+If the sub rule did not match at all the pushed list will be empty.
+</p></div>
             
             
             
@@ -893,6 +981,26 @@ If the sub rule did not match at all the pushed list will be empty.
       
             <p class="shortcomment cmt"> Creates a rule that tries the given sub rule repeatedly until it fails.</p>
             <div class="fullcomment"><div class="comment cmt"><p> Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+</p></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#optional">
+      <a id="optional[A, B](Rule2[A, B]):Rule1[Option[(A, B)]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">optional</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="sub">sub: Rule2[A, B]</span>)</span>
+        <span class="result">: Rule1[<span class="extype" name="scala.Option">Option</span>[(A, B)]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
 </p></div>
             
             
@@ -1054,6 +1162,28 @@ If the sub rule did not match at all the pushed list will be empty.
             <p class="shortcomment cmt">Defines a parser rule wrapping the given rule construction block with caching and recursion protection.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
 Labels the constructed rule with the given label and optionally marks it according to the given rule options.
+</p></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#rule">
+      <a id="rule[T&lt;:Rule](RuleOption,RuleOption*)(⇒ T)((Matcher) ⇒ T):T"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">rule</span>
+        <span class="tparams">[<span name="T">T &lt;: Rule</span>]</span>
+        <span class="params">(<span name="firstOption">firstOption: <a href="RuleOption.html" class="extype" name="org.parboiled.scala.RuleOption">RuleOption</a></span>, <span name="more">more: <a href="RuleOption.html" class="extype" name="org.parboiled.scala.RuleOption">RuleOption</a>*</span>)</span><span class="params">(<span name="block">block: ⇒ T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="creator">creator: (<span class="extype" name="org.parboiled.matchers.Matcher">Matcher</span>) ⇒ T</span>)</span>
+        <span class="result">: T</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Defines a parser rule wrapping the given rule construction block with caching and recursion protection
+using the given rule option(s).</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Defines a parser rule wrapping the given rule construction block with caching and recursion protection
+using the given rule option(s).
 </p></div>
             
             
@@ -1408,21 +1538,21 @@ Labels the constructed rule with the given label and optionally marks it accordi
       </span>
       </h4>
       
-    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#withParseTreeBuilding">
-      <a id="withParseTreeBuilding():Parser.this.type"></a>
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#zeroOrMore">
+      <a id="zeroOrMore[A, B](Rule2[A, B],Rule0):Rule1[List[(A, B)]]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol">
-        <span class="name">withParseTreeBuilding</span>
-        
-        <span class="params">()</span>
-        <span class="result">: Parser.this.type</span>
+        <span class="name">zeroOrMore</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="sub">sub: Rule2[A, B]</span>, <span name="separator">separator: Rule0</span>)</span>
+        <span class="result">: Rule1[List[(A, B)]]</span>
       </span>
       </h4>
       
-            <p class="shortcomment cmt">Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
-</p>
-            <div class="fullcomment"><div class="comment cmt"><p>Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
+            <p class="shortcomment cmt">Creates a rule that zero or more times tries to match a given sub rule.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
+separator rule has to match. So this rule matches following sequences:</p><ul><li>{nothing}</li><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul><p>This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
 </p></div>
             
             
@@ -1465,6 +1595,27 @@ separator rule has to match. So this rule matches following sequences:</p><ul><l
             <p class="shortcomment cmt">Creates a rule that zero or more times tries to match a given sub rule.</p>
             <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
 separator rule has to match. So this rule matches following sequences:</p><ul><li>{nothing}</li><li>{sub}</li><li>{sub} {separator} {sub}</li><li>{sub} {separator} {sub} {separator} {sub}</li><li>...</li></ul></div>
+            
+            
+            
+          </div>
+          
+    </li><li visbl="pub" data-isabs="false" name="org.parboiled.scala.Parser#zeroOrMore">
+      <a id="zeroOrMore[A, B](Rule2[A, B]):Rule1[List[(A, B)]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol">
+        <span class="name">zeroOrMore</span>
+        <span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span>
+        <span class="params">(<span name="sub">sub: Rule2[A, B]</span>)</span>
+        <span class="result">: Rule1[List[(A, B)]]</span>
+      </span>
+      </h4>
+      
+            <p class="shortcomment cmt">Creates a rule that tries the given sub rule repeatedly until it fails.</p>
+            <div class="fullcomment"><div class="comment cmt"><p>Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
+This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+</p></div>
             
             
             
