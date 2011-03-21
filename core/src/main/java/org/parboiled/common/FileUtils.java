@@ -26,13 +26,13 @@ public final class FileUtils {
 
     public static String readAllTextFromResource(String resource) {
         checkArgNotNull(resource, "resource");
-        return readAllText(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
+        return readAllText(FileUtils.class.getClassLoader().getResourceAsStream(resource));
     }
 
     public static String readAllTextFromResource(String resource, Charset charset) {
         checkArgNotNull(resource, "resource");
         checkArgNotNull(charset, "charset");
-        return readAllText(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), charset);
+        return readAllText(FileUtils.class.getClassLoader().getResourceAsStream(resource), charset);
     }
 
     public static String readAllText(String filename) {
@@ -77,13 +77,13 @@ public final class FileUtils {
     
     public static char[] readAllCharsFromResource(String resource) {
         checkArgNotNull(resource, "resource");
-        return readAllChars(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
+        return readAllChars(FileUtils.class.getClassLoader().getResourceAsStream(resource));
     }
 
     public static char[] readAllCharsFromResource(String resource, Charset charset) {
         checkArgNotNull(resource, "resource");
         checkArgNotNull(charset, "charset");
-        return readAllChars(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource), charset);
+        return readAllChars(FileUtils.class.getClassLoader().getResourceAsStream(resource), charset);
     }
 
     public static char[] readAllChars(String filename) {
@@ -128,7 +128,7 @@ public final class FileUtils {
 
     public static byte[] readAllBytesFromResource(String resource) {
         checkArgNotNull(resource, "resource");
-        return readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
+        return readAllBytes(FileUtils.class.getClassLoader().getResourceAsStream(resource));
     }
 
     public static byte[] readAllBytes(String filename) {
