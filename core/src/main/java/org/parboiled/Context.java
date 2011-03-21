@@ -116,14 +116,21 @@ public interface Context<V> {
     List<Node<V>> getSubNodes();
 
     /**
-     * Returns true if the current rule is running somewhere underneath a Test/TestNot rule.
+     * Determines if the current rule is running somewhere underneath a Test/TestNot rule.
      *
      * @return true if the current context has a parent which corresponds to a Test/TestNot rule
      */
     boolean inPredicate();
+    
+    /**
+     * Determines if the action calling this method is run during the resynchronization phase of an error recovery.
+     *
+     * @return true if the action calling this method is run during the resynchronization phase of an error recovery
+     */
+    boolean inErrorRecovery();
 
     /**
-     * Returns true if the current context is for or below a rule marked @SuppressNode or below one
+     * Determines if the current context is for or below a rule marked @SuppressNode or below one
      * marked @SuppressSubnodes.
      *
      * @return true or false
@@ -131,7 +138,7 @@ public interface Context<V> {
     boolean isNodeSuppressed();
 
     /**
-     * Returns true if this context or any sub node recorded a parse error.
+     * Determines if this context or any sub node recorded a parse error.
      *
      * @return true if this context or any sub node recorded a parse error
      */

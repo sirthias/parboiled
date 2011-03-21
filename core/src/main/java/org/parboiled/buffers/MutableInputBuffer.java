@@ -49,7 +49,11 @@ public class MutableInputBuffer implements InputBuffer {
     }
 
     public Position getPosition(int index) {
-        return buffer.getPosition(fix(index));
+        return buffer.getPosition(map(index));
+    }
+
+    public int getOriginalIndex(int index) {
+        return buffer.getOriginalIndex(map(index));
     }
 
     public String extractLine(int lineNumber) {
@@ -57,18 +61,18 @@ public class MutableInputBuffer implements InputBuffer {
     }
 
     public String extract(int start, int end) {
-        return buffer.extract(fix(start), fix(end));
+        return buffer.extract(map(start), map(end));
     }
 
     public String extract(IndexRange range) {
-        return buffer.extract(fix(range.start), fix(range.end));
+        return buffer.extract(map(range.start), map(range.end));
     }
 
     public int getLineCount() {
         return buffer.getLineCount();
     }
 
-    private int fix(int index) {
+    private int map(int index) {
         int j = Arrays.binarySearch(inserts, index);
         if (j < 0) j = -(j + 1);
         return index - j;
@@ -111,5 +115,10 @@ public class MutableInputBuffer implements InputBuffer {
         inserts = newInserts;
         return removedChar;
     }
-
+    
+    public void replaceInsertedChar(int index, char c) {
+        int j = Arrays.binarySearch(inserts, index);
+        checkArgument(j >= 0, "Can only replace chars that were previously inserted");
+        chars[j] = c;
+    }
 }

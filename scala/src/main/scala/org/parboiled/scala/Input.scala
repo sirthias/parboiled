@@ -11,7 +11,11 @@ class Input(val input: Array[Char], bufferCreator: (Array[Char] => InputBuffer) 
 
   /**
    * Causes the input to be wrapped with a IndentDedentInputBuffer.
+   * @param tabStop          the number of characters in a tab stop.
+   * @param lineCommentStart the string starting a line comment or null, if line comments are not defined
+   * @param strict           signals whether an IllegalIndentationException should be thrown on
+   * "semi-dedents", if false the buffer silently accepts these
    */
-  def transformIndents(tabStop: Int = 2, lineCommentStart: String = null): Input =
-    new Input(input, new IndentDedentInputBuffer(_, tabStop, lineCommentStart))
+  def transformIndents(tabStop: Int = 2, lineCommentStart: String = null, strict: Boolean = false): Input =
+    new Input(input, new IndentDedentInputBuffer(_, tabStop, lineCommentStart, strict))
 }

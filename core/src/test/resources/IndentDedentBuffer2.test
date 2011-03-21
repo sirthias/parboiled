@@ -3,6 +3,7 @@
 # on two lines
 
 Level 1
+  # what about comments opening an indentation?
     Level 2      # another coment
 
     # and yet another one
@@ -15,9 +16,10 @@ Level 1
 here we are at one again
         and go deep right away
    # comments don't matter
+     # they can be anywhere
         still on 2
 
                 #start another one on 3
             three
 
-# and comments at the end
+   # indented comment at the end?

@@ -97,7 +97,7 @@ class JsonParser2 extends Parser {
    */
   def parseJson(json: String): AstNode = {
     val parsingResult = ReportingParseRunner(Json).run(json)
-    parsingResult.resultOption match {
+    parsingResult.result match {
       case Some(astRoot) => astRoot
       case None => throw new ParsingException("Invalid JSON source:\n" +
               ErrorUtils.printParseErrors(parsingResult)) 

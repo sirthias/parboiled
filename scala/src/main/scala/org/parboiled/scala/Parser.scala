@@ -14,20 +14,15 @@ import utils.Utils._
 trait Parser {
 
   private val cache = mutable.Map.empty[RuleMethod, Rule]
-
-  /**
-   *  Flag indicating whether parboiled will create a parse tree during a parsing run of this parser.
-   * This flag has to be set before the root is being built in order to have any effect.
-   */
-  var buildParseTree = false
-
   private val lock = new AnyRef()
 
   /**
-   * Marks this parser as parse-tree-building (sets the  { @link # buildParseTree } flag)
+   * Indicates whether parboiled will create a parse tree during a parsing run of this parser.
+   * Override and return true (you can also do this with a "override val buildParseTree = true") to enable
+   * parse tree building.
    */
-  def withParseTreeBuilding(): this.type = {buildParseTree = true; this}
-
+  def buildParseTree = false
+  
   /**
    * Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
    */
@@ -36,6 +31,15 @@ trait Parser {
     rule(ruleMethod.getMethodName, ruleMethod, Seq.empty, block, creator)
   }
 
+  /**
+   * Defines a parser rule wrapping the given rule construction block with caching and recursion protection
+   * using the given rule option(s).
+   */
+  def rule[T <: Rule](firstOption: RuleOption, more: RuleOption*)(block: => T)(implicit creator: Matcher => T): T = {
+    val ruleMethod = getCurrentRuleMethod
+    rule(ruleMethod.getMethodName, ruleMethod, firstOption +: more, block, creator)
+  }
+  
   /**
    * Defines a parser rule wrapping the given rule construction block with caching and recursion protection.
    * Labels the constructed rule with the given label and optionally marks it according to the given rule options.
@@ -85,7 +89,12 @@ trait Parser {
   def optional[A](sub: Rule1[A]): Rule1[Option[A]] = avec(sub ~~> (Some(_)) | push(None)) {
     _.matcher.asInstanceOf[FirstOfMatcher].defaultLabel("Optional")
   }
-
+  
+  /**
+   * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
+   */
+  def optional[A, B](sub: Rule2[A, B]): Rule1[Option[(A, B)]] = optional(sub ~~> ((_, _)))
+  
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
    */
@@ -104,6 +113,12 @@ trait Parser {
   def zeroOrMore[A](sub: Rule1[A]): Rule1[List[A]] = avec(
     push(Nil) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> ((list: List[A]) => list.reverse)
   ) { _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("ZeroOrMore") }
+  
+  /**
+   * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
+   * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+   */
+  def zeroOrMore[A, B](sub: Rule2[A, B]): Rule1[List[(A, B)]] = zeroOrMore(sub ~~> ((_, _)))
 
   /**
    * <p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
@@ -135,6 +150,20 @@ trait Parser {
   def zeroOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = avec(oneOrMore(sub, separator) | push(Nil)) {
     _.matcher.asInstanceOf[FirstOfMatcher].defaultLabel("ZeroOrMore")
   }
+  
+  /**
+   * <p>Creates a rule that zero or more times tries to match a given sub rule. Between two sub rule matches the given
+   * separator rule has to match. So this rule matches following sequences:</p>
+   * <ul>
+   * <li>{nothing}</li>
+   * <li>{sub}</li>
+   * <li>{sub} {separator} {sub}</li>
+   * <li>{sub} {separator} {sub} {separator} {sub}</li>
+   * <li>...</li>
+   * </ul>
+   * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+   */
+  def zeroOrMore[A, B](sub: Rule2[A, B], separator: Rule0): Rule1[List[(A, B)]] = zeroOrMore(sub ~~> ((_, _)), separator)
 
   /**
    *  Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
@@ -155,6 +184,13 @@ trait Parser {
   def oneOrMore[A](sub: Rule1[A]): Rule1[List[A]] = avec(
     sub ~~> (List(_)) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
   ) { _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("OneOrMore") }
+  
+  /**
+   * Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
+   * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
+   * If the sub rule did not match at all the pushed list will be empty.
+   */
+  def oneOrMore[A, B](sub: Rule2[A, B]): Rule1[List[(A, B)]] = oneOrMore(sub ~~> ((_, _)))
 
   /**
    * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
@@ -184,6 +220,19 @@ trait Parser {
   def oneOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = avec(
     sub ~~> (List(_)) ~ zeroOrMore(separator ~ sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
   ) { _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("OneOrMore") }
+  
+  /**
+   * <p>Creates a rule that one or more times tries to match a given sub rule. Between two sub rule matches the given
+   * separator rule has to match. So this rule matches following sequences:</p>
+   * <ul>
+   * <li>{sub}</li>
+   * <li>{sub} {separator} {sub}</li>
+   * <li>{sub} {separator} {sub} {separator} {sub}</li>
+   * <li>...</li>
+   * </ul>
+   * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
+   */
+  def oneOrMore[A, B](sub: Rule2[A, B], separator: Rule0): Rule1[List[(A, B)]] = oneOrMore(sub ~~> ((_, _)), separator)
 
   /**
    * Matches the given sub rule a specified number of times.
@@ -251,6 +300,20 @@ trait Parser {
       }
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
+  }
+  
+  /**
+   * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+   * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes[A, B](times: Int, sub: Rule2[A, B]): Rule1[List[(A, B)]] = nTimes(times, sub, null)
+  
+  /**
+   * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
+   * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
+   */
+  def nTimes[A, B](times: Int, sub: Rule2[A, B], separator: Rule0 = null): Rule1[List[(A, B)]] = {
+    nTimes(times, sub ~~> ((_, _)), separator)
   }
 
   /**

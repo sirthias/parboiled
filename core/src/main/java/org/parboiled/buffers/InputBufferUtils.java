@@ -2,7 +2,7 @@ package org.parboiled.buffers;
 
 import static org.parboiled.support.Chars.*;
 
-public class InputBufferUtils {
+public final class InputBufferUtils {
 
     private InputBufferUtils() {}
 

@@ -18,10 +18,13 @@ package org.parboiled.test;
 
 import org.parboiled.Node;
 import org.parboiled.Rule;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Predicate;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
+
+import java.util.*;
 
 import static org.parboiled.errors.ErrorUtils.printParseErrors;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -62,18 +65,33 @@ public abstract class ParboiledTest<V> {
             return this;
         }
 
-        public TestResult<V> hasResultValue(V expectedResultValue) {
-            assertEquals(result.resultValue, expectedResultValue);
+        public TestResult<V> hasResult(V... expectedResults) {
+            assertEquals(toListReversed(result.valueStack), Arrays.asList(expectedResults));
             return this;
+        }
+        
+        private <T> List<T> toListReversed(Iterable<T> iterable) {
+            List<T> list = new ArrayList<T>();
+            for (T t : iterable) list.add(t);
+            Collections.reverse(list);
+            return list;
         }
     }
 
     public TestResult<V> test(Rule rule, String input) {
         return new TestResult<V>(new ReportingParseRunner<V>(rule).run(input));
     }
+    
+    public TestResult<V> test(Rule rule, InputBuffer inputBuffer) {
+        return new TestResult<V>(new ReportingParseRunner<V>(rule).run(inputBuffer));
+    }
 
     public TestResult<V> testWithRecovery(Rule rule, String input) {
         return new TestResult<V>(new RecoveringParseRunner<V>(rule).run(input));
+    }
+    
+    public TestResult<V> testWithRecovery(Rule rule, InputBuffer inputBuffer) {
+        return new TestResult<V>(new RecoveringParseRunner<V>(rule).run(inputBuffer));
     }
 
     protected abstract void fail(String message);

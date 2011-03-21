@@ -1,3 +1,24 @@
+Version 0.11.0 (2011-03-21)
+---------------------------
+Core:
+- Major overhaul of RecoveryParseRunner, fixed numerous bugs, improved performance
+- Changed RecoveringParseRunner to not create additional ParseTreeNodes underneath error nodes
+- Added Context.inErrorRecovery method
+- Added "strict" flag to IndentDedentBuffer for enabling/disabling exception throwing on illegal indentations
+- Fixed bug in IndentDedentBuffer leaving blank lines on indented comments before EOI
+- Smaller fixes, cleanups and improvements 
+Java:
+- Switched internal class name resolving from using the current Threads ContextClassLoader to using the respective
+  class' own ClassLoader in an attempt to increase compatibility with a broader range of application environments
+Scala:
+- Simplified ParsingResult to be more scala idiomatic, removed "result", renamed "resultOption" to "result",
+  removed "hasErrors" method
+- Renamed POPx rules to DROP, DROP2 and DROP3
+- Removed Parser.withParseTreeBuilding method, changed Parser.buildParseTree from var to a def, which needs to be
+  overridden in order to activate parse tree building
+- Removed empty parens on a number of rule marker methods
+- Added overloads with Rule2 parameter to optional, zeroOrMore, oneOrMore and nTimes
+
 Version 0.10.1 (2011-02-11)
 ---------------------------
 Core:

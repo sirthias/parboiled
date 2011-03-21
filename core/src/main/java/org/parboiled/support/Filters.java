@@ -28,6 +28,7 @@ import org.parboiled.matchers.ProxyMatcher;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.parboiled.matchers.MatcherUtils.unwrap;
 import static org.parboiled.trees.GraphUtils.hasChildren;
 
 public class Filters {
@@ -71,7 +72,7 @@ public class Filters {
             private final Set<Matcher> visited = new HashSet<Matcher>();
 
             public boolean apply(Matcher node) {
-                node = ProxyMatcher.unwrap(node);
+                node = unwrap(node);
                 if (visited.contains(node)) {
                     return false;
                 }

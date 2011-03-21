@@ -55,9 +55,7 @@ trait ParboiledTest {
 
   def matched: Boolean = parsingResult.matched
 
-  def result: Result = parsingResult.result
-
-  def resultOption: Option[Result] = parsingResult.resultOption
+  def result: Option[Result] = parsingResult.result
 
   def parseErrors: List[ParseError] = parsingResult.parseErrors
 

@@ -45,6 +45,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
     private final DefaultInputBuffer convBuffer;
 
     private int[] indexMap; // maps convBuffer indices to origBuffer indices
+    private final boolean strict;
 
     /**
      * Creates a new IndentDedentInputBuffer around the given char array. Note that for performance reasons the given
@@ -53,10 +54,13 @@ public class IndentDedentInputBuffer implements InputBuffer {
      * @param input            the input text.
      * @param tabStop          the number of characters in a tab stop.
      * @param lineCommentStart the string starting a line comment or null, if line comments are not defined
+     * @param strict           signals whether the buffer should throw an {@link IllegalIndentationException} on
+     * "semi-dedents", if false the buffer silently accepts these
      * @throws org.parboiled.errors.IllegalIndentationException
-     *          if the input contains illegal indentations
+     *          if the input contains illegal indentations and the strict flag is set
      */
-    public IndentDedentInputBuffer(char[] input, int tabStop, String lineCommentStart) {
+    public IndentDedentInputBuffer(char[] input, int tabStop, String lineCommentStart, boolean strict) {
+        this.strict = strict;
         checkArgument(tabStop > 0, "tabStop must be > 0");
         checkArgument(lineCommentStart == null || lineCommentStart.indexOf('\n') == -1,
                 "lineCommentStart must not contain newlines");
@@ -85,6 +89,10 @@ public class IndentDedentInputBuffer implements InputBuffer {
 
     public Position getPosition(int index) {
         return origBuffer.getPosition(map(index));
+    }
+
+    public int getOriginalIndex(int index) {
+        return map(index);
     }
 
     public String extractLine(int lineNumber) {
@@ -143,11 +151,11 @@ public class IndentDedentInputBuffer implements InputBuffer {
                     currentLevel = indent;
                     builder.append(Chars.INDENT);
                 } else {
-                    while (indent < currentLevel) {
+                    while (indent < currentLevel && indent <= previousLevels.peek()) {
                         currentLevel = previousLevels.pop();
                         builder.append(Chars.DEDENT);
                     }
-                    if (indent > currentLevel) {
+                    if (strict && indent < currentLevel) {
                         throw new IllegalIndentationException(origBuffer, origBuffer.getPosition(cursor));
                     }
                 }
@@ -181,6 +189,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
                         advance();
                         continue;
                     case Chars.EOI:
+                        indent = 0;
                         break loop;
                     default:
                         if (skipLineComment() == 0) break loop;

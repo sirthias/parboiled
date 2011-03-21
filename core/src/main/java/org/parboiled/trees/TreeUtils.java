@@ -21,7 +21,7 @@ import static org.parboiled.common.Preconditions.*;
 /**
  * General utility methods for operating on tree, i.e. graphs consisting of {@link TreeNode}s.
  */
-public class TreeUtils {
+public final class TreeUtils {
 
     private TreeUtils() {}
 

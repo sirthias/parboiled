@@ -48,7 +48,7 @@ public class BasicParseRunner<V> extends AbstractParseRunner<V> implements Match
      * @deprecated  As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
      * this static method. This method will be removed in one of the coming releases.
      */
-    @Deprecated()
+    @Deprecated
     public static <V> ParsingResult<V> run(Rule rule, String input) {
         checkArgNotNull(rule, "rule");
         checkArgNotNull(input, "input");

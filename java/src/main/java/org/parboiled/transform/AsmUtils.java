@@ -70,7 +70,7 @@ class AsmUtils {
             } else {
                 String className = classDesc.replace('/', '.');
                 try {
-                    clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
+                    clazz = AsmUtils.class.getClassLoader().loadClass(className);
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
                 }

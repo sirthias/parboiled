@@ -21,20 +21,22 @@ import org.parboiled.MatcherContext;
 import org.parboiled.Rule;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.buffers.MutableInputBuffer;
+import org.parboiled.common.ImmutableLinkedList;
+import org.parboiled.common.ImmutableList;
 import org.parboiled.common.Preconditions;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.matchers.*;
 import org.parboiled.matchervisitors.*;
+import org.parboiled.support.Checks;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 import static org.parboiled.common.Preconditions.checkState;
+import static org.parboiled.matchers.MatcherUtils.unwrap;
 import static org.parboiled.support.Chars.*;
 
 /**
@@ -56,6 +58,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
     private InvalidInputError currentError;
     private MutableInputBuffer buffer;
     private ParsingResult<V> lastParsingResult;
+    private Matcher rootMatcherWithoutPTB; // the root matcher with parse tree building disabled
 
     /**
      * Create a new RecoveringParseRunner instance with the given rule and input text and returns the result of
@@ -64,8 +67,8 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * @param rule  the parser rule to run
      * @param input the input text to run on
      * @return the ParsingResult for the parsing run
-     * @deprecated  As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
-     * this static method. This method will be removed in one of the coming releases.
+     * @deprecated As of 0.11.0 you should use the "regular" constructor and one of the "run" methods rather than
+     *             this static method. This method will be removed in one of the coming releases.
      */
     @Deprecated
     public static <V> ParsingResult<V> run(Rule rule, String input) {
@@ -92,15 +95,18 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 .withParseErrors(getParseErrors())
                 .withValueStack(getValueStack());
         lastParsingResult = basicRunner.run(inputBuffer);
-        
+
         if (!lastParsingResult.matched) {
+            // for better performance disable parse tree building during the recovery runs
+            rootMatcherWithoutPTB = (Matcher) getRootMatcher().suppressNode();
+
             // locate first error
             performLocatingRun(inputBuffer);
             checkState(errorIndex >= 0); // we failed before so we must fail again
 
             // in order to be able to apply fixes we need to wrap the input buffer with a mutability wrapper
             buffer = new MutableInputBuffer(inputBuffer);
-            
+
             // report first error
             performReportingRun();
 
@@ -108,13 +114,19 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             while (!fixError(errorIndex)) {
                 performReportingRun();
             }
+
+            // rerun once more with parse tree building enabled to create a parse tree for the fixed input
+            if (!getRootMatcher().isNodeSuppressed()) {
+                performFinalRun();
+                checkState(lastParsingResult.matched);
+            }
         }
         return lastParsingResult;
     }
 
     private boolean performLocatingRun(InputBuffer inputBuffer) {
         resetValueStack();
-        ParseRunner<V> locatingRunner = new ErrorLocatingParseRunner<V>(getRootMatcher(), getInnerHandler())
+        ParseRunner<V> locatingRunner = new ErrorLocatingParseRunner<V>(rootMatcherWithoutPTB, getInnerHandler())
                 .withParseErrors(getParseErrors())
                 .withValueStack(getValueStack());
         lastParsingResult = locatingRunner.run(inputBuffer);
@@ -122,21 +134,30 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 getParseErrors().remove(getParseErrors().size() - 1).getStartIndex();
         return lastParsingResult.matched;
     }
-    
+
     private void performReportingRun() {
         resetValueStack();
-        ParseRunner<V> reportingRunner = new ErrorReportingParseRunner<V>(getRootMatcher(), errorIndex, getInnerHandler())
+        ParseRunner<V> reportingRunner = new ErrorReportingParseRunner<V>(rootMatcherWithoutPTB, errorIndex,
+                getInnerHandler())
                 .withParseErrors(getParseErrors())
                 .withValueStack(getValueStack());
         ParsingResult<V> result = reportingRunner.run(buffer);
         Preconditions.checkState(!result.matched); // we failed before so we should really be failing again
         currentError = (InvalidInputError) getParseErrors().get(getParseErrors().size() - 1);
     }
-    
-    private MatchHandler getInnerHandler() {
-        return errorIndex >= 0 ? new Handler(currentError) : null;
+
+    private void performFinalRun() {
+        resetValueStack();
+        Handler handler = new Handler();
+        MatcherContext<V> rootContext = createRootContext(buffer, handler, false);
+        boolean matched = handler.match(rootContext);
+        lastParsingResult = createParsingResult(matched, rootContext);
     }
-    
+
+    private MatchHandler getInnerHandler() {
+        return errorIndex >= 0 ? new Handler() : null;
+    }
+
     private boolean fixError(int fixIndex) {
         if (tryFixBySingleCharDeletion(fixIndex)) return true;
         int nextErrorAfterDeletion = errorIndex;
@@ -173,15 +194,18 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             }
         } else {
             // we can't fix the error with a single char fix, so fall back to resynchronization
-            // however, if we are already at EOI there is not much more we can do
-            if (buffer.charAt(fixIndex) == EOI) return true;
+            if (buffer.charAt(fixIndex) == EOI) {
+                buffer.insertChar(fixIndex, RESYNC_EOI);
+                currentError.shiftIndexDeltaBy(1);
+                return true;
+            }
             buffer.insertChar(fixIndex, RESYNC);
             currentError.shiftIndexDeltaBy(1);
             performLocatingRun(buffer); // find the next parse error
         }
         return errorIndex == -1;
     }
-    
+
     private boolean tryFixBySingleCharDeletion(int fixIndex) {
         buffer.insertChar(fixIndex, DEL_ERROR);
         boolean nowErrorFree = performLocatingRun(buffer);
@@ -194,11 +218,11 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
         return nowErrorFree;
     }
 
-    @SuppressWarnings({"ConstantConditions"})
+    @SuppressWarnings( {"ConstantConditions"})
     private Character findBestSingleCharInsertion(int fixIndex) {
         GetStarterCharVisitor getStarterCharVisitor = new GetStarterCharVisitor();
         int bestNextErrorIndex = -1;
-        Character bestChar = null;
+        Character bestChar = '\u0000'; // non-null default
         for (MatcherPath failedMatcherPath : currentError.getFailedMatchers()) {
             Character starterChar = failedMatcherPath.element.matcher.accept(getStarterCharVisitor);
             checkState(starterChar != null); // we should only have single character matchers
@@ -228,34 +252,24 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
         buffer.insertChar(fixIndex, DEL_ERROR);
         Character bestChar = findBestSingleCharInsertion(fixIndex + 2);
         if (bestChar == null) { // success, we found a fix that renders the complete input error free
-            currentError.shiftIndexDeltaBy(-1); // delta from DEL_ERROR char insertion and index shift by insertion method
+            currentError
+                    .shiftIndexDeltaBy(-1); // delta from DEL_ERROR char insertion and index shift by insertion method
         } else {
             buffer.undoCharInsertion(fixIndex);
             errorIndex = Math.max(errorIndex - 3, 0);
         }
         return bestChar;
     }
-    
+
     /**
      * A {@link org.parboiled.MatchHandler} implementation that recognizes the special
      * {@link org.parboiled.support.Chars#RESYNC} character to overcome {@link InvalidInputError}s at the respective
      * error indices.
      */
-    private static class Handler implements MatchHandler {
+    private class Handler implements MatchHandler {
         private final IsSingleCharMatcherVisitor isSingleCharMatcherVisitor = new IsSingleCharMatcherVisitor();
-        private final InvalidInputError currentError;
         private int fringeIndex;
         private MatcherPath lastMatchPath;
-
-        /**
-         * Creates a new Handler. If a non-null InvalidInputError is given the handler will set its endIndex
-         * to the correct index if the error corresponds to an error that can only be overcome by resynchronizing.
-         *
-         * @param currentError an optional InvalidInputError whose endIndex is to set during resyncing
-         */
-        public Handler(InvalidInputError currentError) {
-            this.currentError = currentError;
-        }
 
         public boolean match(MatcherContext<?> context) {
             Matcher matcher = context.getMatcher();
@@ -274,21 +288,31 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 return true;
             }
 
-            // if we didn't match we might have to resynchronize, however we only resynchronize
-            // if we are at a RESYNC location and the matcher is a SequenceMatchers that has already
-            // matched at least one character and that is a parent of the last match
-            return context.getInputBuffer().charAt(fringeIndex) == RESYNC &&
-                    qualifiesForResync(context, matcher) &&
-                    resynchronize(context);
+            // if we didn't match we might have to resynchronize
+            if (matcher instanceof SequenceMatcher) {
+                switch(context.getCurrentChar()) {
+                    case RESYNC:
+                    case RESYNC_START:
+                    case RESYNC_EOI:
+                        // however we only resynchronize if we are at a RESYNC location and the matcher is a SequenceMatcher
+                        // that has already matched at least one character and that is a parent of the last match
+                        return qualifiesForResync(context) && resynchronize(context);
+                }
+            }
+            return false;
         }
 
-        @SuppressWarnings({"SimplifiableIfStatement"})
-        private boolean qualifiesForResync(MatcherContext context, Matcher matcher) {
-            if (matcher instanceof SequenceMatcher && context.getCurrentIndex() > context.getStartIndex() &&
-                    context.getPath().isPrefixOf(lastMatchPath)) {
-                return true;
-            }
-            return context.getParent() == null; // always resync on the root if there is nothing else
+        private boolean qualifiesForResync(MatcherContext context) {
+            if (context.getCurrentIndex() == context.getStartIndex() || !context.getPath().isPrefixOf(lastMatchPath)) {
+                // if we have a sequence that hasn't match anything yet or is not a prefix we might still have to
+                // resync on it if there is no other sequence parent anymore
+                MatcherContext parent = context.getParent();
+                while (parent != null) {
+                    if (parent.getMatcher() instanceof SequenceMatcher) return false;
+                    parent = parent.getParent();
+                }
+            }            
+            return true;
         }
 
         private boolean prepareErrorLocation(MatcherContext context) {
@@ -297,8 +321,13 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                     return willMatchDelError(context);
                 case INS_ERROR:
                     return willMatchInsError(context);
+                case RESYNC:
+                case RESYNC_START:
+                case RESYNC_EOI:
+                    return false;
+                default:
+                    return true;
             }
-            return true;
         }
 
         private boolean willMatchDelError(MatcherContext context) {
@@ -310,7 +339,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 return false;
             }
             context.setStartIndex(context.getCurrentIndex());
-            context.clearNodeSuppression();
             if (context.getParent() != null) context.getParent().markError();
             return true;
         }
@@ -324,7 +352,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 return false;
             }
             context.setStartIndex(context.getCurrentIndex());
-            context.clearNodeSuppression();
             context.markError();
             return true;
         }
@@ -336,7 +363,6 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
         }
 
         private boolean resynchronize(MatcherContext context) {
-            context.clearNodeSuppression();
             context.markError();
 
             // create a node for the failed Sequence, taking ownership of all sub nodes created so far
@@ -345,49 +371,76 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
             // by resyncing we flip an unmatched sequence to a matched one, so in order to keep the value stack
             // consistent we go into a special "error action mode" and execute the minimal set of actions underneath
             // the resync sequence
-            executeErrorActions(context);
-
+            rerunAndExecuteErrorActions(context);
+            
             // skip over all characters that are not legal followers of the failed Sequence
-            context.advanceIndex(1); // gobble RESYNC marker
-            fringeIndex++;
-            List<Matcher> followMatchers = new FollowMatchersVisitor().getFollowMatchers(context);
-            int endIndex = gobbleIllegalCharacters(context, followMatchers);
+            switch (context.getCurrentChar()) {
+                case RESYNC:
+                    // this RESYNC error is the last error, we establish the length of the bad sequence and
+                    // change this RESYNC marker to a RESYNC_START / RESYNC_END block
+                    context.advanceIndex(1); // gobble RESYNC marker
+                    List<Matcher> followMatchers = new FollowMatchersVisitor().getFollowMatchers(context);
+                    int endIndex = gobbleIllegalCharacters(context, followMatchers);
+                    currentError.setEndIndex(endIndex);
+                    buffer.replaceInsertedChar(currentError.getStartIndex() - 1, RESYNC_START);
+                    buffer.insertChar(endIndex, RESYNC_END);
+                    context.advanceIndex(1); // gobble RESYNC_END marker
+                    break;
 
-            if (currentError != null && currentError.getStartIndex() == fringeIndex && endIndex - fringeIndex > 1) {
-                currentError.setEndIndex(endIndex);
+                case RESYNC_START:
+                    // a RESYNC error we have already recovered from before
+                    context.advanceIndex(1); // gobble RESYNC_START
+                    while (context.getCurrentChar() != RESYNC_END) {
+                        context.advanceIndex(1); // skip all characters up to the RESYNC_END
+                        checkState(context.getCurrentChar() != EOI); // we MUST find a RESYNC_END before EOI
+                    }
+                    context.advanceIndex(1); // gobble RESYNC_END marker
+                    break;
+                
+                case RESYNC_EOI:
+                    // if we are resyncing on EOI we don't swallow anything
+                    // we also do not have to update the currentError since we only hit this code here
+                    // in the final run
+                    break;
+
+                default:
+                    throw new IllegalStateException();
             }
 
             return true;
         }
 
-        private void executeErrorActions(MatcherContext context) {
+        @SuppressWarnings( {"ConstantConditions"})
+        private void rerunAndExecuteErrorActions(MatcherContext context) {
             // the context is for the resync action, which at this point has FAILED, i.e. ALL its sub actions haven't
             // had a chance to change the value stack, even the ones having run before the actual parse error matcher
             // so we need to rerun all sub matchers of the resync sequence up to the point of the parse error
             // and then run the minimal set of action in "error action mode"
 
+            int savedCurrentIndex = context.getCurrentIndex();
             context.setCurrentIndex(context.getStartIndex()); // restart matching the resync sequence
 
-            Matcher lastGoodSub = lastMatchPath == null ? null :
-                    lastMatchPath.getElementAtLevel(context.getLevel() + 1).matcher;
-            boolean errorMode = false;
-
-            for (Matcher sub : context.getMatcher().getChildren()) {
-                if (errorMode) {
-                    for (ActionMatcher action : sub.accept(new CollectResyncActionsVisitor())) {
-                        action.getSubContext(context).runMatcher();
-                    }
-                    continue;
+            boolean preError = true;
+            for (Matcher child : context.getMatcher().getChildren()) {
+                if (preError && !child.getSubContext(context).runMatcher()) {
+                    // run what will be the preceding matcher of all error actions
+                    new EmptyMatcher().getSubContext(context).runMatcher();
+                    context.setIntTag(1); // signal that at least one rule has run before the error actions
+                    preError = false;
                 }
-                // as long as we are before the error matcher we simply execute normally
-                sub.getSubContext(context).runMatcher();
-                
-                if (sub == lastGoodSub) {
-                    // run an empty matcher which all error actions will see as the immediately preceding rule
-                    context.getSubContext(new EmptyMatcher()).runMatcher();
-                    errorMode = true;
+                if (!preError) {
+                    context.setInErrorRecovery(true);
+                    List<ActionMatcher> errorActions = child.accept(new CollectResyncActionsVisitor());
+                    checkState(errorActions != null);
+                    for (ActionMatcher errorAction : errorActions) {
+                        // execute the error actions without looking at their boolean results !!!
+                        errorAction.getSubContext(context).runMatcher();
+                    }
+                    context.setInErrorRecovery(false);
                 }
             }
+
+            context.setCurrentIndex(savedCurrentIndex);
         }
 
         private int gobbleIllegalCharacters(MatcherContext context, List<Matcher> followMatchers) {
@@ -411,24 +464,20 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * in order to maintain a consistent Value Stack state.
      */
     private static class CollectResyncActionsVisitor extends DefaultMatcherVisitor<List<ActionMatcher>> {
-        private final Set<Matcher> visited = new HashSet<Matcher>();
-        private final List<ActionMatcher> actions = new ArrayList<ActionMatcher>();
+        private ImmutableLinkedList<SequenceMatcher> path = ImmutableLinkedList.nil();
 
         @Override
         public List<ActionMatcher> visit(ActionMatcher matcher) {
-            actions.add(matcher);
-            return actions;
+            return ImmutableList.of(matcher);
         }
 
         @Override
         public List<ActionMatcher> visit(FirstOfMatcher matcher) {
-            // go through all subs in reverse order (because the simplest fall-back cases are often in last position)
-            // and try all of them until we hit a path that does not lead to a recursion
-            List<Matcher> children = matcher.getChildren();
-            for (int i = children.size() - 1; i >= 0; i--) {
-                if (children.get(i).accept(this) != null) return actions;
+            for (Matcher child : matcher.getChildren()) {
+                List<ActionMatcher> actions = child.accept(this);
+                if (actions != null) return actions;
             }
-            throw new IllegalStateException(); // a FirstOf where all subs lead to recursions?
+            return null;
         }
 
         @Override
@@ -438,22 +487,27 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
 
         @Override
         public List<ActionMatcher> visit(SequenceMatcher matcher) {
-            if (visited.contains(matcher)) {
-                // we hit a recursion, so signal to the next FirstOf parent that we need to take another path in order
-                // to collect all actions
+            if (path.contains(matcher)) {
                 return null;
             }
 
-            visited.add(matcher);
+            ImmutableLinkedList<SequenceMatcher> previousPath = path;
+            path = path.prepend(matcher);
+
+            List<ActionMatcher> actions = new ArrayList<ActionMatcher>();
             for (Matcher sub : matcher.getChildren()) {
-                sub.accept(this);
+                List<ActionMatcher> subActions = sub.accept(this);
+                if (subActions == null) return null;
+                actions.addAll(subActions);
             }
+
+            path = previousPath;
             return actions;
         }
 
         @Override
         public List<ActionMatcher> defaultValue(AbstractMatcher matcher) {
-            return actions;
+            return ImmutableList.of();
         }
     }
 }

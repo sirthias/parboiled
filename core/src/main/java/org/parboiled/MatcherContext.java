@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
 import static org.parboiled.common.Preconditions.*;
+import static org.parboiled.matchers.MatcherUtils.unwrap;
 
 /**
  * <p>The Context implementation orchestrating most of the matching process.</p>
@@ -71,6 +72,7 @@ public class MatcherContext<V> implements Context<V> {
     private int intTag;
     private boolean hasError;
     private boolean nodeSuppressed;
+    private boolean inErrorRecovery;
 
     /**
      * Initializes a new root MatcherContext.
@@ -170,6 +172,10 @@ public class MatcherContext<V> implements Context<V> {
                 parent != null && parent.inPredicate();
     }
 
+    public boolean inErrorRecovery() {
+        return inErrorRecovery;
+    }
+    
     public boolean isNodeSuppressed() {
         return nodeSuppressed;
     }
@@ -181,8 +187,11 @@ public class MatcherContext<V> implements Context<V> {
     public String getMatch() {
         checkActionContext();
         MatcherContext prevContext = subContext;
-        return hasError ? ParseTreeUtils.getNodeText(prevContext.node, inputBuffer) :
-                inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
+        if (hasError) {
+            Node prevNode = prevContext.node;
+            return prevNode != null ? ParseTreeUtils.getNodeText(prevNode, inputBuffer) : "";
+        }
+        return inputBuffer.extract(prevContext.startIndex, prevContext.currentIndex);
     }
 
     public char getFirstMatchChar() {
@@ -216,8 +225,8 @@ public class MatcherContext<V> implements Context<V> {
 
     private void checkActionContext() {
         // make sure all the constraints are met
-        Checks.ensure(ProxyMatcher.unwrap(VarFramingMatcher.unwrap(MemoMismatchesMatcher.unwrap(matcher))) instanceof SequenceMatcher &&
-                intTag > 0 && subContext.matcher instanceof ActionMatcher,
+        Checks.ensure(unwrap(matcher) instanceof SequenceMatcher && intTag > 0 &&
+                subContext.matcher instanceof ActionMatcher,
                 "Illegal call to getMatch(), getMatchStartIndex(), getMatchEndIndex() or getMatchRange(), " +
                         "only valid in Sequence rule actions that are not in first position");
     }
@@ -242,9 +251,13 @@ public class MatcherContext<V> implements Context<V> {
         this.currentIndex = currentIndex;
         currentChar = inputBuffer.charAt(currentIndex);
     }
+    
+    public void setInErrorRecovery(boolean flag) {
+        inErrorRecovery = flag;
+    }
 
     public void advanceIndex(int delta) {
-        if (currentChar != Chars.EOI) currentIndex += delta;
+        currentIndex += delta;
         currentChar = inputBuffer.charAt(currentIndex);
     }
 
@@ -264,13 +277,6 @@ public class MatcherContext<V> implements Context<V> {
         if (!hasError) {
             hasError = true;
             if (parent != null) parent.markError();
-        }
-    }
-
-    public void clearNodeSuppression() {
-        if (nodeSuppressed) {
-            nodeSuppressed = false;
-            if (parent != null) parent.clearNodeSuppression();
         }
     }
 
