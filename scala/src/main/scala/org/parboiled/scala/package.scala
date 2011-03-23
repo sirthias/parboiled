@@ -117,6 +117,8 @@ package object scala {
     new ActionMatcher(action(ok(stack3[Any, Any, Any](Pop)))).label(nameAction("Drop3"))
 
   type RuleMethod = StackTraceElement
+  
+  def make[A, U](a: A)(f: A => U): A = { f(a); a }
 
   private[scala] def getCurrentRuleMethod: StackTraceElement = {
     try {

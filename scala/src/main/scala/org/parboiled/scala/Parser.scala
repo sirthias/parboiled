@@ -21,7 +21,6 @@ import _root_.scala.collection.mutable
 import org.parboiled.Context
 import org.parboiled.support.{ValueStack, Characters}
 import rules.Rule._
-import utils.Utils._
 
 /**
  * The main Parser trait for scala parboiled parsers. Defines the basic rule building methods as well as the
@@ -102,7 +101,7 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
    */
-  def optional[A](sub: Rule1[A]): Rule1[Option[A]] = avec(sub ~~> (Some(_)) | push(None)) {
+  def optional[A](sub: Rule1[A]): Rule1[Option[A]] = make(sub ~~> (Some(_)) | push(None)) {
     _.matcher.asInstanceOf[FirstOfMatcher].defaultLabel("Optional")
   }
   
@@ -126,7 +125,7 @@ trait Parser {
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
    * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
    */
-  def zeroOrMore[A](sub: Rule1[A]): Rule1[List[A]] = avec(
+  def zeroOrMore[A](sub: Rule1[A]): Rule1[List[A]] = make(
     push(Nil) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> ((list: List[A]) => list.reverse)
   ) { _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("ZeroOrMore") }
   
@@ -147,7 +146,7 @@ trait Parser {
    * <li>...</li>
    * </ul>
    */
-  def zeroOrMore(sub: Rule0, separator: Rule0): Rule0 = avec(optional(oneOrMore(sub, separator))) {
+  def zeroOrMore(sub: Rule0, separator: Rule0): Rule0 = make(optional(oneOrMore(sub, separator))) {
     _.matcher.asInstanceOf[OptionalMatcher].defaultLabel("ZeroOrMore")
   }
 
@@ -163,7 +162,7 @@ trait Parser {
    * </ul>
    * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
    */
-  def zeroOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = avec(oneOrMore(sub, separator) | push(Nil)) {
+  def zeroOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = make(oneOrMore(sub, separator) | push(Nil)) {
     _.matcher.asInstanceOf[FirstOfMatcher].defaultLabel("ZeroOrMore")
   }
   
@@ -197,7 +196,7 @@ trait Parser {
    * This overload automatically builds a list from the return values of its sub rule and pushes it onto the value stack.
    * If the sub rule did not match at all the pushed list will be empty.
    */
-  def oneOrMore[A](sub: Rule1[A]): Rule1[List[A]] = avec(
+  def oneOrMore[A](sub: Rule1[A]): Rule1[List[A]] = make(
     sub ~~> (List(_)) ~ zeroOrMore(sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
   ) { _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("OneOrMore") }
   
@@ -218,7 +217,7 @@ trait Parser {
    * <li>...</li>
    * </ul>
    */
-  def oneOrMore(sub: Rule0, separator: Rule0): Rule0 = avec(sub ~ zeroOrMore(separator ~ sub)) {
+  def oneOrMore(sub: Rule0, separator: Rule0): Rule0 = make(sub ~ zeroOrMore(separator ~ sub)) {
     _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("OneOrMore")
   }
 
@@ -233,7 +232,7 @@ trait Parser {
    * </ul>
    * This overload automatically builds a list from the return values of the sub rule and pushes it onto the value stack.
    */
-  def oneOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = avec(
+  def oneOrMore[A](sub: Rule1[A], separator: Rule0): Rule1[List[A]] = make(
     sub ~~> (List(_)) ~ zeroOrMore(separator ~ sub ~~> ((list: List[A], subRet) => subRet :: list)) ~~> (_.reverse)
   ) { _.matcher.asInstanceOf[SequenceMatcher].defaultLabel("OneOrMore") }
   
@@ -265,7 +264,7 @@ trait Parser {
     case n if n > 0 => {
       val join = if (separator != null) ((_:Rule0) ~ separator ~ (_:Rule0)) else ((_:Rule0) ~ (_:Rule0))
       def multiply(n: Int): Rule0 = if (n > 1) join(multiply(n-1), sub) else sub
-      avec(multiply(times)) {
+      make(multiply(times)) {
         _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
       }
     }
@@ -288,7 +287,7 @@ trait Parser {
       type R = ReductionRule1[Z, Z]
       val join = if (separator != null) ((_:R) ~ separator ~ (_:R)) else ((_:R) ~ (_:R))
       def multiply(n: Int): R = if (n > 1) join(multiply(n-1), sub) else sub
-      avec(multiply(times)) {
+      make(multiply(times)) {
         _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
       }
     }
@@ -311,7 +310,7 @@ trait Parser {
       def join(a: Rule1[List[A]], b: Rule1[A]) =
         a ~ (if (separator != null) separator ~ b else b) ~~> ((list, x) => x :: list)
       def multiply(n: Int): Rule1[List[A]] = if (n > 1) join(multiply(n-1), sub) else sub ~~> (_ :: Nil)
-      avec(multiply(times) ~~> (_.reverse)) {
+      make(multiply(times) ~~> (_.reverse)) {
         _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
       }
     }

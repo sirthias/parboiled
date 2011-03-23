@@ -35,7 +35,6 @@ define "parboiled" do
   SCALATEST = "org.scalatest:scalatest:jar:1.2"
 
   compile.using :deprecation => true, :target => "1.5", :other => ["-encoding", "UTF-8"], :lint=> "all"
-  meta_inf << file('NOTICE')
 
   desc "The core parts of parboiled, depended on by everything else"
   define "core" do
