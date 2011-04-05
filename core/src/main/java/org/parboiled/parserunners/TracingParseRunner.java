@@ -86,7 +86,7 @@ public class TracingParseRunner<V> extends ReportingParseRunner<V> implements Ma
     }
 
     public Sink<String> getLog() {
-        if (filter == null) {
+        if (log == null) {
             withLog(new ConsoleSink());
         }
         return log;
