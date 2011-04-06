@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mathias Doenitz
+ * Copyright (C) 2009-2011 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,13 @@ public class ActionMatcher extends AbstractMatcher {
     public MatcherContext getSubContext(MatcherContext context) {
         MatcherContext subContext = context.getBasicSubContext();
         subContext.setMatcher(this);
-        // if the subcontext contains match data we use the existing subcontext without reinitializing
-        // this way we can access the match data of the previous match from this action
-        return subContext.getCurrentIndex() > 0 ? subContext : context.getSubContext(this);
+        if ((context.getMatcher() instanceof SequenceMatcher) & context.getIntTag() > 0) {
+            // if we are running in a sequence at the second or later position the subcontext contains match data
+            // that the action might want to access, so we use the existing subcontext without reinitializing
+            return subContext;
+        } else {
+            return context.getSubContext(this);
+        }
     }
 
     @SuppressWarnings({"unchecked"})

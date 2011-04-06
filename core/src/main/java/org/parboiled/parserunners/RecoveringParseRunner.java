@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Mathias Doenitz
+ * Copyright (C) 2009-2011 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,21 @@ import static org.parboiled.support.Chars.*;
  * many more runs are performed to properly report all errors and test the various recovery strategies.
  */
 public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
+    
+    public static class TimeoutException extends RuntimeException {
+        public final Rule rule;
+        public final InputBuffer inputBuffer;
+        public final ParsingResult<?> lastParsingResult;
+
+        public TimeoutException(Rule rule, InputBuffer inputBuffer, ParsingResult<?> lastParsingResult) {
+            this.rule = rule;
+            this.inputBuffer = inputBuffer;
+            this.lastParsingResult = lastParsingResult;
+        }
+    }
+
+    private final long timeout;
+    private long startTimeStamp;
     private int errorIndex;
     private InvalidInputError currentError;
     private MutableInputBuffer buffer;
@@ -83,11 +98,24 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * @param rule the parser rule
      */
     public RecoveringParseRunner(Rule rule) {
+        this(rule, Long.MAX_VALUE);
+    }
+    
+    /**
+     * Creates a new RecoveringParseRunner instance for the given rule.
+     * A parsing run will throw a TimeoutException if it takes longer than the given number if milliseconds. 
+     *
+     * @param rule the parser rule
+     * @param timeout the timeout value in milliseconds
+     */
+    public RecoveringParseRunner(Rule rule, long timeout) {
         super(rule);
+        this.timeout = timeout;
     }
 
     public ParsingResult<V> run(InputBuffer inputBuffer) {
         checkArgNotNull(inputBuffer, "inputBuffer");
+        startTimeStamp = System.currentTimeMillis();
         resetValueStack();
 
         // first, run a basic match
@@ -297,6 +325,11 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                         // however we only resynchronize if we are at a RESYNC location and the matcher is a SequenceMatcher
                         // that has already matched at least one character and that is a parent of the last match
                         return qualifiesForResync(context) && resynchronize(context);
+                }
+                
+                // check for timeout only on failures of sequences so as to not add too much overhead
+                if (System.currentTimeMillis() - startTimeStamp > timeout) {
+                    throw new TimeoutException(getRootMatcher(), buffer, lastParsingResult);
                 }
             }
             return false;

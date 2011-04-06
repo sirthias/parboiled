@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Mathias Doenitz
+ * Copyright (C) 2009-2011 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,5 +214,11 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "    [\" has \"] ' has '\n" +
                         "  [Object] 'cars'\n" +
                         "    [\"cars\"] 'cars'\n");
+    }
+    
+    @Test(expectedExceptions = RecoveringParseRunner.TimeoutException.class)
+    public void testRecoveryTimeout() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        new RecoveringParseRunner<Object>(parser.Clause(), 0).run("AaA");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Mathias Doenitz
+ * Copyright (C) 2009-2011 Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ public class TracingParseRunner<V> extends ReportingParseRunner<V> implements Ma
     private Predicate<Tuple2<Context<?>, Boolean>> filter;
     private Sink<String> log;
     private MatcherPath lastPath;
+    private int line;
 
     /**
      * Creates a new TracingParseRunner instance without filter and a console log for the given rule.
@@ -86,7 +87,7 @@ public class TracingParseRunner<V> extends ReportingParseRunner<V> implements Ma
     }
 
     public Sink<String> getLog() {
-        if (filter == null) {
+        if (log == null) {
             withLog(new ConsoleSink());
         }
         return log;
@@ -107,7 +108,8 @@ public class TracingParseRunner<V> extends ReportingParseRunner<V> implements Ma
         Matcher matcher = context.getMatcher();
         boolean matched = matcher.match(context);
         if (getFilter().apply(new Tuple2<Context<?>, Boolean>(context, matched))) {
-            print(context, matched);
+            line++;
+            print(context, matched); // set line-dependent breakpoint here
         }
         return matched;
     }
