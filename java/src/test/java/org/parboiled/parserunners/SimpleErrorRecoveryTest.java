@@ -215,4 +215,10 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "  [Object] 'cars'\n" +
                         "    [\"cars\"] 'cars'\n");
     }
+    
+    @Test(expectedExceptions = RecoveringParseRunner.TimeoutException.class)
+    public void testRecoveryTimeout() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        new RecoveringParseRunner<Object>(parser.Clause(), 0).run("AaA");
+    }
 }

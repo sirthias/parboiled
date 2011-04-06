@@ -24,6 +24,7 @@ import org.parboiled.errors.GrammarException;
 import org.parboiled.errors.ParseError;
 import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.matchers.*;
+import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.*;
 
 import java.util.List;
@@ -333,6 +334,8 @@ public class MatcherContext<V> implements Context<V> {
             matcher = null; // "retire" this context until is "activated" again by a getSubContext(...) on the parent
             return false;
         } catch (ParserRuntimeException e) {
+            throw e; // don't wrap, just bubble up
+        } catch (RecoveringParseRunner.TimeoutException e) {
             throw e; // don't wrap, just bubble up
         } catch (Throwable e) {
             throw new ParserRuntimeException(e,
