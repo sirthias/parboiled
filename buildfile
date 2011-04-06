@@ -1,13 +1,13 @@
 repositories.remote << 'http://repo1.maven.org/maven2'
 
-upload_to = 'scala_tools_releases'
-#upload_to = 'scala_tools_snapshots'
+#upload_to = 'scala_tools_releases'
+upload_to = 'scala_tools_snapshots'
 #upload_to = 'silo'
 url, user, pass = Buildr.settings.user[upload_to].values_at('url', 'user', 'pass')
 repositories.release_to = { :url => url, :username => user, :password => pass }   
 
 Buildr.settings.build['scala.version'] = "2.8.1"
-VERSION_NUMBER = "0.11.1"
+VERSION_NUMBER = "0.12.0-SNAPSHOT"
 
 require "buildr/scala"
 
