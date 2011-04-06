@@ -38,6 +38,7 @@ public class TracingParseRunner<V> extends ReportingParseRunner<V> implements Ma
     private Predicate<Tuple2<Context<?>, Boolean>> filter;
     private Sink<String> log;
     private MatcherPath lastPath;
+    private int line;
 
     /**
      * Creates a new TracingParseRunner instance without filter and a console log for the given rule.
@@ -107,7 +108,8 @@ public class TracingParseRunner<V> extends ReportingParseRunner<V> implements Ma
         Matcher matcher = context.getMatcher();
         boolean matched = matcher.match(context);
         if (getFilter().apply(new Tuple2<Context<?>, Boolean>(context, matched))) {
-            print(context, matched);
+            line++;
+            print(context, matched); // set line-dependent breakpoint here
         }
         return matched;
     }
