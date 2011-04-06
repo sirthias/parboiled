@@ -25,9 +25,34 @@ import org.parboiled.parserunners.{RecoveringParseRunner => PRecoveringParseRunn
  * than one value on the value stack are considered to be bad style.
  */
 object RecoveringParseRunner {
-  def apply(rule: Rule0) = new RecoveringParseRunner[Nothing](new PRecoveringParseRunner[Nothing](rule))
 
-  def apply[V](rule: Rule1[V]) = new RecoveringParseRunner[V](new PRecoveringParseRunner[V](rule))
+  /**
+   * Create a RecoveringParseRunner for the given rule.
+   */
+  def apply(rule: Rule0): RecoveringParseRunner[Nothing] = apply(rule, Long.MaxValue)
+  
+  /**
+   * Create a RecoveringParseRunner for the given rule.
+   * The timeout value specifies the maximum number of milliseconds a parsing run may take. If the run takes longer
+   * it will be terminated with a org.parboiled.parserunners.RecoveringParseRunner.TimeoutException.
+   */
+  def apply(rule: Rule0, timeout: Long) = {
+    new RecoveringParseRunner[Nothing](new PRecoveringParseRunner[Nothing](rule, timeout))
+  }
+
+  /**
+   * Create a RecoveringParseRunner for the given rule.
+   */
+  def apply[V](rule: Rule1[V]): RecoveringParseRunner[V] = apply(rule, Long.MaxValue)
+  
+  /**
+   * Create a RecoveringParseRunner for the given rule.
+   * The timeout value specifies the maximum number of milliseconds a parsing run may take. If the run takes longer
+   * it will be terminated with a org.parboiled.parserunners.RecoveringParseRunner.TimeoutException.
+   */
+  def apply[V](rule: Rule1[V], timeout: Long = Long.MaxValue) = {
+    new RecoveringParseRunner[V](new PRecoveringParseRunner[V](rule, timeout))
+  }
 }
 
 class RecoveringParseRunner[V](val inner: PRecoveringParseRunner[V]) extends ParseRunner[V] {
