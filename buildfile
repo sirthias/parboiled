@@ -3,11 +3,11 @@ repositories.remote << 'http://repo1.maven.org/maven2'
 #upload_to = 'scala_tools_releases'
 upload_to = 'scala_tools_snapshots'
 #upload_to = 'silo'
-url, user, pass = Buildr.settings.user[upload_to].values_at('url', 'user', 'pass')
-repositories.release_to = { :url => url, :username => user, :password => pass }   
+#url, user, pass = Buildr.settings.user[upload_to].values_at('url', 'user', 'pass')
+#repositories.release_to = { :url => url, :username => user, :password => pass }   
 
-Buildr.settings.build['scala.version'] = "2.8.1"
-VERSION_NUMBER = "0.11.0"
+Buildr.settings.build['scala.version'] = "2.9.0.RC1"
+VERSION_NUMBER = "0.11.1-SNAPSHOT"
 
 require "buildr/scala"
 
@@ -32,7 +32,7 @@ define "parboiled" do
   manifest["Bundle-SymbolicName"] = "org.parboiled"
 
   ASM = ["asm:asm:jar:3.3.1", "asm:asm-tree:jar:3.3.1", "asm:asm-analysis:jar:3.3.1", "asm:asm-util:jar:3.3.1"]
-  SCALATEST = "org.scalatest:scalatest:jar:1.2"
+  SCALATEST = "org.scalatest:scalatest:jar:1.4-SNAPSHOT"
 
   compile.using :deprecation => true, :target => "1.5", :other => ["-encoding", "UTF-8"], :lint=> "all"
   meta_inf << file('NOTICE')
