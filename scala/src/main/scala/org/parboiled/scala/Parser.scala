@@ -378,8 +378,8 @@ trait Parser {
    * Creates a rule that matches any single character in the given  { @link org.parboiled.support.Characters } instance.
    */
   def anyOf(chars: Characters): Rule0 = {
-    if (!chars.isSubtractive && chars.getChars().length == 1)
-      ch(chars.getChars()(0))
+    if (!chars.isSubtractive && chars.getChars.length == 1)
+      ch(chars.getChars.apply(0))
     else if (chars == Characters.NONE)
       NOTHING
     else
@@ -435,16 +435,16 @@ trait Parser {
   /**
    * Create a parser action from the given function whose result value is pushed onto the value stack.
    */
-  def pushFromContext[A](f: Context[_] => A): Rule1[A] =
+  def pushFromContext[A](f: Context[Any] => A): Rule1[A] =
     new Rule1[A](new ActionMatcher(action(rules.Rule.push(f)))).label(nameAction("Push1"))
 
-  def withContext[A, R](f: (A, Context[_]) => R) = new WithContextAction1[A, R](f)
-  def withContext[A, B, R](f: (A, B, Context[_]) => R) = new WithContextAction2[A, B, R](f)
-  def withContext[A, B, C, R](f: (A, B, C, Context[_]) => R) = new WithContextAction3[A, B, C, R](f)
-  def withContext[A, B, C, D, R](f: (A, B, C, D, Context[_]) => R) = new WithContextAction4[A, B, C, D, R](f)
-  def withContext[A, B, C, D, E, R](f: (A, B, C, D, E, Context[_]) => R) = new WithContextAction5[A, B, C, D, E, R](f)
-  def withContext[A, B, C, D, E, F, R](f: (A, B, C, D, E, F, Context[_]) => R) = new WithContextAction6[A, B, C, D, E, F, R](f)
-  def withContext[A, B, C, D, E, F, G, R](f: (A, B, C, D, E, F, G, Context[_]) => R) = new WithContextAction7[A, B, C, D, E, F, G, R](f)
+  def withContext[A, R](f: (A, Context[Any]) => R) = new WithContextAction1[A, R](f)
+  def withContext[A, B, R](f: (A, B, Context[Any]) => R) = new WithContextAction2[A, B, R](f)
+  def withContext[A, B, C, R](f: (A, B, C, Context[Any]) => R) = new WithContextAction3[A, B, C, R](f)
+  def withContext[A, B, C, D, R](f: (A, B, C, D, Context[Any]) => R) = new WithContextAction4[A, B, C, D, R](f)
+  def withContext[A, B, C, D, E, R](f: (A, B, C, D, E, Context[Any]) => R) = new WithContextAction5[A, B, C, D, E, R](f)
+  def withContext[A, B, C, D, E, F, R](f: (A, B, C, D, E, F, Context[Any]) => R) = new WithContextAction6[A, B, C, D, E, F, R](f)
+  def withContext[A, B, C, D, E, F, G, R](f: (A, B, C, D, E, F, G, Context[Any]) => R) = new WithContextAction7[A, B, C, D, E, F, G, R](f)
 
   // the following implicits are defined here in the parser and not in the package object so there are available
   // for overriding
