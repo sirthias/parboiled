@@ -35,22 +35,31 @@ abstract class Rule {
    */
   def unary_! : Rule0 = new TestNotMatcher(matcher)
 
-  def ~(other: Rule0): this.type = withMatcher(append(other))
+  /**
+   * Connects two rules into a rule a sequence.
+   */
+  def ~ (other: Rule0): this.type = withMatcher(append(other))
 
   /**
    * Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.
    */
-  def ~:?[R](f: Char => Boolean): this.type = withMatcher(append(exec(GetMatchedChar, f)))
+  def ~:? [R](f: Char => Boolean): this.type = withMatcher(append(exec(GetMatchedChar, f)))
 
   /**
    * Creates a semantic predicate on the input text matched by the immediately preceding rule.
    */
-  def ~?[R](f: String => Boolean): this.type = withMatcher(append(exec(GetMatch, f)))
+  def ~? [R](f: String => Boolean): this.type = withMatcher(append(exec(GetMatch, f)))
 
+  /**
+   * Creates a simple parser action with the first char of the input text matched by the immediately preceding
+   * rule as parameter.
+   */
+  def ~:% (f: Char => Unit): this.type = ~:?(ok(f))
+  
   /**
    * Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.
    */
-  def ~%(f: String => Unit): this.type = ~?(ok(f))
+  def ~% (f: String => Unit): this.type = ~?(ok(f))
   
   def label(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
 
