@@ -43,12 +43,12 @@ abstract class Rule {
   /**
    * Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.
    */
-  def ~:? [R](f: Char => Boolean): this.type = withMatcher(append(exec(GetMatchedChar, f)))
+  def ~:? (f: Char => Boolean): this.type = withMatcher(append(exec(GetMatchedChar, f)))
 
   /**
    * Creates a semantic predicate on the input text matched by the immediately preceding rule.
    */
-  def ~? [R](f: String => Boolean): this.type = withMatcher(append(exec(GetMatch, f)))
+  def ~? (f: String => Boolean): this.type = withMatcher(append(exec(GetMatch, f)))
 
   /**
    * Creates a simple parser action with the first char of the input text matched by the immediately preceding
