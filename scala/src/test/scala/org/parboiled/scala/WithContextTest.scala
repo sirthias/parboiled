@@ -24,9 +24,14 @@ import testing.ParboiledTest
 class WithContextTest extends ParboiledTest with TestNGSuite {
 
   class TestParser extends Parser {
-    def Clause = rule {
-      "A" ~ pushFromContext(_.getCurrentIndex) ~ Digit ~~> withContext((_:Int) + (_:Int) + _.getCurrentIndex) ~ EOI
-    }
+    def Clause = rule (
+      "A"
+      ~ pushFromContext(_.getCurrentIndex)
+      ~ Digit
+      ~~> withContext((_:Int) + (_:Int) + _.getCurrentIndex)
+      ~% withContext(_.toString + _.getCurrentIndex)
+      ~ EOI
+    )
 
     def Digit = rule { ("0" - "9") ~> (_.toInt) }
   }

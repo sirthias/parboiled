@@ -51,7 +51,7 @@ abstract class Rule {
    * Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.
    */
   def ~%(f: String => Unit): this.type = ~?(ok(f))
-
+  
   def label(label: String): this.type = withMatcher(matcher.label(label).asInstanceOf[Matcher])
 
   def suppressNode: this.type = withMatcher(matcher.suppressNode().asInstanceOf[Matcher])
@@ -125,7 +125,12 @@ object Rule {
     true
   }
 
-  private[parboiled] def ok[A](f: A => Any) = (a: A) => { f(a); true }
+  private[parboiled] def ok[A](f: A => Any): A => Boolean = {
+    f match {
+      case wca: WithContextAction1[A, Any] => new WithContextAction1({ (a, ctx) => wca.action(a, ctx); true })
+      case _ => { a => f(a); true }
+    }
+  }
 
   private[parboiled] def stack1[Z](get: (ValueStack[Any], Int) => Any) = (c: Context[Any]) => {
     get(c.getValueStack, 0).asInstanceOf[Z]
