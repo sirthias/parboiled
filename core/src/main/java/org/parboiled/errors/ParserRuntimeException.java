@@ -37,7 +37,7 @@ public class ParserRuntimeException extends RuntimeException {
     }
 
     public ParserRuntimeException(Throwable cause, String message, Object... messageArgs) {
-        super(String.format(message, messageArgs), cause);
+        super(messageArgs.length > 0 ? String.format(message, messageArgs) : message, cause);
     }
 
     public ParserRuntimeException(Throwable cause) {
