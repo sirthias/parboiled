@@ -69,9 +69,10 @@ public class ActionMatcher extends AbstractMatcher {
     public MatcherContext getSubContext(MatcherContext context) {
         MatcherContext subContext = context.getBasicSubContext();
         subContext.setMatcher(this);
-        if ((context.getMatcher() instanceof SequenceMatcher) & context.getIntTag() > 0) {
-            // if we are running in a sequence at the second or later position the subcontext contains match data
-            // that the action might want to access, so we use the existing subcontext without reinitializing
+        if (context.getCurrentIndex() > context.getStartIndex()) {
+            // if we have already matched something we must be in a sequence at the second or later position
+            // the subcontext contains match data that the action might want to access, so we use the existing
+            // subcontext without reinitializing
             return subContext;
         } else {
             return context.getSubContext(this);
