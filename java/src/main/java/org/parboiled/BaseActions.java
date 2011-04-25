@@ -18,6 +18,7 @@ package org.parboiled;
 
 import org.parboiled.support.Checks;
 import org.parboiled.support.IndexRange;
+import org.parboiled.support.Position;
 
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 
@@ -138,6 +139,17 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     public int matchLength() {
         check();
         return context.getMatchLength();
+    }
+
+    /**
+     * <p>Returns the current position in the underlying {@link org.parboiled.buffers.InputBuffer} as a
+     * {@link Position} instance.</p>
+     * 
+     * @return the current position in the underlying inputbuffer
+     */
+    public Position position() {
+        check();
+        return context.getPosition();
     }
 
     /**

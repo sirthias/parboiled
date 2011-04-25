@@ -21,6 +21,7 @@ import org.parboiled.errors.ParseError;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.support.IndexRange;
 import org.parboiled.support.MatcherPath;
+import org.parboiled.support.Position;
 import org.parboiled.support.ValueStack;
 
 import java.util.List;
@@ -191,6 +192,14 @@ public interface Context<V> {
      * @return the number of characters matched
      */
     int getMatchLength();
+    
+    /**
+     * <p>Returns the current position in the underlying {@link org.parboiled.buffers.InputBuffer} as a
+     * {@link Position} instance.</p>
+     * 
+     * @return the current position in the underlying inputbuffer
+     */
+    Position getPosition();
     
     /**
      * Creates a new {@link IndexRange} instance covering the input text matched by the rule immediately preceding the
