@@ -51,6 +51,16 @@ public abstract class BaseActions<V> implements ContextAware<V> {
     }
 
     /**
+     * Returns the current index in the input buffer.
+     *
+     * @return the current index
+     */
+    public int currentIndex() {
+        check();
+        return context.getCurrentIndex();
+    }
+
+    /**
      * <p>Returns the input text matched by the rule immediately preceding the action expression that is currently
      * being evaluated. This call can only be used in actions that are part of a Sequence rule and are not at first
      * position in this Sequence.</p>
