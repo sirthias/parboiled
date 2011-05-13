@@ -1,3 +1,18 @@
+Version 0.11.2 (2011-05-13)
+---------------------------
+- Changed build system from Apache Buildr to SBT 0.7.7 (Scala Build Tool)
+Core:
+- Added convenience methods to Context and BaseActions returning the current location in the InputBuffer as a Position
+- Fixed another potential problem with ActionMatcher subcontext initialization
+- Fixed MissingFormatArgumentException in ParseRuntimeException when args array is empty
+Java:
+- Added convenience 'currentIndex()' method to BaseActions
+Scala:
+- Added '~:?' operator
+- Fixed 'withContext' not usable on '~%' operator problem
+- Turned all remaining references to Context[_] to Context[Any]
+(this is the last version built against Scala 2.8.1)
+
 Version 0.11.1 (2011-04-06)
 ---------------------------
 Core:
