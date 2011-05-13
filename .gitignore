@@ -1,4 +1,8 @@
-/.idea/workspace.xml
-/.rvmrc
+/.idea/
+/project/boot/
+/project/plugins/project
 target/
-reports/
+lib_managed/
+src_managed/
+test-output/
+*.iml
