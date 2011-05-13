@@ -74,7 +74,6 @@ class RuleMethod extends MethodNode {
                       boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno, boolean hasSkipActionsInPredicates) {
         super(access, name, desc, signature, exceptions);
         this.ownerClass = ownerClass;
-
         parameterCount = Type.getArgumentTypes(desc).length;
         hasCachedAnnotation = parameterCount == 0;
         hasDontLabelAnnotation = hasDontLabelAnno;

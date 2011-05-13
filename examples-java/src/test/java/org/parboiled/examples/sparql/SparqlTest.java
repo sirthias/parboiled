@@ -23,6 +23,7 @@
 package org.parboiled.examples.sparql;
 
 import org.parboiled.Parboiled;
+import org.parboiled.common.FileUtils;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.testng.Assert;
@@ -75,7 +76,7 @@ public class SparqlTest {
         List<TextInfo> textInfos = new ArrayList<TextInfo>();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(
-                ClassLoader.getSystemClassLoader().getResourceAsStream("SparqlTest.test"),
+                getClass().getClassLoader().getResourceAsStream("SparqlTest.test"),
                 Charset.forName("UTF8")));
         while (in.ready()) {
             if (in.read() == '<' && in.ready() && in.read() == '<') {

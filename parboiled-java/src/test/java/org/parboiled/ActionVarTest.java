@@ -17,6 +17,7 @@
 package org.parboiled;
 
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.matchers.Matcher;
 import org.parboiled.support.Var;
 import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
@@ -40,7 +41,9 @@ public class ActionVarTest extends TestNgParboiledTest<Integer> {
     @Test
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
-        Rule rule = parser.A();
+        Matcher rule = (Matcher) parser.A();
+
+        assertEquals(rule.getClass().getName(), "org.parboiled.matchers.VarFramingMatcher");
 
         test(rule, "aaaa")
                 .hasNoErrors()

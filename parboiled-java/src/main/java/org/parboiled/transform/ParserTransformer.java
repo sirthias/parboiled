@@ -26,21 +26,17 @@ import static org.parboiled.transform.AsmUtils.*;
 
 public class ParserTransformer {
 
-    private static final Object lock = new Object();
-
     private ParserTransformer() {}
 
     @SuppressWarnings({"unchecked"})
-    public static <T> Class<? extends T> transformParser(Class<T> parserClass) throws Exception {
+    public static synchronized <T> Class<? extends T> transformParser(Class<T> parserClass) throws Exception {
         checkArgNotNull(parserClass, "parserClass");
-        synchronized (lock) {
-            // first check whether we did not already create and load the extension of the given parser class
-            Class<?> extendedClass = findLoadedClass(
-                    getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
-            );
-            return (Class<? extends T>)
-                    (extendedClass != null ? extendedClass : extendParserClass(parserClass).getExtendedClass());
-        }
+        // first check whether we did not already create and load the extension of the given parser class
+        Class<?> extendedClass = findLoadedClass(
+                getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
+        );
+        return (Class<? extends T>)
+                (extendedClass != null ? extendedClass : extendParserClass(parserClass).getExtendedClass());
     }
 
     static ParserClassNode extendParserClass(Class<?> parserClass) throws Exception {

@@ -39,14 +39,12 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 class AsmUtils {
-
-    private static final ConcurrentMap<String, Class<?>> classForDesc = new ConcurrentHashMap<String, Class<?>>();
 
     public static ClassReader createClassReader(Class<?> clazz) throws IOException {
         checkArgNotNull(clazz, "clazz");
@@ -60,7 +58,9 @@ class AsmUtils {
         return parserClassName + "$$parboiled";
     }
 
-    public static Class<?> getClassForInternalName(String classDesc) {
+    private static final Map<String, Class<?>> classForDesc = new HashMap<String, Class<?>>();
+
+    public static synchronized Class<?> getClassForInternalName(String classDesc) {
         checkArgNotNull(classDesc, "classDesc");
         Class<?> clazz = classForDesc.get(classDesc);
         if (clazz == null) {

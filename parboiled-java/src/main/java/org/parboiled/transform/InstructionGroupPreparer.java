@@ -35,8 +35,6 @@ import static org.objectweb.asm.Opcodes.ALOAD;
 
 class InstructionGroupPreparer implements RuleMethodProcessor {
 
-    private static final Object lock = new Object();
-
     private static final Base64 CUSTOM_BASE64 =
             new Base64("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789äö_");
 
@@ -100,20 +98,18 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
     }
 
     // set a group name base on the hash across all group instructions
-    private void name(InstructionGroup group, ParserClassNode classNode) {
-        synchronized (lock) {
-            // generate an MD5 hash across the buffer, use only the first 96 bit
-            MD5Digester digester = new MD5Digester(classNode.name);
-            group.getInstructions().accept(digester);
-            byte[] hash = digester.getMD5Hash();
-            byte[] hash96 = new byte[12];
-            System.arraycopy(hash, 0, hash96, 0, 12);
+    private synchronized void name(InstructionGroup group, ParserClassNode classNode) {
+        // generate an MD5 hash across the buffer, use only the first 96 bit
+        MD5Digester digester = new MD5Digester(classNode.name);
+        group.getInstructions().accept(digester);
+        byte[] hash = digester.getMD5Hash();
+        byte[] hash96 = new byte[12];
+        System.arraycopy(hash, 0, hash96, 0, 12);
 
-            // generate a name for the group based on the hash
-            String name = group.getRoot().isActionRoot() ? "Action$" : "VarInit$";
-            name += CUSTOM_BASE64.encodeToString(hash96, false);
-            group.setName(name);
-        }
+        // generate a name for the group based on the hash
+        String name = group.getRoot().isActionRoot() ? "Action$" : "VarInit$";
+        name += CUSTOM_BASE64.encodeToString(hash96, false);
+        group.setName(name);
     }
 
     private static class MD5Digester extends EmptyVisitor {
