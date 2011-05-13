@@ -1,5 +1,6 @@
 import java.beans.DefaultPersistenceDelegate
 import sbt._
+import Process._
 
 class Project(info: ProjectInfo) extends DefaultProject(info) {
   
@@ -111,12 +112,31 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     override def disableCrossPaths = true
   }
   
-  class ParboiledCoreProject(info: ProjectInfo) extends ModuleProject(info) {
+  abstract class JavaModuleProject(info: ProjectInfo) extends ModuleProject(info) {
+    def docLink = ""
+    override def docAction = fileTask(mainDocPath / "index.html" from mainSources) {
+      val cmd = "javadoc" +
+              " -sourcepath " + mainSourceRoots.absString +
+              " -classpath " + docClasspath.absString +
+              " -d " + mainDocPath +
+              docLink + 
+              " -encoding utf8" +
+              " -public" +
+              " -windowtitle " + name + "_" + version +
+              " -subpackages" +
+              " org.parboiled"
+      println(cmd)
+      cmd !;
+      None
+    } dependsOn(compile) describedAs "Create Javadocs"
+  }
+  
+  class ParboiledCoreProject(info: ProjectInfo) extends JavaModuleProject(info) {
     val testng = Deps.testng
     val scalaTest = Deps.scalaTest
   }
   
-  class ParboiledJavaProject(info: ProjectInfo) extends ModuleProject(info) {
+  class ParboiledJavaProject(info: ProjectInfo) extends JavaModuleProject(info) {
     val core = coreProject
     val asm1 = Deps.asm1
     val asm2 = Deps.asm2
@@ -124,6 +144,8 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     val asm4 = Deps.asm4
     val testng = Deps.testng
     val scalaTest = Deps.scalaTest
+    
+    override def docLink = " -linkoffline http://www.decodified.com/parboiled/api/core " + coreProject.mainDocPath
   }
   
   class ParboiledScalaProject(info: ProjectInfo) extends ModuleProject(info) {
