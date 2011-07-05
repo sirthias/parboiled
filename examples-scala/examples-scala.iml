@@ -1,30 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="scala" name="Scala">
-      <configuration>
-        <option name="compilerLibraryLevel" value="Project" />
-        <option name="compilerLibraryName" value="buildScala" />
-      </configuration>
-    </facet>
-  </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/target/classes" />
-    <output-test url="file://$MODULE_DIR$/target/test-classes" />
-    <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/scala" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/.idea" />
-      <excludeFolder url="file://$MODULE_DIR$/lib_managed" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
-      <excludeFolder url="file://$MODULE_DIR$/test-output" />
-    </content>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="buildScala" level="project" />
-    <orderEntry type="module" module-name="parboiled-core" />
-    <orderEntry type="module" module-name="parboiled-scala" />
-  </component>
-</module>
-
+      <component name="FacetManager">
+        <facet type="scala" name="Scala">
+          <configuration>
+            <option value="Project" name="compilerLibraryLevel"></option>
+            <option value="buildScala" name="compilerLibraryName"></option>
+          </configuration>
+        </facet>
+        
+      </component>
+      <component inherit-compiler-output="false" name="NewModuleRootManager">
+        <output url="file://$MODULE_DIR$/target/classes"></output><output-test url="file://$MODULE_DIR$/target/test-classes"></output-test>
+        <exclude-output></exclude-output>
+        <content url="file://$MODULE_DIR$">
+          <sourceFolder isTestSource="false" url="file://$MODULE_DIR$/src/main/scala"></sourceFolder><sourceFolder isTestSource="true" url="file://$MODULE_DIR$/src/test/scala"></sourceFolder>
+          
+          
+          <excludeFolder url="file://$MODULE_DIR$/.idea"></excludeFolder><excludeFolder url="file://$MODULE_DIR$/lib_managed"></excludeFolder><excludeFolder url="file://$MODULE_DIR$/target"></excludeFolder><excludeFolder url="file://$MODULE_DIR$/test-output"></excludeFolder>
+        </content>
+        
+        <orderEntry type="inheritedJdk"></orderEntry>
+        <orderEntry type="sourceFolder" forTests="false"></orderEntry>
+        <orderEntry level="project" type="library" name="buildScala"></orderEntry>
+        <orderEntry type="module" module-name="parboiled-core"></orderEntry><orderEntry type="module" module-name="parboiled-scala"></orderEntry>
+        
+      </component>
+    </module>

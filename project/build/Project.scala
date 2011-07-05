@@ -32,7 +32,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     
     // test
     val testng    = "org.testng" % "testng" % "5.14.1" % "test" withSources() 
-    val scalaTest = "org.scalatest" %% "scalatest" % "1.4.1" % "test" withSources() 
+    val scalaTest = "org.scalatest" % "scalatest_2.9.0" % "1.6.1" % "test" withSources()
   }
   
   // -------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   )  
   val scalaCompileSettings = Seq(
     "-deprecation",
-    "-unchecked",
+    //"-unchecked",
     "-encoding", "utf8"
   )
 
