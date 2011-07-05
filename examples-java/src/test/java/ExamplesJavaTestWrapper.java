@@ -5,11 +5,13 @@ import org.scalatest.testng.TestNGWrapperSuite;
 import java.io.File;
 import java.io.IOException;
 
+import static scala.collection.JavaConversions.collectionAsScalaIterable;
+
 @SuppressWarnings("unchecked")
 public class ExamplesJavaTestWrapper extends TestNGWrapperSuite {
 
     public ExamplesJavaTestWrapper() throws IOException {
-        super(scala.collection.JavaConversions.asScalaIterable(ImmutableList.of(getSuiteFileName())).toList());
+        super(collectionAsScalaIterable(ImmutableList.of(getSuiteFileName())).toList());
     }
     
     public static String getSuiteFileName() throws IOException {

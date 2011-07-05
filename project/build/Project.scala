@@ -1,5 +1,6 @@
 import java.beans.DefaultPersistenceDelegate
 import sbt._
+import Process._
 
 class Project(info: ProjectInfo) extends DefaultProject(info) {
   
@@ -31,7 +32,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     
     // test
     val testng    = "org.testng" % "testng" % "5.14.1" % "test" withSources() 
-    val scalaTest = "org.scalatest" %% "scalatest" % "1.4.1" % "test" withSources() 
+    val scalaTest = "org.scalatest" % "scalatest_2.9.0" % "1.6.1" % "test" withSources()
   }
   
   // -------------------------------------------------------------------------------------------------------------------
@@ -47,7 +48,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   )  
   val scalaCompileSettings = Seq(
     "-deprecation",
-    "-unchecked",
+    //"-unchecked",
     "-encoding", "utf8"
   )
 
@@ -97,8 +98,8 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     override def pomExtra = pomExtras
 
     // Publishing
-    //val publishTo = "Scala Tools Snapshots" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
-    val publishTo = "Scala Tools Releases" at "http://nexus.scala-tools.org/content/repositories/releases/"
+    val publishTo = "Scala Tools Snapshots" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+    //val publishTo = "Scala Tools Releases" at "http://nexus.scala-tools.org/content/repositories/releases/"
     
     Credentials(Path.userHome / ".ivy2" / ".credentials", log)
     override def managedStyle = ManagedStyle.Maven
@@ -111,12 +112,31 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     override def disableCrossPaths = true
   }
   
-  class ParboiledCoreProject(info: ProjectInfo) extends ModuleProject(info) {
+  abstract class JavaModuleProject(info: ProjectInfo) extends ModuleProject(info) {
+    def docLink = ""
+    override def docAction = fileTask(mainDocPath / "index.html" from mainSources) {
+      val cmd = "javadoc" +
+              " -sourcepath " + mainSourceRoots.absString +
+              " -classpath " + docClasspath.absString +
+              " -d " + mainDocPath +
+              docLink + 
+              " -encoding utf8" +
+              " -public" +
+              " -windowtitle " + name + "_" + version +
+              " -subpackages" +
+              " org.parboiled"
+      println(cmd)
+      cmd !;
+      None
+    } dependsOn(compile) describedAs "Create Javadocs"
+  }
+  
+  class ParboiledCoreProject(info: ProjectInfo) extends JavaModuleProject(info) {
     val testng = Deps.testng
     val scalaTest = Deps.scalaTest
   }
   
-  class ParboiledJavaProject(info: ProjectInfo) extends ModuleProject(info) {
+  class ParboiledJavaProject(info: ProjectInfo) extends JavaModuleProject(info) {
     val core = coreProject
     val asm1 = Deps.asm1
     val asm2 = Deps.asm2
@@ -124,6 +144,8 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     val asm4 = Deps.asm4
     val testng = Deps.testng
     val scalaTest = Deps.scalaTest
+    
+    override def docLink = " -linkoffline http://www.decodified.com/parboiled/api/core " + coreProject.mainDocPath
   }
   
   class ParboiledScalaProject(info: ProjectInfo) extends ModuleProject(info) {
