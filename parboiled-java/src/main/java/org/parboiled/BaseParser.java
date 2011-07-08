@@ -175,6 +175,35 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
+     * Creates a new rule that matches all characters except the ones in the given string.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule NoneOf(String characters) {
+        checkArgNotNull(characters, "characters");
+        return NoneOf(characters.toCharArray());
+    }
+
+    /**
+     * Creates a new rule that matches all characters except the ones in the given char array.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * argument will yield the same rule instance.</p>
+     *
+     * @param characters the characters
+     * @return a new rule
+     */
+    @DontLabel
+    public Rule NoneOf(char[] characters) {
+        checkArgNotNull(characters, "characters");
+        checkArgument(characters.length > 0);
+        return AnyOf(Characters.allBut(characters));
+    }
+
+    /**
      * Explicitly creates a rule matching the given string. Normally you can just specify the string literal
      * directly in you rule description. However, if you want to not go through {@link #fromStringLiteral(String)},
      * e.g. because you redefined it, you can also use this wrapper.

@@ -26,7 +26,7 @@ public class SimpleTest extends TestNgParboiledTest<Object> {
     static class Parser extends BaseParser<Object> {
 
         public Rule Clause() {
-            return Sequence(Digit(), Operator(), Digit(), AnyOf("abcd"), EOI);
+            return Sequence(Digit(), Operator(), Digit(), AnyOf("abcd"), NoneOf("abcd"), EOI);
         }
 
         public Rule Operator() {
@@ -43,15 +43,16 @@ public class SimpleTest extends TestNgParboiledTest<Object> {
     public void test() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
-        test(rule, "1+5b")
+        test(rule, "1+5bx")
                 .hasNoErrors()
                 .hasParseTree("" +
-                        "[Clause] '1+5b'\n" +
+                        "[Clause] '1+5bx'\n" +
                         "  [Digit] '1'\n" +
                         "  [Operator] '+'\n" +
                         "    ['+'] '+'\n" +
                         "  [Digit] '5'\n" +
                         "  [[abcd]] 'b'\n" +
+                        "  [![abcd]] 'x'\n" +
                         "  [EOI]\n");
     }
 
