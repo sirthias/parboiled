@@ -26,7 +26,7 @@ public class SimpleTest extends TestNgParboiledTest<Object> {
     static class Parser extends BaseParser<Object> {
 
         public Rule Clause() {
-            return Sequence(Digit(), Operator(), Digit(), AnyOf("abcd"), NoneOf("abcd"), EOI);
+            return Sequence(Digit(), Operator(), Digit(), AnyOf("abcd"), OneOrMore(NoneOf("abcd")), EOI);
         }
 
         public Rule Operator() {
@@ -52,7 +52,8 @@ public class SimpleTest extends TestNgParboiledTest<Object> {
                         "    ['+'] '+'\n" +
                         "  [Digit] '5'\n" +
                         "  [[abcd]] 'b'\n" +
-                        "  [![abcd]] 'x'\n" +
+                        "  [OneOrMore] 'x'\n" +
+                        "    [![abcdEOI]] 'x'\n" +
                         "  [EOI]\n");
     }
 

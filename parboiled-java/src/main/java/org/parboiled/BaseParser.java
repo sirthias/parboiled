@@ -24,6 +24,8 @@ import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 import org.parboiled.support.Checks;
 
+import java.util.Arrays;
+
 import static org.parboiled.common.Preconditions.*;
 
 /**
@@ -175,7 +177,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Creates a new rule that matches all characters except the ones in the given string.
+     * Creates a new rule that matches all characters except the ones in the given string and EOI.
      * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -189,7 +191,7 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     }
 
     /**
-     * Creates a new rule that matches all characters except the ones in the given char array.
+     * Creates a new rule that matches all characters except the ones in the given char array and EOI.
      * <p>Note: This methods provides caching, which means that multiple invocations with the same
      * argument will yield the same rule instance.</p>
      *
@@ -200,6 +202,17 @@ public abstract class BaseParser<V> extends BaseActions<V> {
     public Rule NoneOf(char[] characters) {
         checkArgNotNull(characters, "characters");
         checkArgument(characters.length > 0);
+
+        // make sure to always exclude EOI as well
+        boolean containsEOI = false;
+        for (char c : characters) if (c == Chars.EOI) { containsEOI = true; break; }
+        if (!containsEOI) {
+            char[] withEOI = new char[characters.length + 1];
+            System.arraycopy(characters, 0, withEOI, 0, characters.length);
+            withEOI[characters.length] = Chars.EOI;
+            characters = withEOI;
+        }
+
         return AnyOf(Characters.allBut(characters));
     }
 
