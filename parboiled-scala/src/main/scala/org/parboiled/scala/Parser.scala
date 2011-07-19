@@ -264,9 +264,7 @@ trait Parser {
     case n if n > 0 => {
       val join = if (separator != null) ((_:Rule0) ~ separator ~ (_:Rule0)) else ((_:Rule0) ~ (_:Rule0))
       def multiply(n: Int): Rule0 = if (n > 1) join(multiply(n-1), sub) else sub
-      make(multiply(times)) {
-        _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
-      }
+      nameNTimes(multiply(times), times)
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
   }
@@ -287,9 +285,7 @@ trait Parser {
       type R = ReductionRule1[Z, Z]
       val join = if (separator != null) ((_:R) ~ separator ~ (_:R)) else ((_:R) ~ (_:R))
       def multiply(n: Int): R = if (n > 1) join(multiply(n-1), sub) else sub
-      make(multiply(times)) {
-        _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
-      }
+      nameNTimes(multiply(times), times)
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
   }
@@ -310,25 +306,31 @@ trait Parser {
       def join(a: Rule1[List[A]], b: Rule1[A]) =
         a ~ (if (separator != null) separator ~ b else b) ~~> ((list, x) => x :: list)
       def multiply(n: Int): Rule1[List[A]] = if (n > 1) join(multiply(n-1), sub) else sub ~~> (_ :: Nil)
-      make(multiply(times) ~~> (_.reverse)) {
-        _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
-      }
+      nameNTimes(multiply(times) ~~> (_.reverse), times)
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
   }
-  
+
   /**
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
   def nTimes[A, B](times: Int, sub: Rule2[A, B]): Rule1[List[(A, B)]] = nTimes(times, sub, null)
-  
+
   /**
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes[A, B](times: Int, sub: Rule2[A, B], separator: Rule0 = null): Rule1[List[(A, B)]] = {
+  def nTimes[A, B](times: Int, sub: Rule2[A, B], separator: Rule0): Rule1[List[(A, B)]] = {
     nTimes(times, sub ~~> ((_, _)), separator)
+  }
+
+  private def nameNTimes[R <: Rule](rule: R, times: Int) = {
+    rule.matcher match {
+      case sm: SequenceMatcher => sm.defaultLabel(times + "-times")
+      case _ =>
+    }
+    rule
   }
 
   /**
