@@ -24,6 +24,7 @@ import org.parboiled.common.*;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Filters;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ToStringFormatter;
 import org.testng.annotations.Test;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -82,11 +83,8 @@ public class JavaTest {
             );
         }
         assertEquals(
-                printTree(parsingResult.parseTreeRoot, new Formatter<Node<Object>>() {
-                    public String format(Node<Object> node) {
-                        return node.toString();
-                    }
-                }, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
+                printTree(parsingResult.parseTreeRoot, new ToStringFormatter<Node<Object>>(),
+                        Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
                 FileUtils.readAllTextFromResource("SimpleJavaTestParseTree.test")
         );
     }

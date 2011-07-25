@@ -124,7 +124,7 @@ public class JavaParser extends BaseParser<Object> {
         return FirstOf(
                 Sequence(TypeParameters(), GenericMethodOrConstructorRest()),
                 Sequence(Type(), Identifier(), MethodDeclaratorRest()),
-                Sequence(Type(), VariableDeclarators()),
+                Sequence(Type(), VariableDeclarators(), SEMI),
                 Sequence(VOID, Identifier(), VoidMethodDeclaratorRest()),
                 Sequence(Identifier(), ConstructorDeclaratorRest()),
                 InterfaceDeclaration(),
