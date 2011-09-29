@@ -1,4 +1,3 @@
-import java.beans.DefaultPersistenceDelegate
 import sbt._
 import Process._
 
