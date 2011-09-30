@@ -20,6 +20,7 @@ import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.annotations.Cached;
 import org.parboiled.annotations.MemoMismatches;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.testng.annotations.Test;
@@ -31,19 +32,29 @@ import static org.testng.Assert.assertEquals;
 public class BugIn101Test {
 
     static class Parser extends BaseParser<Object> {
-        public Rule A() {
+        Rule A() {
             Object a = new Object();
             return Sequence("a", push(a));
         }
-        protected Rule B() {
+        Rule B() {
             String b = "b";
             return Sequence("b", push(b));
+        }
+        Rule Switch(int i) {
+            switch (i) {
+                case 0: return Sequence(EMPTY, push(1));
+            }
+            return null;
         }
     }
 
     @Test
-    public void verifyTestParserHierarchyExtension() throws Exception {
+    public void test() throws Exception {
+        // threw "java.lang.RuntimeException: Error creating extended parser class:
+        // Execution can fall off end of the code" in 1.0.1
+        Parser parser = Parboiled.createParser(Parser.class);
+
         // threw "java.lang.NoSuchFieldError: field$1" in 1.0.1
-        new ReportingParseRunner<Object>(Parboiled.createParser(Parser.class).B()).run("b");
+        new ReportingParseRunner<Object>(parser.B()).run("b");
     }
 }

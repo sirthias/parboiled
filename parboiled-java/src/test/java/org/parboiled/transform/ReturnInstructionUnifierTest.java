@@ -40,6 +40,28 @@ public class ReturnInstructionUnifierTest extends TransformationTest {
     @SuppressWarnings({"unchecked"})
     @Test
     public void testReturnInstructionUnification() throws Exception {
+        assertTraceDumpEquality(processMethod("RuleWithSwitchAndAction", processors), "" +
+                "    ILOAD 1\n" +
+                "    LOOKUPSWITCH\n" +
+                "      0: L0\n" +
+                "      default: L1\n" +
+                "   L0\n" +
+                "    ALOAD 0\n" +
+                "    GETSTATIC org/parboiled/transform/TestParser.EMPTY : Lorg/parboiled/Rule;\n" +
+                "    ALOAD 0\n" +
+                "    ICONST_1\n" +
+                "    INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.push (Ljava/lang/Object;)Z\n" +
+                "    INVOKESTATIC java/lang/Boolean.valueOf (Z)Ljava/lang/Boolean;\n" +
+                "    ICONST_0\n" +
+                "    ANEWARRAY java/lang/Object\n" +
+                "    INVOKEVIRTUAL org/parboiled/transform/TestParser.Sequence (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lorg/parboiled/Rule;\n" +
+                "    GOTO L2\n" +
+                "   L1\n" +
+                "    ACONST_NULL\n" +
+                "   L2\n" +
+                "    ARETURN\n");
+
         assertTraceDumpEquality(processMethod("RuleWith2Returns", processors), "" +
                 "    ILOAD 1\n" +
                 "    ALOAD 0\n" +

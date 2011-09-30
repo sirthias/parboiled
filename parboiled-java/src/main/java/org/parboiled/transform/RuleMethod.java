@@ -285,6 +285,20 @@ class RuleMethod extends MethodNode {
     }
 
     @Override
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+        usedLabels.add(getLabelNode(dflt));
+        for (Label label : labels) usedLabels.add(getLabelNode(label));
+        super.visitTableSwitchInsn(min, max, dflt, labels);
+    }
+
+    @Override
+    public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+        usedLabels.add(getLabelNode(dflt));
+        for (Label label : labels) usedLabels.add(getLabelNode(label));
+        super.visitLookupSwitchInsn(dflt, keys, labels);
+    }
+
+    @Override
     public void visitLineNumber(int line, Label start) {
         // do not record line numbers
     }
