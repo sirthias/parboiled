@@ -20,6 +20,7 @@ import org.parboiled.common.ImmutableList;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.List;
 
@@ -48,14 +49,14 @@ public class InstructionGroupPreparerTest extends TransformationTest {
         assertEquals(method.getGroups().size(), 3);
 
         InstructionGroup group = method.getGroups().get(1);
-        assertEquals(group.getName(), "Action$HCsAlhftW7cYn1dT");
+        assertEquals(group.getName(), "Action$LmzJHalG7AngCUsX");
         assertEquals(group.getFields().size(), 3);
         assertEquals(group.getFields().get(0).desc, "I");
         assertEquals(group.getFields().get(1).desc, "I");
         assertEquals(group.getFields().get(2).desc, "I");
 
         group = method.getGroups().get(2);
-        assertEquals(group.getName(), "Action$ARäVEaFtWytNAZGB");
+        assertEquals(group.getName(), "Action$OrG2zjbz0MYoT8sO");
         assertEquals(group.getFields().size(), 5);
         assertEquals(group.getFields().get(0).desc, "Lorg/parboiled/transform/TestParser$$parboiled;");
         assertEquals(group.getFields().get(1).desc, "I");

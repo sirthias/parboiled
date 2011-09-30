@@ -135,13 +135,13 @@ public class ActionTest extends TestNgParboiledTest<Integer> {
 
         assertEquals(stats.printActionClassInstances(), "" +
                 "Action classes and their instances for rule 'A':\n" +
-                "    Action$6cLpVbWbQq5ipg4L : A_Action2\n" +
-                "    Action$C7Cct03iSioF6Y0I : D_Action1\n" +
-                "    Action$CkakYAwr0N00UnJ1 : D_Action2\n" +
-                "    Action$I0TRs0StgVDw2pzp : B_Action2, C_Action1\n" +
-                "    Action$UUSxqpbGyJy9hEöE : A_Action1\n" +
-                "    Action$j9fDPvQwCYftylRy : D_Action3\n" +
-                "    Action$yNYbmROXF8hUKwhq : B_Action1\n" +
+                "    Action$0QAUd2XJhkFkwVyB : D_Action2\n" +
+                "    Action$BYXjsBCgkaYmhXqh : D_Action3\n" +
+                "    Action$M1hejMpBJ5SjCHvC : B_Action1\n" +
+                "    Action$Qy8BzTl3RpzAzrXV : A_Action1\n" +
+                "    Action$Syt5vvsOCzKOZ8Az : D_Action1\n" +
+                "    Action$esdKf3Sj9cYL9I1s : B_Action2, C_Action1\n" +
+                "    Action$xipkqpZJpsrvOANU : A_Action2\n" +
                 "    and 1 anonymous instance(s)\n");
     }
 
