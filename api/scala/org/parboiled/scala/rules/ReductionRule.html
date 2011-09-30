@@ -1,0 +1,567 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>org.parboiled.scala.rules.ReductionRule</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../../../../lib/template.css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img src="../../../../lib/class_big.png" />
+        <p id="owner"><a name="org" class="extype" href="../../../package.html">org</a>.<a name="org.parboiled" class="extype" href="../../package.html">parboiled</a>.<a name="org.parboiled.scala" class="extype" href="../package.html">scala</a>.<a name="org.parboiled.scala.rules" class="extype" href="package.html">rules</a></p>
+        <h1>ReductionRule</h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <span class="name">ReductionRule</span>
+        
+        <span class="result"> extends <a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></span>
+      </span>
+      </h4>
+      
+          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>The base class of all reduction rules, which take a certain number of input values and produce one output value.
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>abstract </dd></dl><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a name="org.parboiled.scala.rules.ReductionRule1" class="extype" href="ReductionRule1.html">ReductionRule1</a>, <a name="org.parboiled.scala.rules.ReductionRule2" class="extype" href="ReductionRule2.html">ReductionRule2</a>, <a name="org.parboiled.scala.rules.ReductionRule3" class="extype" href="ReductionRule3.html">ReductionRule3</a></div>
+        </div></div>
+        
+
+      <div id="template">
+
+        <div id="mbrsel">
+          <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+          <div id="order">
+                <span class="filtertype">Ordering</span>
+                <ol><li class="alpha in"><span>Alphabetic</span></li><li class="inherit out"><span>By inheritance</span></li></ol>
+              </div>
+          <div id="ancestors">
+                <span class="filtertype">Inherited</span>
+                <ol><li class="hideall out"><span>Hide All</span></li>
+                <li class="showall in"><span>Show all</span></li></ol>
+                <ol id="linearization"><li name="org.parboiled.scala.rules.ReductionRule" class="in"><span>ReductionRule</span></li><li name="org.parboiled.scala.rules.Rule" class="in"><span>Rule</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+              </div>
+          <div id="visbl">
+              <span class="filtertype">Visibility</span>
+              <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+            </div>
+        </div>
+
+        <div class="members" id="constructors">
+              <h3>Instance Constructors</h3>
+              <ol><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule#this" data-isabs="false">
+      <a id="this:ReductionRule"></a>
+      <h4 class="signature">
+      <span class="kind">new</span>
+      <span class="symbol"> 
+        <span class="name">ReductionRule</span>
+        
+        <span class="params">()</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+        
+        <div class="values members" id="values">
+              <h3>Abstract Value Members</h3>
+              <ol><li visbl="pub" name="org.parboiled.scala.rules.Rule#matcher" data-isabs="true">
+      <a id="matcher:Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">matcher</span>
+        
+        <span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>abstract </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#withMatcher" data-isabs="true">
+      <a id="withMatcher(Matcher):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">withMatcher</span>
+        
+        <span class="params">(<span name="matcher">matcher: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected abstract </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li></ol>
+            </div>
+
+        <div class="values members" id="values">
+              <h3>Concrete Value Members</h3>
+              <ol><li visbl="pub" name="scala.AnyRef#!=" data-isabs="false">
+      <a id="!=(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">!=</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#!=" data-isabs="false">
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">!=</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef###" data-isabs="false">
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">##</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Int" class="extype">Int</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#==" data-isabs="false">
+      <a id="==(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">==</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#==" data-isabs="false">
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">==</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append" data-isabs="false">
+      <a id="append(Matcher):Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">append</span>
+        
+        <span class="params">(<span name="other">other: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>)</span><span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append" data-isabs="false">
+      <a id="append(Rule):Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">append</span>
+        
+        <span class="params">(<span name="other">other: <a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></span>)</span><span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append" data-isabs="false">
+      <a id="append((Context[Any]) ⇒ Boolean):Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">append</span>
+        
+        <span class="params">(<span name="f">f: (<span name="org.parboiled.Context" class="extype">Context</span>[<span name="scala.Any" class="extype">Any</span>]) ⇒ <span name="scala.Boolean" class="extype">Boolean</span></span>)</span><span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#append" data-isabs="false">
+      <a id="append(org.parboiled.Action[_]):Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">append</span>
+        
+        <span class="params">(<span name="action">action: org.parboiled.Action[_]</span>)</span><span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#appendChoice" data-isabs="false">
+      <a id="appendChoice(Matcher):Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">appendChoice</span>
+        
+        <span class="params">(<span name="other">other: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>)</span><span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="prt" name="org.parboiled.scala.rules.Rule#appendChoice" data-isabs="false">
+      <a id="appendChoice(Rule):Matcher"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">appendChoice</span>
+        
+        <span class="params">(<span name="other">other: <a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></span>)</span><span class="result">: <span name="org.parboiled.matchers.Matcher" class="extype">Matcher</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#asInstanceOf" data-isabs="false">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">asInstanceOf</span>
+        <span class="tparams">[<span name="T0">T0</span>]</span>
+        <span class="result">: T0</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="prt" name="scala.AnyRef#clone" data-isabs="false">
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">clone</span>
+        
+        <span class="params">()</span><span class="result">: AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a name="java.lang" class="extype" href="../../../../java/lang/package.html">lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#eq" data-isabs="false">
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">eq</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#equals" data-isabs="false">
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">equals</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="prt" name="scala.AnyRef#finalize" data-isabs="false">
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">finalize</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a name="java.lang" class="extype" href="../../../../java/lang/package.html">lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
+      <a id="getClass():java.lang.Class[_]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getClass</span>
+        
+        <span class="params">()</span><span class="result">: java.lang.Class[_]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">hashCode</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Int" class="extype">Int</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isInstanceOf</span>
+        <span class="tparams">[<span name="T0">T0</span>]</span>
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#label" data-isabs="false">
+      <a id="label(String):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">label</span>
+        
+        <span class="params">(<span name="label">label: <span name="java.lang.String" class="extype">String</span></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#memoMismatches" data-isabs="false">
+      <a id="memoMismatches:ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">memoMismatches</span>
+        
+        <span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#ne" data-isabs="false">
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">ne</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#notify" data-isabs="false">
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">notify</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#notifyAll" data-isabs="false">
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">notifyAll</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#skipNode" data-isabs="false">
+      <a id="skipNode:ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">skipNode</span>
+        
+        <span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#suppressNode" data-isabs="false">
+      <a id="suppressNode:ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">suppressNode</span>
+        
+        <span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#suppressSubnodes" data-isabs="false">
+      <a id="suppressSubnodes:ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">suppressSubnodes</span>
+        
+        <span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#synchronized" data-isabs="false">
+      <a id="synchronized[T0](⇒ T0):T0"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">synchronized</span>
+        <span class="tparams">[<span name="T0">T0</span>]</span>
+        <span class="params">(<span name="arg0">arg0: ⇒ T0</span>)</span><span class="result">: T0</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#toString" data-isabs="false">
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">toString</span>
+        
+        <span class="params">()</span><span class="result">: <span name="java.lang.String" class="extype">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a> → AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#unary_!" data-isabs="false">
+      <a id="unary_!:Rule0"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">unary_!</span>
+        
+        <span class="result">: <a name="org.parboiled.scala.rules.Rule0" class="extype" href="Rule0.html">Rule0</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a &quot;NOT&quot; syntactic predicate according to the PEG formalism.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a &quot;NOT&quot; syntactic predicate according to the PEG formalism.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">wait</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">wait</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Long" class="extype">Long</span></span>, <span name="arg1">arg1: <span name="scala.Int" class="extype">Int</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">wait</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Long" class="extype">Long</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~" data-isabs="false">
+      <a id="~(Rule0):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">~</span>
+        
+        <span class="params">(<span name="other">other: <a name="org.parboiled.scala.rules.Rule0" class="extype" href="Rule0.html">Rule0</a></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Connects two rules into a rule a sequence.</p><div class="fullcomment"><div class="comment cmt"><p>Connects two rules into a rule a sequence.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~%" data-isabs="false">
+      <a id="~%((String) ⇒ Unit):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">~%</span>
+        
+        <span class="params">(<span name="f">f: (<span name="java.lang.String" class="extype">String</span>) ⇒ <span name="scala.Unit" class="extype">Unit</span></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action with the input text matched by the immediately preceding rule as parameter.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~:%" data-isabs="false">
+      <a id="~:%((Char) ⇒ Unit):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">~:%</span>
+        
+        <span class="params">(<span name="f">f: (<span name="scala.Char" class="extype">Char</span>) ⇒ <span name="scala.Unit" class="extype">Unit</span></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a simple parser action with the first char of the input text matched by the immediately preceding
+rule as parameter.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a simple parser action with the first char of the input text matched by the immediately preceding
+rule as parameter.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~:?" data-isabs="false">
+      <a id="~:?((Char) ⇒ Boolean):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">~:?</span>
+        
+        <span class="params">(<span name="f">f: (<span name="scala.Char" class="extype">Char</span>) ⇒ <span name="scala.Boolean" class="extype">Boolean</span></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the first char of the input text matched by the immediately preceding rule.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule#~?" data-isabs="false">
+      <a id="~?((String) ⇒ Boolean):ReductionRule.this.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">~?</span>
+        
+        <span class="params">(<span name="f">f: (<span name="java.lang.String" class="extype">String</span>) ⇒ <span name="scala.Boolean" class="extype">Boolean</span></span>)</span><span class="result">: ReductionRule.this.type</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a semantic predicate on the input text matched by the immediately preceding rule.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a semantic predicate on the input text matched by the immediately preceding rule.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        <div name="org.parboiled.scala.rules.Rule" class="parent">
+              <h3>Inherited from <a name="org.parboiled.scala.rules.Rule" class="extype" href="Rule.html">Rule</a></h3>
+            </div><div name="scala.AnyRef" class="parent">
+              <h3>Inherited from AnyRef</h3>
+            </div><div name="scala.Any" class="parent">
+              <h3>Inherited from <span name="scala.Any" class="extype">Any</span></h3>
+            </div>
+
+      </div>
+      
+      <div id="tooltip"></div>
+      
+    </body>
+      </html>

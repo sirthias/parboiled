@@ -1,0 +1,311 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>org.parboiled.scala.rules</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../../../../lib/template.css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../lib/package_big.png" />
+        <p id="owner"><a name="org" class="extype" href="../../../package.html">org</a>.<a name="org.parboiled" class="extype" href="../../package.html">parboiled</a>.<a name="org.parboiled.scala" class="extype" href="../package.html">scala</a></p>
+        <h1>rules</h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="kind">package</span>
+      <span class="symbol"> 
+        <span class="name">rules</span>
+        
+        
+      </span>
+      </h4>
+      
+          <div class="fullcommenttop" id="comment"></div>
+        
+
+      <div id="template">
+
+        <div id="mbrsel">
+          <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+          
+          
+          <div id="visbl">
+              <span class="filtertype">Visibility</span>
+              <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+            </div>
+        </div>
+
+        
+
+        <div class="types members" id="types">
+              <h3>Type Members</h3>
+              <ol><li visbl="pub" name="org.parboiled.scala.rules.CharRule" data-isabs="false">
+      <a id="CharRule:CharRule"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="CharRule.html"><span class="name">CharRule</span></a>
+        
+        <span class="result"> extends Rule0</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule matching one single character.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.PopRule" data-isabs="true">
+      <a id="PopRule:PopRule"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="PopRule.html"><span class="name">PopRule</span></a>
+        
+        <span class="result"> extends Rule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">The base class of all rules simply removing a certain number of elements off the top of the value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.PopRule1" data-isabs="false">
+      <a id="PopRule1:PopRule1[Z]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="PopRule1.html"><span class="name">PopRule1</span></a>
+        <span class="tparams">[<span name="Z">-Z</span>]</span>
+        <span class="result"> extends PopRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule removing the top value stack element with a given type.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.PopRule2" data-isabs="false">
+      <a id="PopRule2:PopRule2[Y, Z]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="PopRule2.html"><span class="name">PopRule2</span></a>
+        <span class="tparams">[<span name="Y">-Y</span>, <span name="Z">-Z</span>]</span>
+        <span class="result"> extends PopRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule removing the top two value stack elements with given types.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.PopRule3" data-isabs="false">
+      <a id="PopRule3:PopRule3[X, Y, Z]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="PopRule3.html"><span class="name">PopRule3</span></a>
+        <span class="tparams">[<span name="X">-X</span>, <span name="Y">-Y</span>, <span name="Z">-Z</span>]</span>
+        <span class="result"> extends PopRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule removing the top three value stack elements with given types.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.PushRule" data-isabs="true">
+      <a id="PushRule:PushRule"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="PushRule.html"><span class="name">PushRule</span></a>
+        
+        <span class="result"> extends Rule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">The base class of all rules pushing a certain number of elements onto the parser value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule" data-isabs="true">
+      <a id="ReductionRule:ReductionRule"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="ReductionRule.html"><span class="name">ReductionRule</span></a>
+        
+        <span class="result"> extends Rule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">The base class of all reduction rules, which take a certain number of input values and produce one output value.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule1" data-isabs="false">
+      <a id="ReductionRule1:ReductionRule1[Z, R]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="ReductionRule1.html"><span class="name">ReductionRule1</span></a>
+        <span class="tparams">[<span name="Z">-Z</span>, <span name="R">+R</span>]</span>
+        <span class="result"> extends ReductionRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule taking one value off the value stack and replacing it with another value.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule2" data-isabs="false">
+      <a id="ReductionRule2:ReductionRule2[Y, Z, R]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="ReductionRule2.html"><span class="name">ReductionRule2</span></a>
+        <span class="tparams">[<span name="Y">-Y</span>, <span name="Z">-Z</span>, <span name="R">+R</span>]</span>
+        <span class="result"> extends ReductionRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule taking two values off the value stack and replacing them with one other value.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.ReductionRule3" data-isabs="false">
+      <a id="ReductionRule3:ReductionRule3[X, Y, Z, R]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="ReductionRule3.html"><span class="name">ReductionRule3</span></a>
+        <span class="tparams">[<span name="X">-X</span>, <span name="Y">-Y</span>, <span name="Z">-Z</span>, <span name="R">+R</span>]</span>
+        <span class="result"> extends ReductionRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule taking three values off the value stack and replacing them with one other value.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule" data-isabs="true">
+      <a id="Rule:Rule"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule.html"><span class="name">Rule</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">The base class of all scala parser rules.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule0" data-isabs="false">
+      <a id="Rule0:Rule0"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule0.html"><span class="name">Rule0</span></a>
+        
+        <span class="result"> extends Rule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule which does not affect the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule1" data-isabs="false">
+      <a id="Rule1:Rule1[A]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule1.html"><span class="name">Rule1</span></a>
+        <span class="tparams">[<span name="A">+A</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing one new value of a given type onto the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule2" data-isabs="false">
+      <a id="Rule2:Rule2[A, B]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule2.html"><span class="name">Rule2</span></a>
+        <span class="tparams">[<span name="A">+A</span>, <span name="B">+B</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing two new values of given types onto the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule3" data-isabs="false">
+      <a id="Rule3:Rule3[A, B, C]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule3.html"><span class="name">Rule3</span></a>
+        <span class="tparams">[<span name="A">+A</span>, <span name="B">+B</span>, <span name="C">+C</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing 3 new values of given types onto the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule4" data-isabs="false">
+      <a id="Rule4:Rule4[A, B, C, D]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule4.html"><span class="name">Rule4</span></a>
+        <span class="tparams">[<span name="A">+A</span>, <span name="B">+B</span>, <span name="C">+C</span>, <span name="D">+D</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing 4 new values of given types onto the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule5" data-isabs="false">
+      <a id="Rule5:Rule5[A, B, C, D, E]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule5.html"><span class="name">Rule5</span></a>
+        <span class="tparams">[<span name="A">+A</span>, <span name="B">+B</span>, <span name="C">+C</span>, <span name="D">+D</span>, <span name="E">+E</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing 5 new values of given types onto the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule6" data-isabs="false">
+      <a id="Rule6:Rule6[A, B, C, D, E, F]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule6.html"><span class="name">Rule6</span></a>
+        <span class="tparams">[<span name="A">+A</span>, <span name="B">+B</span>, <span name="C">+C</span>, <span name="D">+D</span>, <span name="E">+E</span>, <span name="F">+F</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing 6 new values of given types onto the parsers value stack.</p>
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule7" data-isabs="false">
+      <a id="Rule7:Rule7[A, B, C, D, E, F, G]"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="Rule7.html"><span class="name">Rule7</span></a>
+        <span class="tparams">[<span name="A">+A</span>, <span name="B">+B</span>, <span name="C">+C</span>, <span name="D">+D</span>, <span name="E">+E</span>, <span name="F">+F</span>, <span name="G">+G</span>]</span>
+        <span class="result"> extends PushRule</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A rule pushing 7 new values of given types onto the parsers value stack.</p>
+    </li></ol>
+            </div>
+        
+        
+
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="pub" name="org.parboiled.scala.rules.Rule" data-isabs="false">
+      <a id="Rule:Rule"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Rule$.html"><span class="name">Rule</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule0" data-isabs="false">
+      <a id="Rule0:Rule0"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Rule0$.html"><span class="name">Rule0</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="org.parboiled.scala.rules.Rule1" data-isabs="false">
+      <a id="Rule1:Rule1"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Rule1$.html"><span class="name">Rule1</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+
+      </div>
+      
+      <div id="tooltip"></div>
+      
+    </body>
+      </html>
