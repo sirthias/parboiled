@@ -70,7 +70,7 @@ public class ReportingParseRunner<V> extends AbstractParseRunner<V> {
         resetValueStack();
         result = runLocatingMatch(inputBuffer);
         Preconditions.checkState(!result.matched); // we failed before so we should really be failing again
-        Preconditions.checkState(result.parseErrors.size() == 1);
+        Preconditions.checkState(result.parseErrors.size() >= 1); // may be more than one in case of custom ActionExceptions
         
         // finally perform a third, reporting run (now that we know the error location)
         resetValueStack();

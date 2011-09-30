@@ -1,7 +1,24 @@
+Version 1.0.2 (2011-09-30)
+--------------------------
+Core:
+- Fixed #32 (ReportingParseRunner assumes only one parse error)
+Java:
+- Added 'NoneOf' rule constructor
+- Updated Java parser example
+- Fixed #22 (problem with parse tree creation for skipNode() matchers)
+- Fixed #24 (IllegalStateException in certain cases involving parser inheritance)
+- Fixed #30 (problem in action class naming resulting in NoSuchFieldError in certain cases)
+- Fixed #31 (incorrect handling of 'switch' statements in rule method extension)
+Scala:
+- Upgraded to Scala 2.9.1
+- Fixed #29 (nTimes(1, "a") will throw ClassCastException)
+
+
 Version 1.0.1 (2011-07-05)
 --------------------------
 Scala:
 - Upgraded to Scala 2.9.0-1
+
 
 Version 1.0.0 (2011-05-13)
 --------------------------

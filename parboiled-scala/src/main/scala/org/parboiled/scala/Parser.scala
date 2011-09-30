@@ -19,8 +19,8 @@ package org.parboiled.scala
 import org.parboiled.matchers._
 import _root_.scala.collection.mutable
 import org.parboiled.Context
-import org.parboiled.support.{ValueStack, Characters}
 import rules.Rule._
+import org.parboiled.support.{Chars, ValueStack, Characters}
 
 /**
  * The main Parser trait for scala parboiled parsers. Defines the basic rule building methods as well as the
@@ -264,9 +264,7 @@ trait Parser {
     case n if n > 0 => {
       val join = if (separator != null) ((_:Rule0) ~ separator ~ (_:Rule0)) else ((_:Rule0) ~ (_:Rule0))
       def multiply(n: Int): Rule0 = if (n > 1) join(multiply(n-1), sub) else sub
-      make(multiply(times)) {
-        _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
-      }
+      nameNTimes(multiply(times), times)
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
   }
@@ -287,9 +285,7 @@ trait Parser {
       type R = ReductionRule1[Z, Z]
       val join = if (separator != null) ((_:R) ~ separator ~ (_:R)) else ((_:R) ~ (_:R))
       def multiply(n: Int): R = if (n > 1) join(multiply(n-1), sub) else sub
-      make(multiply(times)) {
-        _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
-      }
+      nameNTimes(multiply(times), times)
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
   }
@@ -310,25 +306,31 @@ trait Parser {
       def join(a: Rule1[List[A]], b: Rule1[A]) =
         a ~ (if (separator != null) separator ~ b else b) ~~> ((list, x) => x :: list)
       def multiply(n: Int): Rule1[List[A]] = if (n > 1) join(multiply(n-1), sub) else sub ~~> (_ :: Nil)
-      make(multiply(times) ~~> (_.reverse)) {
-        _.matcher.asInstanceOf[SequenceMatcher].defaultLabel(times + "-times")
-      }
+      nameNTimes(multiply(times) ~~> (_.reverse), times)
     }
     case _ => throw new IllegalArgumentException("Illegal number of repetitions: " + times)
   }
-  
+
   /**
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
   def nTimes[A, B](times: Int, sub: Rule2[A, B]): Rule1[List[(A, B)]] = nTimes(times, sub, null)
-  
+
   /**
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes[A, B](times: Int, sub: Rule2[A, B], separator: Rule0 = null): Rule1[List[(A, B)]] = {
+  def nTimes[A, B](times: Int, sub: Rule2[A, B], separator: Rule0): Rule1[List[(A, B)]] = {
     nTimes(times, sub ~~> ((_, _)), separator)
+  }
+
+  private def nameNTimes[R <: Rule](rule: R, times: Int) = {
+    rule.matcher match {
+      case sm: SequenceMatcher => sm.defaultLabel(times + "-times")
+      case _ =>
+    }
+    rule
   }
 
   /**
@@ -348,46 +350,67 @@ trait Parser {
 
   /**
    * Creates a rule that matches the given string.
+   * If the string is empty the rule is equivalent to the EMPTY rule.
    */
   def str(s: String): Rule0 = str(s.toCharArray)
 
   /**
    * Creates a rule that matches the given character array.
+   * If the array is empty the rule is equivalent to the EMPTY rule.
    */
   def str(chars: Array[Char]): Rule0 = chars.length match {
     case 0 => EMPTY
     case 1 => ch(chars(0))
-    case _ => new Rule0(new StringMatcher(wrapCharArray(chars).map(ch).map(_.matcher).toArray, chars))
+    case _ => new Rule0(new StringMatcher(wrapCharArray(chars).map(c => ch(c).matcher).toArray, chars))
   }
 
   /**
    * Creates a rule that matches any single character in the given string.
+   * If the string is empty the rule is equivalent to the NOTHING rule.
    */
   def anyOf(s: String): Rule0 = anyOf(s.toCharArray)
 
   /**
    * Creates a rule that matches any single character in the given character array.
+   * If the array is empty the rule is equivalent to the NOTHING rule.
    */
   def anyOf(chars: Array[Char]): Rule0 = chars.length match {
-    case 0 => EMPTY
+    case 0 => NOTHING
     case 1 => ch(chars(0))
     case _ => anyOf(Characters.of(chars: _*))
   }
 
   /**
-   * Creates a rule that matches any single character in the given  { @link org.parboiled.support.Characters } instance.
+   * Creates a rule that matches any single character in the given { @link org.parboiled.support.Characters } instance.
    */
   def anyOf(chars: Characters): Rule0 = {
     if (!chars.isSubtractive && chars.getChars.length == 1)
       ch(chars.getChars.apply(0))
-    else if (chars == Characters.NONE)
-      NOTHING
-    else
-      new Rule0(new AnyOfMatcher(chars))
+    else new Rule0(new AnyOfMatcher(chars))
+  }
+
+  /**
+   * Creates a rule that matches any single character except the ones in the given string and EOI.
+   * If the string is empty the rule is equivalent to the ANY rule.
+   *
+   */
+  def noneOf(s: String): Rule0 = noneOf(s.toCharArray)
+
+  /**
+   * Creates a rule that matches any single character except the ones in the given character array and EOI.
+   * If the array is empty the rule is equivalent to the ANY rule.
+   */
+  def noneOf(chars: Array[Char]): Rule0 = chars.length match {
+    case 0 => ANY
+    case _ => {
+      val charsWithEOI = if (chars.contains(Chars.EOI)) chars else (wrapCharArray(chars) :+ Chars.EOI).toArray
+      anyOf(Characters.allBut(charsWithEOI: _*))
+    }
   }
 
   /**
    * Creates a rule that matches the given character array case-independently.
+   * If the array is empty the rule is equivalent to the EMPTY rule.
    */
   def ignoreCase(chars: Array[Char]): Rule0 = chars.length match {
     case 0 => EMPTY

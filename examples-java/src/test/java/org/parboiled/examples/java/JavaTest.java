@@ -24,6 +24,7 @@ import org.parboiled.common.*;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Filters;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ToStringFormatter;
 import org.testng.annotations.Test;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -48,7 +49,7 @@ public class JavaTest {
 
         assertEquals(ParserStatistics.generateFor(compilationUnit).toString(), "" +
                 "Parser statistics for rule 'CompilationUnit':\n" +
-                "    Total rules       : 679\n" +
+                "    Total rules       : 682\n" +
                 "        Actions       : 0\n" +
                 "        Any           : 1\n" +
                 "        CharIgnoreCase: 1\n" +
@@ -57,13 +58,13 @@ public class JavaTest {
                 "        CharRange     : 7\n" +
                 "        AnyOf         : 16\n" +
                 "        Empty         : 0\n" +
-                "        FirstOf       : 64\n" +
+                "        FirstOf       : 65\n" +
                 "        FirstOfStrings: 4\n" +
                 "        Nothing       : 0\n" +
                 "        OneOrMore     : 7\n" +
                 "        Optional      : 40\n" +
                 "        Sequence      : 310\n" +
-                "        String        : 80\n" +
+                "        String        : 82\n" +
                 "        Test          : 0\n" +
                 "        TestNot       : 13\n" +
                 "        ZeroOrMore    : 51\n" +
@@ -82,11 +83,8 @@ public class JavaTest {
             );
         }
         assertEquals(
-                printTree(parsingResult.parseTreeRoot, new Formatter<Node<Object>>() {
-                    public String format(Node<Object> node) {
-                        return node.toString();
-                    }
-                }, Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
+                printTree(parsingResult.parseTreeRoot, new ToStringFormatter<Node<Object>>(),
+                        Filters.SKIP_EMPTY_OPTS_AND_ZOMS, Predicates.<Node<Object>>alwaysTrue()),
                 FileUtils.readAllTextFromResource("SimpleJavaTestParseTree.test")
         );
     }

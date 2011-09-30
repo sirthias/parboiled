@@ -17,6 +17,8 @@
 package org.parboiled;
 
 import static org.parboiled.common.Preconditions.*;
+
+import org.parboiled.common.ImmutableLinkedList;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
 import org.parboiled.trees.ImmutableTreeNode;
@@ -34,7 +36,7 @@ class NodeImpl<V> extends ImmutableTreeNode<Node<V>> implements Node<V> {
     private final V value;
     private final boolean hasError;
 
-    public NodeImpl(Matcher matcher, List<Node<V>> children, int startIndex,
+    public NodeImpl(Matcher matcher, ImmutableLinkedList<Node<V>> children, int startIndex,
                     int endIndex, V value, boolean hasError) {
         super(children);
         this.matcher = checkArgNotNull(matcher, "matcher");

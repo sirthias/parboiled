@@ -7,8 +7,8 @@
 //---------------------------------------------------------------------------
 //
 //  Copyright (C) 2010 by Mathias Doenitz
-//  Based on a Mouse 1.1 grammar for Java 1.5, which is
-//  Copyright (C) 2006,2009 by Roman R Redziejowski (www.romanredz.se).
+//  Based on the Mouse 1.3 grammar for Java 1.6, which is
+//  Copyright (C) 2006, 2009, 2010, 2011 by Roman R Redziejowski (www.romanredz.se).
 //
 //  The author gives unlimited permission to copy and distribute
 //  this file, with or without modifications, as long as this notice
@@ -36,6 +36,7 @@
 //               HexFloat (HexSignificant) and AnnotationTypeDeclaration (bug in the JLS!)
 //    2010-10-07 Added full support of Unicode Identifiers as set forth in the JLS
 //               (Thanks for Ville Peurala for the patch)
+//    2011-07-23 Transcribed all missing fixes from Romans Mouse grammar (http://www.romanredz.se/papers/Java.1.6.peg)
 //
 //===========================================================================
 
@@ -123,7 +124,7 @@ public class JavaParser extends BaseParser<Object> {
         return FirstOf(
                 Sequence(TypeParameters(), GenericMethodOrConstructorRest()),
                 Sequence(Type(), Identifier(), MethodDeclaratorRest()),
-                Sequence(Type(), VariableDeclarators()),
+                Sequence(Type(), VariableDeclarators(), SEMI),
                 Sequence(VOID, Identifier(), VoidMethodDeclaratorRest()),
                 Sequence(Identifier(), ConstructorDeclaratorRest()),
                 InterfaceDeclaration(),
@@ -272,7 +273,6 @@ public class JavaParser extends BaseParser<Object> {
     Rule EnumConstant() {
         return Sequence(
                 ZeroOrMore(Annotation()),
-                Optional(TypeArguments()),
                 Identifier(),
                 Optional(Arguments()),
                 Optional(ClassBody())
@@ -665,9 +665,9 @@ public class JavaParser extends BaseParser<Object> {
                 LWING,
                 Optional(
                     VariableInitializer(),
-                    ZeroOrMore(COMMA, VariableInitializer()),
-                    Optional(COMMA)
+                    ZeroOrMore(COMMA, VariableInitializer())
                 ),
+                Optional(COMMA),
                 RWING
         );
     }
@@ -769,7 +769,10 @@ public class JavaParser extends BaseParser<Object> {
     }
 
     Rule AnnotationTypeElementDeclaration() {
-        return Sequence(ZeroOrMore(Modifier()), AnnotationTypeElementRest());
+        return FirstOf(
+                Sequence(ZeroOrMore(Modifier()), AnnotationTypeElementRest()),
+                SEMI
+        );
     }
 
     Rule AnnotationTypeElementRest() {
@@ -891,10 +894,10 @@ public class JavaParser extends BaseParser<Object> {
     @MemoMismatches
     Rule Keyword() {
         return Sequence(
-                FirstOf("assert", "break", "case", "catch", "class", "continue", "default", "do", "else", "enum",
-                        "extends", "finally", "final", "for", "if", "implements", "import", "interface", "instanceof",
-                        "new", "package", "return", "static", "super", "switch", "synchronized", "this", "throws",
-                        "throw", "try", "void", "while"),
+                FirstOf("assert", "break", "case", "catch", "class", "const", "continue", "default", "do", "else",
+                        "enum", "extends", "finally", "final", "for", "goto", "if", "implements", "import", "interface",
+                        "instanceof", "new", "package", "return", "static", "super", "switch", "synchronized", "this",
+                        "throws", "throw", "try", "void", "while"),
                 TestNot(LetterOrDigit())
         );
     }

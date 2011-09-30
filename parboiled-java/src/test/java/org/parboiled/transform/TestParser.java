@@ -87,6 +87,14 @@ class TestParser extends BaseParser<Integer> {
         }
     }
 
+    @DontLabel
+    public Rule RuleWithSwitchAndAction(int param) {
+        switch (param) {
+            case 0: return Sequence(EMPTY, push(1));
+        }
+        return null;
+    }
+
     @ExplicitActionsOnly
     public Rule RuleWithExplicitActionsOnly(int param) {
         Boolean b = integer == param;

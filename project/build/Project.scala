@@ -1,4 +1,3 @@
-import java.beans.DefaultPersistenceDelegate
 import sbt._
 import Process._
 
@@ -43,7 +42,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
     "-g",
     "-deprecation",
     "-target", "1.5",
-    "-encoding", "UTF-8",
+    "-encoding", "utf8",
     "-Xlint:unchecked"
   )  
   val scalaCompileSettings = Seq(

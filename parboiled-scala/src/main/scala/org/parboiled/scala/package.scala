@@ -71,7 +71,7 @@ package object scala {
   }
 
   /**
-   * A rule that always matches and consumes no input.
+   * A rule that always matches but consumes no input.
    */
   lazy val EMPTY: Rule0 = new EmptyMatcher()
 
@@ -96,7 +96,7 @@ package object scala {
   lazy val DEDENT: Rule0 = new CharMatcher(Chars.DEDENT)
 
   /**
-   * The Nothing rule, which matches the End-Of-Input "character".
+   * A rule that never matches anything (i.e. that always fails).
    */
   lazy val NOTHING: Rule0 = new NothingMatcher()
 

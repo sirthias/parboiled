@@ -55,7 +55,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 0x1011\n" +
-                "public final class org/parboiled/transform/VarInit$ojjPlntz5r61YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
+                "public final class org/parboiled/transform/VarInit$ojjPlnt06r72YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1\n" +
@@ -79,7 +79,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 0x1011\n" +
-                "public final class org/parboiled/transform/Action$HCsAlhftW7cYn1dT extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$LmzJHalG7AngCUsX extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
@@ -103,11 +103,11 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "  // access flags 0x1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$0 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$LmzJHalG7AngCUsX.field$0 : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$1 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$LmzJHalG7AngCUsX.field$1 : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$HCsAlhftW7cYn1dT.field$2 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$LmzJHalG7AngCUsX.field$2 : I\n" +
                 "    IADD\n" +
                 "    IF_ICMPLE L0\n" +
                 "    ICONST_1\n" +
@@ -124,7 +124,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 0x1011\n" +
-                "public final class org/parboiled/transform/Action$ARäVEaFtWytNAZGB extends org/parboiled/transform/BaseAction  {\n" +
+                "public final class org/parboiled/transform/Action$OrG2zjbz0MYoT8sO extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
@@ -154,21 +154,21 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "  // access flags 0x1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$OrG2zjbz0MYoT8sO.field$0 : Lorg/parboiled/transform/TestParser$$parboiled;\n" +
                 "    GETFIELD org/parboiled/transform/TestParser.integer : I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$1 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$OrG2zjbz0MYoT8sO.field$1 : I\n" +
                 "    IADD\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$2 : Lorg/parboiled/support/Var;\n" +
+                "    GETFIELD org/parboiled/transform/Action$OrG2zjbz0MYoT8sO.field$2 : Lorg/parboiled/support/Var;\n" +
                 "    INVOKEVIRTUAL org/parboiled/support/Var.get ()Ljava/lang/Object;\n" +
                 "    CHECKCAST java/lang/String\n" +
                 "    INVOKEVIRTUAL java/lang/String.length ()I\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$3 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$OrG2zjbz0MYoT8sO.field$3 : I\n" +
                 "    ISUB\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ARäVEaFtWytNAZGB.field$4 : I\n" +
+                "    GETFIELD org/parboiled/transform/Action$OrG2zjbz0MYoT8sO.field$4 : I\n" +
                 "    ISUB\n" +
                 "    IF_ICMPGE L0\n" +
                 "    ICONST_1\n" +

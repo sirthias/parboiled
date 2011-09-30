@@ -17,6 +17,8 @@
 package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.*;
+
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -36,7 +38,7 @@ import static org.objectweb.asm.Opcodes.ALOAD;
 class InstructionGroupPreparer implements RuleMethodProcessor {
 
     private static final Base64 CUSTOM_BASE64 =
-            new Base64("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789äö_");
+            new Base64("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy0123456789zzzz");
 
     private RuleMethod method;
 
@@ -97,11 +99,12 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         }
     }
 
-    // set a group name base on the hash across all group instructions
+    // set a group name base on the hash across all group instructions and fields
     private synchronized void name(InstructionGroup group, ParserClassNode classNode) {
         // generate an MD5 hash across the buffer, use only the first 96 bit
         MD5Digester digester = new MD5Digester(classNode.name);
         group.getInstructions().accept(digester);
+        for (FieldNode field: group.getFields()) field.accept(digester);
         byte[] hash = digester.getMD5Hash();
         byte[] hash96 = new byte[12];
         System.arraycopy(hash, 0, hash96, 0, 12);
@@ -245,6 +248,14 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
             update(end);
             update(handler);
             update(type);
+        }
+
+        @Override
+        public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+            update(name);
+            update(desc);
+            update(signature);
+            return this;
         }
 
         private void update(int i) {
