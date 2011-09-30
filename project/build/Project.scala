@@ -17,7 +17,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   // Therefore, if repositories are defined, this must happen as def, not as val.
   // -------------------------------------------------------------------------------------------------------------------
   import Repositories._
-  // e.g. val glassfishModuleConfig = ModuleConfiguration("org.glassfish", JavaNetRepo)
+  val parboiledModuleConfig = ModuleConfiguration("org.parboiled", ScalaToolsSnapshots)
   
   // -------------------------------------------------------------------------------------------------------------------
   // Dependencies
