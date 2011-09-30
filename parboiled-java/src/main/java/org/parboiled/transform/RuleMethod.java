@@ -310,11 +310,13 @@ class RuleMethod extends MethodNode {
         overridingMethod.hasSuppressNodeAnnotation |= hasSuppressNodeAnnotation;
         overridingMethod.hasSuppressSubnodesAnnotation |= hasSuppressSubnodesAnnotation;
         overridingMethod.hasSkipNodeAnnotation |= hasSkipNodeAnnotation;
+        overridingMethod.hasMemoMismatchesAnnotation |= hasMemoMismatchesAnnotation;
         hasCachedAnnotation = false;
         hasDontLabelAnnotation = true;
         hasSuppressNodeAnnotation = false;
         hasSuppressSubnodesAnnotation = false;
         hasSkipNodeAnnotation = false;
+        hasMemoMismatchesAnnotation = false;
     }
 
     public boolean isGenerationSkipped() {

@@ -19,6 +19,7 @@ package org.parboiled.transform;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.annotations.MemoMismatches;
 import org.testng.annotations.Test;
 
 import static org.parboiled.transform.AsmTestUtils.getMethodInstructionList;
@@ -28,53 +29,48 @@ import static org.testng.Assert.assertEquals;
 public class ParserHierarchyTest {
 
     static class Parser1 extends BaseParser<Object> {
-
         Rule A() {
             return EMPTY;
         }
-
         Rule B() {
             return Sequence('B', dup());
         }
-
         Rule C() {
             return ANY;
         }
-
+        @MemoMismatches
+        Rule E() {
+            return EMPTY;
+        }
     }
 
     @BuildParseTree
     static class Parser2 extends Parser1 {
-
-        @Override
-        Rule A() {
+        @Override Rule A() {
             return Sequence(super.A(), 'A');
         }
-
-        @Override
-        Rule C() {
+        @Override Rule C() {
             return Sequence(super.C(), dup());
         }
-
     }
 
     static class Parser3 extends Parser2 {
-
-        @Override
-        Rule B() {
+        @Override Rule B() {
             return Sequence(super.B(), 'B', dup());
         }
-
-        @Override
-        Rule C() {
+        @Override Rule C() {
             return Sequence('C', super.C());
         }
-
         @SuppressWarnings( {"UnusedDeclaration"})
         Rule D() {
             return Sequence(super.A(), super.B(), B(), dup());
         }
+    }
 
+    static class Parser4 extends Parser1 {
+        @Override Rule E() {
+            return super.E();
+        }
     }
 
     @Test
@@ -239,6 +235,12 @@ public class ParserHierarchyTest {
                 "32     SWAP\n" +
                 "33     PUTFIELD org/parboiled/transform/ParserHierarchyTest$Parser3$$parboiled.cache$C : Lorg/parboiled/Rule;\n" +
                 "34     ARETURN\n");
+    }
+
+    @Test
+    public void testBugIn101() throws Exception {
+        // threw IllegalStateException in 1.0.1
+        ParserTransformer.extendParserClass(Parser4.class);
     }
 
 }
