@@ -87,6 +87,13 @@ public class NodeSkippingTest extends TestNgParboiledTest<Object> {
         public Rule H() {
             return Ch('h');
         }
+
+        public Rule BugIn101() {
+            return FirstOf(
+                    Sequence("a", "c").skipNode(),
+                    "a"
+            );
+        }
     }
 
     @Test
@@ -106,6 +113,11 @@ public class NodeSkippingTest extends TestNgParboiledTest<Object> {
                         "    [F] 'f'\n" +
                         "  [G] 'g'\n" +
                         "  [H] 'h'\n");
+        test(parser.BugIn101(), "abc")
+                .hasNoErrors()
+                .hasParseTree("" +
+                        "[BugIn101] 'a'\n" +
+                        "  ['a'] 'a'\n");
     }
 
 }

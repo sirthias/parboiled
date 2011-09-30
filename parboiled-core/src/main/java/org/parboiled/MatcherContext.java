@@ -164,8 +164,22 @@ public class MatcherContext<V> implements Context<V> {
         return fastStringMatching;
     }
 
-    public List<Node<V>> getSubNodes() {
-        return subNodes.reverse();
+    public ImmutableLinkedList<Node<V>> getSubNodes() {
+        return matcher.isNodeSkipped() ? subNodes : getSubNodes(subNodes, ImmutableLinkedList.<Node<V>>nil());
+    }
+
+    private static <V> ImmutableLinkedList<Node<V>> getSubNodes(ImmutableLinkedList<Node<V>> remaining,
+                                                                ImmutableLinkedList<Node<V>> tail) {
+        while (!remaining.isEmpty()) {
+            Node<V> head = remaining.head();
+            if (head.getMatcher().isNodeSkipped()) {
+                tail = getSubNodes(((ImmutableLinkedList<Node<V>>)head.getChildren()), tail);
+            } else {
+                tail = tail.prepend(head);
+            }
+            remaining = remaining.tail();
+        }
+        return tail;
     }
 
     public boolean inPredicate() {
@@ -287,17 +301,11 @@ public class MatcherContext<V> implements Context<V> {
 
     @SuppressWarnings({"ConstantConditions"})
     public void createNode() {
-        if (!nodeSuppressed && !matcher.isNodeSkipped()) {
+        if (!nodeSuppressed) {
             node = new NodeImpl<V>(matcher, getSubNodes(), startIndex, currentIndex,
                     valueStack.isEmpty() ? null : valueStack.peek(), hasError);
-
-            MatcherContext<V> nodeParentContext = parent;
-            if (nodeParentContext != null) {
-                while (nodeParentContext.getMatcher().isNodeSkipped()) {
-                    nodeParentContext = nodeParentContext.getParent();
-                    Checks.ensure(nodeParentContext != null, "Root rule must not be marked @SkipNode");
-                }
-                nodeParentContext.subNodes = nodeParentContext.subNodes.prepend(node);
+            if (parent != null) {
+                parent.subNodes = parent.subNodes.prepend(node);
             }
         }
     }
