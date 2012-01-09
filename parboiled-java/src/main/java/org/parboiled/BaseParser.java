@@ -551,6 +551,50 @@ public abstract class BaseParser<V> extends BaseActions<V> {
         return ZeroOrMore(Sequence(rule, rule2, moreRules));
     }
 
+    /**
+     * Creates a new rule that repeatedly matches a given sub rule a certain fixed number of times.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param repetitions The number of repetitions to match. Must be >= 0.
+     * @param rule      the sub rule to match repeatedly.
+     * @return a new rule
+     */
+    @Cached
+    @DontLabel
+    public Rule NTimes(int repetitions, Object rule) {
+        return NTimes(repetitions, rule, null);
+    }
+
+    /**
+     * Creates a new rule that repeatedly matches a given sub rule a certain fixed number of times, optionally
+     * separated by a given separator rule.
+     * <p>Note: This methods provides caching, which means that multiple invocations with the same
+     * arguments will yield the same rule instance.</p>
+     *
+     * @param repetitions The number of repetitions to match. Must be >= 0.
+     * @param rule      the sub rule to match repeatedly.
+     * @param separator the separator to match, if null the individual sub rules will be matched without separator.
+     * @return a new rule
+     */
+    @Cached
+    @DontLabel
+    public Rule NTimes(int repetitions, Object rule, Object separator) {
+        checkArgNotNull(rule, "rule");
+        checkArgument(repetitions >= 0, "repetitions must be non-negative");
+        switch (repetitions) {
+            case 0: return EMPTY;
+            case 1: return toRule(rule);
+            default:
+                Object[] rules = new Object[separator == null ? repetitions : repetitions * 2 - 1];
+                if (separator != null) {
+                    for (int i = 0; i < rules.length; i++)
+                        rules[i] = i % 2 == 0 ? rule : separator;
+                } else Arrays.fill(rules, rule);
+                return Sequence(rules);
+        }
+    }
+
     ///************************* "MAGIC" METHODS ***************************///
 
     /**
