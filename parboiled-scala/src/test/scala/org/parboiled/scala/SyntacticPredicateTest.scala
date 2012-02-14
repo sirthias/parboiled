@@ -21,22 +21,28 @@ import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import testing.ParboiledTest
 
-class BugIn101Test extends ParboiledTest with TestNGSuite {
+class SyntacticPredicateTest extends ParboiledTest with TestNGSuite {
+
+  class TestParser extends Parser {
+    def Clause = rule { Number ~ &("1") ~ Number ~ !"5" ~ Number }
+    def Number = rule { "0" - "9" }
+  }
 
   type Result = Int
 
-  class MyParser extends Parser {
-     def A = rule { nTimes(1, "a") }
- }
-
-  val parser = new MyParser() {
+  val parser = new TestParser() {
     override val buildParseTree = true
   }
 
   @Test
-  def testNTimes() {
-    parse(ReportingParseRunner(parser.A), "any") {
-      assertEquals(parseTree,"[A] 'a'\n")
+  def testSyntacticPredicates() {
+    parse(ReportingParseRunner(parser.Clause), "216") {
+      assertEquals(parseTree,
+        """|[Clause] '216'
+           |  [Number] '2'
+           |  [Number] '1'
+           |  [Number] '6'
+           |""".stripMargin)
     }
   }
 
