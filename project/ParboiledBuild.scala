@@ -44,7 +44,7 @@ project.initialize=false
     val testng    = "org.testng" % "testng" % "5.14.1" % "test"
 
     def scalaTest(scalaVersion: String) = scalaVersion match {
-      case "2.9.0" => "org.scalatest" % "scalatest_2.9.0" % "1.6.1" % "test"
+      case x if x startsWith "2.9" => "org.scalatest" % "scalatest_2.9.0" % "1.6.1" % "test"
       case "2.10.0-M6" => "org.scalatest" % "scalatest_2.10.0-M6" % "1.9-2.10.0-M6-B2" % "test"
     }
   }
@@ -55,9 +55,9 @@ project.initialize=false
   // -------------------------------------------------------------------------------------------------------------------
 
   val javaCompileSettings = Seq(
-    "-g",
     "-deprecation",
     "-target", "1.5",
+    "-source", "1.5",
     "-encoding", "utf8",
     "-Xlint:unchecked"
   )
@@ -87,7 +87,8 @@ project.initialize=false
           asmTree,
           asmAnalysis,
           asmUtil
-        )
+        ),
+        javacOptions in Test += "-g" // needed for bytecode rewriting
       )
       .dependsOn(parboiledCore)
 
@@ -103,7 +104,7 @@ project.initialize=false
     Project("examples-java", file("examples-java"))
       .settings(commonSettings: _*)
       .settings(
-
+        javacOptions += "-g" // needed for bytecode rewriting
       )
       .dependsOn(parboiledJava)
 
@@ -119,7 +120,9 @@ project.initialize=false
     libraryDependencies ++= Seq(
       testng
     ),
-    libraryDependencies <+= scalaVersion(scalaTest)
+    libraryDependencies <+= scalaVersion(scalaTest),
+    javacOptions ++= javaCompileSettings,
+    scalacOptions ++= scalaCompileSettings
   )
 
   /*
