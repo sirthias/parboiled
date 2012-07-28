@@ -11,8 +11,8 @@ object Build extends Build {
   }
 
   val basicSettings = seq(
-    version               := "1.1-SNAPSHOT",
-    scalaVersion          := "2.9.2", // "2.10.0-M6"
+    version               := "1.1",
+    scalaVersion          := "2.10.0-M6",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
     organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -57,6 +57,30 @@ object Build extends Build {
     publishLocal := ()
   )
 
+  def javaDoc = seq(
+    doc in Compile <<= (fullClasspath in Compile in doc, target in Compile in doc, javaSource in Compile,
+      name, version, streams) map { (cp, docTarget, compileSrc, name, version, s) =>
+      def replace(x: Any) = x.toString.replace("parboiled-java", "parboiled-core")
+      def docLink = name match {
+        case "parboiled-java" => " -linkoffline http://www.decodified.com/parboiled/api/core " + replace(docTarget)
+        case _ => ""
+      }
+      val cmd = "javadoc" +
+              " -sourcepath " + compileSrc +
+              " -classpath " + cp.map(_.data).mkString(":") +
+              " -d " + docTarget +
+              docLink +
+              " -encoding utf8" +
+              " -public" +
+              " -windowtitle " + name + "_" + version +
+              " -subpackages" +
+              " org.parboiled"
+      s.log.info(cmd)
+      cmd ! s.log
+      docTarget
+    }
+  )
+
   lazy val rootProject = Project("root", file("."))
     .aggregate(parboiledCore, parboiledJava, parboiledScala, examplesJava, examplesScala)
     .settings(basicSettings: _*)
@@ -65,11 +89,13 @@ object Build extends Build {
 
   lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
     .settings(basicSettings: _*)
+    .settings(javaDoc: _*)
 
 
   lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
     .dependsOn(parboiledCore)
     .settings(basicSettings: _*)
+    .settings(javaDoc: _*)
     .settings(
       libraryDependencies ++= compile(asm, asmTree, asmAnalysis, asmUtil),
       javacOptions in Test += "-g" // needed for bytecode rewriting
