@@ -25,8 +25,7 @@ package org.parboiled.transform;
 import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
-import org.objectweb.asm.tree.analysis.Value;
-import org.objectweb.asm.util.AbstractVisitor;
+import org.objectweb.asm.util.Printer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +36,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * A node in the instruction dependency graph.
  */
-class InstructionGraphNode implements Value {
+class InstructionGraphNode extends BasicValue {
 
     private AbstractInsnNode instruction;
     private final BasicValue resultValue;
@@ -50,6 +49,7 @@ class InstructionGraphNode implements Value {
     private InstructionGroup group;
 
     public InstructionGraphNode(AbstractInsnNode instruction, BasicValue resultValue) {
+        super(null);
         this.instruction = instruction;
         this.resultValue = resultValue;
         this.isActionRoot = AsmUtils.isActionRoot(instruction);
@@ -119,9 +119,9 @@ class InstructionGraphNode implements Value {
         return isXStore;
     }
 
-    public void addPredecessors(Collection<Value> preds) {
+    public void addPredecessors(Collection<BasicValue> preds) {
         checkArgNotNull(preds, "preds");
-        for (Value pred : preds) {
+        for (BasicValue pred : preds) {
             if (pred instanceof InstructionGraphNode) {
                 addPredecessor(((InstructionGraphNode) pred));
             }
@@ -135,8 +135,18 @@ class InstructionGraphNode implements Value {
     }
 
     @Override
+    public boolean equals(Object value) {
+        return value == this;
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
     public String toString() {
-        return instruction.getOpcode() != -1 ? AbstractVisitor.OPCODES[instruction.getOpcode()] : super.toString();
+        return instruction.getOpcode() != -1 ? Printer.OPCODES[instruction.getOpcode()] : super.toString();
     }
 
 }

@@ -36,7 +36,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * Initializes the basic ParserClassNode fields and collects all methods.
  */
-class ClassNodeInitializer extends EmptyVisitor {
+class ClassNodeInitializer extends ClassVisitor {
 
     private ParserClassNode classNode;
     private Class<?> ownerClass;
@@ -44,6 +44,10 @@ class ClassNodeInitializer extends EmptyVisitor {
     private boolean hasExplicitActionOnlyAnnotation;
     private boolean hasDontLabelAnnotation;
     private boolean hasSkipActionsInPredicates;
+
+    public ClassNodeInitializer() {
+        super(Opcodes.ASM4);
+    }
 
     public void process(ParserClassNode classNode) throws IOException {
         this.classNode = checkArgNotNull(classNode, "classNode");

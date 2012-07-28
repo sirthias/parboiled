@@ -18,9 +18,7 @@ package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.*;
 
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -104,7 +102,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         // generate an MD5 hash across the buffer, use only the first 96 bit
         MD5Digester digester = new MD5Digester(classNode.name);
         group.getInstructions().accept(digester);
-        for (FieldNode field: group.getFields()) field.accept(digester);
+        for (FieldNode field: group.getFields()) digester.visitField(field);
         byte[] hash = digester.getMD5Hash();
         byte[] hash96 = new byte[12];
         System.arraycopy(hash, 0, hash96, 0, 12);
@@ -115,13 +113,14 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         group.setName(name);
     }
 
-    private static class MD5Digester extends EmptyVisitor {
+    private static class MD5Digester extends MethodVisitor {
         private static MessageDigest digest;
         private static ByteBuffer buffer;
         private final List<Label> labels = new ArrayList<Label>();
         private final String parserClassName;
 
         public MD5Digester(String parserClassName) {
+            super(Opcodes.ASM4);
             this.parserClassName = parserClassName;
             if (digest == null) {
                 try {
@@ -250,12 +249,10 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
             update(type);
         }
 
-        @Override
-        public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-            update(name);
-            update(desc);
-            update(signature);
-            return this;
+        public void visitField(FieldNode field) {
+            update(field.name);
+            update(field.desc);
+            update(field.signature);
         }
 
         private void update(int i) {
