@@ -18,8 +18,11 @@ package org.parboiled.examples.abc;
 
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
+import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
+
+import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import java.util.Scanner;
@@ -34,14 +37,12 @@ public class Main {
             String input = new Scanner(System.in).nextLine();
             if (StringUtils.isEmpty(input)) break;
 
-            ParsingResult<?> result = new RecoveringParseRunner(parser.S()).run(input);
+            ParsingResult<?> result = new ReportingParseRunner(parser.S()).run(input);
 
-            System.out.println(input + " = " + result.parseTreeRoot.getValue() + '\n');
-            System.out.println(printNodeTree(result) + '\n');
-
-            if (!result.matched) {
-                System.out.println(StringUtils.join(result.parseErrors, "---\n"));
-            }
+            if (!result.parseErrors.isEmpty())
+                System.out.println(ErrorUtils.printParseError(result.parseErrors.get(0)));
+            else
+                System.out.println(printNodeTree(result) + '\n');
         }
     }
 
