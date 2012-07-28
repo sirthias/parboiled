@@ -1,3 +1,13 @@
+Version 1.1 (2011-07-28)
+------------------------
+Java:
+- Added `NTimes` rule construction helper
+- Upgraded to ASM 4.0, closes #41
+- Improved ABC example
+Scala:
+- Upgraded to Scala 2.10-M6
+
+
 Version 1.0.2 (2011-09-30)
 --------------------------
 Core:

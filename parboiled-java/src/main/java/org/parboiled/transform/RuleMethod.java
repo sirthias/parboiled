@@ -31,7 +31,6 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
-import org.objectweb.asm.tree.analysis.Value;
 import org.parboiled.BaseParser;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Var;
@@ -187,7 +186,7 @@ class RuleMethod extends MethodNode {
         return name.charAt(0) == '$';
     }
 
-    public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<Value> predecessors) {
+    public InstructionGraphNode setGraphNode(AbstractInsnNode insn, BasicValue resultValue, List<BasicValue> predecessors) {
         if (graphNodes == null) {
             // initialize with a list of null values
             graphNodes = new ArrayList<InstructionGraphNode>(
