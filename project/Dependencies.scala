@@ -23,5 +23,7 @@ object Dependencies {
       "org.scalatest" %% "scalatest" % "1.8"
     case "2.10.0-M6" =>
       "org.scalatest" %% "scalatest" % "1.9-2.10.0-M6-B2"
+    case "2.10.0-M7" =>
+      "org.scalatest" %% "scalatest" % "1.9-2.10.0-M7-B1"
   }
 }
