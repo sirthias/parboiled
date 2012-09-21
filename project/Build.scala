@@ -1,5 +1,6 @@
 import sbt._
 import Keys._
+import com.jsuereth.pgp.sbtplugin._
 
 
 object Build extends Build {
@@ -10,9 +11,9 @@ object Build extends Build {
     shellPrompt := { s => Project.extract(s).currentProject.id + " > " }
   }
 
-  val basicSettings = seq(
-    version               := "1.1",
-    scalaVersion          := "2.10.0-M6",
+  val basicSettings = PgpPlugin.settings ++ seq(
+    version               := "1.1.1-SNAPSHOT",
+    scalaVersion          := "2.10.0-M7",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
     organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -31,25 +32,35 @@ object Build extends Build {
     scalacOptions         := Seq("-unchecked", "-deprecation", "-encoding", "utf8"),
 
     libraryDependencies   ++= test(testNG),
-    libraryDependencies   <+= scalaVersion(scalaTest),
+    libraryDependencies   <++= scalaVersion(v => test(scalaTest(v))),
 
     // scaladoc settings
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
     // publishing
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-    crossPaths := false,
+    crossScalaVersions := Seq("2.9.2", "2.10.0-M7"),
     publishMavenStyle := true,
-    publishTo <<= version { version =>
-      Some {
-        "spray nexus" at {
-          // public uri is repo.spray.cc, we use an SSH tunnel to the nexus here
-          "http://localhost:42424/content/repositories/" + {
-            if (version.trim.endsWith("SNAPSHOT")) "snapshots/" else "releases/"
-          }
-        }
-      }
-    }
+    publishArtifact in Test := false,
+    pomIncludeRepository := { _ => false },
+    PgpPlugin.useGpg := true,
+    PgpPlugin.pgpSigningKey := Some(-2321133875171851978L),
+    publishTo <<= version { v: String =>
+      val nexus = "https://oss.sonatype.org/"
+      if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+      else                             Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    pomExtra :=
+      <scm>
+        <url>git@github.com:sirthias/parboiled.git</url>
+        <connection>scm:git:git@github.com:sirthias/parboiled.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>sirthias</id>
+          <name>Mathias Doenitz</name>
+        </developer>
+      </developers>
   )
 
   val noPublishing = seq(
@@ -90,6 +101,7 @@ object Build extends Build {
   lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
     .settings(basicSettings: _*)
     .settings(javaDoc: _*)
+    .settings(crossPaths := false)
 
 
   lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
@@ -98,8 +110,10 @@ object Build extends Build {
     .settings(javaDoc: _*)
     .settings(
       libraryDependencies ++= compile(asm, asmTree, asmAnalysis, asmUtil),
-      javacOptions in Test += "-g" // needed for bytecode rewriting
+      javacOptions in Test += "-g", // needed for bytecode rewriting
+      crossPaths := false
     )
+
 
   lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
     .dependsOn(parboiledCore)
