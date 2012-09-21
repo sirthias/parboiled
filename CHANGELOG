@@ -1,4 +1,4 @@
-Version 1.1.1 (2011-09-21)
+Version 1.1.1 (2012-09-21)
 --------------------------
 General:
   - Fixed incorrect scope for scalatest dependency
@@ -9,7 +9,7 @@ Scala:
   - Upgraded to Scala 2.10-M7
 
 
-Version 1.1 (2011-07-28)
+Version 1.1 (2012-07-28)
 ------------------------
 Java:
 - Added `NTimes` rule construction helper
