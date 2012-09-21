@@ -21,9 +21,7 @@ object Dependencies {
   def scalaTest(scalaVersion: String) = scalaVersion match {
     case x if x startsWith "2.9" =>
       "org.scalatest" %% "scalatest" % "1.8"
-    case "2.10.0-M6" =>
-      "org.scalatest" %% "scalatest" % "1.9-2.10.0-M6-B2"
     case "2.10.0-M7" =>
-      "org.scalatest" %% "scalatest" % "1.9-2.10.0-M7-B1"
+      "org.scalatest" % "scalatest_2.10.0-M7" % "1.9-2.10.0-M7-B1"
   }
 }
