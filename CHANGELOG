@@ -1,3 +1,14 @@
+Version 1.1.1 (2011-09-21)
+--------------------------
+General:
+  - Fixed incorrect scope for scalatest dependency
+  - Upgraded to SBT 0.12.0
+  - Changed deployment target to sonatype (i.e. maven central)
+Scala:
+  - Enabled proper scala-version cross-building
+  - Upgraded to Scala 2.10-M7
+
+
 Version 1.1 (2011-07-28)
 ------------------------
 Java:

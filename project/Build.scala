@@ -12,7 +12,7 @@ object Build extends Build {
   }
 
   val basicSettings = PgpPlugin.settings ++ seq(
-    version               := "1.1.1-SNAPSHOT",
+    version               := "1.1.1",
     scalaVersion          := "2.10.0-M7",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
