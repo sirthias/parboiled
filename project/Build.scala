@@ -39,7 +39,7 @@ object Build extends Build {
 
     // publishing
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-    crossScalaVersions := Seq("2.9.2", "2.10.0-M7"),
+    crossScalaVersions := Seq("2.9.2", "2.10.0-M7", "2.10.0-RC1"),
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
