@@ -12,8 +12,8 @@ object Build extends Build {
   }
 
   val basicSettings = PgpPlugin.settings ++ seq(
-    version               := "1.1.1",
-    scalaVersion          := "2.10.0-M7",
+    version               := "1.1.2",
+    scalaVersion          := "2.10.0-RC1",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
     organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -29,7 +29,12 @@ object Build extends Build {
       "-encoding", "utf8",
       "-Xlint:unchecked"
     ),
-    scalacOptions         := Seq("-unchecked", "-deprecation", "-encoding", "utf8"),
+    scalacOptions         <<= scalaVersion map {
+      case x if x startsWith "2.9" =>
+        Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+      case x if x startsWith "2.10" =>
+        Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
+    },
 
     libraryDependencies   ++= test(testNG),
     libraryDependencies   <++= scalaVersion(v => test(scalaTest(v))),
@@ -39,7 +44,8 @@ object Build extends Build {
 
     // publishing
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-    crossScalaVersions := Seq("2.9.2", "2.10.0-M7", "2.10.0-RC1"),
+    crossScalaVersions := Seq("2.9.2", "2.10.0-RC1"),
+    scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVersion.binaryScalaVersion(sV) else sV),
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
