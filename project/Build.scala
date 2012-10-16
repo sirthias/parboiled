@@ -12,7 +12,7 @@ object Build extends Build {
   }
 
   val basicSettings = PgpPlugin.settings ++ seq(
-    version               := "1.1.2",
+    version               := "1.1.3",
     scalaVersion          := "2.10.0-RC1",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
@@ -43,7 +43,6 @@ object Build extends Build {
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
     // publishing
-    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     crossScalaVersions := Seq("2.9.2", "2.10.0-RC1"),
     scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVersion.binaryScalaVersion(sV) else sV),
     publishMavenStyle := true,

@@ -1,20 +1,26 @@
+Version 1.1.3 (2012-10-16)
+--------------------------
+Core & Java:
+- Removed superfluous dependency on Scala library
+
+
 Version 1.1.2 (2012-10-15)
 --------------------------
 Scala:
-  - Fix cross-building path generation to include the full scala-version
-    for unstable versions (milestones, RC)
-  - Upgrade to Scala 2.10-RC1
+- Fix cross-building path generation to include the full scala-version
+for unstable versions (milestones, RC)
+- Upgrade to Scala 2.10-RC1
 
 
 Version 1.1.1 (2012-09-21)
 --------------------------
 General:
-  - Fixed incorrect scope for scalatest dependency
-  - Upgraded to SBT 0.12.0
-  - Changed deployment target to sonatype (i.e. maven central)
+- Fixed incorrect scope for scalatest dependency
+- Upgraded to SBT 0.12.0
+- Changed deployment target to sonatype (i.e. maven central)
 Scala:
-  - Enabled proper scala-version cross-building
-  - Upgraded to Scala 2.10-M7
+- Enabled proper scala-version cross-building
+- Upgraded to Scala 2.10-M7
 
 
 Version 1.1 (2012-07-28)
