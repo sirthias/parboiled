@@ -107,7 +107,10 @@ object Build extends Build {
   lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
     .settings(basicSettings: _*)
     .settings(javaDoc: _*)
-    .settings(crossPaths := false)
+    .settings(
+      crossPaths := false,
+      autoScalaLibrary := false
+    )
 
 
   lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
@@ -117,7 +120,8 @@ object Build extends Build {
     .settings(
       libraryDependencies ++= compile(asm, asmTree, asmAnalysis, asmUtil),
       javacOptions in Test += "-g", // needed for bytecode rewriting
-      crossPaths := false
+      crossPaths := false,
+      autoScalaLibrary := false
     )
 
 
