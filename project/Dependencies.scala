@@ -25,5 +25,7 @@ object Dependencies {
       "org.scalatest" %% "scalatest" % "1.9-2.10.0-M7-B1" cross CrossVersion.full
     case "2.10.0-RC1" =>
       "org.scalatest" %% "scalatest" % "1.8-2.10.0-RC1-B1" cross CrossVersion.full
+    case "2.10.0-RC2" =>
+      "org.scalatest" %% "scalatest" % "1.8-B2" cross CrossVersion.full
   }
 }
