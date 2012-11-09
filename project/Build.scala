@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import com.jsuereth.pgp.sbtplugin._
+import com.typesafe.sbt._
 
 
 object Build extends Build {
@@ -11,9 +11,9 @@ object Build extends Build {
     shellPrompt := { s => Project.extract(s).currentProject.id + " > " }
   }
 
-  val basicSettings = PgpPlugin.settings ++ seq(
+  val basicSettings = SbtPgp.settings ++ seq(
     version               := "1.1.3",
-    scalaVersion          := "2.10.0-RC1",
+    scalaVersion          := "2.10.0-RC2",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
     organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -48,8 +48,7 @@ object Build extends Build {
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
-    PgpPlugin.useGpg := true,
-    PgpPlugin.pgpSigningKey := Some(-2321133875171851978L),
+    SbtPgp.useGpg := true,
     publishTo <<= version { v: String =>
       val nexus = "https://oss.sonatype.org/"
       if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
