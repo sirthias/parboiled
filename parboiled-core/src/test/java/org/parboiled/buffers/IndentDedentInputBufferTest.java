@@ -51,6 +51,32 @@ public class IndentDedentInputBufferTest {
     }
 
     @Test
+    public void testIndentDedentInputBufferEmptyLines() {
+        InputBuffer buf = new IndentDedentInputBuffer(("" +
+                "###\n" +
+                "\n" +
+                "L1#X\n" +
+                "  \n" +
+                "  L2\n" +
+                "L12").toCharArray(), 2, "#", false, false);
+
+        String bufContent = collectContent(buf);
+        assertEquals(bufContent, "" +
+                "\n" +
+                "\n" +
+                "L1\n" +
+                "\n" +
+                "»L2\n" +
+                "«L12");
+
+        assertEquals(buf.extract(2, 4), "L1");
+        assertEquals(buf.extract(7, 10), "L2\n");
+        assertEquals(buf.extract(10, 14), "L12");
+        assertEquals(buf.getPosition(5).toString(), "Position{line=4, column=3}");
+        assertEquals(buf.extractLine(5), "  L2");
+    }
+
+    @Test
     public void testIndentDedentInputBuffer1() {
         InputBuffer buf = new IndentDedentInputBuffer(("" +
                 "level 1\n" +

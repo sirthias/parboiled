@@ -46,6 +46,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
 
     private int[] indexMap; // maps convBuffer indices to origBuffer indices
     private final boolean strict;
+    private final boolean skipEmptyLines;
 
     /**
      * Creates a new IndentDedentInputBuffer around the given char array. Note that for performance reasons the given
@@ -60,7 +61,26 @@ public class IndentDedentInputBuffer implements InputBuffer {
      *          if the input contains illegal indentations and the strict flag is set
      */
     public IndentDedentInputBuffer(char[] input, int tabStop, String lineCommentStart, boolean strict) {
+        this(input, tabStop, lineCommentStart, strict, true);
+    }
+
+    /**
+     * Creates a new IndentDedentInputBuffer around the given char array. Note that for performance reasons the given
+     * char array is not defensively copied.
+     *
+     * @param input            the input text.
+     * @param tabStop          the number of characters in a tab stop.
+     * @param lineCommentStart the string starting a line comment or null, if line comments are not defined
+     * @param strict           signals whether the buffer should throw an {@link IllegalIndentationException} on
+     * "semi-dedents", if false the buffer silently accepts these
+     * @param skipEmptyLines   signals whether the buffer should swallow empty lines
+     * @throws org.parboiled.errors.IllegalIndentationException
+     *          if the input contains illegal indentations and the strict flag is set
+     */
+    public IndentDedentInputBuffer(char[] input, int tabStop, String lineCommentStart, boolean strict,
+                                   boolean skipEmptyLines) {
         this.strict = strict;
+        this.skipEmptyLines = skipEmptyLines;
         checkArgument(tabStop > 0, "tabStop must be > 0");
         checkArgument(lineCommentStart == null || lineCommentStart.indexOf('\n') == -1,
                 "lineCommentStart must not contain newlines");
@@ -185,6 +205,7 @@ public class IndentDedentInputBuffer implements InputBuffer {
                         advance();
                         continue;
                     case '\n':
+                        if (!skipEmptyLines) builder.appendNewline(0);
                         indent = 0;
                         advance();
                         continue;
