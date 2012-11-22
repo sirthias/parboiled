@@ -50,6 +50,9 @@ class AsmUtils {
         checkArgNotNull(clazz, "clazz");
         String classFilename = clazz.getName().replace('.', '/') + ".class";
         InputStream inputStream = clazz.getClassLoader().getResourceAsStream(classFilename);
+        if (inputStream == null) {
+            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(classFilename);
+        }
         return new ClassReader(inputStream);
     }
 
@@ -72,7 +75,12 @@ class AsmUtils {
                 try {
                     clazz = AsmUtils.class.getClassLoader().loadClass(className);
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e);
+                    // If class not found trying the context classLoader
+                    try {
+                        Thread.currentThread().getContextClassLoader().loadClass(className);
+                    } catch (ClassNotFoundException e2) {
+                        throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e2);
+                    }
                 }
             }
             classForDesc.put(classDesc, clazz);
