@@ -8,9 +8,9 @@ import java.io.IOException;
 import static scala.collection.JavaConversions.collectionAsScalaIterable;
 
 @SuppressWarnings("unchecked")
-public class CoreTestWrapper extends TestNGWrapperSuite {
+public class JavaTest extends TestNGWrapperSuite {
 
-    public CoreTestWrapper() throws IOException {
+    public JavaTest() throws IOException {
         super(collectionAsScalaIterable(ImmutableList.of(getSuiteFileName())).toList());
     }
     
@@ -21,11 +21,16 @@ public class CoreTestWrapper extends TestNGWrapperSuite {
         String xml = "" +
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\">\n" +
-                "<suite name=\"parboiled-core\">\n" +
-                "  <test verbose=\"1\" name=\"parboiled-core\" annotations=\"JDK\">\n" +
+                "<suite name=\"parboiled-java\">\n" +
+                "  <test verbose=\"1\" name=\"parboiled-java\" annotations=\"JDK\">\n" +
                 "    <packages>\n" +
                 "      <package name=\"org.parboiled.*\" />\n" +
                 "    </packages>\n" +
+                "  </test>\n" +
+                "  <test verbose=\"1\" name=\"NoPackageParser\" annotations=\"JDK\">\n" +
+                "    <classes>\n" +
+                "      <class name=\"NoPackageParser\"/>\n" +
+                "    </classes>" +
                 "  </test>\n" +
                 "</suite>";
         FileUtils.writeAllText(xml, temp);
