@@ -17,6 +17,7 @@
 package org.parboiled.buffers;
 
 import org.parboiled.common.IntArrayStack;
+import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.support.Chars;
 import org.parboiled.support.IndexRange;
 import org.parboiled.support.Position;
@@ -51,7 +52,13 @@ public class DefaultInputBuffer implements InputBuffer {
     }
 
     public char charAt(int index) {
-        return 0 <= index && index < length ? buffer[index] : Chars.EOI;
+        return 0 <= index && index < length ? buffer[index] :
+                index - length > 100000 ? throwParsingException() : Chars.EOI;
+    }
+
+    private char throwParsingException() {
+        throw new ParserRuntimeException("Parser read more than 100K chars beyond EOI, " +
+                "verify that your grammar does not consume EOI indefinitely!");
     }
 
     public boolean test(int index, char[] characters) {
