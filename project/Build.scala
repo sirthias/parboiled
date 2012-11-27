@@ -12,7 +12,7 @@ object Build extends Build {
   }
 
   val basicSettings = SbtPgp.settings ++ seq(
-    version               := "1.1.3",
+    version               := "1.1.4",
     scalaVersion          := "2.10.0-RC3",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",

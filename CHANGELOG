@@ -1,3 +1,14 @@
+Version 1.1.4 (2012-11-27)
+--------------------------
+Core:
+- Added parser automatic parser termination after matching 100K EOI, closed #52
+- Extended IndentDedentBuffer with option to not swallow empty lines, closed #56
+Java:
+- Upgraded to ASM 4.1
+Scala:
+- Upgraded to Scala 2.10.0-RC3
+
+
 Version 1.1.3 (2012-10-16)
 --------------------------
 Core & Java:
