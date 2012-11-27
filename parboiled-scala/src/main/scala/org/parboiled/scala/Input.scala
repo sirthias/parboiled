@@ -32,6 +32,7 @@ class Input(val input: Array[Char], bufferCreator: (Array[Char] => InputBuffer) 
    * @param strict           signals whether an IllegalIndentationException should be thrown on
    * "semi-dedents", if false the buffer silently accepts these
    */
-  def transformIndents(tabStop: Int = 2, lineCommentStart: String = null, strict: Boolean = false): Input =
-    new Input(input, new IndentDedentInputBuffer(_, tabStop, lineCommentStart, strict))
+  def transformIndents(tabStop: Int = 2, lineCommentStart: String = null, strict: Boolean = false,
+                       skipEmptyLines: Boolean = true): Input =
+    new Input(input, new IndentDedentInputBuffer(_, tabStop, lineCommentStart, strict, skipEmptyLines))
 }
