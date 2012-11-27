@@ -55,7 +55,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 0x1011\n" +
-                "public final class org/parboiled/transform/VarInit$ojjPlnt06r72YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
+                "public final synthetic class org/parboiled/transform/VarInit$ojjPlnt06r72YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1\n" +
@@ -79,17 +79,17 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 0x1011\n" +
-                "public final class org/parboiled/transform/Action$LmzJHalG7AngCUsX extends org/parboiled/transform/BaseAction  {\n" +
+                "public final synthetic class org/parboiled/transform/Action$LmzJHalG7AngCUsX extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public I field$0\n" +
+                "  public synthetic I field$0\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public I field$1\n" +
+                "  public synthetic I field$1\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public I field$2\n" +
+                "  public synthetic I field$2\n" +
                 "\n" +
                 "  // access flags 0x1\n" +
                 "  public <init>(Ljava/lang/String;)V\n" +
@@ -124,23 +124,23 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 49.0 (49)\n" +
                 "// access flags 0x1011\n" +
-                "public final class org/parboiled/transform/Action$OrG2zjbz0MYoT8sO extends org/parboiled/transform/BaseAction  {\n" +
+                "public final synthetic class org/parboiled/transform/Action$OrG2zjbz0MYoT8sO extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public Lorg/parboiled/transform/TestParser$$parboiled; field$0\n" +
+                "  public synthetic Lorg/parboiled/transform/TestParser$$parboiled; field$0\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public I field$1\n" +
+                "  public synthetic I field$1\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public Lorg/parboiled/support/Var; field$2\n" +
+                "  public synthetic Lorg/parboiled/support/Var; field$2\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public I field$3\n" +
+                "  public synthetic I field$3\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public I field$4\n" +
+                "  public synthetic I field$4\n" +
                 "\n" +
                 "  // access flags 0x1\n" +
                 "  public <init>(Ljava/lang/String;)V\n" +
