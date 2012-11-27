@@ -55,25 +55,29 @@ public class IndentDedentInputBufferTest {
         InputBuffer buf = new IndentDedentInputBuffer(("" +
                 "###\n" +
                 "\n" +
-                "L1#X\n" +
+                "A#X\n" +
                 "  \n" +
-                "  L2\n" +
-                "L12").toCharArray(), 2, "#", false, false);
+                "  B\n" +
+                "\n" +
+                "  C\n" +
+                "DEF").toCharArray(), 2, "#", true, false);
 
         String bufContent = collectContent(buf);
         assertEquals(bufContent, "" +
                 "\n" +
                 "\n" +
-                "L1\n" +
+                "A\n" +
                 "\n" +
-                "»L2\n" +
-                "«L12");
+                "»B\n" +
+                "\n" +
+                "C\n" +
+                "«DEF");
 
-        assertEquals(buf.extract(2, 4), "L1");
-        assertEquals(buf.extract(7, 10), "L2\n");
-        assertEquals(buf.extract(10, 14), "L12");
-        assertEquals(buf.getPosition(5).toString(), "Position{line=4, column=3}");
-        assertEquals(buf.extractLine(5), "  L2");
+        assertEquals(buf.extract(2, 4), "A#X\n  ");
+        assertEquals(buf.extract(6, 10), "B\n\n  C");
+        assertEquals(buf.extract(11, 15), "DEF");
+        assertEquals(buf.getPosition(5).toString(), "Position{line=5, column=3}");
+        assertEquals(buf.extractLine(5), "  B");
     }
 
     @Test
