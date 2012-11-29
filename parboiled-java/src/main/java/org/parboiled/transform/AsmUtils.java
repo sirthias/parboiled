@@ -77,7 +77,7 @@ class AsmUtils {
                 } catch (ClassNotFoundException e) {
                     // If class not found trying the context classLoader
                     try {
-                        Thread.currentThread().getContextClassLoader().loadClass(className);
+                        clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
                     } catch (ClassNotFoundException e2) {
                         throw new RuntimeException("Error loading class '" + className + "' for rule method analysis", e2);
                     }
