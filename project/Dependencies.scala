@@ -21,7 +21,7 @@ object Dependencies {
   def scalaTest(scalaVersion: String) = scalaVersion match {
     case x if x startsWith "2.9" =>
       "org.scalatest" %% "scalatest" % "1.8"
-    case "2.10.0-RC3" =>
+    case "2.10.0-RC5" =>
       "org.scalatest" %% "scalatest" % "1.8-B1" cross CrossVersion.full
   }
 }
