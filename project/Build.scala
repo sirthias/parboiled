@@ -1,6 +1,7 @@
 import sbt._
 import Keys._
 import com.typesafe.sbt._
+import com.typesafe.sbt.osgi._
 
 
 object Build extends Build {
@@ -109,6 +110,19 @@ object Build extends Build {
       crossPaths := false,
       autoScalaLibrary := false
     )
+    .settings(SbtOsgi.osgiSettings: _*)
+    .settings(
+      OsgiKeys.exportPackage := Seq(
+        "org.parboiled",
+        "org.parboiled.buffers",
+        "org.parboiled.common",
+        "org.parboiled.errors",
+        "org.parboiled.matchers",
+        "org.parboiled.matchervisitors",
+        "org.parboiled.parserunners",
+        "org.parboiled.support",
+        "org.parboiled.trees")
+    )
 
 
   lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
@@ -121,11 +135,28 @@ object Build extends Build {
       crossPaths := false,
       autoScalaLibrary := false
     )
+    .settings(SbtOsgi.osgiSettings: _*)
+    .settings(
+        OsgiKeys.fragmentHost := Some("org.parboiled.core"),
+        OsgiKeys.exportPackage := Seq(
+          "org.parboiled",
+          "org.parboiled.annotations",
+          "org.parboiled.transform")
+    )
 
 
   lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
     .dependsOn(parboiledCore)
     .settings(basicSettings: _*)
+    .settings(SbtOsgi.osgiSettings: _*)
+    .settings(
+      OsgiKeys.exportPackage := Seq(
+        "org.parboiled.scala",
+        "org.parboiled.scala.parserunners",
+        "org.parboiled.scala.rules",
+        "org.parboiled.scala.testing",
+        "org.parboiled.scala.utils")
+    )
 
 
   lazy val examplesJava = Project("examples-java", file("examples-java"))
