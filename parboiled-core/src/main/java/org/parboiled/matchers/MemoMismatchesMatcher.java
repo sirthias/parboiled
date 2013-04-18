@@ -29,26 +29,19 @@ import java.util.List;
 public class MemoMismatchesMatcher implements Matcher {
     private final Matcher inner;
 
-    // we use an int field as memoization flag, it has the following semantics
-    // memo >= 0 : last match failed at position memo
-    // memo == Integer.MIN_VALUE: this match was either never tried or succeeded the last time it was tried
-    private int memo = Integer.MIN_VALUE;
-
     public MemoMismatchesMatcher(Rule inner) {
         this.inner = checkArgNotNull((Matcher) inner, "inner");
     }
 
     @SuppressWarnings({"unchecked"})
     public <V> boolean match(MatcherContext<V> context) {
-        int pos = context.getCurrentIndex();
-        if (memo == pos) {
+        if (context.getMemo() != null) {
             return false;
         }
         if (inner.match(context)) {
-            memo = Integer.MIN_VALUE;
             return true;
         }
-        memo = pos;
+        context.putMemo(Boolean.FALSE);
         return false;
     }
 
