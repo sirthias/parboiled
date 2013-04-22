@@ -28,8 +28,8 @@ import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 import static org.parboiled.errors.ErrorUtils.printParseError;
 import static org.parboiled.common.Preconditions.*;
@@ -63,7 +63,7 @@ public class MatcherContext<V> implements Context<V> {
     private final MatcherContext<V> parent;
     private final int level;
     private final boolean fastStringMatching;
-    private final Map<MatcherPosition, Object> memoStore;
+    private final Set<MatcherPosition> memoizedMismatches;
 
     private MatcherContext<V> subContext;
     private int startIndex;
@@ -99,7 +99,7 @@ public class MatcherContext<V> implements Context<V> {
                           MatchHandler matchHandler, Matcher matcher, boolean fastStringMatching) {
         this(checkArgNotNull(inputBuffer, "inputBuffer"), checkArgNotNull(valueStack, "valueStack"),
                 checkArgNotNull(parseErrors, "parseErrors"), checkArgNotNull(matchHandler, "matchHandler"),
-                null, 0, fastStringMatching,  new HashMap<MatcherPosition, Object>());
+                null, 0, fastStringMatching,  new HashSet<MatcherPosition>());
         this.currentChar = inputBuffer.charAt(0);
         this.matcher = ProxyMatcher.unwrap(checkArgNotNull(matcher, "matcher"));
         this.nodeSuppressed = matcher.isNodeSuppressed();
@@ -107,7 +107,7 @@ public class MatcherContext<V> implements Context<V> {
 
     private MatcherContext(InputBuffer inputBuffer, ValueStack<V> valueStack, List<ParseError> parseErrors,
                            MatchHandler matchHandler, MatcherContext<V> parent, int level, boolean fastStringMatching,
-                           Map<MatcherPosition, Object> memoStore) {
+                           Set<MatcherPosition> memoizedMismatches) {
         this.inputBuffer = inputBuffer;
         this.valueStack = valueStack;
         this.parseErrors = parseErrors;
@@ -115,7 +115,7 @@ public class MatcherContext<V> implements Context<V> {
         this.parent = parent;
         this.level = level;
         this.fastStringMatching = fastStringMatching;
-        this.memoStore = memoStore;
+        this.memoizedMismatches = memoizedMismatches;
     }
 
     @Override
@@ -304,12 +304,12 @@ public class MatcherContext<V> implements Context<V> {
         }
     }
 
-    public Object getMemo() {
-        return memoStore.get(MatcherPosition.at(matcher, currentIndex));
+    public Boolean hasMismatched() {
+        return memoizedMismatches.contains(MatcherPosition.at(matcher, currentIndex));
     }
 
-    public void putMemo(Object memo) {
-        memoStore.put(MatcherPosition.at(matcher, currentIndex), memo);
+    public void memoizeMismatch() {
+    	memoizedMismatches.add(MatcherPosition.at(matcher, currentIndex));
     }
 
     @SuppressWarnings({"ConstantConditions"})
@@ -327,7 +327,7 @@ public class MatcherContext<V> implements Context<V> {
         if (subContext == null) {
             // init new level
             subContext = new MatcherContext<V>(inputBuffer, valueStack, parseErrors, matchHandler, this, level + 1,
-                        fastStringMatching, memoStore);
+                        fastStringMatching, memoizedMismatches);
         } else {
             subContext.path = null; // we always need to reset the MatcherPath, even for actions
         }

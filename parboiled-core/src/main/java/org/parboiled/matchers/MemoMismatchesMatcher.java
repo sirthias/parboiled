@@ -35,13 +35,13 @@ public class MemoMismatchesMatcher implements Matcher {
 
     @SuppressWarnings({"unchecked"})
     public <V> boolean match(MatcherContext<V> context) {
-        if (context.getMemo() != null) {
+        if (context.hasMismatched()) {
             return false;
         }
         if (inner.match(context)) {
             return true;
         }
-        context.putMemo(Boolean.FALSE);
+        context.memoizeMismatch();
         return false;
     }
 
