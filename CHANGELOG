@@ -1,3 +1,12 @@
+Version 1.1.5 (2013-05-02)
+--------------------------
+- General: Added missing OSGi Bundle metadata
+- Core: Fixed MemoMismatcher producing erroneous parsing results
+        for subsequent parsing runs with the same parser instance
+- Java: Fixed problem AsmUtils
+- Scala: Upgraded to Scala 2.9.3 and 2.10.1
+
+
 Version 1.1.4 (2012-11-27)
 --------------------------
 Core:
