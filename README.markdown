@@ -1,6 +1,6 @@
 # Please see
 
-* <http://github.com/sirthias/parboiled/downloads> for downloads
+* <http://repo1.maven.org/maven2/org/parboiled/> for download access to the artifacts
 * <http://wiki.github.com/sirthias/parboiled> for all documentation
 * <http://users.parboiled.org> for the user mailing list / forum
 * <http://sirthias.github.com/parboiled/api/core> for the parboiled-core API javadoc
