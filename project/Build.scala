@@ -14,7 +14,7 @@ object Build extends Build {
 
   val basicSettings = SbtPgp.settings ++ seq(
     version               := "1.1.4",
-    scalaVersion          := "2.10.0",
+    scalaVersion          := "2.10.1",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
     organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -37,14 +37,13 @@ object Build extends Build {
         Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
     },
 
-    libraryDependencies   ++= test(testNG),
-    libraryDependencies   <++= scalaVersion(v => test(scalaTest(v))),
+    libraryDependencies   ++= test(testNG, scalatest),
 
     // scaladoc settings
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
     // publishing
-    crossScalaVersions := Seq("2.9.2", "2.10.0"),
+    crossScalaVersions := Seq("2.9.3", "2.10.1"),
     scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVersion.binaryScalaVersion(sV) else sV),
     publishMavenStyle := true,
     publishArtifact in Test := false,
