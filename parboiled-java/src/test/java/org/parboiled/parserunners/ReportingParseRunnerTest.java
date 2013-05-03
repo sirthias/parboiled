@@ -28,15 +28,19 @@ import static org.testng.Assert.assertEquals;
 public class ReportingParseRunnerTest {
 
     public static class Parser extends BaseParser<Object> {
-        Rule Line() {
+        Rule Line1() {
             return Sequence("Text;", OneOrMore(TestNot(';'), ANY), ';', EOI);
+        }
+
+        Rule Line2() {
+            return Sequence("Text;", TestNot(':'), ';', OneOrMore(ANY), EOI);
         }
     }
 
     @Test
     public void testErrorLocation() {
         Parser parser = Parboiled.createParser(Parser.class);
-        Rule rule = parser.Line();
+        Rule rule = parser.Line1();
         ParsingResult result = new ReportingParseRunner(rule).run("Text;;Something");
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
@@ -48,12 +52,24 @@ public class ReportingParseRunnerTest {
     @Test
     public void testErrorAtEOI() {
         Parser parser = Parboiled.createParser(Parser.class);
-        Rule rule = parser.Line();
+        Rule rule = parser.Line1();
         ParsingResult result = new ReportingParseRunner(rule).run("Text;");
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
                 "Unexpected end of input, expected ';' or ANY (line 1, pos 6):\n" +
                 "Text;\n" +
+                "     ^\n");
+    }
+
+    @Test
+    public void testDoesntExpectTestNotMatcher() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        Rule rule = parser.Line2();
+        ParsingResult result = new ReportingParseRunner(rule).run("Text;Something");
+        assertEquals(result.parseErrors.size(), 1);
+        assertEquals(printParseErrors(result), "" +
+                "Invalid input 'S', expected ';' (line 1, pos 6):\n" +
+                "Text;Something\n" +
                 "     ^\n");
     }
 }
