@@ -95,8 +95,8 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
    */
-  def optional[Z](sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] =
-    new ReductionRule1[Z, Z](new OptionalMatcher(sub.matcher))
+  def optional[A, B <: A](sub: ReductionRule1[A, B]): ReductionRule1[A, B] =
+    new ReductionRule1[A, B](new OptionalMatcher(sub.matcher))
 
   /**
    * Creates a rule that tries the given sub rule and always matches, even if the sub rule did not match.
@@ -118,8 +118,8 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
    */
-  def zeroOrMore[Z](sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] =
-    new ReductionRule1[Z, Z](new ZeroOrMoreMatcher(sub.matcher))
+  def zeroOrMore[A, B <: A](sub: ReductionRule1[A, B]): ReductionRule1[A, B] =
+    new ReductionRule1[A, B](new ZeroOrMoreMatcher(sub.matcher))
 
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches even if the sub rule did not match once.
@@ -188,8 +188,8 @@ trait Parser {
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
    */
-  def oneOrMore[Z](sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] =
-    new ReductionRule1[Z, Z](new OneOrMoreMatcher(sub.matcher))
+  def oneOrMore[A, B <: A](sub: ReductionRule1[A, B]): ReductionRule1[A, B] =
+    new ReductionRule1[A, B](new OneOrMoreMatcher(sub.matcher))
 
   /**
    * Creates a rule that tries the given sub rule repeatedly until it fails. Matches if the sub rule matched at least once.
@@ -273,16 +273,16 @@ trait Parser {
    * Matches the given sub rule a specified number of times.
    * If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z]): ReductionRule1[Z, Z] = nTimes(times, sub, null)
+  def nTimes[A, B <: A](times: Int, sub: ReductionRule1[A, B]): ReductionRule1[A, B] = nTimes(times, sub, null)
 
   /**
    * Matches the given sub rule a specified number of times, whereby two rule matches have to be separated by a match
    * of the given separator rule. If the given number is zero the result is equivalent to the EMPTY match.
    */
-  def nTimes[Z](times: Int, sub: ReductionRule1[Z, Z], separator: Rule0): ReductionRule1[Z, Z] = times match {
-    case 0 => new ReductionRule1[Z, Z](EMPTY.matcher)
+  def nTimes[A, B <: A](times: Int, sub: ReductionRule1[A, B], separator: Rule0): ReductionRule1[A, B] = times match {
+    case 0 => new ReductionRule1[A, B](EMPTY.matcher)
     case n if n > 0 => {
-      type R = ReductionRule1[Z, Z]
+      type R = ReductionRule1[A, B]
       val join = if (separator != null) ((_:R) ~ separator ~ (_:R)) else ((_:R) ~ (_:R))
       def multiply(n: Int): R = if (n > 1) join(multiply(n-1), sub) else sub
       nameNTimes(multiply(times), times)
