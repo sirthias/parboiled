@@ -22,11 +22,14 @@ import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.matchers.TestNotMatcher;
 import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.Position;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * General utility methods regarding parse errors.
@@ -45,10 +48,21 @@ public final class ErrorUtils {
      */
     static Matcher findProperLabelMatcher(MatcherPath path, int errorIndex) {
         checkArgNotNull(path, "path");
-        Matcher found = path.parent != null ? findProperLabelMatcher(path.parent, errorIndex) : null;
-        if (found != null) return found;
-        if (path.element.startIndex == errorIndex && path.element.matcher.hasCustomLabel()) {
-            return path.element.matcher;
+
+        List<MatcherPath.Element> elements = new ArrayList<MatcherPath.Element>();
+        for (MatcherPath cur = path; cur.parent != null; cur = cur.parent) {
+            elements.add(cur.element);
+        }
+
+        ListIterator<MatcherPath.Element> li = elements.listIterator(elements.size());
+        while (li.hasPrevious()) {
+            MatcherPath.Element element = li.previous();
+            if (element.matcher instanceof TestNotMatcher) {
+                return null;
+            }
+            if (element.startIndex == errorIndex && element.matcher.hasCustomLabel()) {
+                return path.element.matcher;
+            }
         }
         return null;
     }
