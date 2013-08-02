@@ -6,7 +6,7 @@ import java.util.List;
 public class IndentNode {
 
 	private final String name;
-	private final List<IndentNode> children = new ArrayList<>();
+	private final List<IndentNode> children = new ArrayList<IndentNode>();
 
 	public IndentNode(String name) {
 		this.name = name;
