@@ -110,7 +110,7 @@ public class RecoveryErrorActionsTest extends TestNgParboiledTest<Object> {
         Parser parser = Parboiled.createParser(Parser.class);
         testWithRecovery(parser.Clause(), "")
                 .hasErrors("" +
-                        "Invalid input 'EOI', expected Clause (line 1, pos 1):\n" +
+                        "Unexpected end of input, expected Clause (line 1, pos 1):\n" +
                         "\n" +
                         "^\n")
                 .hasParseTree("[Clause]E\n")

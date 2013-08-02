@@ -52,7 +52,7 @@ public class EmptyErrorRecoveryTest extends TestNgParboiledTest<Object> {
         
         testWithRecovery(parser.Clause(), "Y")
                 .hasErrors("" +
-                        "Invalid input 'EOI', expected 'e' or 'u' (line 1, pos 2):\n" +
+                        "Unexpected end of input, expected 'e' or 'u' (line 1, pos 2):\n" +
                         "Y\n" +
                         " ^\n");
         
@@ -64,7 +64,7 @@ public class EmptyErrorRecoveryTest extends TestNgParboiledTest<Object> {
         
         testWithRecovery(parser.Clause2(), "Y")
                 .hasErrors("" +
-                        "Invalid input 'EOI', expected 'e' or 'u' (line 1, pos 2):\n" +
+                        "Unexpected end of input, expected 'e' or 'u' (line 1, pos 2):\n" +
                         "Y\n" +
                         " ^\n");
     }

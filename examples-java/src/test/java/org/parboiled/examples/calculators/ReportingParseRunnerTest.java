@@ -46,7 +46,7 @@ public class ReportingParseRunnerTest extends TestNgParboiledTest<Integer> {
         test("1+2*(3-4)X-5", "Invalid input 'X', expected '*', '/', '+', '-' or EOI (line 1, pos 10):\n1+2*(3-4)X-5\n         ^\n");
         test("1+2*(3-4)-X5", "Invalid input 'X', expected Term (line 1, pos 11):\n1+2*(3-4)-X5\n          ^\n");
         test("1+2*(3-4)-5X", "Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 12):\n1+2*(3-4)-5X\n           ^\n");
-        test("1+2*(3-4-5", "Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 11):\n1+2*(3-4-5\n          ^\n");
+        test("1+2*(3-4-5", "Unexpected end of input, expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 11):\n1+2*(3-4-5\n          ^\n");
         test("1+2*3-4)-5", "Invalid input ')', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 8):\n1+2*3-4)-5\n       ^\n");
     }
 

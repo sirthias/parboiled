@@ -61,7 +61,7 @@ public class SimpleErrorRecoveryTest extends TestNgParboiledTest<Object> {
                         "AaA\n" +
                         " ^^\n" +
                         "---\n" +
-                        "Invalid input 'EOI', expected \" and \", \" or \" or Verb (line 1, pos 4):\n" +
+                        "Unexpected end of input, expected \" and \", \" or \" or Verb (line 1, pos 4):\n" +
                         "AaA\n" +
                         "   ^\n");
 

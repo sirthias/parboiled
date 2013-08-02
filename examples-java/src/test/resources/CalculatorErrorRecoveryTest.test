@@ -626,7 +626,7 @@ Invalid input 'X', expected Digit, '*', '/', '+', '-' or EOI (line 1, pos 12):
 ###
 1+2*(3-4-5
 ===
-Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 11):
+Unexpected end of input, expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 11):
 1+2*(3-4-5
           ^
 ===
@@ -836,7 +836,7 @@ Invalid input 'x', expected Term (line 1, pos 5):
 ((1+x2)
     ^
 ---
-Invalid input 'EOI', expected '*', '/', '+', '-' or ')' (line 1, pos 8):
+Unexpected end of input, expected '*', '/', '+', '-' or ')' (line 1, pos 8):
 ((1+x2)
        ^
 ===
@@ -944,7 +944,7 @@ Invalid input 'a...', expected Factor (line 1, pos 4):
 (2*ab4-7
    ^^^
 ---
-Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
+Unexpected end of input, expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 9):
 (2*ab4-7
         ^
 ===

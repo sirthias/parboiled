@@ -41,7 +41,7 @@ public class BugIn0990Test extends TestNgParboiledTest<Integer> {
         // threw IllegalStateException in 0.9.9.0
         testWithRecovery(parser.Clause(), "a.b;")
                 .hasErrors("" +
-                        "Invalid input 'EOI', expected '.', ANY or ';' (line 1, pos 5):\n" +
+                        "Unexpected end of input, expected '.', ANY or ';' (line 1, pos 5):\n" +
                         "a.b;\n" +
                         "    ^\n");
     }

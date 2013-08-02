@@ -41,7 +41,7 @@ public class TracingParseRunnerTest {
         ParsingResult<Integer> result = runner.run("2*(4+5");
 
         assertEquals(printParseErrors(result), "" +
-                "Invalid input 'EOI', expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 7):\n" +
+                "Unexpected end of input, expected Digit, '*', '/', '+', '-' or ')' (line 1, pos 7):\n" +
                 "2*(4+5\n" +
                 "      ^\n");
 

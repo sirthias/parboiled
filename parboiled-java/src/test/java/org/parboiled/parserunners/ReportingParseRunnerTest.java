@@ -52,7 +52,7 @@ public class ReportingParseRunnerTest {
         ParsingResult result = new ReportingParseRunner(rule).run("Text;");
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
-                "Unexpected end of input, expected ANY (line 1, pos 6):\n" +
+                "Unexpected end of input, expected ';' or ANY (line 1, pos 6):\n" +
                 "Text;\n" +
                 "     ^\n");
     }
