@@ -44,4 +44,16 @@ public class ReportingParseRunnerTest {
                 "Text;;Something\n" +
                 "     ^\n");
     }
+
+    @Test
+    public void testErrorAtEOI() {
+        Parser parser = Parboiled.createParser(Parser.class);
+        Rule rule = parser.Line();
+        ParsingResult result = new ReportingParseRunner(rule).run("Text;");
+        assertEquals(result.parseErrors.size(), 1);
+        assertEquals(printParseErrors(result), "" +
+                "Unexpected end of input, expected ANY (line 1, pos 6):\n" +
+                "Text;\n" +
+                "     ^\n");
+    }
 }

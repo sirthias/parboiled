@@ -20,6 +20,7 @@ import org.parboiled.common.Formatter;
 import org.parboiled.common.StringUtils;
 import org.parboiled.matchers.AnyOfMatcher;
 import org.parboiled.matchers.Matcher;
+import org.parboiled.support.Chars;
 import org.parboiled.support.MatcherPath;
 
 import java.util.ArrayList;
@@ -35,12 +36,19 @@ public class DefaultInvalidInputErrorFormatter implements Formatter<InvalidInput
         if (error == null) return "";
 
         int len = error.getEndIndex() - error.getStartIndex();
-        StringBuilder sb = new StringBuilder("Invalid input");
+        StringBuilder sb = new StringBuilder();
         if (len > 0) {
-            sb.append(" '")
-                    .append(StringUtils.escape(String.valueOf(error.getInputBuffer().charAt(error.getStartIndex()))));
-            if (len > 1) sb.append("...");
-            sb.append('\'');
+            char c = error.getInputBuffer().charAt(error.getStartIndex());
+            if (c == Chars.EOI) {
+                sb.append("Unexpected end of input");
+            } else {
+                sb.append("Invalid input '")
+                        .append(StringUtils.escape(String.valueOf(c)));
+                if (len > 1) sb.append("...");
+                sb.append('\'');
+            }
+        } else {
+            sb.append("Invalid input");
         }
         String expectedString = getExpectedString(error);
         if (StringUtils.isNotEmpty(expectedString)) {
