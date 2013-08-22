@@ -27,9 +27,7 @@ import org.parboiled.support.MatcherPath;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.Position;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * General utility methods regarding parse errors.
@@ -47,23 +45,22 @@ public final class ErrorUtils {
      * @return the matcher whose label is best for presentation in "expected" strings
      */
     static Matcher findProperLabelMatcher(MatcherPath path, int errorIndex) {
+        try { return findProperLabelMatcher0(path, errorIndex); }
+        catch(RuntimeException e) {
+            if (e == UnderneathTestNot) return null; else throw e;
+        }
+    }
+
+    private static RuntimeException UnderneathTestNot = new RuntimeException() {
+        @Override public synchronized Throwable fillInStackTrace() { return this; }
+    };
+    private static Matcher findProperLabelMatcher0(MatcherPath path, int errorIndex) {
         checkArgNotNull(path, "path");
-
-        List<MatcherPath.Element> elements = new ArrayList<MatcherPath.Element>();
-        for (MatcherPath cur = path; cur.parent != null; cur = cur.parent) {
-            elements.add(cur.element);
-        }
-
-        ListIterator<MatcherPath.Element> li = elements.listIterator(elements.size());
-        while (li.hasPrevious()) {
-            MatcherPath.Element element = li.previous();
-            if (element.matcher instanceof TestNotMatcher) {
-                return null;
-            }
-            if (element.startIndex == errorIndex && element.matcher.hasCustomLabel()) {
-                return path.element.matcher;
-            }
-        }
+        Matcher found = path.parent != null ? findProperLabelMatcher0(path.parent, errorIndex) : null;
+        if (found != null) return found;
+        Matcher m = path.element.matcher;
+        if (m instanceof TestNotMatcher) throw UnderneathTestNot;
+        if (path.element.startIndex == errorIndex && m.hasCustomLabel()) return m;
         return null;
     }
 

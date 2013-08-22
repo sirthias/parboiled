@@ -33,7 +33,7 @@ public class ReportingParseRunnerTest {
         }
 
         Rule Line2() {
-            return Sequence("Text;", TestNot(':'), ';', OneOrMore(ANY), EOI);
+            return Sequence('a', TestNot('b'), 'c', EOI);
         }
     }
 
@@ -56,7 +56,7 @@ public class ReportingParseRunnerTest {
         ParsingResult result = new ReportingParseRunner(rule).run("Text;");
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
-                "Unexpected end of input, expected ';' or ANY (line 1, pos 6):\n" +
+                "Unexpected end of input, expected ANY (line 1, pos 6):\n" +
                 "Text;\n" +
                 "     ^\n");
     }
@@ -65,11 +65,11 @@ public class ReportingParseRunnerTest {
     public void testDoesntExpectTestNotMatcher() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Line2();
-        ParsingResult result = new ReportingParseRunner(rule).run("Text;Something");
+        ParsingResult result = new ReportingParseRunner(rule).run("ad");
         assertEquals(result.parseErrors.size(), 1);
         assertEquals(printParseErrors(result), "" +
-                "Invalid input 'S', expected ';' (line 1, pos 6):\n" +
-                "Text;Something\n" +
-                "     ^\n");
+                "Invalid input 'd', expected 'c' (line 1, pos 2):\n" +
+                "ad\n" +
+                " ^\n");
     }
 }
