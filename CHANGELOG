@@ -1,3 +1,13 @@
+Version 1.1.6 (2013-08-22)
+--------------------------
+- Core:
+  - Improved error msg for unexpected end of input
+  - Fixed error reporting for rules underneath testNot rules
+- Scala
+  - Added support for ReductionRule1 inside oneOrMore/zeroOrMore while returning a subtype
+  - Upgraded to Scala 2.10.2
+
+
 Version 1.1.5 (2013-05-02)
 --------------------------
 - General: Added missing OSGi Bundle metadata
