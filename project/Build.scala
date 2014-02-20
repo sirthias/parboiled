@@ -96,7 +96,7 @@ object Build extends Build {
     }
   )
 
-  lazy val rootProject = Project("root", file("."))
+  lazy val root = Project("root", file("."))
     .aggregate(parboiledCore, parboiledJava, parboiledScala, examplesJava, examplesScala)
     .settings(basicSettings: _*)
     .settings(noPublishing: _*)
