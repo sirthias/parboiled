@@ -31,11 +31,14 @@ object Build extends Build {
       "-Xlint:unchecked"
     ),
     scalacOptions ++= {
-      if (scalaVersion.value startsWith "2.9")
-        Seq("-unchecked", "-deprecation", "-encoding", "utf8")
-      else if (scalaVersion.value startsWith "2.10")
-        Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
-      else Seq.empty
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, 9)) =>
+          Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+        case Some((2, scalaMajor)) if scalaMajor >= 10 =>
+          Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
+        case _ =>
+          Seq.empty
+      }
     },
 
     libraryDependencies   ++= test(testNG, scalatest),
