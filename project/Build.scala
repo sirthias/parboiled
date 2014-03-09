@@ -30,11 +30,12 @@ object Build extends Build {
       "-encoding", "utf8",
       "-Xlint:unchecked"
     ),
-    scalacOptions         <<= scalaVersion map {
-      case x if x startsWith "2.9" =>
+    scalacOptions ++= {
+      if (scalaVersion.value startsWith "2.9")
         Seq("-unchecked", "-deprecation", "-encoding", "utf8")
-      case x if x startsWith "2.10" =>
+      else if (scalaVersion.value startsWith "2.10")
         Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
+      else Seq.empty
     },
 
     libraryDependencies   ++= test(testNG, scalatest),
