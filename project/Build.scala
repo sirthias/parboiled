@@ -30,11 +30,15 @@ object Build extends Build {
       "-encoding", "utf8",
       "-Xlint:unchecked"
     ),
-    scalacOptions         <<= scalaVersion map {
-      case x if x startsWith "2.9" =>
-        Seq("-unchecked", "-deprecation", "-encoding", "utf8")
-      case x if x startsWith "2.10" =>
-        Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
+    scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, 9)) =>
+          Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+        case Some((2, scalaMajor)) if scalaMajor >= 10 =>
+          Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
+        case _ =>
+          Seq.empty
+      }
     },
 
     libraryDependencies   ++= test(testNG, scalatest),
@@ -96,7 +100,7 @@ object Build extends Build {
     }
   )
 
-  lazy val rootProject = Project("root", file("."))
+  lazy val root = Project("root", file("."))
     .aggregate(parboiledCore, parboiledJava, parboiledScala, examplesJava, examplesScala)
     .settings(basicSettings: _*)
     .settings(noPublishing: _*)
