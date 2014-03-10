@@ -17,13 +17,13 @@
 package org.parboiled.examples.calculators
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.scala.parserunners._
 import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.common.StringBuilderSink
 
-class TracingTest extends ParboiledTest with TestNGSuite {
+class TracingTest extends ParboiledTest with TestNGSuiteLike {
 
   val parser = new SimpleCalculator1
 

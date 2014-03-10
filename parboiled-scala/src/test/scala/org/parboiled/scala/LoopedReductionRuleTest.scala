@@ -17,11 +17,11 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import testing.ParboiledTest
 
-class LoopedReductionRuleTest extends ParboiledTest with TestNGSuite {
+class LoopedReductionRuleTest extends ParboiledTest with TestNGSuiteLike {
 
   type Result = Expression
 

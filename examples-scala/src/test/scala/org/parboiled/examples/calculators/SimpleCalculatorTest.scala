@@ -17,7 +17,7 @@
 package org.parboiled.examples.calculators
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.GraphUtils
@@ -26,7 +26,7 @@ import org.parboiled.support.{Filters, ToStringFormatter}
 import org.parboiled.common.Predicates
 import org.parboiled.scala.parserunners.ReportingParseRunner
 
-class SimpleCalculatorTest extends ParboiledTest with TestNGSuite {
+class SimpleCalculatorTest extends ParboiledTest with TestNGSuiteLike {
   
   val parser = new SimpleCalculator1() {
     override val buildParseTree = true

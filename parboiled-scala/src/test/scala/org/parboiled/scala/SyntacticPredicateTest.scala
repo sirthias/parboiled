@@ -17,11 +17,11 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import testing.ParboiledTest
 
-class SyntacticPredicateTest extends ParboiledTest with TestNGSuite {
+class SyntacticPredicateTest extends ParboiledTest with TestNGSuiteLike {
 
   class TestParser extends Parser {
     def Clause = rule { Number ~ &("1") ~ Number ~ !"5" ~ Number }

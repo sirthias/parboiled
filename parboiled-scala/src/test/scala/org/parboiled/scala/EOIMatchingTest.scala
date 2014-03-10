@@ -17,11 +17,11 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.parboiled.errors.ParserRuntimeException
 import testing.ParboiledTest
 
-class EOIMatchingTest extends ParboiledTest with TestNGSuite {
+class EOIMatchingTest extends ParboiledTest with TestNGSuiteLike {
 
   class EOIMatchingParser extends Parser {
     def Clause = rule { oneOrMore(EOI) }

@@ -17,7 +17,7 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.GraphUtils
@@ -25,7 +25,7 @@ import testing.ParboiledTest
 import org.parboiled.support.{Filters, ToStringFormatter}
 import org.parboiled.common.Predicates
 
-class RecursionTest extends ParboiledTest with TestNGSuite {
+class RecursionTest extends ParboiledTest with TestNGSuiteLike {
 
   class RecursionParser extends Parser {
     def LotsOfAs: Rule0 = rule {ignoreCase('a') ~ optional(LotsOfAs)}

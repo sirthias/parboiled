@@ -17,11 +17,11 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import testing.ParboiledTest
 
-class SemanticPredicateTest extends ParboiledTest with TestNGSuite {
+class SemanticPredicateTest extends ParboiledTest with TestNGSuiteLike {
 
   class TestParser extends Parser {
     def Clause = rule { Number ~ " " ~ Number ~ " " ~ Number ~~~? (_ + _ == _) ~ EOI ~~> (_ + _ - _) }

@@ -17,12 +17,12 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert._
 import testing.ParboiledTest
 import org.parboiled.matchers.FirstOfStringsMatcher
 
-class FirstOfStringsTest extends ParboiledTest with TestNGSuite {
+class FirstOfStringsTest extends ParboiledTest with TestNGSuiteLike {
 
   class TestParser extends Parser {
     def Fast = rule { "Alpha" | "Bravo" | "Charlie" }

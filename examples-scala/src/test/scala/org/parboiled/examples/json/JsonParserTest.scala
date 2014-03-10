@@ -17,12 +17,12 @@
 package org.parboiled.examples.json
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.scala.parserunners.ReportingParseRunner
 
-class JsonParserTest extends ParboiledTest with TestNGSuite {
+class JsonParserTest extends ParboiledTest with TestNGSuiteLike {
   val parser = new JsonParser1()
 
   type Result = parser.AstNode

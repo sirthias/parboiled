@@ -17,14 +17,14 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.support.ToStringFormatter
 import org.parboiled.trees.GraphUtils
 import testing.ParboiledTest
 
-class SimpleTest extends ParboiledTest with TestNGSuite {
+class SimpleTest extends ParboiledTest with TestNGSuiteLike {
 
   class SimpleParser extends Parser {
     def Clause = rule {Digit ~ ClauseRest ~ EOI}

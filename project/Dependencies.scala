@@ -17,5 +17,5 @@ object Dependencies {
   val asmAnalysis = "org.ow2.asm"   %  "asm-analysis"  % "4.1"
   val asmUtil     = "org.ow2.asm"   %  "asm-util"      % "4.1"
   val testNG      = "org.testng"    %  "testng"        % "5.14.1"
-  val scalatest   = "org.scalatest" %% "scalatest"     % "1.9.1"
+  val scalatest   = "org.scalatest" %% "scalatest"     % "2.1.0"
 }
