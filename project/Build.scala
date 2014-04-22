@@ -14,7 +14,7 @@ object Build extends Build {
 
   val basicSettings = SbtPgp.settings ++ seq(
     version               := "1.1.6",
-    scalaVersion          := "2.10.3",
+    scalaVersion          := "2.11.0",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
     organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -47,7 +47,7 @@ object Build extends Build {
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
     // publishing
-    crossScalaVersions := Seq("2.9.3", "2.10.3", "2.11.0-RC3"),
+    crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.0"),
     scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVersion.binaryScalaVersion(sV) else sV),
     publishMavenStyle := true,
     publishArtifact in Test := false,
