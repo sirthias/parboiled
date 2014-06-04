@@ -23,6 +23,7 @@
 package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.*;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -39,6 +40,7 @@ class ParserClassNode extends ClassNode {
     private Class<?> extendedClass;
 
     public ParserClassNode(Class<?> parentClass) {
+        super(Opcodes.ASM4);
         this.parentClass = checkArgNotNull(parentClass, "parentClass");
         parentType = Type.getType(parentClass);
     }
