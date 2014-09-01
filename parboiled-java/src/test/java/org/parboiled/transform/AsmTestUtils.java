@@ -85,7 +85,7 @@ public class AsmTestUtils {
 
     public static void verifyIntegrity(String classInternalName, byte[] classCode) {
         checkArgNotNull(classCode, "classCode");
-        ClassNode generatedClassNode = new ClassNode();
+        ClassNode generatedClassNode = new ClassNode(Opcodes.ASM4);
         ClassReader classReader = new ClassReader(classCode);
         classReader.accept(generatedClassNode, 0);
 
@@ -104,6 +104,10 @@ public class AsmTestUtils {
     }
 
     private static class NonMaxTextifier extends Textifier {
+        private NonMaxTextifier() {
+            super(Opcodes.ASM4);
+        }
+
         @Override
         public void visitMaxs(int maxStack, int maxLocals) {
             // don't include max values
