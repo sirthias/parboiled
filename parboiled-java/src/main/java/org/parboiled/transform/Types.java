@@ -19,6 +19,7 @@ package org.parboiled.transform;
 import org.objectweb.asm.Type;
 import org.parboiled.*;
 import org.parboiled.annotations.*;
+import org.parboiled.common.Factory;
 import org.parboiled.Action;
 import org.parboiled.BaseParser;
 import org.parboiled.matchers.Matcher;
@@ -31,6 +32,7 @@ interface Types {
     static final Type BASE_VAR_INIT = Type.getType(BaseVarInit.class);
     static final Type BASE_PARSER = Type.getType(BaseParser.class);
     static final Type CONTEXT_AWARE = Type.getType(ContextAware.class);
+    static final Type FACTORY = Type.getType(Factory.class);
     static final Type LABEL = Type.getType(Label.class);
     static final Type MATCHER = Type.getType(Matcher.class);
     static final Type PROXY_MATCHER = Type.getType(ProxyMatcher.class);

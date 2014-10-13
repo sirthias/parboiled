@@ -59,7 +59,7 @@ class RuleMethodRewriter implements RuleMethodProcessor {
             if (root.isActionRoot()) {
                 removeGroupRootInstruction();
             } else { // if (root.isVarInitRoot())
-                ((MethodInsnNode) root.getInstruction()).desc = "(Lorg/parboiled/common/Factory;)V";
+                ((MethodInsnNode) root.getInstruction()).desc = "(L" + Types.FACTORY.getInternalName() + ";)V";
             }
         }
 
