@@ -1,3 +1,10 @@
+Version 1.1.7 (2015-02-09)
+--------------------------
+- Upgrade to Scala 2.11.4, cross build for Scala 2.9.2, 2.9.3, 2.10 and 2.11
+- Upgrade to ASM 5.0.3, closed #76
+- Make parboiled-java relocatable, closed #80
+
+
 Version 1.1.6 (2013-08-22)
 --------------------------
 - Core:

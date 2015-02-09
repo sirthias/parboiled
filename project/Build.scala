@@ -12,7 +12,7 @@ object Build extends Build {
   }
 
   val basicSettings = SbtPgp.settings ++ seq(
-    version               := "1.1.6",
+    version               := "1.1.7",
     scalaVersion          := "2.11.5",
     homepage              := Some(new URL("http://parboiled.org")),
     organization          := "org.parboiled",
@@ -40,13 +40,13 @@ object Build extends Build {
       }
     },
 
-    libraryDependencies   ++= test(testNG, scalatest),
+    libraryDependencies   ++= test(testNG, scalatest(scalaVersion.value)),
 
     // scaladoc settings
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
     // publishing
-    crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.5"),
+    crossScalaVersions := Seq("2.9.2", "2.9.3", "2.10.4", "2.11.5"),
     scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVersion.binaryScalaVersion(sV) else sV),
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -70,10 +70,9 @@ object Build extends Build {
       </developers>
   )
 
-  val noPublishing = seq(
-    publish := (),
-    publishLocal := ()
-  )
+  val noPublishing = Seq(
+    publishArtifact := false,
+    publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))))
 
   def javaDoc = seq(
     doc in Compile <<= (fullClasspath in Compile in doc, target in Compile in doc, javaSource in Compile,
