@@ -19,12 +19,12 @@ package org.parboiled.common;
 /**
  * The capability to transform an object of type T into a string representation.
  *
- * @param <T>
+ * @param <T> The type to transform.
  */
 public interface Formatter<T> {
 
     /**
-     * Create a string representation for the given obejct.
+     * Create a string representation for the given object.
      *
      * @param object the object to format
      * @return a string describing the object

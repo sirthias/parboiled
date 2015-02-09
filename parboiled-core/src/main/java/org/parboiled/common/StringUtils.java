@@ -111,7 +111,6 @@ public final class StringUtils {
     /**
      * <p>Joins the elements of the provided <code>Iterable</code> into
      * a single String containing the provided elements.</p>
-     * <p/>
      * <p>No delimiter is added before or after the list.
      * A <code>null</code> separator is the same as an empty String ("").</p>
      *
@@ -126,7 +125,6 @@ public final class StringUtils {
     /**
      * <p>Joins the elements of the provided <code>Iterator</code> into
      * a single String containing the provided elements.</p>
-     * <p/>
      * <p>No delimiter is added before or after the list.
      * A <code>null</code> separator is the same as an empty String ("").</p>
      *
@@ -156,12 +154,11 @@ public final class StringUtils {
     /**
      * <p>Joins the elements of the provided array into a single String
      * containing the provided list of elements.</p>
-     * <p/>
      * <p>No delimiter is added before or after the list.
      * A <code>null</code> separator is the same as an empty String ("").
      * Null objects or empty strings within the array are represented by
      * empty strings.</p>
-     * <p/>
+     *
      * <pre>
      * StringUtils.join(null, *)                = null
      * StringUtils.join([], *)                  = ""
@@ -183,12 +180,10 @@ public final class StringUtils {
     /**
      * <p>Joins the elements of the provided array into a single String
      * containing the provided list of elements.</p>
-     * <p/>
      * <p>No delimiter is added before or after the list.
      * A <code>null</code> separator is the same as an empty String ("").
      * Null objects or empty strings within the array are represented by
      * empty strings.</p>
-     * <p/>
      * <pre>
      * StringUtils.join(null, *)                = null
      * StringUtils.join([], *)                  = ""
@@ -230,7 +225,6 @@ public final class StringUtils {
 
     /**
      * <p>Checks if a String is empty ("") or null.</p>
-     * <p/>
      * <pre>
      * StringUtils.isEmpty(null)      = true
      * StringUtils.isEmpty("")        = true
@@ -238,7 +232,6 @@ public final class StringUtils {
      * StringUtils.isEmpty("bob")     = false
      * StringUtils.isEmpty("  bob  ") = false
      * </pre>
-     * <p/>
      *
      * @param str the String to check, may be null
      * @return <code>true</code> if the String is empty or null
@@ -249,7 +242,6 @@ public final class StringUtils {
 
     /**
      * <p>Checks if a String is not empty ("") and not null.</p>
-     * <p/>
      * <pre>
      * StringUtils.isNotEmpty(null)      = false
      * StringUtils.isNotEmpty("")        = false
@@ -278,10 +270,9 @@ public final class StringUtils {
     /**
      * <p>Compares two Strings, returning <code>true</code> if they are equal ignoring
      * the case.</p>
-     * <p/>
      * <p><code>null</code>s are handled without exceptions. Two <code>null</code>
      * references are considered equal. Comparison is case insensitive.</p>
-     * <p/>
+     *
      * <pre>
      * StringUtils.equalsIgnoreCase(null, null)   = true
      * StringUtils.equalsIgnoreCase(null, "abc")  = false
@@ -301,7 +292,7 @@ public final class StringUtils {
 
     /**
      * Test whether a string starts with a given prefix, handling null values without exceptions.
-     * <p/>
+     *
      * StringUtils.startsWith(null, null)   = false
      * StringUtils.startsWith(null, "abc")  = false
      * StringUtils.startsWith("abc", null)  = true
@@ -318,13 +309,10 @@ public final class StringUtils {
 
     /**
      * <p>Gets a substring from the specified String avoiding exceptions.</p>
-     * <p/>
      * <p>A negative start position can be used to start <code>n</code>
      * characters from the end of the String.</p>
-     * <p/>
      * <p>A <code>null</code> String will return <code>null</code>.
      * An empty ("") String will return "".</p>
-     * <p/>
      * <pre>
      * StringUtils.substring(null, *)   = null
      * StringUtils.substring("", *)     = ""
@@ -362,19 +350,15 @@ public final class StringUtils {
 
     /**
      * <p>Gets a substring from the specified String avoiding exceptions.</p>
-     * <p/>
      * <p>A negative start position can be used to start/end <code>n</code>
      * characters from the end of the String.</p>
-     * <p/>
      * <p>The returned substring starts with the character in the <code>start</code>
      * position and ends before the <code>end</code> position. All position counting is
      * zero-based -- i.e., to start at the beginning of the string use
      * <code>start = 0</code>. Negative start and end positions can be used to
      * specify offsets relative to the end of the String.</p>
-     * <p/>
      * <p>If <code>start</code> is not strictly to the left of <code>end</code>, ""
      * is returned.</p>
-     * <p/>
      * <pre>
      * StringUtils.substring(null, *, *)    = null
      * StringUtils.substring("", * ,  *)    = "";
@@ -433,11 +417,9 @@ public final class StringUtils {
 
     /**
      * <p>Gets the leftmost <code>len</code> characters of a String.</p>
-     * <p/>
      * <p>If <code>len</code> characters are not available, or the
      * String is <code>null</code>, the String will be returned without
      * an exception. An exception is thrown if len is negative.</p>
-     * <p/>
      * <pre>
      * StringUtils.left(null, *)    = null
      * StringUtils.left(*, -ve)     = ""
@@ -466,11 +448,9 @@ public final class StringUtils {
 
     /**
      * <p>Gets the rightmost <code>len</code> characters of a String.</p>
-     * <p/>
      * <p>If <code>len</code> characters are not available, or the String
      * is <code>null</code>, the String will be returned without an
      * an exception. An exception is thrown if len is negative.</p>
-     * <p/>
      * <pre>
      * StringUtils.right(null, *)    = null
      * StringUtils.right(*, -ve)     = ""
@@ -499,12 +479,10 @@ public final class StringUtils {
 
     /**
      * <p>Gets <code>len</code> characters from the middle of a String.</p>
-     * <p/>
      * <p>If <code>len</code> characters are not available, the remainder
      * of the String will be returned without an exception. If the
      * String is <code>null</code>, <code>null</code> will be returned.
      * An exception is thrown if len is negative.</p>
-     * <p/>
      * <pre>
      * StringUtils.mid(null, *, *)    = null
      * StringUtils.mid(*, *, -ve)     = ""

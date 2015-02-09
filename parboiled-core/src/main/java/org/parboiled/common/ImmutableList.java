@@ -27,7 +27,7 @@ import static org.parboiled.common.Utils.arrayOf;
 /**
  * A simple, immutable List implementation wrapping an array.
  *
- * @param <T>
+ * @param <T> The type of the List elements.
  */
 @SuppressWarnings( {"unchecked"})
 public abstract class ImmutableList<T> extends AbstractList<T> {
