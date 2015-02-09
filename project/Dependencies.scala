@@ -16,6 +16,6 @@ object Dependencies {
   val asmTree     = "org.ow2.asm"   %  "asm-tree"      % "5.0.3"
   val asmAnalysis = "org.ow2.asm"   %  "asm-analysis"  % "5.0.3"
   val asmUtil     = "org.ow2.asm"   %  "asm-util"      % "5.0.3"
-  val testNG      = "org.testng"    %  "testng"        % "5.14.1"
-  val scalatest   = "org.scalatest" %% "scalatest"     % "2.1.3"
+  val testNG      = "org.testng"    %  "testng"        % "5.14.10"
+  val scalatest   = "org.scalatest" %% "scalatest"     % "2.2.4"
 }
