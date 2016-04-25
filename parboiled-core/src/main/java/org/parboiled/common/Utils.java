@@ -35,7 +35,6 @@ public final class Utils {
     public static final Float[] EMPTY_FLOAT_OBJECT_ARRAY = new Float[0];
     public static final Double[] EMPTY_DOUBLE_OBJECT_ARRAY = new Double[0];
     public static final Boolean[] EMPTY_BOOLEAN_OBJECT_ARRAY = new Boolean[0];
-    public static HashMap<Class<?>, Class<?>> PRIMITIVE_TO_BOXED;
 
 
     private Utils() {}
@@ -281,20 +280,15 @@ public final class Utils {
      * @return true if boxed is the boxed type of primitive, false otherwise.
      */
     public static boolean isBoxedType(Class<?> primitive, Class<?> boxed) {
-        if(PRIMITIVE_TO_BOXED == null) {
-            PRIMITIVE_TO_BOXED = new HashMap<Class<?>, Class<?>>();
-            PRIMITIVE_TO_BOXED.put(boolean.class, Boolean.class);
-            PRIMITIVE_TO_BOXED.put(byte.class, Byte.class);
-            PRIMITIVE_TO_BOXED.put(char.class, Character.class);
-            PRIMITIVE_TO_BOXED.put(double.class, Double.class);
-            PRIMITIVE_TO_BOXED.put(float.class, Float.class);
-            PRIMITIVE_TO_BOXED.put(int.class, Integer.class);
-            PRIMITIVE_TO_BOXED.put(long.class, Long.class);
-            PRIMITIVE_TO_BOXED.put(short.class, Short.class);
-            PRIMITIVE_TO_BOXED.put(void.class, Void.class);
-        }
-
-        return PRIMITIVE_TO_BOXED.containsKey(primitive) ? boxed == PRIMITIVE_TO_BOXED.get(primitive) : false;
+        return (primitive.equals(boolean.class) && boxed.equals(Boolean.class)) ||
+               (primitive.equals(byte.class) && boxed.equals(Byte.class)) ||
+               (primitive.equals(char.class) && boxed.equals(Character.class)) ||
+               (primitive.equals(double.class) && boxed.equals(Double.class)) ||
+               (primitive.equals(float.class) && boxed.equals(Float.class)) ||
+               (primitive.equals(int.class) && boxed.equals(Integer.class)) ||
+               (primitive.equals(long.class) && boxed.equals(Long.class)) ||
+               (primitive.equals(short.class) && boxed.equals(Short.class)) ||
+               (primitive.equals(void.class) && boxed.equals(Void.class));
     }
 
     /**
