@@ -88,6 +88,10 @@ class AsmUtils {
         return clazz;
     }
 
+    public static synchronized void clearClassCache() {
+        classForDesc.clear();
+    }
+
     public static Class<?> getClassForType(Type type) {
         checkArgNotNull(type, "type");
         switch (type.getSort()) {
