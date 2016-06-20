@@ -36,6 +36,7 @@ public final class Utils {
     public static final Double[] EMPTY_DOUBLE_OBJECT_ARRAY = new Double[0];
     public static final Boolean[] EMPTY_BOOLEAN_OBJECT_ARRAY = new Boolean[0];
 
+
     private Utils() {}
 
     public static Character[] toObjectArray(char[] array) {
@@ -273,6 +274,24 @@ public final class Utils {
     }
 
     /**
+     * Determines if the primitive type is boxed as the boxed type
+     * @param primitive the primitive type to check if boxed is the boxed type
+     * @param boxed the possible boxed type of the primitive
+     * @return true if boxed is the boxed type of primitive, false otherwise.
+     */
+    public static boolean isBoxedType(Class<?> primitive, Class<?> boxed) {
+        return (primitive.equals(boolean.class) && boxed.equals(Boolean.class)) ||
+               (primitive.equals(byte.class) && boxed.equals(Byte.class)) ||
+               (primitive.equals(char.class) && boxed.equals(Character.class)) ||
+               (primitive.equals(double.class) && boxed.equals(Double.class)) ||
+               (primitive.equals(float.class) && boxed.equals(Float.class)) ||
+               (primitive.equals(int.class) && boxed.equals(Integer.class)) ||
+               (primitive.equals(long.class) && boxed.equals(Long.class)) ||
+               (primitive.equals(short.class) && boxed.equals(Short.class)) ||
+               (primitive.equals(void.class) && boxed.equals(Void.class));
+    }
+
+    /**
      * Finds the constructor of the given class that is compatible with the given arguments.
      *
      * @param type the class to find the constructor of
@@ -286,7 +305,7 @@ public final class Utils {
             if (paramTypes.length != args.length) continue;
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
-                if (arg != null && !paramTypes[i].isAssignableFrom(arg.getClass())) continue outer;
+                if (arg != null && !paramTypes[i].isAssignableFrom(arg.getClass()) && !isBoxedType(paramTypes[i], arg.getClass())) continue outer;
                 if (arg == null && paramTypes[i].isPrimitive()) continue outer;
             }
             return constructor;
