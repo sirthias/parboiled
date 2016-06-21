@@ -1,6 +1,7 @@
 import sbt._
 import Keys._
 import com.typesafe.sbt._
+import com.typesafe.sbt.osgi.SbtOsgi._
 
 
 object Build extends Build {
@@ -11,6 +12,12 @@ object Build extends Build {
     shellPrompt := { s => Project.extract(s).currentProject.id + " > " }
   }
 
+  val pbOsgiSettings = osgiSettings ++ Seq(
+  packageBin in Runtime <<= OsgiKeys.bundle,
+  OsgiKeys.exportPackage := Seq("org.parboiled;-split-package:=merge-first", "org.parboiled.*;-split-package:=merge-first")
+  )
+
+  
   val basicSettings = SbtPgp.settings ++ seq(
     version               := "1.1.7",
     scalaVersion          := "2.11.5",
@@ -100,12 +107,13 @@ object Build extends Build {
 
   lazy val root = Project("root", file("."))
     .aggregate(parboiledCore, parboiledJava, parboiledScala, examplesJava, examplesScala)
-    .settings(basicSettings: _*)
+    .settings(basicSettings: _*)  
     .settings(noPublishing: _*)
 
 
   lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
     .settings(basicSettings: _*)
+    .settings(pbOsgiSettings: _*)    
     .settings(javaDoc: _*)
     .settings(
       crossPaths := false,
@@ -115,6 +123,7 @@ object Build extends Build {
   lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
     .dependsOn(parboiledCore)
     .settings(basicSettings: _*)
+    .settings(pbOsgiSettings: _*)
     .settings(javaDoc: _*)
     .settings(
       libraryDependencies ++= compile(asm, asmTree, asmAnalysis, asmUtil),
@@ -126,6 +135,7 @@ object Build extends Build {
   lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
     .dependsOn(parboiledCore)
     .settings(basicSettings: _*)
+    .settings(pbOsgiSettings: _*)
 
 
   lazy val examplesJava = Project("examples-java", file("examples-java"))
