@@ -24,6 +24,7 @@ object Dependencies {
       case "2.9.3" => "1.9.2"
       case "2.10.4" => "2.2.4"
       case "2.11.5" => "2.2.4"
+      case x if x.startsWith("2.12.") => "3.0.0"
     }
   }
 }

@@ -42,6 +42,8 @@ object Build extends Build {
 
     libraryDependencies   ++= test(testNG, scalatest(scalaVersion.value)),
 
+    libraryDependencies   += "org.scalactic" %% "scalactic" % "3.0.0",
+
     // scaladoc settings
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
