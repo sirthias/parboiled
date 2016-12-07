@@ -20,8 +20,6 @@ object Dependencies {
 
   def scalatest(scalaVersion: String) = "org.scalatest" %% "scalatest" % {
     scalaVersion match {
-      case "2.9.2" => "1.9.2"
-      case "2.9.3" => "1.9.2"
       case "2.10.4" => "2.2.4"
       case "2.11.5" => "2.2.4"
       case "2.12.1" => "3.0.1"
