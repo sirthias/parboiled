@@ -46,7 +46,7 @@ object Build extends Build {
     (scalacOptions in doc) <++= (name, version).map { (n, v) => Seq("-doc-title", n, "-doc-version", v) },
 
     // publishing
-    crossScalaVersions := Seq("2.9.2", "2.9.3", "2.10.4", "2.11.5"),
+    crossScalaVersions := Seq("2.9.2", "2.9.3", "2.10.4", "2.11.5", "2.12.1"),
     scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVersion.binaryScalaVersion(sV) else sV),
     publishMavenStyle := true,
     publishArtifact in Test := false,
