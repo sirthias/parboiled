@@ -23,6 +23,8 @@ import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.scala.parserunners.ReportingParseRunner
 
 class JsonParserTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
+
   val parser = new JsonParser1()
 
   type Result = parser.AstNode

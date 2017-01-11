@@ -22,6 +22,7 @@ import org.testng.Assert.assertEquals
 import testing.ParboiledTest
 
 class WithContextTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   class TestParser extends Parser {
     def Clause = rule (

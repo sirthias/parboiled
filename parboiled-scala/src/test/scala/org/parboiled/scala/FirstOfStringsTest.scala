@@ -23,6 +23,7 @@ import testing.ParboiledTest
 import org.parboiled.matchers.FirstOfStringsMatcher
 
 class FirstOfStringsTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   class TestParser extends Parser {
     def Fast = rule { "Alpha" | "Bravo" | "Charlie" }

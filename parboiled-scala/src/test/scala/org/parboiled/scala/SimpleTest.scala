@@ -25,6 +25,7 @@ import org.parboiled.trees.GraphUtils
 import testing.ParboiledTest
 
 class SimpleTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   class SimpleParser extends Parser {
     def Clause = rule {Digit ~ ClauseRest ~ EOI}

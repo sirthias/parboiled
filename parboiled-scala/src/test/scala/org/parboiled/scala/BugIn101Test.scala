@@ -22,6 +22,7 @@ import org.testng.Assert.assertEquals
 import testing.ParboiledTest
 
 class BugIn101Test extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   type Result = Int
 

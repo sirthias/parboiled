@@ -27,6 +27,7 @@ import org.parboiled.common.Predicates
 import org.parboiled.scala.parserunners.ReportingParseRunner
 
 class SimpleCalculatorTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
   
   val parser = new SimpleCalculator1() {
     override val buildParseTree = true

@@ -24,6 +24,7 @@ import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.common.StringBuilderSink
 
 class TracingTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   val parser = new SimpleCalculator1
 

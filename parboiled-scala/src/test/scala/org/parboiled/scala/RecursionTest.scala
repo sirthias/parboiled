@@ -26,6 +26,7 @@ import org.parboiled.support.{Filters, ToStringFormatter}
 import org.parboiled.common.Predicates
 
 class RecursionTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   class RecursionParser extends Parser {
     def LotsOfAs: Rule0 = rule {ignoreCase('a') ~ optional(LotsOfAs)}

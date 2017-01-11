@@ -22,6 +22,7 @@ import org.parboiled.errors.ParserRuntimeException
 import testing.ParboiledTest
 
 class EOIMatchingTest extends ParboiledTest with TestNGSuiteLike {
+  // def fail(message: String): Nothing = super.fail(message)(null)
 
   class EOIMatchingParser extends Parser {
     def Clause = rule { oneOrMore(EOI) }
