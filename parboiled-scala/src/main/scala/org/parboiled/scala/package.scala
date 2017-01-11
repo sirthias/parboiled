@@ -121,11 +121,9 @@ package object scala {
   def make[A, U](a: A)(f: A => U): A = { f(a); a }
 
   private[scala] def getCurrentRuleMethod: StackTraceElement = {
-    try {
-      throw new Throwable
-    } catch {
-      case t: Throwable => t.getStackTrace()(3)
-    }
+    val trace = Thread.currentThread().getStackTrace
+    val ix = trace.indexWhere(m => m.getMethodName != "rule" && m.getMethodName != "rule$", from = 2)
+    trace(ix)
   }
 
   implicit def toTestAction(f: Context[Any] => Boolean): Rule0 = new ActionMatcher(new Action[Any] {
