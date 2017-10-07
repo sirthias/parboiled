@@ -28,12 +28,12 @@ abstract class ReductionRule extends Rule
  * A rule taking one value off the value stack and replacing it with another value.
  */
 class ReductionRule1[-Z, +R](val matcher: Matcher) extends ReductionRule {
-  def ~[X, Y](other: PopRule3[X, Y, R]) = new PopRule3[X, Y, Z](append(other))
-  def ~[Y](other: PopRule2[Y, R]) = new PopRule2[Y, Z](append(other))
-  def ~(other: PopRule1[R]) = new PopRule1[Z](append(other))
-  def ~[X, Y, T](other: ReductionRule3[X, Y, R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
-  def ~[Y, T](other: ReductionRule2[Y, R, T]) = new ReductionRule2[Y, Z, T](append(other))
-  def ~[T](other: ReductionRule1[R, T]) = new ReductionRule1[Z, T](append(other))
+  def ~[X, Y, RR >: R](other: PopRule3[X, Y, RR]) = new PopRule3[X, Y, Z](append(other))
+  def ~[Y, RR >: R](other: PopRule2[Y, RR]) = new PopRule2[Y, Z](append(other))
+  def ~[RR >: R](other: PopRule1[RR]) = new PopRule1[Z](append(other))
+  def ~[X, Y, RR >: R, A](other: ReductionRule3[X, Y, RR, A]) = new ReductionRule3[X, Y, Z, A](append(other))
+  def ~[Y, RR >: R, A](other: ReductionRule2[Y, RR, A]) = new ReductionRule2[Y, Z, A](append(other))
+  def ~[RR >: R, A](other: ReductionRule1[RR, A]) = new ReductionRule1[Z, A](append(other))
   def ~~>[X, Y, A](f: (X, Y, R) => A) = new ReductionRule3[X, Y, Z, A](append(push(exec(stack3(Pop), f))))
   def ~~>[Y, A](f: (Y, R) => A) = new ReductionRule2[Y, Z, A](append(push(exec(stack2(Pop), f))))
   def ~~>[A](f: R => A) = new ReductionRule1[Z, A](append(push(exec(stack1(Pop), f))))
@@ -53,10 +53,10 @@ class ReductionRule1[-Z, +R](val matcher: Matcher) extends ReductionRule {
  * A rule taking two values off the value stack and replacing them with one other value.
  */
 class ReductionRule2[-Y, -Z, +R](val matcher: Matcher) extends ReductionRule {
-  def ~[X](other: PopRule2[X, R]) = new PopRule3[X, Y, Z](append(other))
-  def ~(other: PopRule1[R]) = new PopRule2[Y, Z](append(other))
-  def ~[X, T](other: ReductionRule2[X, R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
-  def ~[T](other: ReductionRule1[R, T]) = new ReductionRule2[Y, Z, T](append(other))
+  def ~[X, RR >: R](other: PopRule2[X, RR]) = new PopRule3[X, Y, Z](append(other))
+  def ~[RR >: R](other: PopRule1[RR]) = new PopRule2[Y, Z](append(other))
+  def ~[X, RR >: R, A](other: ReductionRule2[X, RR, A]) = new ReductionRule3[X, Y, Z, A](append(other))
+  def ~[RR >: R, A](other: ReductionRule1[RR, A]) = new ReductionRule2[Y, Z, A](append(other))
   def ~~>[X, A](f: (X, R) => A) = new ReductionRule3[X, Y, Z, A](append(push(exec(stack2(Pop), f))))
   def ~~>[A](f: R => A) = new ReductionRule2[Y, Z, A](append(push(exec(stack1(Pop), f))))
   def ~~?[X](f: (X, R) => Boolean) = new PopRule3[X, Y, Z](append(exec(stack2(Pop), f)))
@@ -73,8 +73,8 @@ class ReductionRule2[-Y, -Z, +R](val matcher: Matcher) extends ReductionRule {
  * A rule taking three values off the value stack and replacing them with one other value.
  */
 class ReductionRule3[-X, -Y, -Z, +R](val matcher: Matcher) extends ReductionRule {
-  def ~(other: PopRule1[R]) = new PopRule3[X, Y, Z](append(other))
-  def ~[T](other: ReductionRule1[R, T]) = new ReductionRule3[X, Y, Z, T](append(other))
+  def ~[RR >: R](other: PopRule1[RR]) = new PopRule3[X, Y, Z](append(other))
+  def ~[RR >: R, A](other: ReductionRule1[RR, A]) = new ReductionRule3[X, Y, Z, A](append(other))
   def ~~>[A](f: R => A) = new ReductionRule3[X, Y, Z, A](append(push(exec(stack1(Pop), f))))
   def ~~?(f: R => Boolean) = new PopRule3[X, Y, Z](append(exec(stack1(Pop), f)))
   def ~~%(f: R => Unit) = new PopRule3[X, Y, Z](append(ok(exec(stack1(Pop), f))))
