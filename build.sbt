@@ -131,6 +131,6 @@ lazy val examplesJava = Project("examples-java", file("examples-java"))
 
 
 lazy val examplesScala = Project("examples-scala", file("examples-scala"))
-  .dependsOn(parboiledScala)
+  .dependsOn(parboiledScala % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(noPublishing: _*)

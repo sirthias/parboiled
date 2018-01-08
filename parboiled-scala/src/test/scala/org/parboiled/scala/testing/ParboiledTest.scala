@@ -27,7 +27,7 @@ import org.parboiled.Node
  * It can be mixed into any test class that defines a fail(string) method (e.g. all the scalatest Suites).
  */
 trait ParboiledTest {
-  this: {def fail(msg: String): Nothing} =>
+  this: {def fail(msg: String)(implicit pos: org.scalactic.source.Position): Nothing} =>
 
   /**
    * The type of the root value object created by the parser.
