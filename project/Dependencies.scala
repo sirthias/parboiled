@@ -18,11 +18,5 @@ object Dependencies {
   val asmUtil     = "org.ow2.asm"   %  "asm-util"      % "5.2"
   val testNG      = "org.testng"    %  "testng"        % "5.14.10"
 
-  def scalatest(scalaVersion: String) = "org.scalatest" %% "scalatest" % {
-    scalaVersion match {
-      case "2.10.4" => "2.2.4"
-      case "2.11.8" => "2.2.4"
-      case "2.12.1" => "3.0.1"
-    }
-  }
+  def scalatest(scalaVersion: String) = "org.scalatest" %% "scalatest" % "3.0.4"
 }
