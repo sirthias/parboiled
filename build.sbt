@@ -4,7 +4,7 @@ import Dependencies._
 val basicSettings = SbtPgp.settings ++ Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
   version               := "1.1.8",
-  scalaVersion          := "2.11.8",
+  scalaVersion          := "2.11.12",
   homepage              := Some(new URL("http://parboiled.org")),
   organization          := "org.parboiled",
   organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -35,7 +35,7 @@ val basicSettings = SbtPgp.settings ++ Seq(
   (scalacOptions in doc) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
 
   // publishing
-  crossScalaVersions := Seq("2.10.4", "2.11.8", "2.12.1"),
+  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.4"),
   scalaBinaryVersion := {
     if (CrossVersion.isScalaApiCompatible(scalaVersion.value)) CrossVersion.binaryScalaVersion(scalaVersion.value)
     else scalaVersion.value
