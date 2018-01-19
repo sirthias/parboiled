@@ -5,3 +5,5 @@ scala:
 - 2.12.4
 - 2.11.12
 - 2.10.7
+script:
+- sbt "++ ${TRAVIS_SCALA_VERSION}!" test
