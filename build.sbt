@@ -1,7 +1,7 @@
 import com.typesafe.sbt._
 import Dependencies._
 
-val basicSettings = SbtPgp.settings ++ Seq(
+val basicSettings = Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
   version               := "1.1.8",
   scalaVersion          := "2.11.12",
@@ -43,7 +43,7 @@ val basicSettings = SbtPgp.settings ++ Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-  SbtPgp.useGpg := true,
+  useGpg := true,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
     if (version.value.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
@@ -88,7 +88,7 @@ def javaDoc = Seq(
             " -subpackages" +
             " org.parboiled"
     s.log.info(cmd)
-    cmd ! s.log
+    sys.process.Process(cmd) ! s.log
     docTarget
   }
 )
