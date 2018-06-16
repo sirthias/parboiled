@@ -5,13 +5,11 @@ import org.scalatest.testng.TestNGWrapperSuite;
 import java.io.File;
 import java.io.IOException;
 
-import static scala.collection.JavaConversions.collectionAsScalaIterable;
-
 @SuppressWarnings("unchecked")
 public class CoreTest extends TestNGWrapperSuite {
 
     public CoreTest() throws IOException {
-        super(collectionAsScalaIterable(ImmutableList.of(getSuiteFileName())).toList());
+        super(new org.parboiled.JavaCollectionWrapper(ImmutableList.of(getSuiteFileName())).toList());
     }
     
     public static String getSuiteFileName() throws IOException {

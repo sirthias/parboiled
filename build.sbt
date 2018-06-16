@@ -108,7 +108,7 @@ lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
   )
 
 lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
-  .dependsOn(parboiledCore)
+  .dependsOn(parboiledCore % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(javaDoc: _*)
   .settings(
@@ -124,7 +124,7 @@ lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
 
 
 lazy val examplesJava = Project("examples-java", file("examples-java"))
-  .dependsOn(parboiledJava)
+  .dependsOn(parboiledJava % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(noPublishing: _*)
   .settings(javacOptions += "-g") // needed for bytecode rewriting
