@@ -62,7 +62,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    DUP\n" +
                 "    IFNULL L1\n" +
                 "    LDC \"RuleWithoutAction\"\n" +
-                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule; (itf)\n" +
                 "   L1\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
@@ -94,7 +94,7 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    DUP\n" +
                 "    IFNULL L1\n" +
                 "    LDC \"harry\"\n" +
-                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule; (itf)\n" +
                 "   L1\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +
@@ -125,11 +125,11 @@ public class CachingGeneratorTest extends TransformationTest {
                 "    DUP\n" +
                 "    IFNULL L1\n" +
                 "    LDC \"RuleWithLeaf\"\n" +
-                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
+                "    INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule; (itf)\n" +
                 "   L1\n" +
                 "    DUP\n" +
                 "    IFNULL L2\n" +
-                "    INVOKEINTERFACE org/parboiled/Rule.suppressNode ()Lorg/parboiled/Rule;\n" +
+                "    INVOKEINTERFACE org/parboiled/Rule.suppressNode ()Lorg/parboiled/Rule; (itf)\n" +
                 "   L2\n" +
                 "    DUP_X1\n" +
                 "    CHECKCAST org/parboiled/matchers/Matcher\n" +

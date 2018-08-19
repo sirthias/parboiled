@@ -148,9 +148,9 @@ public class VarInitClassGeneratorTest extends TransformationTest {
                 "    GETFIELD org/parboiled/transform/Action$ha3NOiBr9DZ3I2Sh.field$1 : Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser$$parboiled;\n" +
                 "    DUP\n" +
                 "    ALOAD 1\n" +
-                "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V\n" +
+                "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V (itf)\n" +
                 "    INVOKEVIRTUAL org/parboiled/transform/VarInitClassGeneratorTest$Parser.match ()Ljava/lang/String;\n" +
-                "    INVOKEINTERFACE java/util/List.add (Ljava/lang/Object;)Z\n" +
+                "    INVOKEINTERFACE java/util/List.add (Ljava/lang/Object;)Z (itf)\n" +
                 "    IRETURN\n" +
                 "    MAXSTACK = 4\n" +
                 "    MAXLOCALS = 2\n" +
