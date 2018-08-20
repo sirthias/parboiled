@@ -109,7 +109,7 @@ public class ParserHierarchyTest {
                 "22     DUP\n" +
                 "23     IFNULL L1\n" +
                 "24     LDC \"A\"\n" +
-                "25     INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
+                "25     INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule; (itf)\n" +
                 "26    L1\n" +
                 "27     DUP_X1\n" +
                 "28     CHECKCAST org/parboiled/matchers/Matcher\n" +
@@ -172,7 +172,7 @@ public class ParserHierarchyTest {
                 "32     DUP\n" +
                 "33     IFNULL L1\n" +
                 "34     LDC \"B\"\n" +
-                "35     INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
+                "35     INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule; (itf)\n" +
                 "36    L1\n" +
                 "37     DUP_X1\n" +
                 "38     CHECKCAST org/parboiled/matchers/Matcher\n" +
@@ -225,7 +225,7 @@ public class ParserHierarchyTest {
                 "22     DUP\n" +
                 "23     IFNULL L1\n" +
                 "24     LDC \"C\"\n" +
-                "25     INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule;\n" +
+                "25     INVOKEINTERFACE org/parboiled/Rule.label (Ljava/lang/String;)Lorg/parboiled/Rule; (itf)\n" +
                 "26    L1\n" +
                 "27     DUP_X1\n" +
                 "28     CHECKCAST org/parboiled/matchers/Matcher\n" +
