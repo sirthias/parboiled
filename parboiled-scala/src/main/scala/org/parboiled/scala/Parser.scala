@@ -327,7 +327,7 @@ trait Parser {
 
   private def nameNTimes[R <: Rule](rule: R, times: Int) = {
     rule.matcher match {
-      case sm: SequenceMatcher => sm.defaultLabel(times + "-times")
+      case sm: SequenceMatcher => sm.defaultLabel(s"${times}-times")
       case _ =>
     }
     rule
