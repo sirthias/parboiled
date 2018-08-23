@@ -19,5 +19,10 @@ object Dependencies {
   val asmUtil     = "org.ow2.asm"   %  "asm-util"      % asmVersion
   val testNG      = "org.testng"    %  "testng"        % "5.14.10"
 
-  def scalatest(scalaVersion: String) = "org.scalatest" %% "scalatest" % "3.0.4"
+  def scalatest(scalaVersion: String) = {
+    if (scalaVersion == "2.13.0-M4")
+      "org.scalatest" %% "scalatest" % "3.0.6-SNAP1"
+    else
+      "org.scalatest" %% "scalatest" % "3.0.5"
+  }
 }

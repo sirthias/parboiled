@@ -35,7 +35,7 @@ val basicSettings = Seq(
   (scalacOptions in doc) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
 
   // publishing
-  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.4"),
+  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.4", "2.13.0-M4"),
   scalaBinaryVersion := {
     if (CrossVersion.isScalaApiCompatible(scalaVersion.value)) CrossVersion.binaryScalaVersion(scalaVersion.value)
     else scalaVersion.value
@@ -108,7 +108,7 @@ lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
   )
 
 lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
-  .dependsOn(parboiledCore)
+  .dependsOn(parboiledCore % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(javaDoc: _*)
   .settings(
@@ -124,7 +124,7 @@ lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
 
 
 lazy val examplesJava = Project("examples-java", file("examples-java"))
-  .dependsOn(parboiledJava)
+  .dependsOn(parboiledJava % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(noPublishing: _*)
   .settings(javacOptions += "-g") // needed for bytecode rewriting
