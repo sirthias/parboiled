@@ -20,9 +20,11 @@ object Dependencies {
   val testNG      = "org.testng"    %  "testng"        % "5.14.10"
 
   def scalatest(scalaVersion: String) = {
-    if (scalaVersion == "2.13.0-M4")
-      "org.scalatest" %% "scalatest" % "3.0.6-SNAP1"
+    if (scalaVersion == "2.13.0-M5")
+      Nil
+    else if (scalaVersion == "2.13.0-M4")
+      Seq("org.scalatest" %% "scalatest" % "3.0.6-SNAP1")
     else
-      "org.scalatest" %% "scalatest" % "3.0.5"
+      Seq("org.scalatest" %% "scalatest" % "3.0.5")
   }
 }

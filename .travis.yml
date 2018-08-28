@@ -8,3 +8,8 @@ scala:
 - 2.13.0-M4
 script:
 - sbt "++ ${TRAVIS_SCALA_VERSION}!" test
+matrix:
+  include:
+  - scala: 2.13.0-M5
+    script:
+    - sbt 'set resolvers in ThisBuild += "staging" at "https://oss.sonatype.org/content/repositories/staging"' "++ ${TRAVIS_SCALA_VERSION}!" compile

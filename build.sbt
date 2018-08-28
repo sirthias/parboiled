@@ -29,7 +29,8 @@ val basicSettings = Seq(
     }
   },
 
-  libraryDependencies   ++= Dependencies.test(testNG, scalatest(scalaVersion.value)),
+  libraryDependencies   ++= Dependencies.test(testNG),
+  libraryDependencies   ++= Dependencies.test(scalatest(scalaVersion.value): _*),
 
   // scaladoc settings
   (scalacOptions in doc) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
