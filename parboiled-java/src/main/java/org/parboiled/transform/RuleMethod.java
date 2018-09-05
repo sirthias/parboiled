@@ -71,7 +71,7 @@ class RuleMethod extends MethodNode {
 
     public RuleMethod(Class<?> ownerClass, int access, String name, String desc, String signature, String[] exceptions,
                       boolean hasExplicitActionOnlyAnno, boolean hasDontLabelAnno, boolean hasSkipActionsInPredicates) {
-        super(ASM4, access, name, desc, signature, exceptions);
+        super(ASMSettings.ASM_API, access, name, desc, signature, exceptions);
         this.ownerClass = ownerClass;
         parameterCount = Type.getArgumentTypes(desc).length;
         hasCachedAnnotation = parameterCount == 0;
@@ -249,6 +249,17 @@ class RuleMethod extends MethodNode {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+        applyExplicitAction( opcode, owner, name, desc );
+        super.visitMethodInsn(opcode, owner, name, desc);
+    }
+
+    @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean isInterface) {
+        applyExplicitAction( opcode, owner, name, desc );
+        super.visitMethodInsn(opcode, owner, name, desc, isInterface);
+    }
+
+    private void applyExplicitAction( int opcode, String owner, String name, String desc ) {
         switch (opcode) {
             case INVOKESTATIC:
                 if (!hasExplicitActionOnlyAnnotation && isBooleanValueOfZ(owner, name, desc)) {
@@ -268,7 +279,6 @@ class RuleMethod extends MethodNode {
                 }
                 break;
         }
-        super.visitMethodInsn(opcode, owner, name, desc);
     }
 
     @Override
@@ -343,5 +353,5 @@ class RuleMethod extends MethodNode {
     public void suppressNode() {
         hasSuppressNodeAnnotation = true;
     }
-    
+
 }

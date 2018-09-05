@@ -46,7 +46,7 @@ class ClassNodeInitializer extends ClassVisitor {
     private boolean hasSkipActionsInPredicates;
 
     public ClassNodeInitializer() {
-        super(Opcodes.ASM4);
+        super(ASMSettings.ASM_API);
     }
 
     public void process(ParserClassNode classNode) throws IOException {
@@ -87,7 +87,7 @@ class ClassNodeInitializer extends ClassVisitor {
             Checks.ensure((access & ACC_PRIVATE) == 0, "Parser class '%s' must not be private", name);
             Checks.ensure((access & ACC_FINAL) == 0, "Parser class '%s' must not be final.", name);
             classNode.visit(
-                    V1_5,
+                    ASMSettings.JDK_VERSION,
                     ACC_PUBLIC,
                     getExtendedParserClassName(name),
                     null,

@@ -73,11 +73,11 @@ class RuleMethodRewriter implements RuleMethodProcessor {
         insert(new InsnNode(DUP));
         insert(new LdcInsnNode(method.name +
                 (root.isActionRoot() ? "_Action" + ++actionNr : "_VarInit" + ++varInitNr)));
-        insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V"));
+        insert(new MethodInsnNode(INVOKESPECIAL, internalName, "<init>", "(Ljava/lang/String;)V", false));
 
         if (root.isActionRoot() && method.hasSkipActionsInPredicatesAnnotation()) {
             insert(new InsnNode(DUP));
-            insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V"));
+            insert(new MethodInsnNode(INVOKEVIRTUAL, internalName, "setSkipInPredicates", "()V", false));
         }
     }
 

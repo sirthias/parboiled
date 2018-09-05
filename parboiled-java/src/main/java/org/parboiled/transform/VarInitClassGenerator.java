@@ -52,6 +52,7 @@ class VarInitClassGenerator extends GroupClassGenerator {
 
         mv.visitInsn(ARETURN);
         mv.visitMaxs(0, 0); // trigger automatic computing
+        mv.visitEnd();
     }
 
 }

@@ -54,7 +54,7 @@ class LabellingGenerator implements RuleMethodProcessor {
         instructions.insertBefore(ret, new LdcInsnNode(getLabelText(method)));
         // stack: <rule> :: <labelText>
         instructions.insertBefore(ret, new MethodInsnNode(INVOKEINTERFACE, Types.RULE.getInternalName(),
-                "label", "(Ljava/lang/String;)" + Types.RULE_DESC));
+                "label", "(Ljava/lang/String;)" + Types.RULE_DESC, true));
         // stack: <rule>
         instructions.insertBefore(ret, isNullLabel);
         // stack: <rule>
