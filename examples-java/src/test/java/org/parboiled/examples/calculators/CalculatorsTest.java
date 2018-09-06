@@ -30,7 +30,7 @@ public class CalculatorsTest extends TestNgParboiledTest<Object> {
 
     @Test
     public void testCalculator0() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser0.class);
+        CalculatorParser<Integer> parser = Parboiled.createParser(CalculatorParser0.class);
         test(parser.InputLine(), "1+5")
                 .hasNoErrors()
                 .hasParseTree("" +
@@ -54,13 +54,13 @@ public class CalculatorsTest extends TestNgParboiledTest<Object> {
 
     @Test
     public void testCalculator1() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser1.class);
+        CalculatorParser<Integer> parser = Parboiled.createParser(CalculatorParser1.class);
         runBasicCalculationTests(parser, "");
     }
 
     @Test
     public void testCalculator2() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser2.class);
+        CalculatorParser<CalculatorParser2.CalcNode> parser = Parboiled.createParser(CalculatorParser2.class);
         assertEquals(
                 printTree(
                         (Matcher) parser.InputLine(),
@@ -99,14 +99,14 @@ public class CalculatorsTest extends TestNgParboiledTest<Object> {
 
     @Test
     public void testCalculator3() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser3.class);
+        CalculatorParser<CalculatorParser3.CalcNode> parser = Parboiled.createParser(CalculatorParser3.class);
         runBasicCalculationTests(parser, ".0");
         runExtendedCalculationTests(parser);
     }
 
     @Test
     public void testCalculator4() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser4.class);
+        CalculatorParser<CalculatorParser3.CalcNode> parser = Parboiled.createParser(CalculatorParser4.class);
         runBasicCalculationTests(parser, ".0");
         runExtendedCalculationTests(parser);
     }

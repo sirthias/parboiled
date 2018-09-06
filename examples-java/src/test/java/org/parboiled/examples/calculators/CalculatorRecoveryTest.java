@@ -25,7 +25,7 @@ public class CalculatorRecoveryTest extends TestNgParboiledTest<Integer> {
 
     @Test
     public void testCalculatorErrorRecovery() {
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser1.class);
+        CalculatorParser<Integer> parser = Parboiled.createParser(CalculatorParser1.class);
         String[] tests = FileUtils.readAllTextFromResource("CalculatorErrorRecoveryTest.test").split("###\r?\n");
 
         if (!runSingleTest(parser, tests)) {
