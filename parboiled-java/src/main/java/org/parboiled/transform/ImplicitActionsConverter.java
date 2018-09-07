@@ -16,9 +16,6 @@
 
 package org.parboiled.transform;
 
-import static org.parboiled.common.Preconditions.*;
-import static org.objectweb.asm.Opcodes.*;
-
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -29,6 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.objectweb.asm.Opcodes.*;
+import static org.parboiled.common.Preconditions.checkArgNotNull;
+import static org.parboiled.common.Preconditions.checkState;
 import static org.parboiled.transform.AsmUtils.isBooleanValueOfZ;
 
 /**
@@ -131,10 +131,31 @@ class ImplicitActionsConverter implements RuleMethodProcessor {
 
     private List<InstructionGraphNode> getDependents(InstructionGraphNode predecessor) {
         List<InstructionGraphNode> dependents = new ArrayList<InstructionGraphNode>();
+
+        int index = 0;
         for (InstructionGraphNode node : method.getGraphNodes()) {
+
+            if (node == null) {
+                AbstractInsnNode insNode = method.instructions.get(index);
+
+                if (insNode == null) {
+                    throw new IllegalStateException("sparse instruction node graph, missing node and missing instruction for index: " + index);
+                }
+
+                String name = method.name;
+                String desc = method.desc;
+                int opcode = insNode.getOpcode();
+                int type = insNode.getType();
+
+                String message = "sparse instruction node graph, missing node for method: %s( %s ), having instruction at index: %d, with opcode: %d , type: %d";
+                throw new IllegalStateException(String.format(message, name, desc, index, opcode, type));
+            }
+
             if (node.getPredecessors().contains(predecessor)) {
                 dependents.add(node);
             }
+
+            index++;
         }
         return dependents;
     }
