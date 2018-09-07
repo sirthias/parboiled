@@ -45,7 +45,7 @@ class BodyWithSuperCallReplacer implements RuleMethodProcessor {
         method.instructions.add(new VarInsnNode(ALOAD, 0));
         method.instructions.add(createArgumentLoaders(method.desc));
         method.instructions.add(new MethodInsnNode(INVOKESPECIAL,
-                classNode.getParentType().getInternalName(), method.name, method.desc));
+                classNode.getParentType().getInternalName(), method.name, method.desc, classNode.isInterface()));
         method.instructions.add(new InsnNode(ARETURN));
     }
 

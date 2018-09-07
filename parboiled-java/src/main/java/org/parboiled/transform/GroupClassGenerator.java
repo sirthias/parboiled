@@ -77,16 +77,17 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
     }
 
     protected byte[] generateGroupClassCode(InstructionGroup group) {
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter classWriter = new ClassWriter(ASMSettings.FRAMES);
         generateClassBasics(group, classWriter);
         generateFields(group, classWriter);
         generateConstructor(classWriter);
         generateMethod(group, classWriter);
+        classWriter.visitEnd();
         return classWriter.toByteArray();
     }
 
     private void generateClassBasics(InstructionGroup group, ClassWriter cw) {
-        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC, group.getGroupClassType().getInternalName(), null,
+        cw.visit(ASMSettings.JDK_VERSION, ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC, group.getGroupClassType().getInternalName(), null,
                 getBaseType().getInternalName(), null);
         cw.visitSource(classNode.sourceFile, null);
     }
@@ -106,9 +107,10 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/String;)V", null, null);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESPECIAL, getBaseType().getInternalName(), "<init>", "(Ljava/lang/String;)V");
+        mv.visitMethodInsn(INVOKESPECIAL, getBaseType().getInternalName(), "<init>", "(Ljava/lang/String;)V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // trigger automatic computing
+        mv.visitEnd();
     }
 
     protected abstract void generateMethod(InstructionGroup group, ClassWriter cw);
@@ -134,7 +136,7 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
                 }
                 instructions.insertBefore(insn, new VarInsnNode(ALOAD, 1));
                 instructions.insertBefore(insn, new MethodInsnNode(INVOKEINTERFACE,
-                        Types.CONTEXT_AWARE.getInternalName(), "setContext", "(" + Types.CONTEXT_DESC + ")V"));
+                        Types.CONTEXT_AWARE.getInternalName(), "setContext", "(" + Types.CONTEXT_DESC + ")V", true));
             }
         }
     }

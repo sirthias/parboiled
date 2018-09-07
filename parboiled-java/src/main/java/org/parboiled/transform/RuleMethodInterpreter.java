@@ -40,7 +40,7 @@ class RuleMethodInterpreter extends BasicInterpreter {
     private final List<Edge> additionalEdges = new ArrayList<Edge>();
 
     public RuleMethodInterpreter(RuleMethod method) {
-        super(ASM6);
+        super(ASMSettings.ASM_API);
         this.method = method;
     }
 

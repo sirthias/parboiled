@@ -40,7 +40,7 @@ public class AsmTestUtils {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         TraceClassVisitor traceClassVisitor = new TraceClassVisitor(printWriter);
-        ClassVisitor checkClassAdapter = new ClassVisitor(Opcodes.ASM4, traceClassVisitor) {};
+        ClassVisitor checkClassAdapter = new ClassVisitor(ASMSettings.ASM_API, traceClassVisitor) {};
         //ClassAdapter checkClassAdapter = new CheckClassAdapter(traceClassVisitor);
         ClassReader classReader;
         classReader = new ClassReader(code);
@@ -85,7 +85,7 @@ public class AsmTestUtils {
 
     public static void verifyIntegrity(String classInternalName, byte[] classCode) {
         checkArgNotNull(classCode, "classCode");
-        ClassNode generatedClassNode = new ClassNode(Opcodes.ASM4);
+        ClassNode generatedClassNode = new ClassNode(ASMSettings.ASM_API);
         ClassReader classReader = new ClassReader(classCode);
         classReader.accept(generatedClassNode, 0);
 
@@ -105,7 +105,7 @@ public class AsmTestUtils {
 
     private static class NonMaxTextifier extends Textifier {
         private NonMaxTextifier() {
-            super(Opcodes.ASM4);
+            super(ASMSettings.ASM_API);
         }
 
         @Override

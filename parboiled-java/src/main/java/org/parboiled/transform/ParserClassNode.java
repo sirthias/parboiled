@@ -40,7 +40,7 @@ class ParserClassNode extends ClassNode {
     private Class<?> extendedClass;
 
     public ParserClassNode(Class<?> parentClass) {
-        super(Opcodes.ASM4);
+        super(ASMSettings.ASM_API);
         this.parentClass = checkArgNotNull(parentClass, "parentClass");
         parentType = Type.getType(parentClass);
     }
@@ -75,5 +75,9 @@ class ParserClassNode extends ClassNode {
 
     public void setExtendedClass(Class<?> extendedClass) {
         this.extendedClass = extendedClass;
+    }
+
+    public boolean isInterface() {
+        return this.parentClass.isInterface();
     }
 }

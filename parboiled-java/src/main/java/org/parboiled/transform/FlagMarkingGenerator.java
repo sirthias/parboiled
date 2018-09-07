@@ -37,7 +37,7 @@ class FlagMarkingGenerator implements RuleMethodProcessor {
         checkArgNotNull(classNode, "classNode");
         checkArgNotNull(method, "method");
         checkState(!method.isSuperMethod()); // super methods have flag moved to the overriding method
-        
+
         InsnList instructions = method.instructions;
 
         AbstractInsnNode ret = instructions.getLast();
@@ -56,7 +56,7 @@ class FlagMarkingGenerator implements RuleMethodProcessor {
         if (method.hasSuppressSubnodesAnnotation()) generateMarkerCall(instructions, ret, "suppressSubnodes");
         if (method.hasSkipNodeAnnotation()) generateMarkerCall(instructions, ret, "skipNode");
         if (method.hasMemoMismatchesAnnotation()) generateMarkerCall(instructions, ret, "memoMismatches");
-        
+
         // stack: <rule>
         instructions.insertBefore(ret, isNullLabel);
         // stack: <rule>
@@ -64,7 +64,7 @@ class FlagMarkingGenerator implements RuleMethodProcessor {
 
     private void generateMarkerCall(InsnList instructions, AbstractInsnNode ret, String call) {
         instructions.insertBefore(ret, new MethodInsnNode(INVOKEINTERFACE, Types.RULE.getInternalName(), call,
-                "()" + Types.RULE.getDescriptor()));
+                "()" + Types.RULE.getDescriptor(), true));
     }
 
 }

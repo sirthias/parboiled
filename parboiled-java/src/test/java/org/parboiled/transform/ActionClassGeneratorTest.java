@@ -53,7 +53,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
 
         InstructionGroup group = method.getGroups().get(0);
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
-                "// class version 49.0 (49)\n" +
+                "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
                 "public final synthetic class org/parboiled/transform/VarInit$ojjPlnt06r72YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
                 "\n" +
@@ -77,7 +77,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
 
         group = method.getGroups().get(1);
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
-                "// class version 49.0 (49)\n" +
+                "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
                 "public final synthetic class org/parboiled/transform/Action$LmzJHalG7AngCUsX extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
@@ -113,8 +113,10 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    ICONST_1\n" +
                 "    GOTO L1\n" +
                 "   L0\n" +
+                "   FRAME SAME\n" +
                 "    ICONST_0\n" +
                 "   L1\n" +
+                "   FRAME SAME1 I\n" +
                 "    IRETURN\n" +
                 "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 2\n" +
@@ -122,7 +124,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
 
         group = method.getGroups().get(2);
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
-                "// class version 49.0 (49)\n" +
+                "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
                 "public final synthetic class org/parboiled/transform/Action$OrG2zjbz0MYoT8sO extends org/parboiled/transform/BaseAction  {\n" +
                 "\n" +
@@ -174,8 +176,10 @@ public class ActionClassGeneratorTest extends TransformationTest {
                 "    ICONST_1\n" +
                 "    GOTO L1\n" +
                 "   L0\n" +
+                "   FRAME SAME\n" +
                 "    ICONST_0\n" +
                 "   L1\n" +
+                "   FRAME SAME1 I\n" +
                 "    IRETURN\n" +
                 "    MAXSTACK = 3\n" +
                 "    MAXLOCALS = 2\n" +

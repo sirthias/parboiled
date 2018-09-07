@@ -3,7 +3,7 @@ import Dependencies._
 
 val basicSettings = Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
-  version               := "1.1.8",
+  version               := "1.2.0",
   scalaVersion          := "2.11.12",
   homepage              := Some(new URL("http://parboiled.org")),
   organization          := "org.parboiled",
@@ -15,8 +15,8 @@ val basicSettings = Seq(
 
   javacOptions          ++= Seq(
     "-deprecation",
-    "-target", "1.6",
-    "-source", "1.6",
+    "-target", "1.7",
+    "-source", "1.7",
     "-encoding", "utf8",
     "-Xlint:unchecked"
   ),

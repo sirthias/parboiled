@@ -120,7 +120,7 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         private final String parserClassName;
 
         public MD5Digester(String parserClassName) {
-            super(Opcodes.ASM4);
+            super(ASMSettings.ASM_API);
             this.parserClassName = parserClassName;
             if (digest == null) {
                 try {
@@ -179,6 +179,11 @@ class InstructionGroupPreparer implements RuleMethodProcessor {
         }
 
         @Override
+        public void visitMethodInsn( int opcode, String owner, String name, String descriptor, boolean isInterface ) {
+            this.visitMethodInsn( opcode, owner, name, descriptor );
+        }
+
+    @Override
         public void visitJumpInsn(int opcode, Label label) {
             update(opcode);
             update(label);

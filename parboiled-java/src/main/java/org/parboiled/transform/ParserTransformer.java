@@ -94,7 +94,7 @@ public class ParserTransformer {
     }
 
     private static void defineExtendedParserClass(ParserClassNode classNode) {
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter classWriter = new ClassWriter(ASMSettings.FRAMES);
         classNode.accept(classWriter);
         classNode.setClassCode(classWriter.toByteArray());
         classNode.setExtendedClass(loadClass(

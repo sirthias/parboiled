@@ -51,7 +51,7 @@ class ConstructorGenerator {
         instructions.add(new VarInsnNode(ALOAD, 0));
         instructions.add(createArgumentLoaders(constructor.desc));
         instructions.add(new MethodInsnNode(INVOKESPECIAL,
-                classNode.getParentType().getInternalName(), "<init>", constructor.desc));
+                classNode.getParentType().getInternalName(), "<init>", constructor.desc, classNode.isInterface()));
         instructions.add(new InsnNode(RETURN));
 
         classNode.methods.add(newConstructor);
@@ -64,7 +64,7 @@ class ConstructorGenerator {
         InsnList instructions = method.instructions;
         instructions.add(new TypeInsnNode(NEW, classNode.name));
         instructions.add(new InsnNode(DUP));
-        instructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.name, "<init>", "()V"));
+        instructions.add(new MethodInsnNode(INVOKESPECIAL, classNode.name, "<init>", "()V", classNode.isInterface()));
         instructions.add(new InsnNode(ARETURN));
 
         classNode.methods.add(method);

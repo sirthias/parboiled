@@ -121,7 +121,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack: <hashMap> :: <this> :: <hashMap>
         insert(new InsnNode(DUP));
         // stack: <hashMap> :: <this> :: <hashMap> :: <hashMap>
-        insert(new MethodInsnNode(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V"));
+        insert(new MethodInsnNode(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false));
         // stack: <hashMap> :: <this> :: <hashMap>
         insert(new FieldInsnNode(PUTFIELD, classNode.name, cacheFieldName, cacheFieldDesc));
         // stack: <hashMap>
@@ -141,7 +141,7 @@ class CachingGenerator implements RuleMethodProcessor {
             // stack: <hashMap> :: <arguments> :: <arguments>
             generatePushNewParameterObjectArray(paramTypes);
             // stack: <hashMap> :: <arguments> :: <arguments> :: <array>
-            insert(new MethodInsnNode(INVOKESPECIAL, arguments, "<init>", "([Ljava/lang/Object;)V"));
+            insert(new MethodInsnNode(INVOKESPECIAL, arguments, "<init>", "([Ljava/lang/Object;)V", false));
             // stack: <hashMap> :: <arguments>
         } else {
             // stack: <hashMap>
@@ -156,7 +156,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack: <hashMap> :: <mapKey> :: <mapKey>
         insert(new VarInsnNode(ASTORE, method.maxLocals));
         // stack: <hashMap> :: <mapKey>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false));
         // stack: <object>
         insert(new TypeInsnNode(CHECKCAST, Types.RULE.getInternalName()));
         // stack: <rule>
@@ -204,35 +204,35 @@ class CachingGenerator implements RuleMethodProcessor {
         switch (paramTypes[parameterNr++].getSort()) {
             case Type.BOOLEAN:
                 insert(new VarInsnNode(ILOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false));
                 return;
             case Type.CHAR:
                 insert(new VarInsnNode(ILOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false));
                 return;
             case Type.BYTE:
                 insert(new VarInsnNode(ILOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;", false));
                 return;
             case Type.SHORT:
                 insert(new VarInsnNode(ILOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;", false));
                 return;
             case Type.INT:
                 insert(new VarInsnNode(ILOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false));
                 return;
             case Type.FLOAT:
                 insert(new VarInsnNode(FLOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false));
                 return;
             case Type.LONG:
                 insert(new VarInsnNode(LLOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false));
                 return;
             case Type.DOUBLE:
                 insert(new VarInsnNode(DLOAD, parameterNr));
-                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"));
+                insert(new MethodInsnNode(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false));
                 return;
             case Type.ARRAY:
             case Type.OBJECT:
@@ -253,7 +253,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack: <proxyMatcher>
         insert(new InsnNode(DUP));
         // stack: <proxyMatcher> :: <proxyMatcher>
-        insert(new MethodInsnNode(INVOKESPECIAL, proxyMatcherType, "<init>", "()V"));
+        insert(new MethodInsnNode(INVOKESPECIAL, proxyMatcherType, "<init>", "()V", false));
         // stack: <proxyMatcher>
         generateStoreInCache();
         // stack: <proxyMatcher>
@@ -274,7 +274,7 @@ class CachingGenerator implements RuleMethodProcessor {
         // stack: <rule> :: <proxyMatcher> :: <rule>
         insert(new TypeInsnNode(CHECKCAST, Types.MATCHER.getInternalName()));
         // stack: <rule> :: <proxyMatcher> :: <matcher>
-        insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm", '(' + Types.MATCHER_DESC + ")V"));
+        insert(new MethodInsnNode(INVOKEVIRTUAL, proxyMatcherType, "arm", '(' + Types.MATCHER_DESC + ")V", false));
         // stack: <rule>
     }
 
@@ -310,7 +310,7 @@ class CachingGenerator implements RuleMethodProcessor {
         insert(new InsnNode(POP));
         // stack: <rule> :: <hashMap> :: <mapKey> :: <rule>
         insert(new MethodInsnNode(INVOKEVIRTUAL, "java/util/HashMap", "put",
-                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
+                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false));
         // stack: <rule> :: <null>
         insert(new InsnNode(POP));
         // stack: <rule>
