@@ -33,7 +33,7 @@ class EOIMatchingTest extends ParboiledTest with TestNGSuiteLike {
     expectedExceptionsMessageRegExp = "Parser read more than 100K chars beyond EOI, " +
       "verify that your grammar does not consume EOI indefinitely!"
   )
-  def testEOIMatchingParser() {
+  def testEOIMatchingParser(): Unit = {
     val rule = new EOIMatchingParser().Clause
     parse(ReportingParseRunner(rule), "") {
       fail("Exception expected")

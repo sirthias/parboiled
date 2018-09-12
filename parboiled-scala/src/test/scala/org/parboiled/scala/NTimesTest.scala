@@ -39,7 +39,7 @@ class NTimesTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testNTimes() {
+  def testNTimes(): Unit = {
     parse(ReportingParseRunner(parser.AsAndBs), "abbbbb123") {
       assertEquals(parseTree,
          """[AsAndBs, {6}] 'abbbbb123'

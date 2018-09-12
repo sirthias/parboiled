@@ -54,7 +54,7 @@ class LoopedReductionRuleTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testLoopedReductionRule() {
+  def testLoopedReductionRule(): Unit = {
     parse(ReportingParseRunner(parser.IntsAndDoubles), "1 + 0.3 + 0.3 + 0.3") {
       assertEquals(parseTree,
         """[IntsAndDoubles, {DoubleExpression(1.9000000000000001)}] '1 + 0.3 + 0.3 + 0.3'

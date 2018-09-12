@@ -38,7 +38,7 @@ class FirstOfStringsTest extends ParboiledTest with TestNGSuiteLike {
   val parser = new TestParser
 
   @Test
-  def testFast() {
+  def testFast(): Unit = {
     assertTrue(parser.Fast.matcher.isInstanceOf[FirstOfStringsMatcher]);
     assertFalse(parser.Slow1.matcher.isInstanceOf[FirstOfStringsMatcher]);
     assertFalse(parser.Slow2.matcher.isInstanceOf[FirstOfStringsMatcher]);

@@ -36,7 +36,7 @@ class SyntacticPredicateTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testSyntacticPredicates() {
+  def testSyntacticPredicates(): Unit = {
     parse(ReportingParseRunner(parser.Clause), "216") {
       assertEquals(parseTree,
         """|[Clause] '216'

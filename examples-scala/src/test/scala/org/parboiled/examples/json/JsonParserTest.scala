@@ -30,7 +30,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuiteLike {
   type Result = parser.AstNode
 
   @Test
-  def testJsonParser() {
+  def testJsonParser(): Unit = {
     val json = """|{
                   |  "simpleKey" : "some value",
                   |  "key with spaces": null,
@@ -70,7 +70,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testJsonParserError() {
+  def testJsonParserError(): Unit = {
     failParse(ReportingParseRunner(parser.Json), "XYZ") {
       assertEquals(errors,
         """|Invalid input 'X', expected Json (line 1, pos 1):

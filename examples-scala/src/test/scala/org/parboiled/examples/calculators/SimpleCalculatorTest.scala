@@ -36,7 +36,7 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuiteLike {
   type Result = Int
 
   @Test
-  def testSimpleCalculatorMatcherBuilding() {
+  def testSimpleCalculatorMatcherBuilding(): Unit = {
     assertEquals(GraphUtils.printTree(parser.InputLine.matcher, new ToStringFormatter[Matcher](),
       Predicates.alwaysTrue(), Filters.preventLoops),
        """|InputLine
@@ -76,8 +76,8 @@ class SimpleCalculatorTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testCalculations() {
-    def test(input: String, expected: Int) {
+  def testCalculations(): Unit = {
+    def test(input: String, expected: Int): Unit = {
       parse(ReportingParseRunner(parser.InputLine), input) {
         assertEquals(result.get, expected)
       }

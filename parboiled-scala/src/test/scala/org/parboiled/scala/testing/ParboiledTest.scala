@@ -42,7 +42,7 @@ trait ParboiledTest {
    * If the parsing run is not successful, i.e. the input did not match the grammar, the test fails will a respective
    * error message.
    */
-  def parse(runner: ParseRunner[_ <: Result], input: Input)(f: => Unit) {
+  def parse(runner: ParseRunner[_ <: Result], input: Input)(f: => Unit): Unit = {
     pRunner.withValue(runner) {
       val res = runner.run(input)
       if (!res.matched) {
@@ -57,7 +57,7 @@ trait ParboiledTest {
    * If the parsing run is successful, i.e. the input did match the grammar, the test fails will a respective
    * error message.
    */
-  def failParse(runner: ParseRunner[_ <: Result], input: Input)(f: => Unit) {
+  def failParse(runner: ParseRunner[_ <: Result], input: Input)(f: => Unit): Unit = {
     pRunner.withValue(runner) {
       val res = runner.run(input)
       if (res.matched) {

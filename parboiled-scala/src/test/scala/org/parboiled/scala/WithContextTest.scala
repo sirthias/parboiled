@@ -44,7 +44,7 @@ class WithContextTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testWithContext() {
+  def testWithContext(): Unit = {
     parse(ReportingParseRunner(parser.Clause), "A5") {
       assertEquals(parseTree,
          """|[Clause, {8}] 'A5'

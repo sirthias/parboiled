@@ -42,7 +42,7 @@ class SimpleTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testRuleTreeConstruction() {
+  def testRuleTreeConstruction(): Unit = {
     val rule = parser.Clause
     assertEquals(GraphUtils.printTree(rule.matcher, new ToStringFormatter[Matcher]),
        """|Clause
@@ -60,7 +60,7 @@ class SimpleTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testSimpleParse() {
+  def testSimpleParse(): Unit = {
     parse(ReportingParseRunner(parser.Clause), "1+2a") {
       assertEquals(parseTree,
          """|[Clause] '1+2a'

@@ -37,7 +37,7 @@ class RecursionTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testRuleTreeConstruction() {
+  def testRuleTreeConstruction(): Unit = {
     val rule = parser.LotsOfAs
     assertEquals(GraphUtils.printTree(rule.matcher, new ToStringFormatter[Matcher], Predicates.alwaysTrue(),
       Filters.preventLoops()),
@@ -49,7 +49,7 @@ class RecursionTest extends ParboiledTest with TestNGSuiteLike {
   }
 
   @Test
-  def testRecursion() {
+  def testRecursion(): Unit = {
     parse(ReportingParseRunner(parser.LotsOfAs), "aAAAa") {
       assertEquals(parseTree,
          """|[LotsOfAs] 'aAAAa'
