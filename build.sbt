@@ -65,7 +65,9 @@ val basicSettings = Seq(
 
 val noPublishing = Seq(
   publishArtifact := false,
-  publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))))
+  publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
+  publishConfiguration := publishConfiguration.value.withOverwrite(true)
+)
 
 def javaDoc = Seq(
   doc in Compile := {

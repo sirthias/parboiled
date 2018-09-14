@@ -67,7 +67,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
         }
     }
 
-    private final long timeout;
+    private final long timeoutNanos;
     private long startTimeStamp;
     private int errorIndex;
     private InvalidInputError currentError;
@@ -106,16 +106,20 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
      * A parsing run will throw a TimeoutException if it takes longer than the given number if milliseconds. 
      *
      * @param rule the parser rule
-     * @param timeout the timeout value in milliseconds
+     * @param timeoutMillis the timeout value in milliseconds
      */
-    public RecoveringParseRunner(Rule rule, long timeout) {
+    public RecoveringParseRunner(Rule rule, long timeoutMillis) {
         super(rule);
-        this.timeout = timeout;
+        if (timeoutMillis > Long.MAX_VALUE / 1000000) {
+            this.timeoutNanos = Long.MAX_VALUE;
+        } else {
+            this.timeoutNanos = timeoutMillis * 1000000;
+        }
     }
 
     public ParsingResult<V> run(InputBuffer inputBuffer) {
         checkArgNotNull(inputBuffer, "inputBuffer");
-        startTimeStamp = System.currentTimeMillis();
+        startTimeStamp = System.nanoTime();
         resetValueStack();
 
         // first, run a basic match
@@ -328,7 +332,7 @@ public class RecoveringParseRunner<V> extends AbstractParseRunner<V> {
                 }
                 
                 // check for timeout only on failures of sequences so as to not add too much overhead
-                if (System.currentTimeMillis() - startTimeStamp > timeout) {
+                if (System.nanoTime() - startTimeStamp > timeoutNanos) {
                     throw new TimeoutException(getRootMatcher(), buffer, lastParsingResult);
                 }
             }
