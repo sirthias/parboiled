@@ -14,6 +14,6 @@ matrix:
     env: JDK7_TEST
     script:
     - sbt "java++ 1.7" "++ ${TRAVIS_SCALA_VERSION}!" test
-  - scala: 2.13.0-M5
+  - scala: 2.13.0-M4
     script:
     - sbt "++ ${TRAVIS_SCALA_VERSION}!" compile

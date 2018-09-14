@@ -23,7 +23,7 @@ object Dependencies {
     if (scalaVersion == "2.13.0-M5")
       Nil
     else if (scalaVersion == "2.13.0-M4")
-      Seq("org.scalatest" %% "scalatest" % "3.0.6-SNAP1")
+      Seq("org.scalatest" %% "scalatest" % "3.0.6-SNAP2")
     else
       Seq("org.scalatest" %% "scalatest" % "3.0.5")
   }

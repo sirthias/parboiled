@@ -2,8 +2,8 @@ Version 1.2.0 (2018-09-14)
 --------------------------
 - Added support for `~~>` and friends in ReductionRules
 - Added support for PushRules to chain after ReductionRules
-- Upgraded to ASM 6
-- Added Scala 2.13.0-M5 build
+- Upgraded to ASM 6.2.1
+- Added Scala 2.13.0-M4 build
 - Dropped support for Java 1.5
 
 
