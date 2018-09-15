@@ -50,7 +50,7 @@ class TracingParseRunner[V](val inner: PTracingParseRunner[V]) extends ParseRunn
    */
   def filter(filter: TracingPredicate) = {
     inner.withFilter(new PPredicate[T2[Context[Any], Boolean]] {
-      def apply(t: T2[Context[Any], Boolean]) = filter(t.a, t.b)
+      def apply(t: T2[Context[Any], Boolean]) = filter((t.a, t.b))
     })
     this
   }
