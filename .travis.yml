@@ -10,6 +10,8 @@ script:
 - sbt "++ ${TRAVIS_SCALA_VERSION}!" test
 matrix:
   include:
+  - scala: 2.12.6
+    jdk: oraclejdk10
   - scala: 2.11.12
     env: JDK7_TEST
     script:
