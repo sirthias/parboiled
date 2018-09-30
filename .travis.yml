@@ -2,7 +2,7 @@ language: scala
 sudo: false
 jdk: oraclejdk8
 scala:
-- 2.12.6
+- 2.12.7
 - 2.11.12
 - 2.10.7
 - 2.13.0-M4
@@ -10,7 +10,7 @@ script:
 - sbt "++ ${TRAVIS_SCALA_VERSION}!" test
 matrix:
   include:
-  - scala: 2.12.6
+  - scala: 2.12.7
     jdk: oraclejdk10
   - scala: 2.11.12
     env: JDK7_TEST
