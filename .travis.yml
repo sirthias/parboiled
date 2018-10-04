@@ -11,7 +11,7 @@ script:
 matrix:
   include:
   - scala: 2.12.7
-    jdk: oraclejdk10
+    jdk: openjdk11
   - scala: 2.11.12
     env: JDK7_TEST
     script:
