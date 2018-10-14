@@ -21,9 +21,7 @@ object Dependencies {
 
   def scalatest(scalaVersion: String) = {
     if (scalaVersion == "2.13.0-M5")
-      Nil
-    else if (scalaVersion == "2.13.0-M4")
-      Seq("org.scalatest" %% "scalatest" % "3.0.6-SNAP2")
+      Seq("org.scalatest" %% "scalatest" % "3.0.6-SNAP3")
     else
       Seq("org.scalatest" %% "scalatest" % "3.0.5")
   }
