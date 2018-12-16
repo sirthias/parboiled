@@ -55,7 +55,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
-                "public final synthetic class org/parboiled/transform/VarInit$ojjPlnt06r72YBBm extends org/parboiled/transform/BaseVarInit  {\n" +
+                "public final synthetic class org/parboiled/transform/VarInit$ojjPlnt06r72YBBm extends org/parboiled/transform/BaseVarInit {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1\n" +
@@ -79,7 +79,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
-                "public final synthetic class org/parboiled/transform/Action$LmzJHalG7AngCUsX extends org/parboiled/transform/BaseAction  {\n" +
+                "public final synthetic class org/parboiled/transform/Action$LmzJHalG7AngCUsX extends org/parboiled/transform/BaseAction {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
@@ -126,7 +126,7 @@ public class ActionClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
-                "public final synthetic class org/parboiled/transform/Action$OrG2zjbz0MYoT8sO extends org/parboiled/transform/BaseAction  {\n" +
+                "public final synthetic class org/parboiled/transform/Action$OrG2zjbz0MYoT8sO extends org/parboiled/transform/BaseAction {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
