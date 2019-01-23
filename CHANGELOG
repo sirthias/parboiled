@@ -1,3 +1,9 @@
+Version 1.3.0 (2019-01-23)
+--------------------------
+- Upgraded to ASM 7.0
+- Added Scala 2.13.0-M5 build
+
+
 Version 1.2.0 (2018-09-14)
 --------------------------
 - Added support for `~~>` and friends in ReductionRules

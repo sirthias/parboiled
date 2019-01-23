@@ -3,7 +3,7 @@ import Dependencies._
 
 val basicSettings = Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
-  version               := "1.2.0",
+  version               := "1.3.0",
   scalaVersion          := "2.11.12",
   homepage              := Some(new URL("http://parboiled.org")),
   organization          := "org.parboiled",
@@ -44,7 +44,6 @@ val basicSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-  useGpg := true,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
     if (version.value.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
