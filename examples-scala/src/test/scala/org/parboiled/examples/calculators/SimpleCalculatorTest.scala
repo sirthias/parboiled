@@ -17,7 +17,7 @@
 package org.parboiled.examples.calculators
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuiteLike
+import org.scalatestplus.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.GraphUtils

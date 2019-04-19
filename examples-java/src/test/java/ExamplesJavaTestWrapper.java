@@ -1,6 +1,6 @@
 import org.parboiled.common.FileUtils;
 import org.parboiled.common.ImmutableList;
-import org.scalatest.testng.TestNGWrapperSuite;
+import org.scalatestplus.testng.TestNGWrapperSuite;
 
 import java.io.File;
 import java.io.IOException;

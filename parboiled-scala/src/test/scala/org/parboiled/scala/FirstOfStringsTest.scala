@@ -17,7 +17,7 @@
 package org.parboiled.scala
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuiteLike
+import org.scalatestplus.testng.TestNGSuiteLike
 import org.testng.Assert._
 import testing.ParboiledTest
 import org.parboiled.matchers.FirstOfStringsMatcher

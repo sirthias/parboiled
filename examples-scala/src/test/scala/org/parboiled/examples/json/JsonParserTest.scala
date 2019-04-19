@@ -17,7 +17,7 @@
 package org.parboiled.examples.json
 
 import org.testng.annotations.Test
-import org.scalatest.testng.TestNGSuiteLike
+import org.scalatestplus.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.scala.parserunners.ReportingParseRunner
@@ -84,8 +84,8 @@ class JsonParserTest extends ParboiledTest with TestNGSuiteLike {
   def printAst(node: JsonParser1#AstNode, indent: String = ""): String = node match {
     case n: JsonParser1#ObjectNode => "{\n" + (for (sub <- n.members) yield printAst(sub, indent + "  ")).mkString + indent + "}"
     case n: JsonParser1#MemberNode => indent + '"' + n.key + "\" : " + printAst(n.value, indent) + "\n"
-    case n: JsonParser1#ArrayNode => '[' + (for (sub <- n.elements) yield printAst(sub, indent + "  ")).mkString(", ") + "]"
-    case n: JsonParser1#StringNode => '"' + n.text + '"'
+    case n: JsonParser1#ArrayNode => "[" + (for (sub <- n.elements) yield printAst(sub, indent + "  ")).mkString(", ") + "]"
+    case n: JsonParser1#StringNode => "\"" + n.text + '"'
     case n: JsonParser1#NumberNode => n.value.toString
     case parser.True => "true"
     case parser.False => "false"
