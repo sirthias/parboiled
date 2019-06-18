@@ -14,6 +14,7 @@ matrix:
     dist: xenial
     jdk: openjdk11
   - scala: 2.11.12
+    dist: trusty
     env: JDK7_TEST
     script:
     - sbt "java++ 1.7" "++ ${TRAVIS_SCALA_VERSION}!" test
