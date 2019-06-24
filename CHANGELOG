@@ -1,3 +1,11 @@
+Version 1.3.1 (2019-06-24)
+--------------------------
+- Upgraded to ASM 7.1
+- Fixed class loader in parser generation
+- Added cross-build for Scala 2.13.0
+- Dropped support for Scala 2.10
+
+
 Version 1.3.0 (2019-01-23)
 --------------------------
 - Upgraded to ASM 7.0
