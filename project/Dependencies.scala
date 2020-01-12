@@ -12,7 +12,7 @@ object Dependencies {
   def runtime   (deps: ModuleID*): Seq[ModuleID] = deps map (_ % "runtime")
   def container (deps: ModuleID*): Seq[ModuleID] = deps map (_ % "container")
 
-  val asmVersion  = "7.2"
+  val asmVersion  = "7.3.1"
   val asm         = "org.ow2.asm"   %  "asm"           % asmVersion
   val asmTree     = "org.ow2.asm"   %  "asm-tree"      % asmVersion
   val asmAnalysis = "org.ow2.asm"   %  "asm-analysis"  % asmVersion
