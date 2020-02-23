@@ -1,4 +1,3 @@
-import com.typesafe.sbt._
 import Dependencies._
 
 val basicSettings = Seq(

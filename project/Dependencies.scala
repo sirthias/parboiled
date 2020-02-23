@@ -17,9 +17,9 @@ object Dependencies {
   val asmTree     = "org.ow2.asm"   %  "asm-tree"      % asmVersion
   val asmAnalysis = "org.ow2.asm"   %  "asm-analysis"  % asmVersion
   val asmUtil     = "org.ow2.asm"   %  "asm-util"      % asmVersion
-  val testNG      = "org.testng"    %  "testng"        % "6.14.3"
+  val testNG      = "org.scalatestplus" %% "testng-6-7" % "3.1.1.0"
 
   def scalatest(scalaVersion: String) = {
-    Seq("org.scalatest" %% "scalatest" % "3.0.8")
+    Seq("org.scalatest" %% "scalatest" % "3.1.1")
   }
 }
