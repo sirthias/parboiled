@@ -19,14 +19,14 @@ val basicSettings = Seq(
     "-encoding", "utf8",
     "-Xlint:unchecked"
   ),
-  scalacOptions ++= {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor >= 10 =>
-        Seq("-feature", "-language:implicitConversions", "-unchecked", "-deprecation", "-encoding", "utf8")
-      case _ =>
-        Seq.empty
-    }
-  },
+  scalacOptions ++= Seq(
+    "-feature",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-deprecation",
+    "-encoding",
+    "utf8"
+  ),
 
   libraryDependencies   ++= Dependencies.test(testNG),
   libraryDependencies   ++= Dependencies.test(scalatest(scalaVersion.value): _*),
