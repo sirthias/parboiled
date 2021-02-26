@@ -32,7 +32,7 @@ val basicSettings = Seq(
   libraryDependencies   ++= Dependencies.test(scalatest(scalaVersion.value): _*),
 
   // scaladoc settings
-  (scalacOptions in doc) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
+  (doc / scalacOptions) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
 
   // publishing
   crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.4"),
@@ -41,7 +41,7 @@ val basicSettings = Seq(
     else scalaVersion.value
   },
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
@@ -68,10 +68,10 @@ val noPublishing = Seq(
 )
 
 def javaDoc = Seq(
-  doc in Compile := {
-    val cp = (fullClasspath in Compile in doc).value
-    val docTarget = (target in Compile in doc).value
-    val compileSrc = (javaSource in Compile).value
+  (Compile / doc) := {
+    val cp = (Compile / doc / fullClasspath).value
+    val docTarget = (Compile / doc / target).value
+    val compileSrc = (Compile / javaSource).value
     val s = streams.value
     def replace(x: Any) = x.toString.replace("parboiled-java", "parboiled-core")
     def docLink = name.value match {
@@ -114,7 +114,7 @@ lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
   .settings(javaDoc: _*)
   .settings(
     libraryDependencies ++= Dependencies.compile(asm, asmTree, asmAnalysis, asmUtil),
-    javacOptions in Test += "-g", // needed for bytecode rewriting
+    Test / javacOptions += "-g", // needed for bytecode rewriting
     crossPaths := false,
     autoScalaLibrary := false
   )
