@@ -35,7 +35,7 @@ val basicSettings = Seq(
   (doc / scalacOptions) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
 
   // publishing
-  crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6"),
+  crossScalaVersions := Seq("2.11.12", "2.12.14", "2.13.6"),
   scalaBinaryVersion := {
     if (CrossVersion.isScalaApiCompatible(scalaVersion.value)) CrossVersion.binaryScalaVersion(scalaVersion.value)
     else scalaVersion.value
