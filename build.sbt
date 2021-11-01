@@ -3,7 +3,7 @@ import Dependencies._
 val basicSettings = Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
   version               := "1.3.2-SNAPSHOT",
-  scalaVersion          := "2.13.6",
+  scalaVersion          := "2.13.7",
   homepage              := Some(new URL("http://parboiled.org")),
   organization          := "org.parboiled",
   organizationHomepage  := Some(new URL("http://parboiled.org")),
@@ -35,7 +35,7 @@ val basicSettings = Seq(
   (doc / scalacOptions) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
 
   // publishing
-  crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.6"),
+  crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.7"),
   scalaBinaryVersion := {
     if (CrossVersion.isScalaApiCompatible(scalaVersion.value)) CrossVersion.binaryScalaVersion(scalaVersion.value)
     else scalaVersion.value
