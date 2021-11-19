@@ -14,8 +14,8 @@ val basicSettings = Seq(
 
   javacOptions          ++= Seq(
     "-deprecation",
-    "-target", "1.7",
-    "-source", "1.7",
+    "-target", "11",
+    "-source", "11",
     "-encoding", "utf8",
     "-Xlint:unchecked"
   ),

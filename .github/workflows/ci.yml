@@ -10,12 +10,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - java: 8
           - java: 11
     steps:
     - uses: actions/checkout@v2.4.0
     - uses: olafurpg/setup-scala@v13
       with:
-        java-version: "adopt@1.${{ matrix.java }}"
+        java-version: "adopt@${{ matrix.java }}"
     - uses: coursier/cache-action@v6
     - run: sbt -v "+ test"
