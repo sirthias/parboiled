@@ -58,12 +58,12 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
 
         Class<?> groupClass;
         synchronized (lock) {
-            groupClass = findLoadedClass(className, classLoader);
+            groupClass = findLoadedClass(className, classLoader, classNode.getParentClass());
             if (groupClass == null || forceCodeBuilding) {
                 byte[] groupClassCode = generateGroupClassCode(group);
                 group.setGroupClassCode(groupClassCode);
                 if (groupClass == null) {
-                    loadClass(className, groupClassCode, classLoader);
+                    loadClass(className, groupClassCode, classLoader, classNode.getParentClass());
                 }
             }
         }
