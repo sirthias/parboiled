@@ -1,12 +1,17 @@
-/.idea/
-/project/boot/
-/project/plugins/project
-target/
-lib_managed/
-src_managed/
-test-output/
-*.iml
-/*/.cache
-/*/.classpath
-/*/.project
-/*/.settings
+# Only put project-/build-tool-specific things here!
+# Everything specific to your particular dev machine
+# (like OS- or IDE-related artifacts) should go into
+# a personal, global .gitignore file!
+# (See https://help.github.com/articles/ignoring-files/ for details)
+
+.bsp
+lib_managed
+target
+project/boot
+project/build/target
+project/plugins/lib_managed
+project/plugins/src_managed
+project/plugins/target
+project/plugins/project/build.properties
+buildinfo.properties
+proguard-sbt.txt
