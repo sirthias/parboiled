@@ -15,6 +15,6 @@ jobs:
     - uses: actions/checkout@v2.4.0
     - uses: olafurpg/setup-scala@v13
       with:
-        java-version: "adopt@${{ matrix.java }}"
+        java-version: "adopt@1.${{ matrix.java }}"
     - uses: coursier/cache-action@v6
     - run: sbt -v "+ test"
