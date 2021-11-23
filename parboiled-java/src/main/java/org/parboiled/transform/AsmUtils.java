@@ -199,11 +199,20 @@ class AsmUtils {
      * @param classLoader the class loader to use
      * @return the class instance or null
      */
-    public static Class<?> findLoadedClass(String className, ClassLoader classLoader, Class<?> origClass) {
+    public static Class<?> findLoadedClass(String className, ClassLoader classLoader) {
         checkArgNotNull(className, "className");
-        checkArgNotNull(origClass, "origClass");
+        checkArgNotNull(classLoader, "classLoader");
         try {
-            return (Class<?>) origClass.getMethod("findLoadedClass", String.class).invoke(null, className);
+            Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
+            Method findLoadedClassMethod = classLoaderBaseClass.getDeclaredMethod("findLoadedClass", String.class);
+
+            // protected method invocation
+            findLoadedClassMethod.setAccessible(true);
+            try {
+                return (Class<?>) findLoadedClassMethod.invoke(classLoader, className);
+            } finally {
+                findLoadedClassMethod.setAccessible(false);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Could not determine whether class '" + className +
                     "' has already been loaded", e);
@@ -222,11 +231,22 @@ class AsmUtils {
      * @param classLoader the class loader to use
      * @return the class instance
      */
-    public static Class<?> loadClass(String className, byte[] code, ClassLoader classLoader, Class<?> origClass) {
+    public static Class<?> loadClass(String className, byte[] code, ClassLoader classLoader) {
+        checkArgNotNull(className, "className");
         checkArgNotNull(code, "code");
-        checkArgNotNull(origClass, "origClass");
+        checkArgNotNull(classLoader, "classLoader");
         try {
-            return (Class<?>) origClass.getMethod("loadClass", byte[].class).invoke(null, code);
+            Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
+            Method defineClassMethod = classLoaderBaseClass.getDeclaredMethod("defineClass",
+                    String.class, byte[].class, int.class, int.class);
+
+            // protected method invocation
+            defineClassMethod.setAccessible(true);
+            try {
+                return (Class<?>) defineClassMethod.invoke(classLoader, className, code, 0, code.length);
+            } finally {
+                defineClassMethod.setAccessible(false);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Could not load class '" + className + '\'', e);
         }

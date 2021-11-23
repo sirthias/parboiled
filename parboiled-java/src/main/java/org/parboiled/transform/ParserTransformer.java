@@ -33,7 +33,7 @@ public class ParserTransformer {
         checkArgNotNull(parserClass, "parserClass");
         // first check whether we did not already create and load the extension of the given parser class
         Class<?> extendedClass = findLoadedClass(
-                getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader(), parserClass
+                getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
         );
         return (Class<? extends T>)
                 (extendedClass != null ? extendedClass : extendParserClass(parserClass).getExtendedClass());
@@ -44,7 +44,7 @@ public class ParserTransformer {
         new ClassNodeInitializer().process(classNode);
         runMethodTransformers(classNode);
         new ConstructorGenerator().process(classNode);
-        defineExtendedParserClass(classNode, parserClass);
+        defineExtendedParserClass(classNode);
         return classNode;
     }
 
@@ -93,7 +93,7 @@ public class ParserTransformer {
         );
     }
 
-    private static void defineExtendedParserClass(final ParserClassNode classNode, Class<?> origClass) {
+    private static void defineExtendedParserClass(final ParserClassNode classNode) {
         ClassWriter classWriter = new ClassWriter(ASMSettings.FRAMES) {
             @Override
             protected ClassLoader getClassLoader() {
@@ -105,8 +105,7 @@ public class ParserTransformer {
         classNode.setExtendedClass(loadClass(
                 classNode.name.replace('/', '.'),
                 classNode.getClassCode(),
-                classNode.getParentClass().getClassLoader(),
-                origClass
+                classNode.getParentClass().getClassLoader()
         ));
     }
 
