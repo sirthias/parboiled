@@ -61,6 +61,14 @@ val basicSettings = Seq(
     </developers>
 )
 
+val javaTestModulesSettings = 
+  if (List("11", "17").exists(System.getProperty("java.version", "").startsWith)) 
+    Seq(
+      Test / fork := true,
+      Test / javaOptions += "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    )
+  else Seq.empty
+
 val noPublishing = Seq(
   publishArtifact := false,
   publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
@@ -112,11 +120,14 @@ lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
   .dependsOn(parboiledCore % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(javaDoc: _*)
+  .settings(javaTestModulesSettings: _*)
   .settings(
     libraryDependencies ++= Dependencies.compile(asm, asmTree, asmAnalysis, asmUtil),
     Test / javacOptions += "-g", // needed for bytecode rewriting
     crossPaths := false,
-    autoScalaLibrary := false
+    autoScalaLibrary := false,
+    // java 17 patch module path by letting parboiled reflective access to java base package
+    Compile / packageBin / packageOptions += Package.ManifestAttributes("Add-Opens" -> "java.base/java.lang")
   )
 
 lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
@@ -128,6 +139,7 @@ lazy val examplesJava = Project("examples-java", file("examples-java"))
   .dependsOn(parboiledJava % "compile->compile;test->test")
   .settings(basicSettings: _*)
   .settings(noPublishing: _*)
+  .settings(javaTestModulesSettings: _*)
   .settings(javacOptions += "-g") // needed for bytecode rewriting
 
 
