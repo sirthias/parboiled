@@ -1,3 +1,10 @@
+Version 1.4.0 (2022-01-24)
+--------------------------
+- Support Java 17
+- Upgraded to ASM 9.2
+- Dropped support for Scala 2.11
+
+
 Version 1.3.1 (2019-06-24)
 --------------------------
 - Upgraded to ASM 7.1
