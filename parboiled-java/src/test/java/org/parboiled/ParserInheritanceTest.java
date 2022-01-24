@@ -45,7 +45,7 @@ public class ParserInheritanceTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void test() {
+    public void testParserInheritance() {
         ParentParser parentParser = Parboiled.createParser(ParentParser.class);
         test(parentParser.Abcd(), "abcd")
                 .hasNoErrors()

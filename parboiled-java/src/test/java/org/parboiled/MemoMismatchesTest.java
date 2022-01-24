@@ -58,7 +58,7 @@ public class MemoMismatchesTest {
     }
 
     @Test
-    public void test1() {
+    public void testMemoMismatches1() {
         Parser parser = Parboiled.createParser(Parser.class);
 
         ParserStatistics stats = ParserStatistics.generateFor(parser.Clause());
@@ -91,7 +91,7 @@ public class MemoMismatchesTest {
 
         ProfilingParseRunner runner = new ProfilingParseRunner(parser.Clause());
         assertFalse(runner.run("2").hasErrors());
-        assertEquals(runner.getReport().printBasics().replaceFirst("\\d\\.\\d\\d\\d s", "X.XXX s"), "" +
+        assertEquals(runner.getReport().printBasics().replace(',', '.').replaceFirst("\\d+\\.\\d+ s", "X.XXX s"), "" +
                 "Runs                     :               1\n" +
                 "Active rules             :              13\n" +
                 "Total net rule time      :           X.XXX s\n" +
@@ -106,7 +106,7 @@ public class MemoMismatchesTest {
     }
 
     @Test
-    public void test2() {
+    public void testMemoMismatches2() {
         MemoParser parser = Parboiled.createParser(MemoParser.class);
 
         ParserStatistics stats = ParserStatistics.generateFor(parser.Clause());
@@ -139,7 +139,7 @@ public class MemoMismatchesTest {
 
         ProfilingParseRunner runner = new ProfilingParseRunner(parser.Clause());
         assertFalse(runner.run("2").hasErrors());
-        assertEquals(runner.getReport().printBasics().replaceFirst("\\d\\.\\d\\d\\d s", "X.XXX s"), "" +
+        assertEquals(runner.getReport().printBasics().replace(',', '.').replaceFirst("\\d+\\.\\d+ s", "X.XXX s"), "" +
                 "Runs                     :               1\n" +
                 "Active rules             :              13\n" +
                 "Total net rule time      :           X.XXX s\n" +

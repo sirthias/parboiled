@@ -48,7 +48,7 @@ public class CreateParserTest {
     }
 
     @Test
-    public void testPrimitives() {
+    public void testCreateParser() {
         Parser parser = Parboiled.createParser(Parser.class, "Hello, world", false, 1.056f);
         assertEquals(parser.getStringParam(), "Hello, world");
         assertFalse(parser.getBooleanParam());

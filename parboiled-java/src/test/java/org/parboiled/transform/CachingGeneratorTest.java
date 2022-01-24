@@ -41,7 +41,7 @@ public class CachingGeneratorTest extends TransformationTest {
 
     @SuppressWarnings( {"unchecked"})
     @Test
-    public void test() throws Exception {
+    public void testCachingGenerator() throws Exception {
         assertTraceDumpEquality(processMethod("RuleWithoutAction", processors), "" +
                 "    ALOAD 0\n" +
                 "    GETFIELD org/parboiled/transform/TestParser$$parboiled.cache$RuleWithoutAction : Lorg/parboiled/Rule;\n" +

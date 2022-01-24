@@ -50,7 +50,7 @@ public class SplitParserTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void test() {
+    public void testSplitParser() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.Clause(), "1+5")
                 .hasNoErrors()

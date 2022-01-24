@@ -40,7 +40,7 @@ public class SimpleTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void test() {
+    public void testSimple() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
         test(rule, "1+5bx")

@@ -57,7 +57,7 @@ public class VarFramingTest extends TestNgParboiledTest<Integer> {
     }
 
     @Test
-    public void test() {
+    public void testVarFraming() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
 

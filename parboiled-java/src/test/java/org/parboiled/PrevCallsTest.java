@@ -66,7 +66,7 @@ public class PrevCallsTest extends TestNgParboiledTest<Integer> {
     }
 
     @Test
-    public void test() {
+    public void testPrevCalls() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
         test(rule, "100+23")

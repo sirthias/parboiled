@@ -33,7 +33,7 @@ public class CurrentCharTest {
     }
 
     @Test
-    public void test() {
+    public void testCurrentChar() {
         Parser parser = Parboiled.createParser(Parser.class);
         assertFalse(new RecoveringParseRunner(parser.Clause()).run("a").hasErrors());
         assertTrue(new RecoveringParseRunner(parser.Clause()).run("b").hasErrors());

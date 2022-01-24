@@ -62,7 +62,7 @@ public class InPredicateTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void test() {
+    public void testInPredicate() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.Number(), "56577")
                 .hasNoErrors()

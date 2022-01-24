@@ -59,7 +59,7 @@ public class IndentDedentTest {
     }
 
     @Test
-    public void test() {
+    public void testIndentDedent() {
         IndentDedentParser parser = Parboiled.createParser(IndentDedentParser.class);
         Rule rule = parser.File();
         String source = "" +

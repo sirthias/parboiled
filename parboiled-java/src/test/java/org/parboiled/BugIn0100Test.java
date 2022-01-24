@@ -34,7 +34,7 @@ public class BugIn0100Test extends TestNgParboiledTest<Integer> {
     }
 
     @Test
-    public void test() {
+    public void testBugIn0100() {
         // throws NPE in 0.10.0
         Parboiled.createParser(Parser.class);
     }

@@ -40,7 +40,7 @@ public class NTimesTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void test() {
+    public void testNTimes() {
         Parser parser = Parboiled.createParser(Parser.class);
         Rule rule = parser.Clause();
         test(rule, "1234+2345-3456")

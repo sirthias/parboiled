@@ -97,7 +97,7 @@ public class NodeSkippingTest extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void testNodeSuppression() {
+    public void testNodeSkipping() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.ABCDEFGH(), "abcdefgh")
                 .hasNoErrors()

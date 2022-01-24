@@ -44,7 +44,7 @@ public class ActionVar2Test extends TestNgParboiledTest<Object> {
     }
 
     @Test
-    public void test() {
+    public void testActionVar2() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.Clause(), "{12}abcdefghijkl\n")
                 .hasNoErrors()

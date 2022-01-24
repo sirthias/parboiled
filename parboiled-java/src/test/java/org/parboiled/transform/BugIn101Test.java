@@ -49,7 +49,7 @@ public class BugIn101Test {
     }
 
     @Test
-    public void test() throws Exception {
+    public void testBugIn101() throws Exception {
         // threw "java.lang.RuntimeException: Error creating extended parser class:
         // Execution can fall off end of the code" in 1.0.1
         Parser parser = Parboiled.createParser(Parser.class);

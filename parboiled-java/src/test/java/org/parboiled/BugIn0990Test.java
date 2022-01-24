@@ -32,7 +32,7 @@ public class BugIn0990Test extends TestNgParboiledTest<Integer> {
     }
 
     @Test
-    public void test() {
+    public void testBugIn0990() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.ID(), "ab")
                 .hasErrors("" +

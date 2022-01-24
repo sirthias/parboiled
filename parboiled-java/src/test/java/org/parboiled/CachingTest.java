@@ -58,7 +58,7 @@ public class CachingTest {
     }
 
     @Test
-    public void testLabellingParser() {
+    public void testCaching() {
         CachingParser parser = Parboiled.createParser(CachingParser.class);
 
         Matcher matcher1 = (Matcher) parser.Rule1();

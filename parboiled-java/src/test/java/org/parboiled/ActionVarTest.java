@@ -39,7 +39,7 @@ public class ActionVarTest extends TestNgParboiledTest<Integer> {
     }
 
     @Test
-    public void test() {
+    public void testActionVar() {
         Parser parser = Parboiled.createParser(Parser.class);
         Matcher rule = (Matcher) parser.A();
 

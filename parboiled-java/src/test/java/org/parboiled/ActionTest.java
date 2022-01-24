@@ -91,7 +91,7 @@ public class ActionTest extends TestNgParboiledTest<Integer> {
     }
 
     @Test
-    public void test() {
+    public void testAction() {
         Parser parser = Parboiled.createParser(Parser.class);
         test(parser.A(), "abcd")
                 .hasNoErrors()
