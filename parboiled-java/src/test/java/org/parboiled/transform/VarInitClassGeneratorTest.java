@@ -120,14 +120,14 @@ public class VarInitClassGeneratorTest extends TransformationTest {
         assertEquals(getClassDump(group.getGroupClassCode()), "" +
                 "// class version 51.0 (51)\n" +
                 "// access flags 0x1011\n" +
-                "public final synthetic class org/parboiled/transform/Action$ha3NOiBr9DZ3I2Sh extends org/parboiled/transform/BaseAction {\n" +
+                "public final synthetic class org/parboiled/transform/Action$wahXW5a63chqvc1g extends org/parboiled/transform/BaseAction {\n" +
                 "\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
                 "  public synthetic Lorg/parboiled/support/Var; field$0\n" +
                 "\n" +
                 "  // access flags 0x1001\n" +
-                "  public synthetic Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser$$parboiled; field$1\n" +
+                "  public synthetic Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser; field$1\n" +
                 "\n" +
                 "  // access flags 0x1\n" +
                 "  public <init>(Ljava/lang/String;)V\n" +
@@ -141,11 +141,11 @@ public class VarInitClassGeneratorTest extends TransformationTest {
                 "  // access flags 0x1\n" +
                 "  public run(Lorg/parboiled/Context;)Z\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ha3NOiBr9DZ3I2Sh.field$0 : Lorg/parboiled/support/Var;\n" +
+                "    GETFIELD org/parboiled/transform/Action$wahXW5a63chqvc1g.field$0 : Lorg/parboiled/support/Var;\n" +
                 "    INVOKEVIRTUAL org/parboiled/support/Var.get ()Ljava/lang/Object;\n" +
                 "    CHECKCAST java/util/List\n" +
                 "    ALOAD 0\n" +
-                "    GETFIELD org/parboiled/transform/Action$ha3NOiBr9DZ3I2Sh.field$1 : Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser$$parboiled;\n" +
+                "    GETFIELD org/parboiled/transform/Action$wahXW5a63chqvc1g.field$1 : Lorg/parboiled/transform/VarInitClassGeneratorTest$Parser;\n" +
                 "    DUP\n" +
                 "    ALOAD 1\n" +
                 "    INVOKEINTERFACE org/parboiled/ContextAware.setContext (Lorg/parboiled/Context;)V (itf)\n" +

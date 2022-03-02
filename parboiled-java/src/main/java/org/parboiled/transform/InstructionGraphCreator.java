@@ -23,6 +23,8 @@
 package org.parboiled.transform;
 
 import static org.parboiled.common.Preconditions.*;
+
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.Analyzer;
 
 /**
@@ -51,7 +53,7 @@ class InstructionGraphCreator implements RuleMethodProcessor {
                 interpreter.newControlFlowEdge(insn, successor);
                 return true;
             }
-        }.analyze(classNode.name, method);
+        }.analyze(Type.getInternalName(classNode.getParentClass()), method);
 
         interpreter.finish();
     }

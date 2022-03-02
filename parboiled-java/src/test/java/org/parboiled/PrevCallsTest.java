@@ -22,6 +22,8 @@ import org.parboiled.common.Reference;
 import org.parboiled.test.TestNgParboiledTest;
 import org.testng.annotations.Test;
 
+import java.lang.invoke.MethodHandles;
+
 public class PrevCallsTest extends TestNgParboiledTest<Integer> {
 
     @BuildParseTree
@@ -62,7 +64,6 @@ public class PrevCallsTest extends TestNgParboiledTest<Integer> {
                     push(Integer.parseInt(match()))
             );
         }
-
     }
 
     @Test
