@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - java: 8
           - java: 11
           - java: 17
     steps:
