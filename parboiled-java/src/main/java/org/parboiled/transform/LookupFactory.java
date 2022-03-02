@@ -22,7 +22,8 @@ import java.lang.reflect.Method;
 import java.util.WeakHashMap;
 
 /**
- * Helper that defines classes using {@code MethodHandles.Lookup#defineClass}.
+ * Helper that can be used to create {@link Lookup} instances for
+ * specific classes.
  */
 final class LookupFactory {
 
@@ -33,6 +34,14 @@ final class LookupFactory {
 		loadTrustedLookup();
 	}
 
+	/**
+	 * Tries to load a trusted {@link Lookup} instance.
+	 *
+	 * <p>
+	 * Adapted from <a href="https://github.com/google/guice/blob/cf759d44c78e8490e3d54df6a27918e0811bbdf9/core/src/com/google/inject/internal/aop/HiddenClassDefiner.java#L40">HiddenClassDefiner</a>
+	 * of Google Guice.
+	 * </p>
+	 */
 	private void loadTrustedLookup() {
 		try {
 			Class<?> unsafeType = Class.forName("sun.misc.Unsafe");
@@ -52,6 +61,25 @@ final class LookupFactory {
 		}
 	}
 
+	/**
+	 * Determines a {@link Lookup} instance for the given hostClass.
+	 * <p>
+	 * The method first tries to use a static method of the hostClass with the
+	 * following signature:
+	 * </p>
+	 * <p>
+	 * <code>
+	 *     public static {@link Lookup} lookup();
+	 * </code>
+	 * </p>
+	 * <p>
+	 * If this fails then it tries to use a trusted lookup
+	 * instance created via sun.misc.Unsafe.
+	 * </p>
+	 *
+	 * @param hostClass The target class of the lookup instance
+	 * @return a lookup instance or <code>null</code> if not found
+	 */
 	Lookup lookupFor(Class<?> hostClass) {
 		Lookup lookup = lookups.get(hostClass);
 		if (lookup == null) {
