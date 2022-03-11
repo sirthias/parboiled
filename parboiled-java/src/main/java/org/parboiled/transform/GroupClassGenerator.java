@@ -70,7 +70,8 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
     private void createGroupClassType(InstructionGroup group) {
         String s = classNode.name;
         int lastSlash = classNode.name.lastIndexOf('/');
-        String groupClassInternalName = (lastSlash >= 0 ? s.substring(0, lastSlash) + '/': "") + group.getName();
+        // do not prepend a slash if class is in the default package (lastSlash == -1)
+        String groupClassInternalName = (lastSlash >= 0 ? s.substring(0, lastSlash) + '/' : "") + group.getName();
         group.setGroupClassType(Type.getObjectType(groupClassInternalName));
     }
 
