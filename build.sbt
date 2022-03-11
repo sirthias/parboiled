@@ -2,7 +2,7 @@ import Dependencies._
 
 val basicSettings = Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
-  version               := "1.4.0",
+  version               := "1.4.1",
   scalaVersion          := "2.13.8",
   homepage              := Some(new URL("http://parboiled.org")),
   organization          := "org.parboiled",

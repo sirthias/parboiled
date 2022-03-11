@@ -1,3 +1,9 @@
+Version 1.4.1 (2022-03-11)
+--------------------------
+- Improved support for Java 16+ (thanks to @kenwenzel for the patch!)
+- Dropped support for Java 8
+
+
 Version 1.4.0 (2022-01-24)
 --------------------------
 - Support Java 17
