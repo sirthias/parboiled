@@ -23,8 +23,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
-import static org.parboiled.transform.AsmUtils.findLoadedClass;
-import static org.parboiled.transform.AsmUtils.loadClass;
+import static org.parboiled.transform.AsmUtils.defineClass;
 
 abstract class GroupClassGenerator implements RuleMethodProcessor {
 
@@ -54,16 +53,15 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
     private void loadGroupClass(InstructionGroup group) {
         createGroupClassType(group);
         String className = group.getGroupClassType().getClassName();
-        ClassLoader classLoader = classNode.getParentClass().getClassLoader();
 
         Class<?> groupClass;
         synchronized (lock) {
-            groupClass = findLoadedClass(className, classLoader);
+            groupClass = AsmUtils.loadClass(className, classNode.getParentClass());
             if (groupClass == null || forceCodeBuilding) {
                 byte[] groupClassCode = generateGroupClassCode(group);
                 group.setGroupClassCode(groupClassCode);
                 if (groupClass == null) {
-                    loadClass(className, groupClassCode, classLoader);
+                    AsmUtils.defineClass(className, groupClassCode, classNode.getParentClass());
                 }
             }
         }
@@ -72,7 +70,8 @@ abstract class GroupClassGenerator implements RuleMethodProcessor {
     private void createGroupClassType(InstructionGroup group) {
         String s = classNode.name;
         int lastSlash = classNode.name.lastIndexOf('/');
-        String groupClassInternalName = (lastSlash >= 0 ? s.substring(0, lastSlash) : s)+ '/' + group.getName();
+        // do not prepend a slash if class is in the default package (lastSlash == -1)
+        String groupClassInternalName = (lastSlash >= 0 ? s.substring(0, lastSlash) + '/' : "") + group.getName();
         group.setGroupClassType(Type.getObjectType(groupClassInternalName));
     }
 

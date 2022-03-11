@@ -35,6 +35,7 @@ import org.parboiled.support.Var;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -45,6 +46,8 @@ import java.util.Map;
 import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 class AsmUtils {
+
+    private static final LookupFactory lookupFactory = new LookupFactory();
 
     public static ClassReader createClassReader(Class<?> clazz) throws IOException {
         checkArgNotNull(clazz, "clazz");
@@ -196,22 +199,17 @@ class AsmUtils {
      * Otherwise the method returns null.
      *
      * @param className   the full name of the class to be loaded
-     * @param classLoader the class loader to use
+     * @param parentClass the parent class of the class with the given className
      * @return the class instance or null
      */
-    public static Class<?> findLoadedClass(String className, ClassLoader classLoader) {
+    public static Class<?> loadClass(String className, Class<?> parentClass) {
         checkArgNotNull(className, "className");
-        checkArgNotNull(classLoader, "classLoader");
+        checkArgNotNull(parentClass, "parentClass");
         try {
-            Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
-            Method findLoadedClassMethod = classLoaderBaseClass.getDeclaredMethod("findLoadedClass", String.class);
-
-            // protected method invocation
-            findLoadedClassMethod.setAccessible(true);
             try {
-                return (Class<?>) findLoadedClassMethod.invoke(classLoader, className);
-            } finally {
-                findLoadedClassMethod.setAccessible(false);
+                return parentClass.getClassLoader().loadClass(className);
+            } catch (ClassNotFoundException cnfe) {
+                return null;
             }
         } catch (Exception e) {
             throw new RuntimeException("Could not determine whether class '" + className +
@@ -220,22 +218,30 @@ class AsmUtils {
     }
 
     /**
-     * Loads the class defined with the given name and bytecode using the given class loader.
-     * Since package and class idendity includes the ClassLoader instance used to load a class we use reflection
+     * Defines a new class with the given name and bytecode within the package of the given parent class.
+     * Since package and class identity includes the ClassLoader instance used to load a class we use reflection
      * on the given class loader to define generated classes. If we used our own class loader (in order to be able
      * to access the protected "defineClass" method) we would likely still be able to load generated classes,
      * however, they would not have access to package-private classes and members of their super classes.
      *
      * @param className   the full name of the class to be loaded
      * @param code        the bytecode of the class to load
-     * @param classLoader the class loader to use
+     * @param parentClass the parent class of the new class
      * @return the class instance
      */
-    public static Class<?> loadClass(String className, byte[] code, ClassLoader classLoader) {
+    public static Class<?> defineClass(String className, byte[] code, Class<?> parentClass) {
         checkArgNotNull(className, "className");
         checkArgNotNull(code, "code");
-        checkArgNotNull(classLoader, "classLoader");
+        checkArgNotNull(parentClass, "parentClass");
+
         try {
+            if (lookupFactory != null) {
+                MethodHandles.Lookup lookup = lookupFactory.lookupFor(parentClass);
+                if (lookup != null) {
+                    return lookup.defineClass(code);
+                }
+            }
+
             Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");
             Method defineClassMethod = classLoaderBaseClass.getDeclaredMethod("defineClass",
                     String.class, byte[].class, int.class, int.class);
@@ -243,7 +249,7 @@ class AsmUtils {
             // protected method invocation
             defineClassMethod.setAccessible(true);
             try {
-                return (Class<?>) defineClassMethod.invoke(classLoader, className, code, 0, code.length);
+                return (Class<?>) defineClassMethod.invoke(parentClass.getClassLoader(), className, code, 0, code.length);
             } finally {
                 defineClassMethod.setAccessible(false);
             }

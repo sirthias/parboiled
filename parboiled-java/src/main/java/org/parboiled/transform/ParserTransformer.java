@@ -32,8 +32,8 @@ public class ParserTransformer {
     public static synchronized <T> Class<? extends T> transformParser(Class<T> parserClass) throws Exception {
         checkArgNotNull(parserClass, "parserClass");
         // first check whether we did not already create and load the extension of the given parser class
-        Class<?> extendedClass = findLoadedClass(
-                getExtendedParserClassName(parserClass.getName()), parserClass.getClassLoader()
+        Class<?> extendedClass = AsmUtils.loadClass(
+                getExtendedParserClassName(parserClass.getName()), parserClass
         );
         return (Class<? extends T>)
                 (extendedClass != null ? extendedClass : extendParserClass(parserClass).getExtendedClass());
@@ -102,10 +102,10 @@ public class ParserTransformer {
         };
         classNode.accept(classWriter);
         classNode.setClassCode(classWriter.toByteArray());
-        classNode.setExtendedClass(loadClass(
+        classNode.setExtendedClass(defineClass(
                 classNode.name.replace('/', '.'),
                 classNode.getClassCode(),
-                classNode.getParentClass().getClassLoader()
+                classNode.getParentClass()
         ));
     }
 
