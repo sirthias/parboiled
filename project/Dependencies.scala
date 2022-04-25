@@ -20,6 +20,6 @@ object Dependencies {
   val testNG      = "org.scalatestplus" %% "testng-7-5" % "3.2.12.0"
 
   def scalatest(scalaVersion: String) = {
-    Seq("org.scalatest" %% "scalatest" % "3.2.11")
+    Seq("org.scalatest" %% "scalatest" % "3.2.12")
   }
 }
