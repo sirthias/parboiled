@@ -42,7 +42,7 @@ class InstructionGraphCreator implements RuleMethodProcessor {
         checkArgNotNull(method, "method");
         final RuleMethodInterpreter interpreter = new RuleMethodInterpreter(method);
 
-        new Analyzer(interpreter) {
+        new Analyzer<>(interpreter) {
             @Override
             protected void newControlFlowEdge(int insn, int successor) {
                 interpreter.newControlFlowEdge(insn, successor);
