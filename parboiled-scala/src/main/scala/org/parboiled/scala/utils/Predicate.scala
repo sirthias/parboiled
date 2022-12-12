@@ -30,5 +30,5 @@ abstract class Predicate[-A] extends (A => Boolean) {
   def apply(a: A): Boolean
   def &&[B <: A](other: Predicate[B]) = Predicate[B](a => apply(a) && other(a))
   def ||[B <: A](other: Predicate[B]) = Predicate[B](a => apply(a) && other(a))
-  def unary_!(): Predicate[A] = Predicate[A](a => !apply(a))
+  def unary_! : Predicate[A] = Predicate[A](a => !apply(a))
 }

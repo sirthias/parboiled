@@ -21,13 +21,13 @@ import util.DynamicVariable
 import org.parboiled.support.ParseTreeUtils
 import org.parboiled.errors.{ParseError, ErrorUtils}
 import org.parboiled.Node
+import org.scalatest.Suite
 
 /**
  * A trait simplifying the creation of tests for "parboiled for scala" parsers.
  * It can be mixed into any test class that defines a fail(string) method (e.g. all the scalatest Suites).
  */
-trait ParboiledTest {
-  this: {def fail(msg: String)(implicit pos: org.scalactic.source.Position): Nothing} =>
+trait ParboiledTest extends Suite {
 
   /**
    * The type of the root value object created by the parser.
