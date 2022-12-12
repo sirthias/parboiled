@@ -96,7 +96,7 @@ public class AsmTestUtils {
 
     public static void verifyMethodIntegrity(String ownerInternalName, MethodNode method) {
         try {
-            new Analyzer(new SimpleVerifier()).analyze(ownerInternalName, method);
+            new Analyzer<>(new SimpleVerifier()).analyze(ownerInternalName, method);
         } catch (AnalyzerException e) {
             throw new RuntimeException(
                     "Integrity error in method '" + method.name + "' of type '" + ownerInternalName + "': ", e);
