@@ -47,24 +47,24 @@ class JsonParser1 extends Parser {
   def Json = rule { WhiteSpace ~ (JsonObject | JsonArray) ~ EOI }
 
   def JsonObject: Rule1[ObjectNode] = rule {
-    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> ObjectNode
+    "{ " ~ zeroOrMore(Pair, separator = ", ") ~ "} " ~~> (ObjectNode.apply _)
   }
 
   def Pair = rule {
-    JsonString ~~> (_.text) ~ ": " ~ Value ~~> MemberNode
+    JsonString ~~> (_.text) ~ ": " ~ Value ~~> (MemberNode.apply _)
   }
 
   def Value: Rule1[AstNode] = rule {
     JsonString | JsonNumber | JsonObject | JsonArray | JsonTrue | JsonFalse | JsonNull
   }
 
-  def JsonString = rule { "\"" ~ zeroOrMore(Character) ~> StringNode ~ "\" " }
+  def JsonString = rule { "\"" ~ zeroOrMore(Character) ~> StringNode.apply ~ "\" " }
 
   def JsonNumber = rule {
     group(Integer ~ optional(Frac ~ optional(Exp))) ~> (s => NumberNode(BigDecimal(s))) ~ WhiteSpace
   }
 
-  def JsonArray = rule { "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> ArrayNode }
+  def JsonArray = rule { "[ " ~ zeroOrMore(Value, separator = ", ") ~ "] " ~~> (ArrayNode.apply _) }
 
   def Character = rule { EscapedChar | NormalChar }
 

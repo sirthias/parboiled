@@ -21,6 +21,7 @@ import org.scalatestplus.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
 import org.parboiled.matchers.Matcher
 import org.parboiled.trees.GraphUtils
+import org.parboiled.scala._
 import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.support.{Filters, ToStringFormatter}
 import org.parboiled.common.Predicates

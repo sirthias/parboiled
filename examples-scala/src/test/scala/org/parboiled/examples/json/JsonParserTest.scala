@@ -19,6 +19,7 @@ package org.parboiled.examples.json
 import org.testng.annotations.Test
 import org.scalatestplus.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
+import org.parboiled.scala._
 import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.scala.parserunners.ReportingParseRunner
 
@@ -38,7 +39,7 @@ class JsonParserTest extends ParboiledTest with TestNGSuiteLike {
                   |  "number": -1.2323424E-5,
                   |  "Boolean yes":true,
                   |  "Boolean no": false,
-                  |  "Unic\u00f8de" :  "Long string with newline\nescape",
+                  |  "Unicøde" :  "Long string with newline\nescape",
                   |  "key with \"quotes\"" : "string",
                   |  "sub object" : {
                   |    "sub key": 26.5,

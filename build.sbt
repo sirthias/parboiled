@@ -28,6 +28,15 @@ val basicSettings = Seq(
     "utf8"
   ),
 
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) =>
+        Seq("-Xsource:3")
+      case _ =>
+        Nil
+    }
+  },
+
   libraryDependencies   ++= Dependencies.test(testNG),
   libraryDependencies   ++= Dependencies.test(scalatest(scalaVersion.value): _*),
 
@@ -35,7 +44,7 @@ val basicSettings = Seq(
   (doc / scalacOptions) ++= Seq("-doc-title", name.value, "-doc-version", version.value),
 
   // publishing
-  crossScalaVersions := Seq("2.12.17", "2.13.10"),
+  crossScalaVersions := Seq("2.12.17", "2.13.10", "3.2.1"),
   scalaBinaryVersion := {
     if (CrossVersion.isScalaApiCompatible(scalaVersion.value)) CrossVersion.binaryScalaVersion(scalaVersion.value)
     else scalaVersion.value

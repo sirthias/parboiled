@@ -19,7 +19,9 @@ package org.parboiled.examples.calculators
 import org.testng.annotations.Test
 import org.scalatestplus.testng.TestNGSuiteLike
 import org.testng.Assert.assertEquals
+import org.parboiled.scala._
 import org.parboiled.scala.parserunners._
+import org.parboiled.scala.parserunners.TracingParseRunner
 import org.parboiled.scala.testing.ParboiledTest
 import org.parboiled.common.StringBuilderSink
 
