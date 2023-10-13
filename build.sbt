@@ -4,12 +4,12 @@ val basicSettings = Seq(
   shellPrompt           := { s => Project.extract(s).currentProject.id + " > " },
   version               := "1.4.1",
   scalaVersion          := "2.13.12",
-  homepage              := Some(new URL("http://parboiled.org")),
+  homepage              := Some(url("http://parboiled.org")),
   organization          := "org.parboiled",
-  organizationHomepage  := Some(new URL("http://parboiled.org")),
+  organizationHomepage  := Some(url("http://parboiled.org")),
   description           := "Elegant parsing in Java and Scala - lightweight, easy-to-use, powerful",
   startYear             := Some(2009),
-  licenses              := Seq("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  licenses              := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   resolvers             ++= resolutionRepos,
 
   javacOptions          ++= Seq(
