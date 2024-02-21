@@ -98,7 +98,7 @@ class JsonParser1 extends Parser {
    * We redefine the default string-to-rule conversion to also match trailing whitespace if the string ends with
    * a blank, this keeps the rules free from most whitespace matching clutter
    */
-  override implicit def toRule(string: String) =
+  override implicit def toRule(string: String): Rule0 =
     if (string.endsWith(" "))
       str(string.trim) ~ WhiteSpace
     else
