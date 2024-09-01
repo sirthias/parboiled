@@ -30,8 +30,10 @@ val basicSettings = Seq(
 
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, _)) =>
+      case Some((2, 12)) =>
         Seq("-Xsource:3")
+      case Some((2, 13)) =>
+        Seq("-Xsource:3-cross")
       case _ =>
         Nil
     }
