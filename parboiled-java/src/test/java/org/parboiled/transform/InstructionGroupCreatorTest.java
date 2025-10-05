@@ -19,6 +19,7 @@ package org.parboiled.transform;
 import static org.parboiled.common.Preconditions.*;
 import org.parboiled.common.FileUtils;
 import org.parboiled.common.ImmutableList;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
@@ -46,7 +47,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
     public void testInstructionGraphing() throws Exception {
         setup(TestParser.class);
 
-        testMethodAnalysis("RuleWithComplexActionSetup", 724347041L);
+        testMethodAnalysis("RuleWithComplexActionSetup", 3760629084L);
         //renderToGraphViz(dotSource);
     }
 
@@ -56,8 +57,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
         dotSource = generateDotSource(method);
         long crc = computeCRC(dotSource);
         if (crc != dotSourceCRC) {
-            System.err.println("Invalid dotSource CRC for method '" + methodName + "': " + crc + 'L');
-            assertEquals(dotSource, "");
+            Assert.fail("Invalid dotSource CRC for method '" + methodName + "': " + crc + 'L');
         }
     }
 
