@@ -114,13 +114,13 @@ def javaDoc = Seq(
 
 lazy val root = Project("root", file("."))
   .aggregate(parboiledCore, parboiledJava, parboiledScala, examplesJava, examplesScala)
-  .settings(basicSettings: _*)
-  .settings(noPublishing: _*)
+  .settings(basicSettings)
+  .settings(noPublishing)
 
 
 lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
-  .settings(basicSettings: _*)
-  .settings(javaDoc: _*)
+  .settings(basicSettings)
+  .settings(javaDoc)
   .settings(
     crossPaths := false,
     autoScalaLibrary := false
@@ -128,9 +128,9 @@ lazy val parboiledCore = Project("parboiled-core", file("parboiled-core"))
 
 lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
   .dependsOn(parboiledCore % "compile->compile;test->test")
-  .settings(basicSettings: _*)
-  .settings(javaDoc: _*)
-  .settings(javaTestModulesSettings: _*)
+  .settings(basicSettings)
+  .settings(javaDoc)
+  .settings(javaTestModulesSettings)
   .settings(
     libraryDependencies ++= Dependencies.compile(asm, asmTree, asmAnalysis, asmUtil),
     Test / javacOptions += "-g", // needed for bytecode rewriting
@@ -142,18 +142,18 @@ lazy val parboiledJava = Project("parboiled-java", file("parboiled-java"))
 
 lazy val parboiledScala = Project("parboiled-scala", file("parboiled-scala"))
   .dependsOn(parboiledCore)
-  .settings(basicSettings: _*)
+  .settings(basicSettings)
 
 
 lazy val examplesJava = Project("examples-java", file("examples-java"))
   .dependsOn(parboiledJava % "compile->compile;test->test")
-  .settings(basicSettings: _*)
-  .settings(noPublishing: _*)
-  .settings(javaTestModulesSettings: _*)
+  .settings(basicSettings)
+  .settings(noPublishing)
+  .settings(javaTestModulesSettings)
   .settings(javacOptions += "-g") // needed for bytecode rewriting
 
 
 lazy val examplesScala = Project("examples-scala", file("examples-scala"))
   .dependsOn(parboiledScala % "compile->compile;test->test")
-  .settings(basicSettings: _*)
-  .settings(noPublishing: _*)
+  .settings(basicSettings)
+  .settings(noPublishing)
