@@ -111,7 +111,7 @@ public class InstructionGroupCreatorTest extends TransformationTest {
 
     @SuppressWarnings({"UnusedDeclaration"})
     private static void renderToGraphViz(String dotSource) throws Exception {
-        String command = "/usr/local/bin/dot -Tpng";
+        String[] command = {"/usr/local/bin/dot", "-Tpng"};
         String output = "/Users/mathias/Downloads/graph.png";
 
         final Process process = Runtime.getRuntime().exec(command);
