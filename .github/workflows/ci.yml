@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - java: 11
-          - java: 21
+          - java: 17
+          - java: 25
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-java@v5
