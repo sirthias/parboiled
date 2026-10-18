@@ -49,6 +49,14 @@ class AsmUtils {
 
     private static final LookupFactory lookupFactory = new LookupFactory();
 
+    static void registerLookup(Class<?> hostClass, MethodHandles.Lookup lookup) {
+        lookupFactory.registerLookup(hostClass, lookup);
+    }
+
+    static MethodHandles.Lookup lookupFor(Class<?> hostClass) {
+        return lookupFactory.lookupFor(hostClass);
+    }
+
     public static ClassReader createClassReader(Class<?> clazz) throws IOException {
         checkArgNotNull(clazz, "clazz");
         String classFilename = clazz.getName().replace('.', '/') + ".class";
@@ -235,11 +243,9 @@ class AsmUtils {
         checkArgNotNull(parentClass, "parentClass");
 
         try {
-            if (lookupFactory != null) {
-                MethodHandles.Lookup lookup = lookupFactory.lookupFor(parentClass);
-                if (lookup != null) {
-                    return lookup.defineClass(code);
-                }
+            MethodHandles.Lookup lookup = lookupFactory.lookupFor(parentClass);
+            if (lookup != null) {
+                return lookup.defineClass(code);
             }
 
             Class<?> classLoaderBaseClass = Class.forName("java.lang.ClassLoader");

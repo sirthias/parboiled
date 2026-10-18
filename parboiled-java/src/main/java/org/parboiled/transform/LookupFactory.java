@@ -27,11 +27,32 @@ import java.util.WeakHashMap;
  */
 final class LookupFactory {
 
-	private WeakHashMap<Class<?>, Lookup> lookups = new WeakHashMap<>();
+	private final WeakHashMap<Class<?>, Lookup> lookups = new WeakHashMap<>();
 	private Lookup trustedLookup;
+	private boolean trustedLookupLoaded;
 
-	LookupFactory() {
-		loadTrustedLookup();
+	/**
+	 * Registers a {@link Lookup} instance which is used to define new classes
+	 * for the given hostClass. The lookup must have {@link Lookup#PACKAGE}
+	 * access and its lookup class must reside in the same package and
+	 * class loader as the hostClass.
+	 *
+	 * @param hostClass The target class of the lookup instance
+	 * @param lookup    The lookup instance
+	 * @throws IllegalArgumentException if the lookup is not suitable for the hostClass
+	 */
+	synchronized void registerLookup(Class<?> hostClass, Lookup lookup) {
+		Class<?> lookupClass = lookup.lookupClass();
+		if ((lookup.lookupModes() & Lookup.PACKAGE) == 0) {
+			throw new IllegalArgumentException("The given lookup for " + lookupClass.getName() +
+					" does not have PACKAGE access");
+		}
+		if (!lookupClass.getPackageName().equals(hostClass.getPackageName()) ||
+				lookupClass.getClassLoader() != hostClass.getClassLoader()) {
+			throw new IllegalArgumentException("The given lookup for " + lookupClass.getName() +
+					" is not in the same runtime package as " + hostClass.getName());
+		}
+		lookups.put(hostClass, lookup);
 	}
 
 	/**
@@ -42,7 +63,11 @@ final class LookupFactory {
 	 * of Google Guice.
 	 * </p>
 	 */
-	private void loadTrustedLookup() {
+	private Lookup getTrustedLookup() {
+		if (trustedLookupLoaded) {
+			return trustedLookup;
+		}
+		trustedLookupLoaded = true;
 		try {
 			Class<?> unsafeType = Class.forName("sun.misc.Unsafe");
 			Field theUnsafeField = unsafeType.getDeclaredField("theUnsafe");
@@ -59,18 +84,28 @@ final class LookupFactory {
 		} catch (Exception e) {
 			// Unsafe and trusted lookup is not available
 		}
+		return trustedLookup;
 	}
 
 	/**
 	 * Determines a {@link Lookup} instance for the given hostClass.
 	 * <p>
-	 * The method first tries to use a static method of the hostClass with the
+	 * If a lookup instance was registered for the hostClass via
+	 * {@link #registerLookup(Class, Lookup)} then this instance is used.
+	 * </p>
+	 * <p>
+	 * Otherwise the method tries to use a static method of the hostClass with the
 	 * following signature:
 	 * </p>
 	 * <p>
 	 * <code>
 	 *     public static {@link Lookup} lookup();
 	 * </code>
+	 * </p>
+	 * <p>
+	 * Note that such a method exposes full access to the hostClass to everyone who
+	 * can access the hostClass. Prefer passing the lookup explicitly via
+	 * {@link org.parboiled.Parboiled#createParser(Lookup, Class, Object...)}.
 	 * </p>
 	 * <p>
 	 * If this fails then it tries to use a trusted lookup
@@ -80,7 +115,7 @@ final class LookupFactory {
 	 * @param hostClass The target class of the lookup instance
 	 * @return a lookup instance or <code>null</code> if not found
 	 */
-	Lookup lookupFor(Class<?> hostClass) {
+	synchronized Lookup lookupFor(Class<?> hostClass) {
 		Lookup lookup = lookups.get(hostClass);
 		if (lookup == null) {
 			try {
@@ -91,9 +126,12 @@ final class LookupFactory {
 				// failed to use lookup() method
 			}
 
-			if (lookup == null && trustedLookup != null) {
+			if (lookup == null) {
 				// use trusted lookup instance if available
-				lookup = trustedLookup.in(hostClass);
+				Lookup trusted = getTrustedLookup();
+				if (trusted != null) {
+					lookup = trusted.in(hostClass);
+				}
 			}
 
 			if (lookup != null) {

@@ -20,6 +20,7 @@ import static org.parboiled.common.Preconditions.*;
 import org.objectweb.asm.ClassWriter;
 import org.parboiled.common.ImmutableList;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import static org.parboiled.transform.AsmUtils.*;
@@ -27,6 +28,23 @@ import static org.parboiled.transform.AsmUtils.*;
 public class ParserTransformer {
 
     private ParserTransformer() {}
+
+    /**
+     * Transforms the given parser class, using the given lookup to define the generated classes.
+     *
+     * @param lookup      a lookup with {@link MethodHandles.Lookup#PACKAGE} access in the package of the parser class,
+     *                    typically obtained via {@link MethodHandles#lookup()} by the caller
+     * @param parserClass the parser class to transform
+     * @return the extended parser class
+     * @throws Exception if the transformation fails
+     */
+    public static synchronized <T> Class<? extends T> transformParser(MethodHandles.Lookup lookup,
+                                                                      Class<T> parserClass) throws Exception {
+        checkArgNotNull(lookup, "lookup");
+        checkArgNotNull(parserClass, "parserClass");
+        AsmUtils.registerLookup(parserClass, lookup);
+        return transformParser(parserClass);
+    }
 
     @SuppressWarnings({"unchecked"})
     public static synchronized <T> Class<? extends T> transformParser(Class<T> parserClass) throws Exception {
