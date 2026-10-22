@@ -19,7 +19,6 @@ package org.parboiled.transform;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.WeakHashMap;
 
 /**
  * Helper that can be used to create {@link Lookup} instances for
@@ -27,9 +26,18 @@ import java.util.WeakHashMap;
  */
 final class LookupFactory {
 
-	private final WeakHashMap<Class<?>, Lookup> lookups = new WeakHashMap<>();
+	private final ClassValue<LookupHolder> lookups = new ClassValue<LookupHolder>() {
+		@Override
+		protected LookupHolder computeValue(Class<?> type) {
+			return new LookupHolder();
+		}
+	};
 	private Lookup trustedLookup;
 	private boolean trustedLookupLoaded;
+
+	private static final class LookupHolder {
+		Lookup lookup;
+	}
 
 	/**
 	 * Registers a {@link Lookup} instance which is used to define new classes
@@ -52,7 +60,7 @@ final class LookupFactory {
 			throw new IllegalArgumentException("The given lookup for " + lookupClass.getName() +
 					" is not in the same runtime package as " + hostClass.getName());
 		}
-		lookups.put(hostClass, lookup);
+		lookups.get(hostClass).lookup = lookup;
 	}
 
 	/**
@@ -116,7 +124,8 @@ final class LookupFactory {
 	 * @return a lookup instance or <code>null</code> if not found
 	 */
 	synchronized Lookup lookupFor(Class<?> hostClass) {
-		Lookup lookup = lookups.get(hostClass);
+		LookupHolder holder = lookups.get(hostClass);
+		Lookup lookup = holder.lookup;
 		if (lookup == null) {
 			try {
 				// try to find a lookup() method first
@@ -135,7 +144,7 @@ final class LookupFactory {
 			}
 
 			if (lookup != null) {
-				lookups.put(hostClass, lookup);
+				holder.lookup = lookup;
 			}
 		}
 		return lookup;
